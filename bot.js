@@ -1,7 +1,7 @@
 const discord = require('discord.js');
 const config = require('./config.json');
-const bot2 = require('./server.js');
 const bot = new discord.Client();
+const Server = require('./server.js');
 
 // Load configurations.
 const token = config.token;
@@ -16,11 +16,12 @@ bot.on('ready', () => {
   console.log('Logged in as ' + bot.user.username);
   console.log(`${time.toLocaleDateString()} ${time.toLocaleTimeString()}`);
   console.log('--------------------------');
+  bot.server = new Server(bot.guilds.firstKey());
 });
 
 bot.on('message', message => {
-
-
+  if (message.author.bot) return;
+  bot.server.add(message);
   if (message.author.id != owner_ID) return;
   if (!message.content.startsWith(prefix)) return;
 

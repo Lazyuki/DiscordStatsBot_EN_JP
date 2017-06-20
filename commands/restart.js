@@ -3,7 +3,7 @@ module.exports.alias = [
   'reboot'
 ];
 
-module.exports.command = (null, null, bot) => {
-  setTimeout(bot.destroy(), 0);
-  setTimeout(process.exit(2), 0);
+module.exports.command = (msg, cont, bot) => {
+  bot.destroy()
+  process.exit(2);
 };

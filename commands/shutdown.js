@@ -4,9 +4,8 @@ module.exports.alias = [
   'destroy'
 ];
 
-module.exports.command = (message, null, bot) => {
-  message.channel.send('bye...');
+module.exports.command = (message, _, bot) => {
   console.log('Shutting down...');
-  setTimeout(bot.destroy(), 0);
-  setTimeout(process.exit(0), 0);
+  bot.destroy()
+  setTimeout(process.exit, 0);
 };
