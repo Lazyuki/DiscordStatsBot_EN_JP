@@ -1,6 +1,6 @@
-const discord = require('discord.js');
+const Discord = require('discord.js');
 const config = require('./config.json');
-const bot = new discord.Client();
+const bot = new Discord.Client();
 const Server = require('./server.js');
 
 // Load configurations.
@@ -10,24 +10,24 @@ const prefix = config.prefix;
 
 const commands = require('./cmds.js');
 
-
 bot.on('ready', () => {
   let time = new Date();
   console.log('Logged in as ' + bot.user.username);
   console.log(`${time.toLocaleDateString()} ${time.toLocaleTimeString()}`);
   console.log('--------------------------');
-  bot.server = new Server(bot.guilds.firstKey());
+  if (!bot.server) bot.server = new Server(bot.guilds.get('189571157446492161'));
 });
 
 bot.on('message', message => {
   if (message.author.bot) return;
   if (!message.content.startsWith(prefix)) {
+    if (message.guild.id != '189571157446492161') return;
     bot.server.addMessage(message);
     return;
   }
   if (message.author.id != owner_ID) return; // remove this
   let command = message.content.split(' ')[0].slice(1);
-  let content = message.content.substr(command.length + 1);
+  let content = message.content.substr(command.length + 2);
   if (!commands[command]) { // if not our bot command, process it.
     bot.server.addMessage(message);
     return;
