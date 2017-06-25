@@ -4,6 +4,6 @@ module.exports.alias = [
 ];
 
 module.exports.command = (msg, cont, bot) => {
-  bot.destroy()
+  bot.destroy();
   process.exit(2);
 };

@@ -1,7 +1,8 @@
 module.exports.alias = [
 	'kill',
 	'shutdown',
-  'destroy'
+  'destroy',
+	'sd'
 ];
 
 module.exports.command = (message, _, bot) => {

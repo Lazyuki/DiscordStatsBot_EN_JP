@@ -2,28 +2,32 @@ module.exports = class UserRecord {
   constructor(userID) {
     this.id = userID;
     this.record = new Array(31);
+    this.thirtyDays = 0;
+    this.channels = {};
   }
 
-  add(channelID) {
-    debugger;
-    let today = new Date().getDate() - 1; // -1 for array indexing
-    if (this.record[today] == undefined) {
+  // channelID in string, today is an int between 0-30
+  add(channelID, today) {
+    this.thirtyDays++;
+    if (!this.record[today]) {
       this.record[today] = {};
       this.record[today][channelID] = 0;
-      console.log(this.record[today][channelID]);
+    } else if (!this.record[today][channelID]) {
+      this.record[today][channelID] = 0;
+      if (!this.channels[channelID]) {
+        this.channels[channelID] = 0;
+      }
     }
-    console.log(this.record[today][channelID]);
+    this.channels[channelID]++;
     this.record[today][channelID]++;
   }
 
-  total() {
-    let count = 0;
-    this.record.forEach(function(day) {
-      if (day == undefined) return;
-      for (var ch in day) {
-        count += day[ch];
-      }
-    });
-    return count;
+  totalStats() {
+    return this.thirtyDays;
+  }
+
+  channelStats(channelID) {
+    let result = this.channels[channelID];
+    return result ? result : 0;
   }
 };

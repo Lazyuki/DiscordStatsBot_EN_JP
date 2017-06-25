@@ -8,6 +8,7 @@ module.exports = class Server /*extends discord.Guild */{
      this.ignoredChannels = [];
      this.ignoredMembers  = [];
      this.users = {};
+     this.today = 0;
    }
 
    getIgnoredChannels() {
@@ -26,24 +27,29 @@ module.exports = class Server /*extends discord.Guild */{
      this.ignoreMembers.push(member);
    }
 
-   add(message) {
+   addMessage(message) {
      let author = message.author.id;
      let channel = message.channel.id;
      if (!this.users[author]) {
        this.users[author] = new UserRecord(author);
      }
      let userRec = this.users[author];
-     userRec.add(channel);
+     userRec.add(channel, this.today);
    }
 
-   stat(message) {
-     let ch = message.channel;
-     let result = '';
+   leaderboard(message) {
+     let result = {};
      for (var user in this.users) {
-       result += (user + " : " + this.users[user].total());
-       result += '\n';
+       result[user] = this.users[user].totalStats();
      }
-     ch.send(result);
+     return result;
    }
 
+   channelLeaderboard(message) {
+     let result = {};
+     for (var user in this.users) {
+       result[user] = this.users[user].channelStats(message.channel.id);
+     }
+     return result;
+   }
 }

@@ -21,13 +21,17 @@ bot.on('ready', () => {
 
 bot.on('message', message => {
   if (message.author.bot) return;
-  bot.server.add(message);
-  if (message.author.id != owner_ID) return;
-  if (!message.content.startsWith(prefix)) return;
-
+  if (!message.content.startsWith(prefix)) {
+    bot.server.addMessage(message);
+    return;
+  }
+  if (message.author.id != owner_ID) return; // remove this
   let command = message.content.split(' ')[0].slice(1);
   let content = message.content.substr(command.length + 1);
-  if (!commands[command]) return;
+  if (!commands[command]) { // if not our bot command, process it.
+    bot.server.addMessage(message);
+    return;
+  }
   commands[command].command(message, content, bot);
 });
 

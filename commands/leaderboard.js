@@ -3,7 +3,13 @@ module.exports.alias = [
 	'leaderboard'
 ];
 
-module.exports.command = (message, _, bot) => {
+module.exports.command = async (message, _, bot) => {
   let channel = message.channel;
-  bot.server.stat(message);
+  let dic = bot.server.leaderboard(message);
+
+  let msg = '';
+  for (var user in dic) {
+    msg += (await bot.fetchUser(user)).username + ': ' + dic[user] + '\n';
+  }
+  channel.send(msg);
 };
