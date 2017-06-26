@@ -3,22 +3,25 @@ const UserRecord = require('./UserRecord.js');
 const BST = require('./BST.js');
 const fs = require('fs');
 
-module.exports = class Server /*extends discord.Guild */{
-  constructor(server) {
-     //super();
-     this.server = server;
+module.exports = class Server {
+  constructor(serverID) {
+     this.server = serverID;
      this.ignoredChannels = [];
      this.ignoredMembers  = [];
      this.users = {};
-     if (fs.existsSync('./sample.json')) {
-       let json = JSON.parse(fs.readFileSync('sample.json', 'utf8'));
-       for (var user in json) {
-         let uRec = json[user]
+     this.today = 0;
+     if (fs.existsSync('./.restore.json')) {
+       let json = JSON.parse(fs.readFileSync('./.restore.json', 'utf8'));
+       this.server = json['server'];
+       this.ignoredChannels = json['ignoredChannels'];
+       this.ignoredMembers = json['ignoredMembers'];
+       this.today = json['today'];
+       for (var user in json['users']) {
+         let uRec = json['users'][user]
          this.users[user] = new UserRecord(uRec['record'], uRec['thirtyDays'],
                             uRec['channels']);
        }
      }
-     this.today = 0;
    }
 
    getIgnoredChannels() {
@@ -47,33 +50,8 @@ module.exports = class Server /*extends discord.Guild */{
      userRec.add(channel, this.today);
    }
 
-   leaderboard(message) {
-     let result = new BST();
-     for (var user in this.users) {
-       let res = this.users[user].totalStats();
-       if (res != 0) {
-         result.add(user, res);
-       }
-     }
-     return result.toMap();
-   }
-
-   channelLeaderboard(message, content, bot) {
-     let result = new BST();
-     let channel = content == '' ? message.channel.id : content;
-     //let chan = this.server.channels[content];
-     for (var user in this.users) {
-       //if (!(await chan.permissionsFor(user)).has('SEND_MESSAGES')) continue;
-       let res = this.users[user].channelStats(channel);
-       if (res != 0) {
-         result.add(user, res);
-       }
-     }
-     return result.toMap();
-   }
-
    save() {
-     fs.writeFile("./sample.json", JSON.stringify(this.users), (err) => {
+     fs.writeFile("./.restore.json", JSON.stringify(this), (err) => {
        if (err) {
           console.error(err);
           return;

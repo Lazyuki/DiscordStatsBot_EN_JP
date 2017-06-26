@@ -39,6 +39,7 @@ module.exports = class BST {
 
   toMap() {
     var map = {};
+    if (!this.root) return map;
     var rec = function(map, curr) {
       if (curr.right) rec(map, curr.right);
       map[curr.key] = curr.value;

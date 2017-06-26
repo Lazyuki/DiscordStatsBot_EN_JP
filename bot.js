@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const config = require('./config.json');
 const bot = new Discord.Client();
 const Server = require('./server.js');
+const midnightTask = require('./midnightTask.js');
 
 // Load configurations.
 const token = config.token;
@@ -12,10 +13,17 @@ const commands = require('./cmds.js');
 
 bot.on('ready', () => {
   let time = new Date();
+  let h = time.getUTCHours();
+  let m = time.getUTCMinutes();
+  let s = time.getUTCSeconds();
+  let timeLeft = (24*60*60) - (h*60*60) - (m*60) - s;
+  setTimeout(() => {
+    midnightTask(bot);
+  },  timeLeft * 1000); // timeLeft * 1000
   console.log('Logged in as ' + bot.user.username);
   console.log(`${time.toLocaleDateString()} ${time.toLocaleTimeString()}`);
   console.log('--------------------------');
-  if (!bot.server) bot.server = new Server(bot.guilds.get('189571157446492161'));
+  if (!bot.server) bot.server = new Server('189571157446492161');
 });
 
 bot.on('message', message => {
