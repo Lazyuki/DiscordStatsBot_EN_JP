@@ -17,7 +17,7 @@ bot.on('ready', () => {
   let m = time.getUTCMinutes();
   let s = time.getUTCSeconds();
   let timeLeft = (24*60*60) - (h*60*60) - (m*60) - s;
-  setTimeout(() => {
+  setTimeout(() => { // set up the day changing task
     midnightTask(bot);
   },  timeLeft * 1000); // timeLeft * 1000
   console.log('Logged in as ' + bot.user.username);

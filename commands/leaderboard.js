@@ -19,16 +19,19 @@ module.exports.command = async (message, _, bot) => {
 		}
 	}
 	result = result.toMap();
-
   let embed = new Discord.RichEmbed();
 	embed.title = 'Leaderboard';
 	embed.description = 'For the last 30 days (UTC time)';
 	embed.color = Number('0x3A8EDB');
 	var count = 0;
+	var mems = bot.guilds.get('189571157446492161').members;
   for (var user in result) {
 		count++;
-		embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true)
-		if (count >= 25) break;
+		// use bot only method (fetchUser)? It would also show banned people.
+		if (mems.get(user)) { // if left, wont show up.
+			embed.addField(count + ') ' + mems.get(user).user.username, result[user], true)
+			if (count >= 25) break;
+		}
   }
   channel.send({embed});
 };

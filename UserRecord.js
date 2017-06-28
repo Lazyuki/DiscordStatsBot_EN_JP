@@ -3,7 +3,7 @@ module.exports = class UserRecord {
     if (arguments.length != 3) {
       this.record = new Array(31);
       this.thirtyDays = 0;
-      this.channels = {};
+      this.channels = {}; // {<channel ID>: # messages, <ID>: #}
     } else {
       this.record = record;
       this.thirtyDays = thirtyDays;

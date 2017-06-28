@@ -56,7 +56,7 @@ module.exports = class Server {
           console.error(err);
           return;
        };
-       console.log("File has been created");
+       console.log("./.restore.json has been updated");
      });
    }
 }

@@ -9,7 +9,10 @@ module.exports.alias = [
 module.exports.command = async (message, content, bot) => {
   let channel = message.channel;
   var chlb = message.channel;
-  if (content != '') {
+  var chMentions = message.mentions.channels;
+  if (chMentions.size != 0) {
+    chlb = chMentions.get(chMentions.firstKey());
+  } else if (content != '') {
     chlb = bot.guilds.get('189571157446492161').channels.get(content);
   }
   //let result = bot.server.channelLeaderboard(message, content, bot);
@@ -30,10 +33,13 @@ module.exports.command = async (message, content, bot) => {
   embed.description = 'For the last 30 days (UTC time)'
 	embed.color = Number('0x3A8EDB');
   var count = 0;
+  let mems = bot.guilds.get('189571157446492161').members;
   for (var user in result) {
 		count++;
-		embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true)
-		if (count >= 25) break;
+    if (mems.get(user)) { // if left, wont show up.
+      embed.addField(count + ') ' + mems.get(user).user.username, result[user], true)
+      if (count >= 25) break;
+    }
   }
   channel.send({embed});
 };
