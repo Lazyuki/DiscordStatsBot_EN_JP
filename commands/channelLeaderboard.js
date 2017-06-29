@@ -35,7 +35,7 @@ module.exports.command = async (message, content, bot) => {
   var count = 0;
   for (var user in result) {
     count++;
-    embed.addField(count + ') ' + bot.fetchUser(user).username, result[user], true)
+    embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true)
     if (count >= 25) break;
   }
   channel.send({embed});

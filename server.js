@@ -51,14 +51,14 @@ module.exports = class Server {
    }
 
    save(bot) {
-     fs.writeFile("./.restore.json", JSON.stringify(this), (err) => {
+     fs.writeFileSync("./.restore.json", JSON.stringify(this), (err) => {
        if (err) {
           console.error(err);
           return;
        };
        console.log("./.restore.json has been updated");
      });
-     fs.writeFile("./server.json", JSON.stringify(bot.guilds.get('189571157446492161')), (err) => {
+     fs.writeFileSync("./server.json", JSON.stringify(bot.guilds.get('189571157446492161')), (err) => {
        if (err) {
           console.error(err);
           return;

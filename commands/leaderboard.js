@@ -16,7 +16,7 @@ module.exports.command = async (message, content, bot) => {
     memberID = mentions.firstKey();
   } else if (content != '') {
     if (bot.server.users[content]) { // TODO: check with name instead of ID
-      user = bot.guilds.get('189571157446492161').members.get(content); // not good if banned
+      memberID = content; // not good if banned
     } else {
       // User not found
     }
@@ -41,10 +41,9 @@ module.exports.command = async (message, content, bot) => {
 
   for (var user in result) {
 		count++; // counts banned people
-		// use bot only method (fetchUser)? It would also show banned people.
 		if (count == 25) {
 			if (found) {
-				embed.addField(count + ') ' + bot.fetchUser(user).username, result[user], true);
+				embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true);
 				break;
 			};
 			twentyfive = false;
@@ -53,13 +52,13 @@ module.exports.command = async (message, content, bot) => {
 			if (user == memberID) {
 				found = true;
 				if (!twentyfive) {
-					embed.addField('__' + count + ') ' + bot.fetchUser(user).username + '__', result[user]);
+					embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user]);
 					break;
 				}
 			}
 		}
 		if (twentyfive) { // if left, wont show up.
-			embed.addField(count + ') ' + bot.fetchUser(user).username, result[user], true)
+			embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true)
 		}
   }
   channel.send({embed});
