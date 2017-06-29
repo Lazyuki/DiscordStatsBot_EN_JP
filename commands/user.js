@@ -28,7 +28,7 @@ module.exports.command = async (message, content, bot) => {
   }
   var record = bot.server.users[user.id];
   var chans = record.channels;
-  let ignoreHidden = !bot.server.hiddendChannels.includes(message.channel.id);
+  let ignoreHidden = !bot.server.hiddenChannels.includes(message.channel.id);
 
   // Most active channel
   var chanMax = 0;
