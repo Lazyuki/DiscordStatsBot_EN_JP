@@ -36,10 +36,12 @@ module.exports.command = async (message, content, bot) => {
   // Most active day in the last 4 weeks, excluding today.
   var d = new Date().getUTCDay() - 1; // Sunday = 0, do not count today.
   let dayArr = [0, 0, 0, 0, 0, 0, 0]; // Su Mo Tu We Th Fr Sa
+  var daySum = 0;
   for (var i = bot.server.today - 1; i > bot.server.today - 28; i--) { // 4 weeks
     var chans = record.record[((i % 31) + 31) % 31];
     for (var ch in chans) {
       dayArr[d] += chans[ch];
+      daySum += chans[ch];
     }
     d = ((d - 1) % 7 + 7) % 7;
   }
@@ -61,10 +63,11 @@ module.exports.command = async (message, content, bot) => {
   embed.color = Number('0x3A8EDB');
 
   let IDpercent = (max / record.thirtyDays * 100).toFixed(2);
+  let chanPercent = (maxDayNum / daySUm * 100).toFixed(2);
   embed.addField('Messages sent', record.thirtyDays, true);
   embed.addField('Most active channel',
     '#' + bot.guilds.get('189571157446492161').channels.get(maxID).name + `\n(${IDpercent}%)`, true); // fix for undefined
-  embed.addField('Most active day', days[maxDay], true);
+  embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   //embed.addField('Last message sent', , true);
   //embed.addField('Messages today, this week, this month', , true);
   message.channel.send({embed});
