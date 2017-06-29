@@ -35,10 +35,10 @@ module.exports.command = async (message, content, bot) => {
   var count = 0;
   let mems = bot.guilds.get('189571157446492161').members;
   for (var user in result) {
-		count++;
     if (mems.get(user)) { // if left, wont show up.
+      count++;
       embed.addField(count + ') ' + mems.get(user).user.username, result[user], true)
-      if (count >= 25) break;
+      if (count >= 24) break;
     }
   }
   channel.send({embed});

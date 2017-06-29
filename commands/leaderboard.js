@@ -6,7 +6,7 @@ module.exports.alias = [
 	'leaderboard'
 ];
 
-module.exports.command = async (message, _, bot) => {
+module.exports.command = async (message, content, bot) => {
   let channel = message.channel;
   // let result = bot.server.leaderboard(message);
 
@@ -24,13 +24,29 @@ module.exports.command = async (message, _, bot) => {
 	embed.description = 'For the last 30 days (UTC time)';
 	embed.color = Number('0x3A8EDB');
 	var count = 0;
+	var found = content == ''; // ID
+	var twentyfive = true;
+
 	var mems = bot.guilds.get('189571157446492161').members;
   for (var user in result) {
-		count++;
+		count++; // counts banned people
 		// use bot only method (fetchUser)? It would also show banned people.
-		if (mems.get(user)) { // if left, wont show up.
+		if (!found) {
+			if (user == content) {
+				found = true;
+				if (!twentyfive) {
+					embed.addField('__' + count + ') ' + mems.get(user).user.username + '__', result[user]);
+					break;
+				}
+			}
+		}
+		if (mems.get(user) && twentyfive) { // if left, wont show up.
+
 			embed.addField(count + ') ' + mems.get(user).user.username, result[user], true)
-			if (count >= 25) break;
+			if (count == 24) {
+				if (found) break;
+				twentyfive = false;
+			}
 		}
   }
   channel.send({embed});

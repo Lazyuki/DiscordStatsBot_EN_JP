@@ -1,7 +1,7 @@
 module.exports = class UserRecord {
   constructor(record, thirtyDays, channels) {
     if (arguments.length != 3) {
-      this.record = new Array(31);
+      this.record = new Array(31); // TODO 0 out?
       this.thirtyDays = 0;
       this.channels = {}; // {<channel ID>: # messages, <ID>: #}
     } else {

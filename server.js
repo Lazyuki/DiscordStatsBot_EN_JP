@@ -50,13 +50,20 @@ module.exports = class Server {
      userRec.add(channel, this.today);
    }
 
-   save() {
+   save(bot) {
      fs.writeFile("./.restore.json", JSON.stringify(this), (err) => {
        if (err) {
           console.error(err);
           return;
        };
        console.log("./.restore.json has been updated");
+     });
+     fs.writeFile("./server.json", JSON.stringify(bot.guilds.get('189571157446492161')), (err) => {
+       if (err) {
+          console.error(err);
+          return;
+       };
+       console.log("server has been updated");
      });
    }
 }
