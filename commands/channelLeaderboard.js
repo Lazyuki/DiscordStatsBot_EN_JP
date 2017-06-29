@@ -7,21 +7,22 @@ module.exports.alias = [
 ];
 
 module.exports.command = async (message, content, bot) => {
-  let channel = message.channel;
+  let sendChannel = message.channel;
   var chlb = message.channel;
   var chMentions = message.mentions.channels;
   if (chMentions.size != 0) {
     chlb = chMentions.get(chMentions.firstKey());
   } else if (content != '') {
-    chlb = bot.server.server.fetchMembers(content, 1);
+    chlb = bot.server.server.channels.get(content);
+    if (chlb == undefined) return; // invalid channel;
   }
   //let result = bot.server.channelLeaderboard(message, content, bot);
 
   let users = bot.server.users;
   var result = new BST();
-  let chan = content == '' ? message.channel.id : content;
+  let channelID = chlb.id;
   for (var user in users) {
-    let res = users[user].channelStats(chan);
+    let res = users[user].channelStats(channelID);
     if (res != 0) {
       result.add(user, res);
     }
@@ -38,5 +39,6 @@ module.exports.command = async (message, content, bot) => {
     embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true)
     if (count >= 25) break;
   }
-  channel.send({embed});
+  embed.setFooter('Current UTC time: ' + new Date().toUTCString());
+  sendChannel.send({embed});
 };

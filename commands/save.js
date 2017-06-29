@@ -3,5 +3,5 @@ module.exports.alias = [
 ];
 
 module.exports.command = async (message, _, bot) => {
-  bot.server.save(bot);
+  bot.server.save();
 };

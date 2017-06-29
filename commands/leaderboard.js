@@ -19,13 +19,11 @@ module.exports.command = async (message, content, bot) => {
     for (var id in bot.server.users) {
       let u = bot.server.server.members.get(id);
 			if (u == undefined) continue; // if banned
-      if (u.user.username.toLowerCase().startsWith(content)) {
+      if (u.user.username.toLowerCase().startsWith(content)
+					|| u.displayName.toLowerCase().startsWith(content)) {
         memberID = id;
         break;
-      } else if (u.displayName.toLowerCase().startsWith(content)) {
-        memberID = id;
-        break;
-      }
+			}
     }
   }
 
@@ -68,5 +66,6 @@ module.exports.command = async (message, content, bot) => {
 			embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true)
 		}
   }
+	embed.setFooter('Current UTC time: ' + new Date().toUTCString());
   channel.send({embed});
 };

@@ -5,7 +5,7 @@ module.exports.alias = [
 ];
 
 module.exports.command = (msg, cont, bot) => {
-  bot.server.save(bot);
+  bot.server.save();
   bot.destroy().then((val) => {
     process.exit(2);
   }, (err) => {
