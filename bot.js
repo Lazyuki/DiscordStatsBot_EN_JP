@@ -34,7 +34,7 @@ bot.on('message', message => {
     return;
   }
   //if (message.author.id != owner_ID) return; // remove this
-  let command = message.content.split(' ')[0].slice(1);
+  let command = message.content.split(' ')[0].slice(1).toLowerCase();
   let content = message.content.substr(command.length + 2);
   if (!commands[command]) { // if not our bot command, process it.
     bot.server.addMessage(message);
