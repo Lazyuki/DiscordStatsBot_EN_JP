@@ -13,7 +13,7 @@ module.exports = class Server {
      if (fs.existsSync('./.restore.json')) {
        let json = JSON.parse(fs.readFileSync('./.restore.json', 'utf8'));
        //this.server = json['server']['id'];
-       this.hiddenChannels = json['ignoredChannels'];
+       this.hiddenChannels = json['hiddenChannels'];
        this.ignoredMembers = json['ignoredMembers'];
        this.today = json['today'];
        for (var user in json['users']) {
