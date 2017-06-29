@@ -6,6 +6,7 @@ module.exports.alias = [
 ];
 
 module.exports.command = (message, _, bot) => {
+	if (message.author.id != bot.owner_ID) return;
   console.log('Shutting down...');
   bot.destroy()
   setTimeout(process.exit, 0);

@@ -6,7 +6,7 @@ const midnightTask = require('./midnightTask.js');
 
 // Load configurations.
 const token = config.token;
-const owner_ID = config.owner_ID;
+bot.owner_ID = config.owner_ID;
 const prefix = config.prefix;
 
 const commands = require('./cmds.js');
@@ -33,7 +33,7 @@ bot.on('message', message => {
     bot.server.addMessage(message);
     return;
   }
-  if (message.author.id != owner_ID) return; // remove this
+  //if (message.author.id != owner_ID) return; // remove this
   let command = message.content.split(' ')[0].slice(1);
   let content = message.content.substr(command.length + 2);
   if (!commands[command]) { // if not our bot command, process it.
