@@ -9,7 +9,7 @@ module.exports.command = (message, content, bot) => {
 	if (!num) num = 0;
 	var moreThan = 0;
 	for (var user in bot.server.users) {
-		if (bot.users[user].thirtyDays > num) moreThan++;
+		if (bot.server.users[user].thirtyDays > num) moreThan++;
 	}
 	s += `${moreThan} people have talked more than ${num} messages.\n`;
   s += `Date number: ${bot.server.today}\n`;
