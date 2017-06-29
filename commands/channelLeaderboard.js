@@ -18,7 +18,7 @@ module.exports.command = async (message, content, bot) => {
   }
 
   if (bot.server.ignoredChannels.includes(chlb.id)) { // It's a hidden channel
-    if (sendChannel.id != chlb.id) {
+    if (!bot.server.ignoredChannels.includes(sendChannel.id)) {
       chlb = sendChannel;
     }
   }
