@@ -6,14 +6,14 @@ const fs = require('fs');
 module.exports = class Server {
   constructor(server) {
      this.server = server;
-     this.ignoredChannels = [];
+     this.hiddenChannels = [];
      this.ignoredMembers  = [];
      this.users = {};
      this.today = 0;
      if (fs.existsSync('./.restore.json')) {
        let json = JSON.parse(fs.readFileSync('./.restore.json', 'utf8'));
        //this.server = json['server']['id'];
-       this.ignoredChannels = json['ignoredChannels'];
+       this.hiddenChannels = json['ignoredChannels'];
        this.ignoredMembers = json['ignoredMembers'];
        this.today = json['today'];
        for (var user in json['users']) {
@@ -24,16 +24,8 @@ module.exports = class Server {
      }
    }
 
-   getHiddenChannels() {
-     return this.ignoredChannels;
-   }
-
-   getIgnoredMembers() {
-     return this.ignoredMembers;
-   }
-
    hideChannel(channel) {
-     this.ignoredChannels.push(channel);
+     this.hiddenChannels.push(channel);
    }
 
    ignoreMember(member) {

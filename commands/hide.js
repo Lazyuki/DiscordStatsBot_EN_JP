@@ -6,7 +6,7 @@ module.exports.command = (message, content, bot) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
 	let chan = bot.server.server.channels.get(content);
   if (chan) {
-		if (bot.server.ignoredChannels.includes(content)) {
+		if (bot.server.hiddenChannels.includes(content)) {
 			message.channel.send(`#${chan.name} is already hidden.`);
 			return;
 		}
