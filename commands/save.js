@@ -2,6 +2,6 @@ module.exports.alias = [
 	'save'
 ];
 
-module.exports.command = async (message, _, bot) => {
+module.exports.command = (message, _, bot) => {
   bot.server.save();
 };

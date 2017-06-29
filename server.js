@@ -24,7 +24,7 @@ module.exports = class Server {
      }
    }
 
-   getIgnoredChannels() {
+   getHiddenChannels() {
      return this.ignoredChannels;
    }
 
@@ -32,7 +32,7 @@ module.exports = class Server {
      return this.ignoredMembers;
    }
 
-   ignoreChannel(channel) {
+   hideChannel(channel) {
      this.ignoredChannels.push(channel);
    }
 

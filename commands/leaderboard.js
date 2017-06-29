@@ -43,13 +43,15 @@ module.exports.command = async (message, content, bot) => {
 	var count = 0;
 	var found = false;
 	var twentyfive = true;
+	var moreThan = 0;
 
   for (var user in result) {
+		if (result[user] > 10) moreThan++;
 		count++; // counts banned people
 		if (count == 25) {
 			if (found) {
 				embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true);
-				break;
+				//break;
 			};
 			twentyfive = false;
 		}
@@ -58,7 +60,7 @@ module.exports.command = async (message, content, bot) => {
 				found = true;
 				if (!twentyfive) {
 					embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user]);
-					break;
+					//break;
 				}
 			}
 		}
@@ -66,6 +68,7 @@ module.exports.command = async (message, content, bot) => {
 			embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true)
 		}
   }
+	console.log(moreThan);
 	embed.setFooter('Current UTC time: ' + new Date().toUTCString());
   channel.send({embed});
 };

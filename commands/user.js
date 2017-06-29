@@ -14,7 +14,7 @@ module.exports.command = async (message, content, bot) => {
   let mentions = message.mentions.members;
   if (mentions.size != 0) {
     user = mentions.get(mentions.firstKey()).user;
-  } else if (content != '') {
+  } else if (content != '') { // search name
     content = content.toLowerCase();
     for (var id in bot.server.users) {
       let u = bot.server.server.members.get(id);
@@ -28,14 +28,16 @@ module.exports.command = async (message, content, bot) => {
   }
   var record = bot.server.users[user.id];
   var chans = record.channels;
+  let ignoreHidden = !bot.server.ignoredChannels.includes(message.channel.id);
 
   // Most active channel
-  var max = 0;
-  var maxID = '';
+  var chanMax = 0;
+  var chanMaxID = '';
   for (var chid in chans) {
-    if (chans[chid] > max) {
-      max = chans[chid];
-      maxID = chid;
+    if (bot.server.ignoredChannels.includes(chid) && ignoreHidden) continue;
+    if (chans[chid] > chanMax) {
+      chanMax = chans[chid];
+      chanMaxID = chid;
     }
   }
 
@@ -68,11 +70,11 @@ module.exports.command = async (message, content, bot) => {
   embed.description = 'For the last 30 days (UTC time)'
   embed.color = Number('0x3A8EDB');
 
-  let IDpercent = (max / record.thirtyDays * 100).toFixed(2);
+  let IDpercent = (chanMax / record.thirtyDays * 100).toFixed(2);
   let chanPercent = (maxDayNum / daySum * 100).toFixed(2);
   embed.addField('Messages sent ', record.thirtyDays, true);
   embed.addField('Most active channel',
-    '#' + bot.server.server.channels.get(maxID).name + `\n(${IDpercent}%)`, true); // fix for undefined
+    '#' + bot.server.server.channels.get(chanMaxID).name + `\n(${IDpercent}%)`, true); // fix for undefined
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   //embed.addField('Last message sent', , true);
   //embed.addField('Messages today, this week, this month', , true);

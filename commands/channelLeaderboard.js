@@ -16,6 +16,12 @@ module.exports.command = async (message, content, bot) => {
     chlb = bot.server.server.channels.get(content);
     if (chlb == undefined) return; // invalid channel;
   }
+
+  if (bot.server.ignoredChannels.includes(chlb.id)) { // It's a hidden channel
+    if (sendChannel.id != chlb.id) {
+      chlb = sendChannel;
+    }
+  }
   //let result = bot.server.channelLeaderboard(message, content, bot);
 
   let users = bot.server.users;
