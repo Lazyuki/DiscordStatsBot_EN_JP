@@ -63,7 +63,7 @@ module.exports.command = async (message, content, bot) => {
   embed.color = Number('0x3A8EDB');
 
   let IDpercent = (max / record.thirtyDays * 100).toFixed(2);
-  let chanPercent = (maxDayNum / daySUm * 100).toFixed(2);
+  let chanPercent = (maxDayNum / daySum * 100).toFixed(2);
   embed.addField('Messages sent', record.thirtyDays, true);
   embed.addField('Most active channel',
     '#' + bot.guilds.get('189571157446492161').channels.get(maxID).name + `\n(${IDpercent}%)`, true); // fix for undefined
