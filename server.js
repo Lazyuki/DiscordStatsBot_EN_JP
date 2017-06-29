@@ -4,15 +4,15 @@ const BST = require('./BST.js');
 const fs = require('fs');
 
 module.exports = class Server {
-  constructor(serverID) {
-     this.server = serverID;
+  constructor(server) {
+     this.server = server;
      this.ignoredChannels = [];
      this.ignoredMembers  = [];
      this.users = {};
      this.today = 0;
      if (fs.existsSync('./.restore.json')) {
        let json = JSON.parse(fs.readFileSync('./.restore.json', 'utf8'));
-       this.server = json['server'];
+       //this.server = json['server']['id'];
        this.ignoredChannels = json['ignoredChannels'];
        this.ignoredMembers = json['ignoredMembers'];
        this.today = json['today'];

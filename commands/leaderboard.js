@@ -15,10 +15,17 @@ module.exports.command = async (message, content, bot) => {
 	if (mentions.size != 0) {
     memberID = mentions.firstKey();
   } else if (content != '') {
-    if (bot.server.users[content]) { // TODO: check with name instead of ID
-      memberID = content; // not good if banned
-    } else {
-      // User not found
+		content = content.toLowerCase();
+    for (var id in bot.server.users) {
+      let u = bot.server.server.members.get(id);
+			if (u == undefined) continue; // if banned
+      if (u.user.username.toLowerCase().startsWith(content)) {
+        memberID = id;
+        break;
+      } else if (u.displayName.toLowerCase().startsWith(content)) {
+        memberID = id;
+        break;
+      }
     }
   }
 

@@ -23,7 +23,7 @@ bot.on('ready', () => {
   console.log('Logged in as ' + bot.user.username);
   console.log(`${time.toLocaleDateString()} ${time.toLocaleTimeString()}`);
   console.log('--------------------------');
-  if (!bot.server) bot.server = new Server('189571157446492161');
+  if (!bot.server) bot.server = new Server(bot.guilds.get('189571157446492161'));
 });
 
 bot.on('message', message => {

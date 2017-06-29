@@ -13,7 +13,7 @@ module.exports.command = async (message, content, bot) => {
   if (chMentions.size != 0) {
     chlb = chMentions.get(chMentions.firstKey());
   } else if (content != '') {
-    chlb = bot.guilds.get('189571157446492161').channels.get(content);
+    chlb = bot.server.server.fetchMembers(content, 1);
   }
   //let result = bot.server.channelLeaderboard(message, content, bot);
 
