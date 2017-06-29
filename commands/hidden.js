@@ -4,10 +4,11 @@ module.exports.alias = [
 
 module.exports.command = (message, content, bot) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
-  let arr = bot.server.getHiddenChannels();
+  let arr = bot.server.ignoredChannels;
 	let s = '';
-	for (var channel in arr) {
-		s += `<#${channel}>\n`
+	for (var index in arr) {
+		if (!arr[index]) continue;
+		s += `<#${arr[index]}>\n`;
 	}
   message.channel.send(s);
 };
