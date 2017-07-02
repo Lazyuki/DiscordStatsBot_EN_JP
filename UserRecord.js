@@ -14,7 +14,7 @@ module.exports = class UserRecord {
     } else { // build from backup
       this.record = record;
       this.thirtyDays = thirtyDays;
-      this.japanese = 0;
+      this.japanese = japanese;
       this.channels = channels;
     }
   }
