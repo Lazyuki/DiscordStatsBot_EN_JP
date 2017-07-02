@@ -19,7 +19,7 @@ module.exports = class Server {
        for (var user in json['users']) {
          let uRec = json['users'][user]
          this.users[user] = new UserRecord(uRec['record'], uRec['thirtyDays'],
-                            uRec['channels']);
+                            uRec['japanese'], uRec['channels']);
        }
      }
    }
@@ -39,7 +39,7 @@ module.exports = class Server {
        this.users[author] = new UserRecord();
      }
      let userRec = this.users[author];
-     userRec.add(channel, this.today);
+     userRec.add(message.content, channel, this.today);
    }
 
    save() {

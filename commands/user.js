@@ -72,12 +72,14 @@ module.exports.command = async (message, content, bot) => {
 
   let IDpercent = (chanMax / record.thirtyDays * 100).toFixed(2);
   let chanPercent = (maxDayNum / daySum * 100).toFixed(2);
+  let jpnPercent = (record.japanese / record.thirtyDays * 100).toFixed(2);
   embed.addField('Messages sent ', record.thirtyDays, true);
   embed.addField('Most active channel',
     '#' + bot.server.server.channels.get(chanMaxID).name + `\n(${IDpercent}%)`, true); // fix for undefined
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   //embed.addField('Last message sent', , true);
   //embed.addField('Messages today, this week, this month', , true);
+  embed.addField('Japanese usage', jpnPercent + '%', true);
   embed.setFooter('Current UTC time: ' + new Date().toUTCString());
   message.channel.send({embed});
 };
