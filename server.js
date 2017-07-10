@@ -42,12 +42,22 @@ module.exports = class Server {
      userRec.add(message.content, channel, this.today);
    }
 
-   save() {
-     try {
-       fs.writeFileSync('./.restore.json', JSON.stringify(this), 'utf8');
-     } catch (e) {
-       console.log(e);
+   save(backup=false) {
+     if (backup) {
+       var date = new Date().toLocaleDateString().replace(/\//g, '-');
+       try {
+         fs.writeFileSync(`./backups/log-${date}.json`, JSON.stringify(this), 'utf8');
+       } catch (e) {
+         console.log(e);
+       }
+       console.log(`Backup has been created: ${date}`);
+     } else {
+       try {
+         fs.writeFileSync('./.restore.json', JSON.stringify(this), 'utf8');
+       } catch (e) {
+         console.log(e);
+       }
+       console.log("./.restore.json has been updated");
      }
-     console.log("./.restore.json has been updated");
    }
 }

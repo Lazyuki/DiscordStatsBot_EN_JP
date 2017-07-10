@@ -1,8 +1,9 @@
 // 3040-309F : hiragana
 // 30A0-30FF : katakana
-// FF00-FFEF : Full-width roman + half-width katakana
-// 4E00-9FAF : Common and uncommon kanji
-const regex = /[\u3040-\u309F]|[\u30A0-\u30FF]|[\uFF00-\uFFEF]|[\u4E00-\u9FAF]/g;
+// FF66-FF9D : half-width katakana
+// 4E00-9FAF : common and uncommon kanji
+const regex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/g;
+
 //
 module.exports = class UserRecord {
   constructor(record, thirtyDays, japanese, channels) {
