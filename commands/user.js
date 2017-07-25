@@ -6,7 +6,8 @@ module.exports.alias = [
   'user',
   'usr',
   'whois',
-  'info'
+  'info',
+  'dare'
 ];
 
 module.exports.command = async (message, content, bot) => {
@@ -24,6 +25,10 @@ module.exports.command = async (message, content, bot) => {
         user = u.user;
         break;
       }
+    }
+    if (user.id == message.author.id) { // Search failed
+      //message.channel.send('User not found');
+      return;
     }
   }
   var record = bot.server.users[user.id];
@@ -50,7 +55,7 @@ module.exports.command = async (message, content, bot) => {
 	});
   var topChans = '';
   for (var i = 0; i < 3 && i < sortable.length; i++) {
-    let perc = (sortable[i][1] / record.thirtyDays * 100).toFixed(2);
+    let perc = (sortable[i][1] / record.thirtyDays * 100).toFixed(1);
 	  topChans += "**#" + bot.server.server.channels.get(sortable[i][0]).name + "** : " + perc + "%\n";
 	}
 
@@ -87,7 +92,7 @@ module.exports.command = async (message, content, bot) => {
   embed.color = Number('0x3A8EDB');
 
 //  let IDpercent = (chanMax / record.thirtyDays * 100).toFixed(2);
-  let chanPercent = (maxDayNum / daySum * 100).toFixed(2);
+  let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
   let jpnPercent = (record.japanese / record.thirtyDays * 100).toFixed(2);
   embed.addField('Messages sent ', record.thirtyDays, true);
   embed.addField('Most active channels', topChans, true);

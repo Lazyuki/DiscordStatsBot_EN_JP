@@ -3,7 +3,8 @@ const BST = require('../BST.js');
 
 module.exports.alias = [
 	'lb',
-	'leaderboard'
+	'leaderboard',
+	'l'
 ];
 
 module.exports.command = async (message, content, bot) => {

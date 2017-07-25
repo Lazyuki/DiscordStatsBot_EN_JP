@@ -8,11 +8,15 @@ module.exports.alias = [
 
 module.exports.command = (message, content, bot) => {
 	if (message.author.id != bot.owner_ID) return;
+	let ignoreHidden = !bot.server.hiddenChannels.includes(message.channel.id);
+
 
 	var allch = {};
 	for (var user in bot.server.users) {
 		var u = bot.server.users[user];
 		for (var ch in u.channels) {
+			if (bot.server.hiddenChannels.includes(ch) && ignoreHidden) continue;
+			if (ch == '293787390710120449') continue; // removes #testing_ground
 			if (allch[ch]) {
 				allch[ch] += u.channels[ch];
 			} else {

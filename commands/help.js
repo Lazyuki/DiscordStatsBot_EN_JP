@@ -1,7 +1,8 @@
 module.exports.alias = [
 	'help',
   'h',
-  'halp'
+  'halp',
+	'tasukete'
 ];
 
 module.exports.command = (message, content, bot) => {
