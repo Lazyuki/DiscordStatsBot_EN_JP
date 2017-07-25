@@ -18,7 +18,7 @@ module.exports.command = async (message, content, bot) => {
     content = content.toLowerCase();
     for (var id in bot.server.users) {
       let u = bot.server.server.members.get(id);
-      if (u == undefined) continue; // if banned
+      if (u == undefined) continue; // if banned or left
       if (u.user.username.toLowerCase().startsWith(content)
           || u.displayName.toLowerCase().startsWith(content)) {
         user = u.user;
@@ -30,19 +30,34 @@ module.exports.command = async (message, content, bot) => {
   var chans = record.channels;
   let ignoreHidden = !bot.server.hiddenChannels.includes(message.channel.id);
 
-  // Most active channel
-  var chanMax = 0;
-  var chanMaxID = '';
-  for (var chid in chans) {
-    if (bot.server.hiddenChannels.includes(chid) && ignoreHidden) continue;
-    if (chans[chid] > chanMax) {
-      chanMax = chans[chid];
-      chanMaxID = chid;
-    }
-  }
+  // Most active channels
+  var topCHannels = {};
+	for (var ch in chans) {
+      if (bot.server.hiddenChannels.includes(ch) && ignoreHidden) continue;
+		if (topCHannels[ch]) {
+			topCHannels[ch] += chans[ch];
+		} else {
+			topCHannels[ch] = chans[ch];
+		}
+	}
+
+  var sortable = [];
+	for (var c in topCHannels) {
+	  sortable.push([c, topCHannels[c]]);
+	}
+	sortable.sort(function(a, b) {
+	    return b[1] - a[1];
+	});
+  var topChans = '';
+  for (var i = 0; i < 3 && i < sortable.length; i++) {
+    let perc = (sortable[i][1] / record.thirtyDays * 100).toFixed(2);
+	  topChans += "**#" + bot.server.server.channels.get(sortable[i][0]).name + "** : " + perc + "%\n";
+	}
+
 
   // Most active day in the last 4 weeks, excluding today.
   var d = new Date().getUTCDay() - 1; // Sunday = 0, do not count today.
+  if (d == -1) d = 6;
   let dayArr = [0, 0, 0, 0, 0, 0, 0]; // Su Mo Tu We Th Fr Sa
   var daySum = 0;
   for (var i = bot.server.today - 1; i > bot.server.today - 28; i--) { // 4 weeks
@@ -62,6 +77,7 @@ module.exports.command = async (message, content, bot) => {
     }
   }
 
+
   let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
               'Thursday', 'Friday', 'Saturday'];
 
@@ -70,14 +86,14 @@ module.exports.command = async (message, content, bot) => {
   embed.description = 'For the last 30 days (UTC time)'
   embed.color = Number('0x3A8EDB');
 
-  let IDpercent = (chanMax / record.thirtyDays * 100).toFixed(2);
+//  let IDpercent = (chanMax / record.thirtyDays * 100).toFixed(2);
   let chanPercent = (maxDayNum / daySum * 100).toFixed(2);
   let jpnPercent = (record.japanese / record.thirtyDays * 100).toFixed(2);
   embed.addField('Messages sent ', record.thirtyDays, true);
-  if (chanMax != 0) embed.addField('Most active channel',
-    '#' + bot.server.server.channels.get(chanMaxID).name + `\n(${IDpercent}%)`, true); // fix for undefined
+  embed.addField('Most active channels', topChans, true);
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   //embed.addField('Last message sent', , true);
+  //embed.addField('Favorite emoji', , true);
   //embed.addField('Messages today, this week, this month', , true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
   embed.setFooter('Current UTC time: ' + new Date().toUTCString());

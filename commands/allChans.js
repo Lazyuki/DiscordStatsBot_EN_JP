@@ -32,9 +32,7 @@ module.exports.command = (message, content, bot) => {
 
 	var s = "";
   for (var i in sortable) {
-		let ch = bot.server.server.channels.get(sortable[i][0]);
-		if (!ch) continue;
-	  s += ch.name + ": " + sortable[i][1] + "\n";
+	  s += "<#" + sortable[i][0] + "> : " + sortable[i][1] + "\n";
 	}
   message.channel.send(s);
 
