@@ -24,6 +24,7 @@ bot.on('ready', () => {
   console.log(`${time.toLocaleDateString()} ${time.toLocaleTimeString()}`);
   console.log('--------------------------');
   if (!bot.server) bot.server = new Server(bot.guilds.get('189571157446492161'));
+  bot.deletedMessages = [];
 });
 
 bot.on('message', message => {
@@ -41,6 +42,14 @@ bot.on('message', message => {
     return;
   }
   commands[command].command(message, content, bot);
+});
+
+bot.on('messageDelete', message => {
+  if (message.author.bot) return;
+  if (message.author.id == bot.owner_ID) return; // if mine.
+  var arr = bot.deletedMessages;
+  arr.push(message);
+  if (arr.length > 30) arr.shift();
 });
 
 // Log in. This should be the last call
