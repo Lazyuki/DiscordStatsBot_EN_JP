@@ -1,4 +1,6 @@
 const Discord = require('discord.js');
+const dateFormat = require('dateformat');
+
 
 module.exports.alias = [
 	'snowflake',
@@ -8,6 +10,13 @@ module.exports.alias = [
 
 module.exports.command = (message, content, bot) => {
   let chan = message.channel;
-  let decon = Discord.SnowflakeUtil.deconstruct(content);
-	chan.send(`Creation time: ${decon.date.toUTCString()}`);
+	if (content.length > 23) return;
+  let date = Discord.SnowflakeUtil.deconstruct(content).date;
+	let embed = new Discord.RichEmbed();
+	let dateStr = dateFormat(date, "UTC:ddd mmm dS, yyyy 'at' h:MM TT");
+	embed.title = `Creation time in UTC and your local time`;
+	embed.setFooter(`UTC | ${dateStr } --- Local`);
+	embed.color = Number('0x3A8EDB');
+	embed.timestamp = date;
+	chan.send({embed});
 };
