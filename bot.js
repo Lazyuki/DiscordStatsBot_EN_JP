@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const config = require('./config.json');
 const bot = new Discord.Client();
 const Server = require('./server.js');
+const SimpleMsg = require('./SimpleMessage.js');
 const midnightTask = require('./midnightTask.js');
 
 // Load configurations.
@@ -47,8 +48,9 @@ bot.on('message', message => {
 bot.on('messageDelete', message => {
   if (message.author.bot) return;
   if (message.author.id == bot.owner_ID) return; // if mine.
+  if (message.content.length < 5) return; // delete short messages
   var arr = bot.deletedMessages;
-  arr.push(message);
+  arr.push(new SimpleMsg(message));
   if (arr.length > 30) arr.shift();
 });
 

@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 
-
 module.exports.alias = [
 	'u',
   'user',
