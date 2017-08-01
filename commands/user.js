@@ -42,7 +42,7 @@ module.exports.command = async (message, content, bot) => {
 		embed.color = Number('0x3A8EDB');
 		if (member) { // ban check
 			embed.setFooter('Joined at ');
-			embed.timestamp = member.joineddAt;
+			embed.timestamp = member.joinedAt;
 		}
 		message.channel.send({embed});
 		return;
@@ -117,7 +117,7 @@ module.exports.command = async (message, content, bot) => {
   embed.addField('Japanese usage', jpnPercent + '%', true);
 	if (member) { // ban check
 		embed.setFooter('Joined at ');
-		embed.timestamp = member.joineddAt;
+		embed.timestamp = member.joinedAt;
 	}
   message.channel.send({embed});
 };
