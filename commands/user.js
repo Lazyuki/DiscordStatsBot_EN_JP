@@ -40,6 +40,11 @@ module.exports.command = async (message, content, bot) => {
 		embed.title = `Stats for ${user.username}`;
 		embed.description = 'Hasn\'t said anything in the past 30 days'
 		embed.color = Number('0x3A8EDB');
+		if (member) { // ban check
+			embed.setFooter('Joined at ');
+			embed.timestamp = member.joineddAt;
+		}
+		message.channel.send({embed});
 		return;
 	}
 
@@ -110,5 +115,9 @@ module.exports.command = async (message, content, bot) => {
   //embed.addField('Favorite emoji', , true);
   //embed.addField('Messages today, this week, this month', , true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
+	if (member) { // ban check
+		embed.setFooter('Joined at ');
+		embed.timestamp = member.joineddAt;
+	}
   message.channel.send({embed});
 };
