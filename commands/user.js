@@ -26,7 +26,7 @@ module.exports.command = async (message, content, bot) => {
       }
     }
     if (user.id == message.author.id) { // Search failed
-			// react with X
+			message.react('❓');
       return;
     }
   }
