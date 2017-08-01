@@ -117,7 +117,8 @@ module.exports.command = async (message, content, bot) => {
   embed.addField('Japanese usage', jpnPercent + '%', true);
 	if (member) { // ban check
 		embed.setFooter('Last message sent at ');
-		embed.timestamp = member.lastMessage.createdAt;
+		if (member.lastMessage != null) embed.timestamp = member.lastMessage.createdAt;
+
 	}
   message.channel.send({embed});
 };
