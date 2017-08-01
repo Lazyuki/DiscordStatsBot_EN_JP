@@ -3,9 +3,9 @@ echo "Running bot.js"
 
 until node ./bot.js
 do
-  if [ $? -eq 1 ]
+  if [ $? -eq 0 ]
   then
-    echo "Exited with an error"
+    echo "Shutting down the bot"
     break
   fi
   echo "Restarting..."

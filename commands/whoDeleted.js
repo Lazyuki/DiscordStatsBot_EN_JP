@@ -17,7 +17,7 @@ module.exports.command = async (message, content = 10, bot) => {
     if (i >= num) break;
     let embed = new Discord.RichEmbed();
     var msg = bot.deletedMessages[i];
-    var date = new Date(msg.timestamp * 1000);
+    var date = new Date(msg.timestamp);
     embed.title = `<@${msg.author_id}>`;
     embed.description = `${msg.content} `;
     embed.timestamp = date;
