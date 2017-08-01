@@ -4,17 +4,19 @@ const BST = require('./BST.js');
 const fs = require('fs');
 
 module.exports = class Server {
-  constructor(server) {
-     this.server = server;
+  constructor(guild) {
+     this.guild = guild;
      this.hiddenChannels = [];
      this.ignoredMembers  = [];
      this.users = {};
+     this.deletedMessages = [];
      this.today = 0;
      if (fs.existsSync('./.restore.json')) {
        let json = JSON.parse(fs.readFileSync('./.restore.json', 'utf8'));
        //this.server = json['server']['id'];
        this.hiddenChannels = json['hiddenChannels'];
        this.ignoredMembers = json['ignoredMembers'];
+       this.deletedMessages = json['deletedMessages'];
        this.today = json['today'];
        for (var user in json['users']) {
          let uRec = json['users'][user]

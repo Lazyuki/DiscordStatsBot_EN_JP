@@ -4,7 +4,7 @@ module.exports.alias = [
 
 module.exports.command = (message, content, bot) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
-	let chan = bot.server.server.channels.get(content);
+	let chan = bot.server.guild.channels.get(content);
   if (chan) {
 		if (bot.server.hiddenChannels.includes(content)) {
 			message.channel.send(`#${chan.name} is already hidden.`);

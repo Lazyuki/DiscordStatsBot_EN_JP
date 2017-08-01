@@ -14,7 +14,7 @@ module.exports.command = async (message, content, bot) => {
   if (chMentions.size != 0) {
     chlb = chMentions.get(chMentions.firstKey());
   } else if (content != '') {
-    chlb = bot.server.server.channels.get(content);
+    chlb = bot.server.guild.channels.get(content);
     if (chlb == undefined) return; // invalid channel;
   }
 

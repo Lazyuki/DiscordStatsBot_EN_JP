@@ -65,6 +65,9 @@ module.exports = class UserRecord {
       }
       let num = this.record[earliestDay][chan];
       this.channels[chan] -= num;
+      if (this.channels[chan] == 0) {
+        delete this.channels[chan]; // if hasn't spoken in this channel
+      }
       this.thirtyDays -= num;
       this.record[earliestDay][chan] = 0;
     }

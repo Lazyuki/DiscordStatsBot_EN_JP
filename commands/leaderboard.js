@@ -18,7 +18,7 @@ module.exports.command = async (message, content, bot) => {
   } else if (content != '') {
 		content = content.toLowerCase();
     for (var id in bot.server.users) {
-      let u = bot.server.server.members.get(id);
+      let u = bot.server.guild.members.get(id);
 			if (u == undefined) continue; // if banned
       if (u.user.username.toLowerCase().startsWith(content)
 					|| u.displayName.toLowerCase().startsWith(content)) {
