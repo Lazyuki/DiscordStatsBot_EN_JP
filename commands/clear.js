@@ -1,5 +1,6 @@
 module.exports.alias = [
 	'clear',
+	'clean',
   'clr',
 	'd',
 	'del'

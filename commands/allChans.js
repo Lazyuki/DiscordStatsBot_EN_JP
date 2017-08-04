@@ -3,7 +3,8 @@
 
 module.exports.alias = [
 	'allchans',
-	'allChans'
+	'allChans',
+	'ac'
 ];
 
 module.exports.command = (message, content, bot) => {
@@ -14,8 +15,11 @@ module.exports.command = (message, content, bot) => {
 	for (var user in bot.server.users) {
 		var u = bot.server.users[user];
 		for (var ch in u.channels) {
+			if (u.channels[ch] == 0) {
+				delete u.channels[ch];
+				continue;
+			}
 			if (bot.server.hiddenChannels.includes(ch) && ignoreHidden) continue;
-			if (ch == '293787390710120449') continue; // removes #testing_ground
 			if (allch[ch]) {
 				allch[ch] += u.channels[ch];
 			} else {
@@ -38,5 +42,4 @@ module.exports.command = (message, content, bot) => {
 	  s += "<#" + sortable[i][0] + "> : " + sortable[i][1] + "\n";
 	}
   message.channel.send(s);
-
 };
