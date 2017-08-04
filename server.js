@@ -16,13 +16,13 @@ module.exports = class Server {
        //this.server = json['server']['id'];
        this.hiddenChannels = json['hiddenChannels'];
        this.ignoredMembers = json['ignoredMembers'];
-       this.deletedMessages = json['deletedMessages'];
        this.today = json['today'];
        for (var user in json['users']) {
          let uRec = json['users'][user]
          this.users[user] = new UserRecord(uRec['record'], uRec['thirtyDays'],
                             uRec['japanese'], uRec['channels']);
        }
+       // this.deletedMessages = json['deletedMessages'];
      }
    }
 

@@ -11,10 +11,12 @@ module.exports.alias = [
 module.exports.command = (message, content, bot) => {
   let chan = message.channel;
 	if (content.length > 23) return;
+	//SF id with mentions?
   let date = Discord.SnowflakeUtil.deconstruct(content).date;
 	let embed = new Discord.RichEmbed();
 	let dateStr = dateFormat(date, "UTC:ddd mmm dS, yyyy 'at' h:MM TT");
 	embed.title = `Creation time in UTC and your local time`;
+	embed.description = content;
 	embed.setFooter(`UTC | ${dateStr } --- Local`);
 	embed.color = Number('0x3A8EDB');
 	embed.timestamp = date;

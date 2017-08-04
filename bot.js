@@ -31,14 +31,14 @@ bot.on('ready', () => {
 bot.on('message', message => {
   if (message.author.bot) return;
   if (!message.content.startsWith(prefix)) {
-    if (message.guild.id != '189571157446492161') return;
+    if (message.guild.id != '189571157446492161') return; // ONLY EJLX
     bot.server.addMessage(message);
     return;
   }
   //if (message.author.id != owner_ID) return; // remove this
   let command = message.content.split(' ')[0].slice(1).toLowerCase();
   let content = message.content.substr(command.length + 2);
-  if (!commands[command]) { // if not our bot command, process it.
+  if (!commands[command]) { // if not Ciri bot command, add it.
     bot.server.addMessage(message);
     return;
   }
@@ -48,10 +48,13 @@ bot.on('message', message => {
 bot.on('messageDelete', message => {
   if (message.author.bot) return;
   if (message.author.id == bot.owner_ID) return; // if mine.
-  if (message.content.length < 5) return; // delete short messages
-  var arr = bot.deletedMessages;
+  let con = message.content;
+  if (message.content.length < 5) return; // don't log short messages
+  if (con.startsWith('.') || con.startsWith('t!')
+      || con.startsWith('!') || con.startsWith(':')) return;  // no bot messages
+  let arr = bot.deletedMessages;
   arr.push(new SimpleMsg(message));
-  if (arr.length > 30) arr.shift();
+  if (arr.length > 50) arr.shift();
 });
 
 // Log in. This should be the last call

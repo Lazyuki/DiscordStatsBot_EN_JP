@@ -41,7 +41,7 @@ module.exports.command = async (message, content, bot) => {
 		embed.description = 'Hasn\'t said anything in the past 30 days'
 		embed.color = Number('0x3A8EDB');
 		if (member) { // ban check
-			embed.setFooter('Joined at ');
+			embed.setFooter('Joined ');
 			embed.timestamp = member.joinedAt;
 		}
 		message.channel.send({embed});
@@ -116,7 +116,7 @@ module.exports.command = async (message, content, bot) => {
   //embed.addField('Messages today, this week, this month', , true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
 	if (member) { // ban check
-		embed.setFooter('Joined at ');
+		embed.setFooter('Joined ');
 		embed.timestamp = member.joinedAt;
 	}
   message.channel.send({embed});
