@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const BST = require('../BST.js');
+const BST = require('../classes/BST.js');
 
 module.exports.alias = [
 	'chlb',

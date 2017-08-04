@@ -1,24 +1,28 @@
 const Discord = require('discord.js');
 const config = require('./config.json');
 const bot = new Discord.Client();
-const Server = require('./server.js');
-const SimpleMsg = require('./SimpleMessage.js');
-const midnightTask = require('./midnightTask.js');
+const Server = require('./classes/Server.js');
+const SimpleMsg = require('./classes/SimpleMessage.js');
+const midnightTask = require('./classes/midnightTask.js');
+const savingTask = require('./classes/savingTask.js');
+const commands = require('./cmds.js');
 
 // Load configurations.
 const token = config.token;
 bot.owner_ID = config.owner_ID;
 const prefix = config.prefix;
 
-const commands = require('./cmds.js');
 
 bot.on('ready', () => {
+  setTimeout(() => { // sets up the saving state task
+    savingTask(bot);
+  },  60*60*1000);
   let time = new Date();
   let h = time.getUTCHours();
   let m = time.getUTCMinutes();
   let s = time.getUTCSeconds();
   let timeLeft = (24*60*60) - (h*60*60) - (m*60) - s;
-  setTimeout(() => { // set up the day changing task
+  setTimeout(() => { // sets up the day changing task
     midnightTask(bot);
   },  timeLeft * 1000); // timeLeft * 1000
   console.log('Logged in as ' + bot.user.username);

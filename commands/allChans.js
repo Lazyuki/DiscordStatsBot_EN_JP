@@ -1,6 +1,3 @@
-
-//const UserRecord = require('./UserRecord.js');
-
 module.exports.alias = [
 	'allchans',
 	'allChans',
