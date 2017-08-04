@@ -1,13 +1,17 @@
 module.exports.alias = [
-	'fix'
+	'realfixSept6'
 ];
 
 module.exports.command = (message, content, bot) => {
-		let u = bot.server.users['121805062686113793'];
-		let u1 = bot.server.users['216877927705346048'];
-		let u2 = bot.server.users['260719745727332353'];
-		u.japanese -= (u.japanese / 31) * 4
-		u2.japanese -= u2.japanese / 31 * 4
-		u1.japanese -= u1.japanese / 31 * 4
-
+	if (message.author.id != bot.owner_ID) return;
+	for (var user in bot.server.users) {
+		let u = bot.server.users[user];
+		var realJP = 0;
+		for (var day in u.record) {
+			if (u.record[day]['jpn']) {
+				realJP += u.record[day]['jpn'];
+			}
+		}
+		u.japanese = realJP;
+	}
 };

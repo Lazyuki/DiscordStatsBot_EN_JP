@@ -59,7 +59,7 @@ module.exports = class UserRecord {
     let earliestDay = (today) % 31; // (today - 1) % 30?
     for (var chan in this.record[earliestDay]) {
       if (chan == 'jpn') {
-        // this.japanese -= this.record[earliestDay]['jpn']; // TODO real code
+        // this.japanese -= this.record[earliestDay]['jpn']; // TODO USE on Sept 6
         this.japanese -= this.japanese / 31
         this.record[earliestDay]['jpn'] = 0;
         continue;
