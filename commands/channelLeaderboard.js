@@ -7,25 +7,24 @@ module.exports.alias = [
   'c'
 ];
 
-module.exports.command = async (message, content, bot) => {
+module.exports.command = async (message, content, bot, server) => {
   let sendChannel = message.channel;
   var chlb = message.channel;
   var chMentions = message.mentions.channels;
   if (chMentions.size != 0) {
     chlb = chMentions.get(chMentions.firstKey());
   } else if (content != '') {
-    chlb = bot.server.guild.channels.get(content);
+    chlb = server.guild.channels.get(content);
     if (chlb == undefined) return; // invalid channel;
   }
 
-  if (bot.server.hiddenChannels.includes(chlb.id)) { // It's a hidden channel
-    if (!bot.server.hiddenChannels.includes(sendChannel.id)) {
+  if (server.hiddenChannels.includes(chlb.id)) { // It's a hidden channel
+    if (!server.hiddenChannels.includes(sendChannel.id)) {
       chlb = sendChannel;
     }
   }
-  //let result = bot.server.channelLeaderboard(message, content, bot);
 
-  let users = bot.server.users;
+  let users = server.users;
   var result = new BST();
   let channelID = chlb.id;
   for (var user in users) {

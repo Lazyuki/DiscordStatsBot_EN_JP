@@ -3,5 +3,7 @@ module.exports.alias = [
 ];
 
 module.exports.command = (message, _, bot) => {
-  bot.server.save();
+	for (var s in bot.servers) {
+    bot.servers[s].save();
+  }
 };

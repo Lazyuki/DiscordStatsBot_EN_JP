@@ -7,18 +7,16 @@ module.exports.alias = [
 	'l'
 ];
 
-module.exports.command = async (message, content, bot) => {
+module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
-  // let result = bot.server.leaderboard(message);
-
 	var memberID = message.author.id;
 	var mentions = message.mentions.members;
 	if (mentions.size != 0) {
     memberID = mentions.firstKey();
   } else if (content != '') {
 		content = content.toLowerCase();
-    for (var id in bot.server.users) {
-      let u = bot.server.guild.members.get(id);
+    for (var id in server.users) {
+      let u = server.guild.members.get(id);
 			if (u == undefined) continue; // if banned
       if (u.user.username.toLowerCase().startsWith(content)
 					|| u.displayName.toLowerCase().startsWith(content)) {
@@ -28,7 +26,7 @@ module.exports.command = async (message, content, bot) => {
     }
   }
 
-	let users = bot.server.users;
+	let users = server.users;
 	var result = new BST();
 	for (var user in users) {
 		let res = users[user].totalStats();
@@ -44,17 +42,15 @@ module.exports.command = async (message, content, bot) => {
 	var count = 0;
 	var found = false;
 	var twentyfive = true;
-	//var moreThan = 0;
 
   for (var user in result) {
-		//if (result[user] > 10) moreThan++;
-		count++; // counts banned people
-		if (count == 25) {
+		count++; // this also counts banned people
+		if (count == 25) { // the 25th person is either the 25th one or the user
 			if (found) {
 				embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true);
 				break;
 			};
-			twentyfive = false;
+			twentyfive = false; // 25th person is normal
 		}
 		if (!found) {
 			if (user == memberID) {

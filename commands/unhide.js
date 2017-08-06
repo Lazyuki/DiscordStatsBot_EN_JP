@@ -2,12 +2,11 @@ module.exports.alias = [
 	'unhide'
 ];
 
-module.exports.command = (message, content, bot) => {
+module.exports.command = (message, content, bot, server) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
-  let arr = bot.server.hiddenChannels;
+  let arr = server.hiddenChannels;
   var index = arr.indexOf(content);
   if (index == -1) return;
-  delete arr[index]; // or new array?
-  bot.server.hiddenChannels = arr;
+	server.hiddenChannels = arr.splice(index, 1);
   message.channel.send(`<#${content}> is no longer hidden`);
 };

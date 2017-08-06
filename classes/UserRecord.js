@@ -6,23 +6,23 @@ const regex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/g;
 
 //
 module.exports = class UserRecord {
-  constructor(record, thirtyDays, japanese, channels) {
+  constructor(record, thirty, jp, chans) {
     if (arguments.length != 4) { // build from scratch
       this.record = new Array(31); // TODO zero-out?
-      this.thirtyDays = 0;
-      this.japanese = 0;
-      this.channels = {}; // {<channel ID>: # messages, <ID>: #}
+      this.thirty = 0;
+      this.jp = 0;
+      this.chans = {}; // {<channel ID>: # messages, <ID>: #}
     } else { // build from backup
       this.record = record;
-      this.thirtyDays = thirtyDays;
-      this.japanese = japanese;
-      this.channels = channels;
+      this.thirty = thirty;
+      this.jp = jp;
+      this.chans = chans;
     }
   }
 
   // channelID in string, today is an int between 0-30
   add(content, channelID, today) {
-    this.thirtyDays++;
+    this.thirty++;
     let jp = regex.test(content); //
     if (!this.record[today]) {
       this.record[today] = {};
@@ -30,26 +30,26 @@ module.exports = class UserRecord {
     } else if (!this.record[today][channelID]) {
       this.record[today][channelID] = 0;
     }
-    if (!this.channels[channelID]) {
-      this.channels[channelID] = 0;
+    if (!this.chans[channelID]) {
+      this.chans[channelID] = 0;
     }
-    if (jp) { // contains some Japanese characters
+    if (jp) { // contains some jp characters
       if (!this.record[today]['jpn']) {
         this.record[today]['jpn'] = 0;
       }
       this.record[today]['jpn']++;
-      this.japanese++;
+      this.jp++;
     }
-    this.channels[channelID]++;
+    this.chans[channelID]++;
     this.record[today][channelID]++;
   }
 
   totalStats() {
-    return this.thirtyDays;
+    return this.thirty;
   }
 
   channelStats(channelID) {
-    let result = this.channels[channelID];
+    let result = this.chans[channelID];
     return result ? result : 0;
   }
 
@@ -59,19 +59,18 @@ module.exports = class UserRecord {
     let earliestDay = (today) % 31; // (today - 1) % 30?
     for (var chan in this.record[earliestDay]) {
       if (chan == 'jpn') {
-        // this.japanese -= this.record[earliestDay]['jpn']; // TODO USE on Sept 6
-        this.japanese -= this.japanese / 31
+        this.jp -= this.record[earliestDay]['jpn'];
         this.record[earliestDay]['jpn'] = 0;
         continue;
       }
       let num = this.record[earliestDay][chan];
-      this.channels[chan] -= num;
-      if (this.channels[chan] == 0) {
-        delete this.channels[chan]; // if hasn't spoken in this channel
+      this.chans[chan] -= num;
+      if (this.chans[chan] == 0) {
+        delete this.chans[chan]; // if hasn't spoken in this channel
       }
-      this.thirtyDays -= num;
+      this.thirty -= num;
       this.record[earliestDay][chan] = 0;
     }
-    return this.thirtyDays == 0;
+    return this.thirty == 0;
   }
 };

@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-var sleep = require('sleep');
+const sleep = require('sleep');
 
 module.exports.alias = [
   'whodel',
@@ -8,10 +8,10 @@ module.exports.alias = [
   'wd'
 ];
 
-module.exports.command = async (message, content, bot) => {
+module.exports.command = async (message, content, bot, server) => {
   if (message.author.id != bot.owner_ID) return;
   var num = parseInt(content);
-  if (num == NaN) num = 10;
+  if (isNaN(num)) num = 10;
   let mentions = message.mentions;
   let chans = mentions.channels;
   let users = mentions.users;
@@ -19,20 +19,20 @@ module.exports.command = async (message, content, bot) => {
   let chanMention = chans.size > 0;
   let userMention = users.size > 0;
 // by name
-  for (var i in bot.deletedMessages) {
+  for (var i in server.deletedMessages) {
     if (i >= num) break;
-    let msg = bot.deletedMessages[bot.deletedMessages.length - 1 - i];
+    let msg = server.deletedMessages[server.deletedMessages.length - 1 - i];
     if (chanMention) {
-      if (!chans.has(msg.channel_id)) continue;
+      if (!chans.has(msg.chid)) continue;
     }
     if (userMention) {
-      if (!users.has(msg.author_id)) continue;
+      if (!users.has(msg.aid)) continue;
     }
     let embed = new Discord.RichEmbed();
-    let date = new Date(msg.timestamp);
-    embed.title = `${msg.author} : <@${msg.author_id}>`;
-    embed.description = `${msg.content}`;
-    embed.setFooter(`#${msg.channel}`)
+    let date = new Date(msg.time);
+    embed.title = `${msg.a} : <@${msg.aid}>`;
+    embed.description = `${msg.con}`;
+    embed.setFooter(`#${msg.ch}`)
     embed.timestamp = date;
     embed.color = Number('0xDB3C3C');
     message.channel.send({embed});

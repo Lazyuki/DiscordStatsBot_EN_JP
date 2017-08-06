@@ -1,10 +1,16 @@
 module.exports = function task(bot) {
-  bot.server.save(true); // saves the state everyday
-  bot.server.today = (bot.server.today + 1) % 31;
-  for (var user in bot.server.users) {
-    let res = bot.server.users[user].adjust(bot.server.today);
-    if (res) {
-      delete bot.server.users[user];
+  for (var sid in bot.servers) {
+    let s = bot.servers[sid];
+    s.save(true); // saves the state everyday
+    s.today = (s.today + 1) % 31;
+    let ejlx = s.guild.id == '189571157446492161';
+    for (var user in s.users) {
+      let uRec = s.users[user];
+      let res = uRec.adjust(s.today);
+      if (ejlx) uRec.jp -= uRec.jp / 31 // TODO delete on sept 6
+      if (res) {
+        delete uRec;
+      }
     }
   }
 

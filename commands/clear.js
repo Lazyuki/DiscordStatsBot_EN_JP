@@ -1,9 +1,7 @@
 module.exports.alias = [
 	'clear',
 	'clean',
-  'clr',
-	'd',
-	'del'
+  'clr'
 ];
 
 module.exports.command = async (message, content, bot) => {

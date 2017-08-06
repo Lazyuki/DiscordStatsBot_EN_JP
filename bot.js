@@ -2,7 +2,6 @@ const Discord = require('discord.js');
 const config = require('./config.json');
 const bot = new Discord.Client();
 const Server = require('./classes/Server.js');
-const SimpleMsg = require('./classes/SimpleMessage.js');
 const midnightTask = require('./classes/midnightTask.js');
 const savingTask = require('./classes/savingTask.js');
 const commands = require('./cmds.js');
@@ -12,9 +11,8 @@ const token = config.token;
 bot.owner_ID = config.owner_ID;
 const prefix = config.prefix;
 
-
 bot.on('ready', () => {
-  setTimeout(() => { // sets up the saving state task
+  setTimeout(() => { // sets up the saving restore state task
     savingTask(bot);
   },  60*60*1000);
   let time = new Date();
@@ -28,37 +26,52 @@ bot.on('ready', () => {
   console.log('Logged in as ' + bot.user.username);
   console.log(`${time.toLocaleDateString()} ${time.toLocaleTimeString()}`);
   console.log('--------------------------');
-  if (!bot.server) bot.server = new Server(bot.guilds.get('189571157446492161'));
-  bot.deletedMessages = [];
+  bot.servers = {};
+  for (var guild of bot.guilds.values()) {
+    if (guild.id == '293787390710120449') continue; // My testing server
+    bot.servers[guild.id] = new Server(guild);
+  }
 });
 
-bot.on('message', message => {
+bot.on('message', async message => {
   if (message.author.bot) return;
-  if (!message.content.startsWith(prefix)) {
-    if (message.guild.id != '189571157446492161') return; // ONLY EJLX
-    bot.server.addMessage(message);
+  if (message.channel.type != 'text') {
+    let msgs = [
+      'Come on... I\'m not available here... \n https://media3.giphy.com/media/mfGYunx8bcWJy/giphy.gif',
+      '*sigh* Why did you PM me https://68.media.tumblr.com/d0238a0224ac18b47d1ac2fbbb6dd168/tumblr_nselfnnY3l1rpd9dfo1_250.gif',
+      'I don\'t work here ¯\\\_(ツ)\_/¯ http://cloud-3.steamusercontent.com/ugc/576816221180356023/FF4FF60F13F2A773123B3B26A19935944480F510/',
+      'I can\'t do anything in private channels... https://img.fireden.net/vg/image/1435/20/1435200851484.gif'];
+    var msg = msgs[Math.floor(Math.random() * msgs.length)];
+    message.channel.send(msg);
     return;
   }
-  //if (message.author.id != owner_ID) return; // remove this
+  let testServer = message.guild.id == '293787390710120449'; // My testing server
+  if (!message.content.startsWith(prefix)) {
+    if (testServer) return;// Ignore my server
+    bot.servers[message.guild.id].addMessage(message);
+    return;
+  }
+
   let command = message.content.split(' ')[0].slice(1).toLowerCase();
   let content = message.content.substr(command.length + 2);
   if (!commands[command]) { // if not Ciri bot command, add it.
-    bot.server.addMessage(message);
+    if (testServer) return;
+    bot.servers[message.guild.id].addMessage(message);
     return;
   }
-  commands[command].command(message, content, bot);
+  let server = testServer ? bot.servers['189571157446492161'] : bot.servers[message.guild.id]; // defaults commands to EJLX
+  commands[command].command(message, content, bot, server);
 });
 
 bot.on('messageDelete', message => {
   if (message.author.bot) return;
   if (message.author.id == bot.owner_ID) return; // if mine.
-  let con = message.content;
-  if (message.content.length < 5) return; // don't log short messages
-  if (con.startsWith('.') || con.startsWith('t!')
-      || con.startsWith('!') || con.startsWith(':')) return;  // no bot messages
-  let arr = bot.deletedMessages;
-  arr.push(new SimpleMsg(message));
-  if (arr.length > 50) arr.shift();
+  if (message.guild.id == '293787390710120449') return;// Ignore my server
+  bot.servers[message.guild.id].addDeletedMessage(message);
+});
+
+bot.on('guildCreate', guild => {
+  bot.servers[guild.id] = new Server(guild);
 });
 
 // Log in. This should be the last call

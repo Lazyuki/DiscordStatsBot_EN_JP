@@ -2,15 +2,16 @@ module.exports.alias = [
 	'hide'
 ];
 
-module.exports.command = (message, content, bot) => {
+module.exports.command = (message, content, bot, server) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
-	let chan = bot.server.guild.channels.get(content);
+	let chan = server.guild.channels.get(content);
   if (chan) {
-		if (bot.server.hiddenChannels.includes(content)) {
-			message.channel.send(`#${chan.name} is already hidden.`);
-			return;
-		}
-		bot.server.hideChannel(content);
+		server.hideChannel(content);
 		message.channel.send(`#${chan.name} is hidden now.`)
+	} else if (message.mentions.channels.size != 0) {
+		for (var [id, ch] of message.mentions.channels) {
+			server.hideChannel(id);
+			message.channel.send(`#${ch.name} is hidden now.`)
+		}
 	}
 };
