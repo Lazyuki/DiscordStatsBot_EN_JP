@@ -8,7 +8,7 @@ const regex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/g;
 module.exports = class UserRecord {
   constructor(record, thirty, jp, chans) {
     if (arguments.length != 4) { // build from scratch
-      this.record = new Array(31); // TODO zero-out?
+      this.record = new Array(31); //31 days
       this.thirty = 0;
       this.jp = 0;
       this.chans = {}; // {<channel ID>: # messages, <ID>: #}
@@ -44,6 +44,13 @@ module.exports = class UserRecord {
     this.record[today][channelID]++;
   }
 
+  addReacts(today) {
+    if (!this.record[today]['rxn']) {
+      this.record[today]['rxn'] = 0;
+    }
+    this.record[today]['rxn']++;
+  }
+
   totalStats() {
     return this.thirty;
   }
@@ -63,10 +70,15 @@ module.exports = class UserRecord {
         this.record[earliestDay]['jpn'] = 0;
         continue;
       }
+      if (chan == 'rxn') { // reactions
+        this.rxn -= this.record[earliestDay]['rxn'];
+        this.record[earliestDay]['rxn'] = 0;
+        continue;
+      }
       let num = this.record[earliestDay][chan];
       this.chans[chan] -= num;
       if (this.chans[chan] == 0) {
-        delete this.chans[chan]; // if hasn't spoken in this channel
+        delete this.chans[chan]; // if the user hasn't spoken in this channel
       }
       this.thirty -= num;
       this.record[earliestDay][chan] = 0;

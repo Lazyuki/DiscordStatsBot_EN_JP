@@ -54,7 +54,7 @@ module.exports.command = async (message, content, bot, server) => {
   // Most active channels
   var topCHannels = {};
 	for (var ch in chans) {
-      if (server.hiddenChannels.includes(ch) && ignoreHidden) continue;
+    if (server.hiddenChannels.includes(ch) && ignoreHidden) continue;
 		if (topCHannels[ch]) {
 			topCHannels[ch] += chans[ch];
 		} else {
@@ -82,8 +82,9 @@ module.exports.command = async (message, content, bot, server) => {
   let dayArr = [0, 0, 0, 0, 0, 0, 0]; // Su Mo Tu We Th Fr Sa
   var daySum = 0;
   for (var i = server.today - 1; i > server.today - 28; i--) { // 4 weeks
-    var chans = record.record[((i % 31) + 31) % 31];
+    var chans = record.record[((i % 31) + 31) % 31]; // in case it over flows
     for (var ch in chans) {
+			if (ch == 'jpn') continue;
       dayArr[d] += chans[ch];
       daySum += chans[ch];
     }
@@ -112,8 +113,9 @@ module.exports.command = async (message, content, bot, server) => {
   embed.addField('Most active channels', topChans, true);
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   //embed.addField('Favorite emoji', , true);
+	//embed.addField('Reacted', record.reactions, true);
   //embed.addField('Messages today, this week, this month', , true);
-  embed.addField('jp usage', jpnPercent + '%', true);
+  embed.addField('Japanese usage', jpnPercent + '%', true);
 	if (member) { // ban check
 		embed.setFooter('Joined ');
 		embed.timestamp = member.joinedAt;
