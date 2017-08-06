@@ -5,7 +5,6 @@ module.exports.alias = [
 ];
 
 module.exports.command = (message, content, bot, server) => {
-	//if (message.author.id != bot.owner_ID) return;
 	let ignoreHidden = !server.hiddenChannels.includes(message.channel.id);
 
 	var allch = {};

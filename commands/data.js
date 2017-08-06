@@ -26,6 +26,7 @@ module.exports.command = (message, content, bot) => {
 			if (server.users[user].thirty > num) moreThan++;
 		}
 		res += `${moreThan} people have talked more than ${num} messages.\n`;
+		res += `Number of hidden channels: ${server.hiddenChannels.length}`
 	  res += `Date number: ${server.today}\n\n`;
 	}
 	res += `UTC Time: ${new Date().toUTCString()}`;

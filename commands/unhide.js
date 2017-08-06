@@ -7,6 +7,6 @@ module.exports.command = (message, content, bot, server) => {
   let arr = server.hiddenChannels;
   var index = arr.indexOf(content);
   if (index == -1) return;
-	server.hiddenChannels = arr.splice(index, 1);
+	arr.splice(index, 1);
   message.channel.send(`<#${content}> is no longer hidden`);
 };
