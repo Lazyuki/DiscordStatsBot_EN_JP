@@ -72,6 +72,7 @@ bot.on('messageDelete', message => {
 
 bot.on('guildCreate', guild => {
   bot.servers[guild.id] = new Server(guild);
+  console.log(`Server added: ${guild.name}`);
 });
 
 // Log in. This should be the last call

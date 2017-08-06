@@ -3,5 +3,5 @@ module.exports.alias = [
 ];
 
 module.exports.command = async (message, content, bot) => {
-	await bot.setGame(content);
+	await bot.user.setGame(content);
 };

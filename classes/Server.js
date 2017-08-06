@@ -17,10 +17,10 @@ module.exports = class Server {
        this.today = json['today'];
        for (var user in json['users']) {
          let uRec = json['users'][user]
-         this.users[user] = new UserRecord(uRec['record'], uRec['thirtyDays'],
-                           uRec['japanese'], uRec['channels']); // TODO fix to new var names
-        //  this.users[user] = new UserRecord(uRec['record'], uRec['thirty'],
-        //                                        uRec['jp'], uRec['chans']); // TODO fix to new var names
+        //  this.users[user] = new UserRecord(uRec['record'], uRec['thirtyDays'],
+        //                    uRec['japanese'], uRec['channels']); // TODO fix to new var names
+         this.users[user] = new UserRecord(uRec['record'], uRec['thirty'],
+                                               uRec['jp'], uRec['chans']); // TODO fix to new var names
        }
       //  for (var dm in json['deletedMessages']) {
       //    this.deletedMessages.push(new SimpleMsg(dm.id, dm.a, dm.aid, dm.con, dm.ch, dm.chid, dm.time));
@@ -69,7 +69,7 @@ module.exports = class Server {
        } catch (e) {
          console.log(e);
        }
-       console.log(`./.${this.guild.id}_restore.json has been updated`);
+       // console.log(`./.${this.guild.id}_restore.json has been updated`);
      }
    }
 }
