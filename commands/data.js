@@ -25,8 +25,6 @@ module.exports.command = (message, content, bot) => {
 		for (var user in server.users) {
 			if (server.users[user].thirty > num) {
 				moreThan++;
-			} else {
-				console.log(user);
 			}
 		}
 		res += `${moreThan} people have talked more than ${num} messages.\n`;

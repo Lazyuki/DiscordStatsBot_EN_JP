@@ -10,7 +10,7 @@ module.exports = class SimpleMessage {
       this.time = message.createdTimestamp; // Message time stamp
     } else if (arguments.length == 7) {
       this.id = message;
-      this.a = aun;
+      this.a = a;
       this.aid = aid;
       this.con = con;
       this.ch = chn;

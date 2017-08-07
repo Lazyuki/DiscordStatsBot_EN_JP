@@ -35,6 +35,7 @@ bot.on('ready', () => {
 
 bot.on('message', async message => {
   if (message.author.bot) return;
+  if (message.system) return;
   if (message.channel.type != 'text') {
     let msgs = [
       'Come on... I\'m not available here... \n https://media3.giphy.com/media/mfGYunx8bcWJy/giphy.gif',
@@ -68,6 +69,12 @@ bot.on('messageDelete', message => {
   if (message.author.id == bot.owner_ID) return; // if mine.
   if (message.guild.id == '293787390710120449') return;// Ignore my server
   bot.servers[message.guild.id].addDeletedMessage(message);
+});
+
+bot.on('messageDeleteBulk', messages => {
+  for (var [id, message] of messages) {
+
+  }
 });
 
 bot.on('guildCreate', guild => {

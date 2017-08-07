@@ -112,9 +112,9 @@ module.exports.command = async (message, content, bot, server) => {
   embed.addField('Messages sent ', record.thirty, true);
   embed.addField('Most active channels', topChans, true);
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
-  //embed.addField('Favorite emoji', , true);
+  //embed.addField('Emojis used', , true);
+	//embed.addField('Time Spent in VC', , true);
 	//embed.addField('Reacted', record.reactions, true);
-  //embed.addField('Messages today, this week, this month', , true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
 	if (member) { // ban check
 		embed.setFooter('Joined this server');

@@ -20,9 +20,10 @@ module.exports = class Server {
          this.users[user] = new UserRecord(uRec['record'], uRec['thirty'],
                                                uRec['jp'], uRec['chans']); // TODO fix to new var names
        }
-      //  for (var dm in json['deletedMessages']) {
-      //    this.deletedMessages.push(new SimpleMsg(dm.id, dm.a, dm.aid, dm.con, dm.ch, dm.chid, dm.time));
-      //  }
+       for (var msg in json['deletedMessages']) {
+         let dm = json['deletedMessages'][msg]
+         this.deletedMessages.push(new SimpleMsg(dm.id, dm.a, dm.aid, dm.con, dm.ch, dm.chid, dm.time));
+       }
      }
    }
 

@@ -18,7 +18,7 @@ module.exports.command = (message, content, bot, server) => {
   var count = 0;
   let s = '';
   for (var [key, value] of res) {
-    if (count++ > 50) break;
+    if (count++ > 20) break;
     s += '**' + key.substring(0, key.length - 5) + '**' + key.substr(-5) + '\n';
   }
 
