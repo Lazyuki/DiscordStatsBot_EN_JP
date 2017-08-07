@@ -117,7 +117,7 @@ module.exports.command = async (message, content, bot, server) => {
   //embed.addField('Messages today, this week, this month', , true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
 	if (member) { // ban check
-		embed.setFooter('Joined ');
+		embed.setFooter('Joined this server');
 		embed.timestamp = member.joinedAt;
 	}
   message.channel.send({embed});

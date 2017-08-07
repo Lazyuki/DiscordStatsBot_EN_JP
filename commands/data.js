@@ -23,7 +23,11 @@ module.exports.command = (message, content, bot) => {
 		if (!num) num = 0;
 		var moreThan = 0;
 		for (var user in server.users) {
-			if (server.users[user].thirty > num) moreThan++;
+			if (server.users[user].thirty > num) {
+				moreThan++;
+			} else {
+				console.log(user);
+			}
 		}
 		res += `${moreThan} people have talked more than ${num} messages.\n`;
 	  res += `Date number: ${server.today}\n\n`;

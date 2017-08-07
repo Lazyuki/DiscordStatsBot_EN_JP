@@ -16,6 +16,7 @@ module.exports.command = (message, content, bot, server) => {
 				continue;
 			}
 			if (server.hiddenChannels.includes(ch) && ignoreHidden) continue;
+			if (ch == '293787390710120449') continue; // #testing-ground
 			if (allch[ch]) {
 				allch[ch] += u.chans[ch];
 			} else {

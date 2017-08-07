@@ -9,7 +9,7 @@ module.exports = function task(bot) {
       let res = uRec.adjust(s.today);
       if (ejlx) uRec.jp -= uRec.jp / 31 // TODO delete on sept 6
       if (res) {
-        delete uRec;
+        delete s.users[user];
       }
     }
   }
