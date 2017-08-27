@@ -40,8 +40,7 @@ bot.on('message', async message => {
     let msgs = [
       'Come on... I\'m not available here... \n https://media3.giphy.com/media/mfGYunx8bcWJy/giphy.gif',
       '*sigh* Why did you PM me https://68.media.tumblr.com/d0238a0224ac18b47d1ac2fbbb6dd168/tumblr_nselfnnY3l1rpd9dfo1_250.gif',
-      'I don\'t work here ¯\\\_(ツ)\_/¯ http://cloud-3.steamusercontent.com/ugc/576816221180356023/FF4FF60F13F2A773123B3B26A19935944480F510/',
-      'I can\'t do anything in private channels... https://img.fireden.net/vg/image/1435/20/1435200851484.gif'];
+      'I don\'t work here ¯\\\_(ツ)\_/¯ http://cloud-3.steamusercontent.com/ugc/576816221180356023/FF4FF60F13F2A773123B3B26A19935944480F510/'];
     var msg = msgs[Math.floor(Math.random() * msgs.length)];
     message.channel.send(msg);
     return;
@@ -64,6 +63,10 @@ bot.on('message', async message => {
   commands[command].command(message, content, bot, server);
 });
 
+bot.on('guildMemberAdd', member => {
+  // check mee6 message?
+});
+
 bot.on('messageDelete', message => {
   if (message.author.bot) return;
   if (message.author.id == bot.owner_ID) return; // if mine.
@@ -73,7 +76,7 @@ bot.on('messageDelete', message => {
 
 bot.on('messageDeleteBulk', messages => {
   for (var [id, message] of messages) {
-
+    bot.servers[message.guild.id].addDeletedMessage(message);
   }
 });
 

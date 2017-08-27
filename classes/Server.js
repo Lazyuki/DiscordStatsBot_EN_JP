@@ -54,6 +54,7 @@ module.exports = class Server {
    }
 
    save(backup=false) {
+     // Store the actual date? 
      if (backup) {
        var date = new Date().toLocaleDateString().replace(/\//g, '-');
        try {

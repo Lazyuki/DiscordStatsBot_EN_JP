@@ -6,7 +6,7 @@ module.exports.alias = [
 
 module.exports.command = async (message, content, bot) => {
   let chan = message.channel;
-	var messages = await chan.fetchMessages({limit:20});
+	var messages = await chan.fetchMessages({limit:30});
 	var deleteCount = parseInt(content);
 	if (!deleteCount) deleteCount = 1;
 	for (var m of messages.values()) {

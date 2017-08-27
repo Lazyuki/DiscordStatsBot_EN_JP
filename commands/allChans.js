@@ -1,7 +1,6 @@
 module.exports.alias = [
-	'allchans',
-	'allChans',
-	'ac'
+	'channels',
+	'ch'
 ];
 
 module.exports.command = (message, content, bot, server) => {
@@ -36,7 +35,7 @@ module.exports.command = (message, content, bot, server) => {
 
 	var s = "";
   for (var i in sortable) {
-	  s += "<#" + sortable[i][0] + "> : " + sortable[i][1] + "\n";
+	  s += "<#" + sortable[i][0] + "> : " + sortable[i][1] + " (" + sortable[i][0] + ")\n";
 	}
   message.channel.send(s);
 };

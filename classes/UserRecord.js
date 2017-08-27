@@ -4,6 +4,9 @@
 // 4E00-9FAF : common and uncommon kanji
 const regex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/g;
 
+// /^(?:<:[^:]+:\d+>|:[^:]+:)$/.test(message.content)
+// example <:turboRAGE:312737141509586945> 📠
+
 //
 module.exports = class UserRecord {
   constructor(record, thirty, jp, chans) {
