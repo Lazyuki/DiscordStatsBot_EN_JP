@@ -17,6 +17,7 @@ module.exports.command = (message, content, bot, server) => {
 			if (server.hiddenChannels.includes(ch) && ignoreHidden) continue;
 			if (ch == '293787390710120449') continue; // #testing-ground
 			if (allch[ch]) {
+				if (!allch[ch] > 0) continue;
 				allch[ch] += u.chans[ch];
 			} else {
 				allch[ch] = u.chans[ch];
@@ -35,7 +36,7 @@ module.exports.command = (message, content, bot, server) => {
 
 	var s = "";
   for (var i in sortable) {
-	  s += "<#" + sortable[i][0] + "> : " + sortable[i][1] + " (" + sortable[i][0] + ")\n";
+	  s += "<#" + sortable[i][0] + "> : " + sortable[i][1] + "\n";
 	}
   message.channel.send(s);
 };
