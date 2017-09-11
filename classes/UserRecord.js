@@ -26,7 +26,7 @@ module.exports = class UserRecord {
   // channelID in string, today is an int between 0-30
   add(content, channelID, today) {
     this.thirty++;
-    let jp = regex.test(content); //
+    let jp = regex.test(content);
     if (!this.record[today]) {
       this.record[today] = {};
       this.record[today][channelID] = 0;
@@ -70,7 +70,7 @@ module.exports = class UserRecord {
     for (var chan in this.record[earliestDay]) {
       if (chan == 'jpn') {
         this.jp -= this.record[earliestDay]['jpn'];
-        this.record[earliestDay]['jpn'] = 0;
+        this.record[earliestDay]['jpn'] = 0; // or delete?
         continue;
       }
       if (chan == 'rxn') { // reactions
@@ -80,12 +80,15 @@ module.exports = class UserRecord {
       }
       let num = this.record[earliestDay][chan];
       this.chans[chan] -= num;
-      if (this.chans[chan] == 0) {
+      if (this.chans[chan] <= 0) {
         delete this.chans[chan]; // if the user hasn't spoken in this channel
       }
       this.thirty -= num;
-      this.record[earliestDay][chan] = 0;
+      this.record[earliestDay][chan] = 0; // or delete?
+      // delete this.record[earliestDay][chan]; // or delete?
+
     }
+    //this.record[earliestDay] == {};
     return this.thirty == 0;
   }
 };

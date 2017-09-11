@@ -6,9 +6,7 @@ module.exports = function task(bot) {
     let ejlx = s.guild.id == '189571157446492161';
     for (var user in s.users) {
       let uRec = s.users[user];
-      let res = uRec.adjust(s.today);
-      if (ejlx) uRec.jp -= uRec.jp / 31 // TODO delete on sept 6
-      if (res) {
+      if (uRec.adjust(s.today)) {
         delete s.users[user];
       }
     }
