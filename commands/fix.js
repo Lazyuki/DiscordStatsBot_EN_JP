@@ -8,8 +8,8 @@ module.exports.command = (message, content, bot, server) => {
 		let u = server.users[user];
 		var count = 0;
 		for (var ch in u.chans) {
-			if (!u.chans[ch] || u.chans[ch] == 0) {
-				delete u.chans[ch];
+			if (u.chans[ch] == null) {
+				delete server.users[user].chans[ch];
 				count++;
 			}
 		}
