@@ -15,3 +15,4 @@ module.exports.command = (message, content, bot, server) => {
 		u.jp = realJP;
 	}
 	message.channel.send('done');
+};
