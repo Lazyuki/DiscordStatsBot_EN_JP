@@ -1,5 +1,5 @@
 module.exports.alias = [
-	'fix'
+	'jpfix'
 ];
 
 module.exports.command = (message, content, bot, server) => {

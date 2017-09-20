@@ -6,7 +6,6 @@ module.exports.alias = [
 ];
 
 module.exports.command = async (message, content, bot, server) => {
-	if (message.author.id != bot.owner_ID) return;
   var user = message.author; // default
   let mentions = message.mentions.members;
   if (mentions.size != 0) {
@@ -67,7 +66,7 @@ module.exports.command = async (message, content, bot, server) => {
 	sortable.sort(function(a, b) {
 	    return b[1] - a[1];
 	});
-  var topChans = '';
+  var topChans = `User channels for ${user.username}\n`;
   for (var i = 0; i < sortable.length; i++) {
     let perc = sortable[i][1];
 		let channel = server.guild.channels.get(sortable[i][0]);
