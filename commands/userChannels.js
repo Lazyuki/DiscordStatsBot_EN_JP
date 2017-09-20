@@ -1,7 +1,8 @@
 const Discord = require('discord.js');
 
 module.exports.alias = [
-	'uch'
+	'uch',
+	'user-channels'
 ];
 
 module.exports.command = async (message, content, bot, server) => {
@@ -68,10 +69,10 @@ module.exports.command = async (message, content, bot, server) => {
 	});
   var topChans = '';
   for (var i = 0; i < sortable.length; i++) {
-    let perc = (sortable[i][1] / record.thirty * 100).toFixed(1);
+    let perc = sortable[i][1];
 		let channel = server.guild.channels.get(sortable[i][0]);
 		if (!channel) continue;
-	  topChans += "**#" + channel.name + "** : " + perc + "%\n";
+	  topChans += "**#" + channel.name + "** : " + perc + " messages\n";
 	}
 
   message.channel.send(topChans);
