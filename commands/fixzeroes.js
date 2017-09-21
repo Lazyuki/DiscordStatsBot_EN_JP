@@ -1,5 +1,5 @@
 module.exports.alias = [
-	'fixzeros'
+	'fixzeroes'
 ];
 
 module.exports.command = (message, content, bot, server) => {
