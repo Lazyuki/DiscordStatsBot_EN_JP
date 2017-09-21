@@ -3,7 +3,6 @@ module.exports = function task(bot) {
     let s = bot.servers[sid];
     s.save(true); // saves the state everyday
     s.today = (s.today + 1) % 31;
-    let ejlx = s.guild.id == '189571157446492161';
     for (var user in s.users) {
       let uRec = s.users[user];
       if (uRec.adjust(s.today)) {

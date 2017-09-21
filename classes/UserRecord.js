@@ -84,7 +84,6 @@ module.exports = class UserRecord {
         delete this.chans[chan]; // if the user hasn't spoken in this channel
       }
       this.thirty -= num;
-      //this.record[earliestDay][chan] = 0; // or delete?
       delete this.record[earliestDay][chan];
 
     }
