@@ -44,17 +44,21 @@ module.exports = class Server {
 
    addDeletedMessage(message) {
      let con = message.content;
-     if (message.content.length < 5) return; // don't log short messages
      if (con.startsWith('.') || con.startsWith('t!')
          || con.startsWith('!') || con.startsWith(':')
          || con.startsWith('&')) return;  // no bot messages
+     if (message.attachments) {
+       message.content += " | " + message.attachments.first().url;
+     } else if (message.content.length < 5) {
+       return;
+     }
      let arr = this.deletedMessages;
      arr.push(new SimpleMsg(message));
      if (arr.length > 50) arr.shift();
    }
 
    save(backup=false) {
-     // Store the actual date? 
+     // Store the actual date?
      if (backup) {
        var date = new Date().toLocaleDateString().replace(/\//g, '-');
        try {

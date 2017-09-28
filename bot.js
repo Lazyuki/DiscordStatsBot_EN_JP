@@ -69,7 +69,7 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('messageDelete', message => {
   if (message.author.bot) return;
-  if (message.author.id == bot.owner_ID) return; // if mine.
+  //if (message.author.id == bot.owner_ID) return; // if mine.
   if (message.guild.id == '293787390710120449') return;// Ignore my server
   bot.servers[message.guild.id].addDeletedMessage(message);
 });

@@ -2,14 +2,15 @@ const Discord = require('discord.js');
 const sleep = require('sleep');
 
 module.exports.alias = [
-  'whodel',
   'deletedmessages',
   'dm',
-  'wd'
+  'deleted'
 ];
 
 module.exports.command = async (message, content, bot, server) => {
   if (message.author.id != bot.owner_ID) return;
+  //if (!message.member.hasPermission('ADMINISTRATOR') && message.author.id != bot.owner_ID) return;
+
   var num = parseInt(content);
   if (!num) num = 5;
   var userID = null;
