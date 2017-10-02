@@ -47,7 +47,7 @@ module.exports = class Server {
      if (con.startsWith('.') || con.startsWith('t!')
          || con.startsWith('!') || con.startsWith(':')
          || con.startsWith('&')) return;  // no bot messages
-     if (message.attachments) {
+     if (message.attachments.length > 0) {
        message.content += " | " + message.attachments.first().url;
      } else if (message.content.length < 5) {
        return;
