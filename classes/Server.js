@@ -56,7 +56,7 @@ module.exports = class Server {
         return;
       }
       if (this.watchedUsers.includes(message.author.id)) {
-        let embed = new Discord.RichEmbed();
+        let embed = new discord.RichEmbed();
         let msg = new SimpleMsg(message);
         let date = new Date(msg.time);
         embed.title = `${msg.a} : <@${msg.aid}>`;
