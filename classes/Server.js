@@ -26,7 +26,6 @@ module.exports = class Server {
          this.deletedMessages.push(new SimpleMsg(dm.id, dm.a, dm.aid, dm.con, dm.ch, dm.chid, dm.time));
        }
 
-       /*
        for (var wu in json['watchedUsers']) {
          this.watchedUsers[wu] = [];
          let dms = json['watchedUsers'][wu];
@@ -34,7 +33,7 @@ module.exports = class Server {
            let dm = json['watchedUsers'][wu][i];
            this.watchedUsers[wu].push(new SimpleMsg(dm.id, dm.a, dm.aid, dm.con, dm.ch, dm.chid, dm.time));
          }
-       }*/
+       }
      }
    }
 
