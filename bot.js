@@ -53,7 +53,7 @@ bot.on('message', async message => {
   }
 
   let command = message.content.split(' ')[0].slice(1).toLowerCase();
-  let content = message.content.substr(command.length + 2);
+  let content = message.content.substr(command.length + 2).trim();
   if (!commands[command]) { // if not Ciri bot command, add it.
     if (testServer) return;
     bot.servers[message.guild.id].addMessage(message);

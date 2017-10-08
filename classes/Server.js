@@ -11,6 +11,7 @@ module.exports = class Server {
      this.users = {};
      this.deletedMessages = [];
      this.today = 0;
+     this.watchedUsers = {};
      if (fs.existsSync(`./.${this.guild.id}_restore.json`)) {
        let json = JSON.parse(fs.readFileSync(`./.${this.guild.id}_restore.json`, 'utf8'));
        this.hiddenChannels = json['hiddenChannels'];
@@ -21,9 +22,19 @@ module.exports = class Server {
                                                uRec['jp'], uRec['chans']); // TODO fix to new var names
        }
        for (var msg in json['deletedMessages']) {
-         let dm = json['deletedMessages'][msg]
+         let dm = json['deletedMessages'][msg];
          this.deletedMessages.push(new SimpleMsg(dm.id, dm.a, dm.aid, dm.con, dm.ch, dm.chid, dm.time));
        }
+
+       /*
+       for (var wu in json['watchedUsers']) {
+         this.watchedUsers[wu] = [];
+         let dms = json['watchedUsers'][wu];
+         for (var i in dms) {
+           let dm = json['watchedUsers'][wu][i];
+           this.watchedUsers[wu].push(new SimpleMsg(dm.id, dm.a, dm.aid, dm.con, dm.ch, dm.chid, dm.time));
+         }
+       }*/
      }
    }
 
@@ -52,7 +63,12 @@ module.exports = class Server {
      } else if (message.content.length < 5) {
        return;
      }
-     let arr = this.deletedMessages;
+     var arr;
+     if (this.watchedUsers[message.author.id]) {
+       arr = this.watchedUsers[message.author.id];
+     } else {
+       arr = this.deletedMessages;
+     }
      arr.push(new SimpleMsg(message));
      if (arr.length > 50) arr.shift();
    }
