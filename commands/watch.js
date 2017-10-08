@@ -4,6 +4,7 @@ module.exports.alias = [
 
 module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
+	if (message.guild.id != '189571157446492161') return; // Only for EJLX server
 	if (content = '') {
 		message.channel.send('Please specify a user with an ID or mention them');
 		return;
@@ -18,10 +19,10 @@ module.exports.command = async (message, content, bot, server) => {
 		user = member.user;
 	}
 
-	if (server.watchedUsers[user.id]) {
+	if (server.watchedUsers.includes(user.id)) {
 		message.channel.send(user.username + ' is already being watched');
 	} else {
-		server.watchedUsers[user.id] = [];
+		server.watchedUsers.push(user.id);
 		message.channel.send(user.username + ' is now being watched for deleted messages');
 	}
 };
