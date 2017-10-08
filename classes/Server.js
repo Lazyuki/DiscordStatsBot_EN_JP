@@ -53,7 +53,7 @@ module.exports = class Server {
       var imageURL = '';
       if (message.attachments.size > 0) {
         imageURL = message.attachments.first().url;
-        message.content += `\n{Attachment (expires soon): ${imageURL}}`;
+        message.content += `\n{Attachment (expires soon): ${imageURL} }`;
       } else if (message.content.length < 3) {
         return;
       }
