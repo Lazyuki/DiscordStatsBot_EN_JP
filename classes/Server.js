@@ -15,7 +15,7 @@ module.exports = class Server {
       if (fs.existsSync(`./.${this.guild.id}_restore.json`)) {
         let json = JSON.parse(fs.readFileSync(`./.${this.guild.id}_restore.json`, 'utf8'));
         this.hiddenChannels = json['hiddenChannels'];
-        //this.watchedUsers = json['watchedUsers'];
+        this.watchedUsers = json['watchedUsers'];
         this.today = json['today'];
         for (var user in json['users']) {
           let uRec = json['users'][user]
