@@ -5,7 +5,7 @@ module.exports.alias = [
 module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
 	if (server.guild.id != '189571157446492161') return; // Only for EJLX server
-	if (content = '') {
+	if (content == '') {
 		message.channel.send('Please specify a user with an ID or mention them');
 		return;
 	}
