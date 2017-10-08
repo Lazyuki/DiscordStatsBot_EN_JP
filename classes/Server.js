@@ -64,7 +64,7 @@ module.exports = class Server {
         embed.setFooter(`#${msg.ch}`)
         embed.timestamp = date;
         embed.color = Number('0xDB3C3C');
-        let chan = server.guild.channels.get('366692441442615306'); // #mod_log
+        let chan = this.guild.channels.get('366692441442615306'); // #mod_log
         if (chan == undefined) return;
         chan.send({embed});
       } else {
