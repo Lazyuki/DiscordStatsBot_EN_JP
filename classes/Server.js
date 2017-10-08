@@ -55,7 +55,7 @@ module.exports = class Server {
       } else if (message.content.length < 3) {
         return;
       }
-      if (this.watchedUsers.includes(message.author.id) {
+      if (this.watchedUsers.includes(message.author.id)) {
         let embed = new Discord.RichEmbed();
         let msg = new SimpleMsg(message);
         let date = new Date(msg.time);
