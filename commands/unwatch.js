@@ -4,6 +4,10 @@ module.exports.alias = [
 
 module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
+	if (content = '') {
+		message.channel.send('Please specify a user with an ID or mention them');
+		return;
+	}
 	let mentions = message.mentions.members;
 	var user;
   if (mentions.size != 0) {
