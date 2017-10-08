@@ -8,8 +8,8 @@ module.exports.alias = [
 ];
 
 module.exports.command = async (message, content, bot, server) => {
-  if (message.author.id != bot.owner_ID) return;
-  //if (!message.member.hasPermission('ADMINISTRATOR') && message.author.id != bot.owner_ID) return;
+  //if (message.author.id != bot.owner_ID) return;
+  if (!message.member.hasPermission('ADMINISTRATOR')) return;
 
   var num = parseInt(content);
   if (!num) num = 5;
