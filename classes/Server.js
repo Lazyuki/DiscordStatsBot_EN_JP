@@ -50,8 +50,10 @@ module.exports = class Server {
       if (con.startsWith('.') || con.startsWith('t!') ||
         con.startsWith('!') || con.startsWith(':') ||
         con.startsWith('&') || con.startsWith(',')) return; // no bot messages
+      var imageURL = '';
       if (message.attachments.size > 0) {
-        message.content += " | " + message.attachments.first().url;
+        imageURL = message.attachments.first().url;
+        message.content += `\n{Attachment (expires soon): ${imageURL}}`;
       } else if (message.content.length < 3) {
         return;
       }
@@ -64,6 +66,9 @@ module.exports = class Server {
         embed.setFooter(`#${msg.ch}`)
         embed.timestamp = date;
         embed.color = Number('0xDB3C3C');
+        if (imageURL != '') {
+          embed.setImage(imageURL)
+        }
         let chan = this.guild.channels.get('366692441442615306'); // #mod_log
         if (chan == undefined) return;
         chan.send({embed});
