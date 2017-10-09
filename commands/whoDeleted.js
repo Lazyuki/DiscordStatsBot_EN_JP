@@ -43,6 +43,7 @@ module.exports.command = async (message, content, bot, server) => {
     embed.timestamp = date;
     embed.color = Number('0xDB3C3C');
     message.channel.send({embed});
+    //sleep.msleep(400); // put await on the line above
   }
   message.channel.send("Done displaying deleted messages");
 };
