@@ -65,12 +65,12 @@ bot.on('message', async message => {
 
 bot.on('guildMemberAdd', member => {
   // check mee6 message?
+  bot.servers[member.guild.id].addNewUser(member.id);
 });
 
 bot.on('messageDelete', message => {
   if (message.author.bot) return;
-  //if (message.author.id == bot.owner_ID) return; // if mine.
-  if (message.guild.id == '293787390710120449') return;// Ignore my server
+  if (message.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[message.guild.id].addDeletedMessage(message);
 });
 

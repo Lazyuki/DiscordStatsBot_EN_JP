@@ -12,11 +12,13 @@ module.exports = class Server {
       this.deletedMessages = [];
       this.today = 0;
       this.watchedUsers = [];
+      this.newUsers = [];
       if (fs.existsSync(`./.${this.guild.id}_restore.json`)) {
         let json = JSON.parse(fs.readFileSync(`./.${this.guild.id}_restore.json`, 'utf8'));
         this.hiddenChannels = json['hiddenChannels'];
         this.watchedUsers = json['watchedUsers'];
         this.today = json['today'];
+        //this.newUsers = json['newUsers'];
         for (var user in json['users']) {
           let uRec = json['users'][user]
           this.users[user] = new UserRecord(uRec['record'], uRec['thirty'],
@@ -77,6 +79,11 @@ module.exports = class Server {
         arr.push(new SimpleMsg(message));
         if (arr.length > 50) arr.shift();
       }
+    }
+
+    addNewUser(memberID) {
+      this.newUsers.push(memberID);
+      if (this.newUsers.length > 3) this.newUsers.shift();
     }
 
     save(backup = false) {
