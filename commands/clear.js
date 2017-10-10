@@ -16,4 +16,5 @@ module.exports.command = async (message, content, bot) => {
 			if (--deleteCount <= 0) break;
 		}
 	}
+	message.delete();
 };
