@@ -82,8 +82,7 @@ module.exports = class Server {
     }
 
     addNewUser(memberID) {
-      this.newUsers.push(memberID);
-      if (this.newUsers.length > 3) this.newUsers.shift();
+      if (this.newUsers.unshift(memberID) > 3) this.newUsers.pop();
     }
 
     save(backup = false) {
