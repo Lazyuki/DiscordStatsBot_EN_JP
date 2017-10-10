@@ -18,7 +18,7 @@ module.exports = class Server {
         this.hiddenChannels = json['hiddenChannels'];
         this.watchedUsers = json['watchedUsers'];
         this.today = json['today'];
-        //this.newUsers = json['newUsers'];
+        this.newUsers = json['newUsers'];
         for (var user in json['users']) {
           let uRec = json['users'][user]
           this.users[user] = new UserRecord(uRec['record'], uRec['thirty'],
