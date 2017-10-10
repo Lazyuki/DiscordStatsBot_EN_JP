@@ -33,5 +33,5 @@ module.exports.command = async (message, content, bot, server) => {
 	await member.removeRole(roles['nu']);
 	await member.addRole(roles[role]);
   message.delete();
-	message.channel.send(`${member.user.username }, you\'ve been tagged as \"${rolename.role}\" by ${message.author.username}!`);
+	message.channel.send(`${member.user.username }, you\'ve been tagged as \"${rolename[role]}\" by ${message.author.username}!`);
 };
