@@ -30,4 +30,5 @@ module.exports.command = async (message, content, bot, server) => {
 	await member.removeRole(roles['nu']);
 	await member.addRole(roles[role]);
 	message.channel.send(member.user.username + ', you are tagged!');
+	message.delete();
 };
