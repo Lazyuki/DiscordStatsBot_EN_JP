@@ -1,6 +1,9 @@
 const roles = {'nj':'196765998706196480', 'jp' : '196765998706196480', 'fj': '270391106955509770',
          			 'ne': '197100137665921024', 'en': '197100137665921024', 'fe': '241997079168155649',
          			 'ol': '248982130246418433', 'nu': '249695630606336000' };
+const rolename = {'nj':'Native Japanese', 'jp' : 'Native Japanese', 'fj': 'Fluent Japanese',
+        			 'ne': 'Native English', 'en': 'Native English', 'fe': 'Fluent English',
+        			 'ol': 'Other Language', 'nu': 'New User' };
 
 module.exports.alias = [
 	'tag',
@@ -30,5 +33,5 @@ module.exports.command = async (message, content, bot, server) => {
 	await member.removeRole(roles['nu']);
 	await member.addRole(roles[role]);
   message.delete();
-	message.channel.send(`${member.user.username }, you are tagged by ${message.author.username}!`);
+	message.channel.send(`${member.user.username }, you\'ve been tagged as \"${rolename.role}\" by ${message.author.username}!`);
 };
