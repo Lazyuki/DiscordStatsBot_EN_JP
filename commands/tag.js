@@ -24,7 +24,7 @@ module.exports.command = async (message, content, bot, server) => {
 		} else {
 			memberID = server.newUsers[0];
 	  }
-		if (member == undefined) return; // error
+		if (memberID == undefined) return; // error
 		member = await server.guild.fetchMember(memberID);
 	}
 	await member.removeRole(roles['nu']);
