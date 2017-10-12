@@ -62,6 +62,9 @@ module.exports = class Server {
       } else if (message.content.length < 3) {
         return;
       }
+      if (message.mentions.members.size > 20) {
+
+      }
       if (this.watchedUsers.includes(message.author.id)) {
         let embed = new discord.RichEmbed();
         let msg = new SimpleMsg(message);

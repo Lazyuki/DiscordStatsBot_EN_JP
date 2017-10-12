@@ -1,9 +1,17 @@
-const roles = {'nj':'196765998706196480', 'jp' : '196765998706196480', 'fj': '270391106955509770',
-         			 'ne': '197100137665921024', 'en': '197100137665921024', 'fe': '241997079168155649',
-         			 'ol': '248982130246418433', 'nu': '249695630606336000' };
-const rolename = {'nj':'Native Japanese', 'jp' : 'Native Japanese', 'fj': 'Fluent Japanese',
-        			 'ne': 'Native English', 'en': 'Native English', 'fe': 'Fluent English',
-        			 'ol': 'Other Language', 'nu': 'New User' };
+const abbrev = ['nj', 'jp', 'fj', 'ne', 'en', 'fe', 'ol', 'nu'];
+const roleNames = ['Native Japanese', 'Native Japanese', 'Fluent Japanese',
+        			        'Native English', 'Native English', 'Fluent English',
+        			        'Other Language', 'New User'];
+const roleIDs = ['196765998706196480', '196765998706196480', '270391106955509770',
+         			   '197100137665921024', '197100137665921024', '241997079168155649',
+         			   '248982130246418433', '249695630606336000'];
+function exists(array, value) {
+  return array.indexOf(value) >= 0;
+};
+
+function crossGet(src, dest, value) {
+  return dest[src.indexOf(value)];
+}
 
 module.exports.alias = [
 	'tag',
@@ -13,7 +21,7 @@ module.exports.alias = [
 module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('MANAGE_ROLES')) return;
   var role = content.substr(0, 2);
-	if (!roles[role]) return; // no such role
+	if (!exists(abbrev, role)) return; // no such role
 	var member;
 	var mentions = message.mentions.members;
 	if (mentions.size != 0) {
@@ -30,9 +38,19 @@ module.exports.command = async (message, content, bot, server) => {
 		if (memberID == undefined) return; // error
 		member = await server.guild.fetchMember(memberID);
 	}
-  
-	await member.removeRole(roles['nu']);
-	await member.addRole(roles[role]);
+  let oldRoles = member.roles;
+  var oldRole = '';
+  for (var r of oldRoles.keys()) {
+    if (exists(roleIDs, r)) {
+      oldRole = r;
+      await member.removeRole(r);
+    }
+  }
+  await member.addRole(crossGet(abbrev, roleIDs, role));
   message.delete();
-	message.channel.send(`${member.user.username }, you\'ve been tagged as \"${rolename[role]}\" by ${message.author.username}!`);
+  if (oldRole != '' && oldRole != crossGet(abbrev, roleIDs, 'nu')){
+  	message.channel.send(`${member.user.username}, you\'ve been tagged as \"${crossGet(abbrev, roleNames, role)}\" by ${message.author.username} instead of \"${crossGet(roleIDs, roleNames, oldRole)}\"!`);
+  } else {
+  	message.channel.send(`${member.user.username}, you\'ve been tagged as \"${crossGet(abbrev, roleNames, role)}\" by ${message.author.username}!`);
+  };
 };
