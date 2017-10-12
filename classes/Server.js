@@ -68,7 +68,7 @@ module.exports = class Server {
         let date = new Date(msg.time);
         let now = (new Date()).getTime() /1000;
         embed.setAuthor(`${msg.a} : <@${msg.aid}>` ,message.author.avatarURL);
-        embed.title = `**Message Deleted** after ${now - date.getTime() / 1000} seconds`;
+        embed.title = `Message Deleted after ${(now - date.getTime() / 1000).toFixed(1)} seconds`;
         embed.description = `${msg.con}`;
         embed.setFooter(`#${msg.ch}`)
         embed.timestamp = date;
@@ -93,7 +93,7 @@ module.exports = class Server {
         let date = new Date(old.time);
         let now = (new Date()).getTime() / 1000;
         embed.setAuthor(`${old.a} : <@${old.aid}>`, oldMessage.author.avatarURL)
-        embed.title = `**Message Edited** after ${now - date.getTime() / 1000} seconds`;
+        embed.title = `Message Edited after ${(now - date.getTime() / 1000).toFixed(1)} seconds`;
         embed.addField('Before:', `${old.con}`, false);
         embed.addField('After:', `${newMessage.content}`, false);
         embed.setFooter(`#${old.ch}`)
