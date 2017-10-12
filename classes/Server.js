@@ -66,7 +66,7 @@ module.exports = class Server {
         let embed = new discord.RichEmbed();
         let msg = new SimpleMsg(message);
         let date = new Date(msg.time);
-        let now = Date().now().getTime() * 1000;
+        let now = (new Date()).getTime() * 1000;
         embed.setAuthor(`${msg.a} : <@${msg.aid}>` ,message.author.avatarURL);
         embed.title = `**Message Deleted** after ${date.getTime() * 1000 - now} seconds`;
         embed.description = `${msg.con}`;
@@ -91,7 +91,7 @@ module.exports = class Server {
         let embed = new discord.RichEmbed();
         let old = new SimpleMsg(oldMessage);
         let date = new Date(old.time);
-        let now = Date().now().getTime() * 1000;
+        let now = (new Date()).getTime() * 1000;
         embed.setAuthor(`${old.a} : <@${old.aid}>`, oldMessage.author.avatarURL)
         embed.title = `**Message Edited** after ${date.getTime() * 1000 - now} seconds`;
         embed.addField('Before:', `${old.con}`, false);
