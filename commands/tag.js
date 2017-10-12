@@ -12,6 +12,9 @@ module.exports.alias = [
 
 module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('MANAGE_ROLES')) return;
+  if (content == 'cancel') {
+    
+  };
   var role = content.substr(0, 2);
 	if (!roles[role]) return; // no such role
 	var member;
