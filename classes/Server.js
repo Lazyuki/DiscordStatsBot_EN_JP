@@ -66,11 +66,11 @@ module.exports = class Server {
         let embed = new discord.RichEmbed();
         let msg = new SimpleMsg(message);
         let date = new Date(msg.time);
-        embed.title = `${msg.a} : <@${msg.aid}>`;
+        embed.setAuthor(`${msg.a} : <@${msg.aid}>` ,message.author.avatarURL)
+        embed.title = 'Message Deleted';
         embed.description = `${msg.con}`;
         embed.setFooter(`#${msg.ch}`)
         embed.timestamp = date;
-        embed.setThumbnail(message.author.avatarURL);
         embed.color = Number('0xDB3C3C');
         if (imageURL != '') {
           embed.setImage(imageURL)
@@ -90,13 +90,12 @@ module.exports = class Server {
         let embed = new discord.RichEmbed();
         let old = new SimpleMsg(oldMessage);
         let date = new Date(old.time);
-        embed.title = `${old.a} : <@${old.aid}>`;
-        embed.description = 'Message edited.'
+        embed.setAuthor(`${old.a} : <@${old.aid}>`, oldMessage.author.avatarURL)
+        embed.title = 'Message Edited';
         embed.addField('Before:', `${old.con}`, false);
         embed.addField('After:', `${newMessage.content}`, false);
         embed.setFooter(`#${old.ch}`)
         embed.timestamp = date;
-        embed.setThumbnail(oldMessage.author.avatarURL);
         embed.color = Number('0xff9933');
         let chan = this.guild.channels.get('366692441442615306'); // #mod_log
         if (chan == undefined) return;
