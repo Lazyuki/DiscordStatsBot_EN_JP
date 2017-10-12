@@ -69,6 +69,7 @@ bot.on('guildMemberAdd', member => {
 });
 
 bot.on('messageUpdate', (oldMessage, newMessage) => {
+  if (message.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[oldMessage.guild.id].addEdits(oldMessage, newMessage);
 });
 
