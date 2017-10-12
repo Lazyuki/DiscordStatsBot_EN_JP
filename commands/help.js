@@ -12,7 +12,7 @@ module.exports.command = (message, content, bot, server) => {
 	if (message.member.hasPermission('ADMINISTRATOR') && server.hiddenChannels.includes(message.channel.id)) {
 		chan.send('Current mod commands are \n\`hide\`, \`hidden\`, and \`unhide\` for hiding channels.\n' +
 			'\`watch\`, \`watched\`, and \`unwatch\` for tracking deleted messages of a specific user. Use ID or mention. Names won\'t work. \n' +
-		  '\`deleted\` shows the last 5 deleted messages from any user, just in case.');
+		  '\`deleted\` shows the last 5 deleted messages from any user, just in case. OR `,deleted [channel id/user id]` for specific channels/users');
 	}
 
 };

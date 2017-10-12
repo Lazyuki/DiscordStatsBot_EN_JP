@@ -62,16 +62,13 @@ module.exports = class Server {
       } else if (message.content.length < 3) {
         return;
       }
-      if (message.mentions.members.size > 20) {
-
-      }
       if (this.watchedUsers.includes(message.author.id)) {
         let embed = new discord.RichEmbed();
         let msg = new SimpleMsg(message);
         let date = new Date(msg.time);
-        let now = (new Date()).getTime() /1000;
+        let duration = ((new Date()).getTime() / 1000 - date.getTime() / 1000).toFixed(1);
         embed.setAuthor(`${msg.a} : <@${msg.aid}>` ,message.author.avatarURL);
-        embed.title = `Message Deleted after ${(now - date.getTime() / 1000).toFixed(1)} seconds`;
+        embed.title = `Message Deleted after ${duration} seconds`;
         embed.description = `${msg.con}`;
         embed.setFooter(`#${msg.ch}`)
         embed.timestamp = date;
@@ -82,10 +79,22 @@ module.exports = class Server {
         let chan = this.guild.channels.get('366692441442615306'); // #mod_log
         if (chan == undefined) return;
         chan.send({embed});
+        if (message.mentions.members.size > 20) { // spam alert!
+          if (duration < 2) {
+            message.member.addRole(`259181555803619329`);
+            chan.send(`**USER MUTED** ${message.author} has been muted. <@&240647591770062848> if this was a mistake, unmute them by removing the mute tag. If not, BAN!`);
+          }
+        }
       } else {
         var arr = this.deletedMessages;
         arr.push(new SimpleMsg(message));
         if (arr.length > 50) arr.shift();
+      }
+      if (message.mentions.members.size > 20) { // spam alert!
+        let chan = this.guild.channels.get('366692441442615306'); // #mod_log
+        if (chan == undefined) return;
+        this.watchedUsers.push(message.author.id);
+        chan.send(`**POSSIBLE SPAM ALERT** (deleting a message with 20+ mentions) by ${message.author} in ${message.channel} ! Automatically added to the watchlist`);
       }
     }
 
