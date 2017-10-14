@@ -18,12 +18,10 @@ module.exports.command = async (message, content, bot, server) => {
 		user = member.user;
 	}
 
-	if (server.watchedUsers.includes(user.id)) {
-		var index = server.watchedUsers.indexOf(user.id);
-	  if (index == -1) return; // sanity check
-		server.watchedUsers.splice(index, 1);
+	if (server.watchedUsers[user.id]) {
+		delete server.watchedUsers[user.id];
 		message.channel.send(user.username + ' is now off the hook');
 	} else {
-		message.channel.send(user.username + ' isn\'t being watched');
+		message.channel.send(user.username + ' wasn\'t being watched tho :cirithink:');
 	}
 };

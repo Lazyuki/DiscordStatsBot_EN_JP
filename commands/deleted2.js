@@ -2,21 +2,21 @@ const Discord = require('discord.js');
 const sleep = require('sleep');
 
 module.exports.alias = [
-  'deletedmessages',
-  'dm',
-  'deleted'
+  'deleted2',
+  'del2'
 ];
 
+// deprecated!
 module.exports.command = async (message, content, bot, server) => {
-  //if (message.author.id != bot.owner_ID) return;
-  if (!message.member.hasPermission('ADMINISTRATOR')) return;
+  if (message.author.id != bot.owner_ID) return;
+  //if (!message.member.hasPermission('ADMINISTRATOR')) return;
 
   var num = parseInt(content);
   if (!num) num = 5;
   var userID = null;
-  if (num > 50) {
+  if (num > 30) {
     userID = num;
-    num = 50;
+    num = 30;
   }
   let mentions = message.mentions;
   let chans = mentions.channels;
@@ -35,13 +35,25 @@ module.exports.command = async (message, content, bot, server) => {
       if (userID != msg.aid) continue;
     }
 
-    let embed = new Discord.RichEmbed();
+    let embed = new discord.RichEmbed();
+    let msg = new SimpleMsg(message);
     let date = new Date(msg.time);
-    embed.title = `${msg.a} : <@${msg.aid}>`;
-    embed.description = `${msg.con}`;
+    embed.setAuthor(`${msg.a + msg.atag} ID: ${msg.aid}` ,msg.apfp);
+    if (msg.del) { // message was deleted
+      embed.title = `Message Deleted after ${msg.dur} seconds`;
+      embed.description = `${msg.con}`;
+      embed.color = Number('0xDB3C3C');
+    } else { // message was edited
+      embed.title = `Message Edited after ${msg.dur} seconds`;
+      embed.addField('Before:', `${msg.con}`, false);
+      embed.addField('After:', `${msg.acon}`, false);
+      embed.color = Number('0xff9933');
+    }
     embed.setFooter(`#${msg.ch}`)
     embed.timestamp = date;
-    embed.color = Number('0xDB3C3C');
+    if (msg.img) { // if != null
+      embed.setImage(msg.img);
+    }
     message.channel.send({embed});
     //sleep.msleep(400); // put await on the line above
   }

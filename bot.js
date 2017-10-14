@@ -11,6 +11,7 @@ const token = config.token;
 bot.owner_ID = config.owner_ID;
 const prefix = config.prefix;
 
+
 bot.on('ready', () => {
   setTimeout(() => { // sets up the saving restore state task
     savingTask(bot);
