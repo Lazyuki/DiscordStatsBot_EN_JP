@@ -110,7 +110,11 @@ module.exports = class Server {
     addEdits(oldMessage, newMessage) {
       if (this.watchedUsers[oldMessage.author.id]) {
         let simple = new SimpleMsg(oldMessage);
+        simple.del = false;
         simple.acon = newMessage.content;
+        this.watchedUsers[oldMessage.author.id].push(simple);
+        if (this.watchedUsers[oldMessage.author.id].length > 30) this.watchedUsers[oldMessage.author.id].shift();
+
       }
     }
 
