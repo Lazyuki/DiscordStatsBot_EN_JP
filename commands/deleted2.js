@@ -36,7 +36,6 @@ module.exports.command = async (message, content, bot, server) => {
     }
 
     let embed = new discord.RichEmbed();
-    let msg = new SimpleMsg(message);
     let date = new Date(msg.time);
     embed.setAuthor(`${msg.a + msg.atag} ID: ${msg.aid}` ,msg.apfp);
     if (msg.del) { // message was deleted

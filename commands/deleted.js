@@ -33,7 +33,6 @@ module.exports.command = async (message, content, bot, server) => {
       if (i >= num) break; // enough messages
 	    let msg = delMsgs[delMsgs.length - 1 - i];
       let embed = new discord.RichEmbed();
-      let msg = new SimpleMsg(message);
       let date = new Date(msg.time);
       embed.setAuthor(`${msg.a + msg.atag} ID: ${msg.aid}` ,msg.apfp);
       if (msg.del) { // message was deleted
