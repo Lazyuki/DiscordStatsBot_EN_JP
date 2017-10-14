@@ -34,16 +34,16 @@ module.exports = class Server {
         }
         for (var msg in json['deletedMessages']) {
           let dm = json['deletedMessages'][msg];
-          // this.deletedMessages.push(new SimpleMsg(dm.id, dm.del, dm.a, dm.atag, dm.aid, dm.apfp, dm.con, dm.acon, dm.ch, dm.chid, dm.time, dm.dur, dm.img));
+          this.deletedMessages.push(new SimpleMsg(dm.id, dm.del, dm.a, dm.atag, dm.aid, dm.apfp, dm.con, dm.acon, dm.ch, dm.chid, dm.time, dm.dur, dm.img));
         }
-        // for (var wu in json['watchedUsers']) {
-        //   this.watchedUsers[wu] = [];
-        //   let dms = json['watchedUsers'][wu];
-        //   for (var i in dms) {
-        //     let dm = json['watchedUsers'][wu][i];
-        //     this.watchedUsers[wu].push(new SimpleMsg(dm.id, dm.del, dm.a, dm.atag, dm.aid, dm.apfp, dm.con, dm.acon, dm.ch, dm.chid, dm.time, dm.dur, dm.img));
-        //   }
-        // }
+        for (var wu in json['watchedUsers']) {
+          this.watchedUsers[wu] = [];
+          let dms = json['watchedUsers'][wu];
+          for (var i in dms) {
+            let dm = json['watchedUsers'][wu][i];
+            this.watchedUsers[wu].push(new SimpleMsg(dm.id, dm.del, dm.a, dm.atag, dm.aid, dm.apfp, dm.con, dm.acon, dm.ch, dm.chid, dm.time, dm.dur, dm.img));
+          }
+        }
       }
     }
 
