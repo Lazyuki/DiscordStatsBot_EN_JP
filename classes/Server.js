@@ -5,12 +5,8 @@ const BST = require('./BST.js');
 const fs = require('fs');
 
 // imgur setup
-const imgur = require('imgur');
 const config = require('../config.json');
-imgur.setClientId(config.imgurID);
-imgur.setAPIUrl('https://api.imgur.com/3/');
-const imgurAlbum= config.imgurAlbum;
-imgur.setCredentials(config.imgurEmail, config.imgurPass, config.imgurID);
+const request = require('request');
 
 module.exports = class Server {
     constructor(guild) {
@@ -78,13 +74,19 @@ module.exports = class Server {
       if (this.watchedUsers[message.author.id]) {
         arr = this.watchedUsers[message.author.id];
         if (imageURL != '') {
-          imgur.uploadUrl(imageURL, config.imgurAlbum)
-            .then(function (json) {
-              simple.img = json.data.link;
-            })
-            .catch(function (err) {
-              console.error(err.message);
-            });
+          var options = { method: 'POST',
+            url: 'https://api.imgur.com/3/image',
+            headers:
+             {
+               'cache-control': 'no-cache',
+               authorization: `Bearer ${config.imgurAccessToken}`,
+               'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' },
+            formData: {image: imageURL, album: config.imgurAlbum } };
+          request(options, function (error, response, body) {
+            if (error) throw new Error(error);
+            var ret = JSON.parse(body);
+            msg.img =  ret.data.link;
+          });
         }
       } else {
         arr = this.deletedMessages;
@@ -106,7 +108,7 @@ module.exports = class Server {
     }
 
     addEdits(oldMessage, newMessage) {
-      if (this.watchedUsers.includes(oldMessage.author.id)) {
+      if (this.watchedUsers[oldMessage.author.id]) {
         let simple = new SimpleMsg(oldMessage);
         simple.acon = newMessage.content;
       }
