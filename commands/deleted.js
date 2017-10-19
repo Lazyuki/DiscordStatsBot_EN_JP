@@ -16,7 +16,7 @@ module.exports.command = async (message, content, bot, server) => {
 	let mentions = message.mentions.members;
   let args = content.split(' ');
   var num = args[1];
-  if (!num > 0) {
+  if (!(num > 0)) {
     num = 5;
   }
 	var user;

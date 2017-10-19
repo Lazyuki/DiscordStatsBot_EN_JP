@@ -22,6 +22,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('MANAGE_ROLES')) return;
   var role = content.substr(0, 2);
 	if (!exists(abbrev, role)) return; // no such role
+  var newRole = crossGet(abbrev, roleIDs, role);
 	var member;
 	var mentions = message.mentions.members;
 	if (mentions.size != 0) {
@@ -41,12 +42,17 @@ module.exports.command = async (message, content, bot, server) => {
   let oldRoles = member.roles;
   var oldRole = '';
   for (var r of oldRoles.keys()) {
+    if (r == newRole) { // adding the same role.
+      message.delete();
+      message.channel.send(`Already tagged as \"${crossGet(abbrev, roleNames, role)}\"`);
+      return;
+    }
     if (exists(roleIDs, r)) {
       oldRole = r;
       await member.removeRole(r);
     }
   }
-  await member.addRole(crossGet(abbrev, roleIDs, role));
+  await member.addRole(newRole);
   message.delete();
   if (oldRole != '' && oldRole != crossGet(abbrev, roleIDs, 'nu')){
   	message.channel.send(`${member.user.username}, you\'ve been tagged as \"${crossGet(abbrev, roleNames, role)}\" by ${message.author.username} instead of \"${crossGet(roleIDs, roleNames, oldRole)}\"!`);

@@ -12,6 +12,7 @@ module.exports.alias = [
 module.exports.command = async (message, content, bot, server) => {
   var user = message.author; // default
   let mentions = message.mentions.members;
+	var userFound = false;
   if (mentions.size != 0) {
     user = mentions.get(mentions.firstKey()).user;
   } else if (content != '') { // search name
@@ -22,10 +23,11 @@ module.exports.command = async (message, content, bot, server) => {
       if (u.user.username.toLowerCase().startsWith(content)
           || u.displayName.toLowerCase().startsWith(content)) {
         user = u.user;
+				userFound = true;
         break;
       }
     }
-    if (user.id == message.author.id) { // Search failed
+    if (!userFound) { // Search failed
 			message.react('❓');
       return;
     }
