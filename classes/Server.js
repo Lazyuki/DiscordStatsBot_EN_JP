@@ -85,7 +85,7 @@ module.exports = class Server {
           request(options, function (error, response, body) {
             if (error) throw new Error(error);
             var ret = JSON.parse(body);
-            msg.img =  ret.data.link;
+            simple.img =  ret.data.link;
           });
         }
       } else {
