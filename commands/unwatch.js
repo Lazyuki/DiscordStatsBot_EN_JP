@@ -9,19 +9,15 @@ module.exports.command = async (message, content, bot, server) => {
 		return;
 	}
 	let mentions = message.mentions.members;
-	var user;
+	var userID = content;
   if (mentions.size != 0) {
-    user = mentions.get(mentions.firstKey()).user;
-  } else if (content != '') {
-	  let member = await server.guild.fetchMember(content);
-		if (member == undefined) return;
-		user = member.user;
-	}
+    userID = mentions.firstKey();
+  }
 
-	if (server.watchedUsers[user.id]) {
-		delete server.watchedUsers[user.id];
-		message.channel.send(user.username + ' is now off the hook');
+	if (server.watchedUsers[userID]) {
+		delete server.watchedUsers[userID];
+		message.channel.send(`<@${userID}> is now off the hook`;
 	} else {
-		message.channel.send(user.username + ' wasn\'t being watched tho :cirithink:');
+		message.channel.send(`<@${userID}> wasn\'t being watched tho :cirithink:`);
 	}
 };
