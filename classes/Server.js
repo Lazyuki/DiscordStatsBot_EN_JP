@@ -2,11 +2,17 @@ const Discord = require('discord.js');
 const UserRecord = require('./UserRecord.js');
 const SimpleMsg = require('./SimpleMessage.js');
 const BST = require('./BST.js');
+const LINE = require('@line/bot-sdk');
 const fs = require('fs');
 
 // imgur setup
 const config = require('../config.json');
 const request = require('request');
+
+// LINE setup
+const LINEclient = new LINE.Client({
+  channelAccessToken: config.LINEchannelAccessToken
+});
 
 module.exports = class Server {
     constructor(guild) {
@@ -56,6 +62,24 @@ module.exports = class Server {
       }
       let userRec = this.users[author];
       userRec.add(message.content, channel, this.today);
+
+      // Notify via LINE
+      if (message.mentions.members[bot.owner_ID] || message.mentions.roles['240647591770062848']) {
+        if (message.content.startsWith('t!')) return; // ignore tatsumaki
+        const LINEmsg = [];
+        LINEmsg.push({
+          type: 'text',
+          text: `${message.content}`
+        });
+        LINEmsg.push({
+          type: 'text',
+          text: `In #${message.channel.name} by ${message.author.username}`
+        });
+        LINEclient.pushMessage(config.LINEuserID, LINEmsg)
+          .catch((err) => {
+            throw new Error(err);
+          });
+      }
     }
 
     addDeletedMessage(message) {
