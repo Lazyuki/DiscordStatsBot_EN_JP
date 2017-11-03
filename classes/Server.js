@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const UserRecord = require('./UserRecord.js');
 const SimpleMsg = require('./SimpleMessage.js');
 const BST = require('./BST.js');
+const fs = require('fs');
 
 // imgur setup
 const config = require('../config.json');
