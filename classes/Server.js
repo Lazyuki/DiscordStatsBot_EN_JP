@@ -1,8 +1,7 @@
-const discord = require('discord.js');
+const Discord = require('discord.js');
 const UserRecord = require('./UserRecord.js');
 const SimpleMsg = require('./SimpleMessage.js');
 const BST = require('./BST.js');
-const fs = require('fs');
 
 // imgur setup
 const config = require('../config.json');
@@ -33,11 +32,12 @@ module.exports = class Server {
         }
         for (var wu in json['watchedUsers']) {
           this.watchedUsers[wu] = [];
-          let dms = json['watchedUsers'][wu];
-          for (var i in dms) {
-            let dm = json['watchedUsers'][wu][i];
-            this.watchedUsers[wu].push(new SimpleMsg(dm.id, dm.del, dm.a, dm.atag, dm.aid, dm.apfp, dm.con, dm.acon, dm.ch, dm.chid, dm.time, dm.dur, dm.img));
-          }
+          // Uncomment below for restoring them
+          // let dms = json['watchedUsers'][wu];
+          // for (var i in dms) {
+          //   let dm = json['watchedUsers'][wu][i];
+          //   this.watchedUsers[wu].push(new SimpleMsg(dm.id, dm.del, dm.a, dm.atag, dm.aid, dm.apfp, dm.con, dm.acon, dm.ch, dm.chid, dm.time, dm.dur, dm.img));
+          // }
         }
       }
     }
@@ -72,8 +72,9 @@ module.exports = class Server {
       let simple = new SimpleMsg(message);
       var arr;
       if (this.watchedUsers[message.author.id]) {
-        arr = this.watchedUsers[message.author.id];
+        // arr = this.watchedUsers[message.author.id];
         if (imageURL != '') {
+          // Use IMGUR
           var options = { method: 'POST',
             url: 'https://api.imgur.com/3/image',
             headers:
@@ -88,14 +89,15 @@ module.exports = class Server {
             simple.img =  ret.data.link;
           });
         }
+        postLogs(simple);
       } else {
         arr = this.deletedMessages;
+        // Move the next two outside of the brackets if you don't want to post.
+        arr.push(simple);
+        if (arr.length > 30) arr.shift();
       }
-      arr.push(simple);
-      if (arr.length > 30) arr.shift();
-
-      if (message.mentions.members.size > 20) { // spam alert!
-        let chan = this.guild.channels.get('265319872378961920'); // #secrets_p
+      if (message.mentions.members.size > 20) { // SPAM alert!
+        let chan = this.guild.channels.get('366692441442615306'); // #mod_log
         if (chan == undefined) return;
         if (this.watchedUsers[message.author.id]) {
           message.member.addRole(`259181555803619329`); // muted role
@@ -112,10 +114,35 @@ module.exports = class Server {
         let simple = new SimpleMsg(oldMessage);
         simple.del = false;
         simple.acon = newMessage.content;
-        this.watchedUsers[oldMessage.author.id].push(simple);
-        if (this.watchedUsers[oldMessage.author.id].length > 30) this.watchedUsers[oldMessage.author.id].shift();
-
+        postLogs(simple);
+        // Uncomment below for storing messages
+        // this.watchedUsers[oldMessage.author.id].push(simple);
+        // if (this.watchedUsers[oldMessage.author.id].length > 30) this.watchedUsers[oldMessage.author.id].shift();
       }
+    }
+
+    postLogs(msg) {
+      let embed = new Discord.RichEmbed();
+      let date = new Date(msg.time);
+      embed.setAuthor(`${msg.atag} ID: ${msg.aid}` ,msg.apfp);
+      if (msg.del) { // message was deleted
+        embed.title = `Message Deleted after ${msg.dur} seconds`;
+        embed.description = `${msg.con}`;
+        embed.color = Number('0xDB3C3C');
+      } else { // message was edited
+        embed.title = `Message Edited after ${msg.dur} seconds`;
+        embed.addField('Before:', `${msg.con}`, false);
+        embed.addField('After:', `${msg.acon}`, false);
+        embed.color = Number('0xff9933');
+      }
+      embed.setFooter(`#${msg.ch}`)
+      embed.timestamp = date;
+      if (msg.img) { // if != null
+        embed.setImage(msg.img);
+      }
+      let chan = this.guild.channels.get('366692441442615306'); // #mod_log
+      if (chan == undefined) return;
+      chan.send({embed});
     }
 
     addNewUser(memberID) {
