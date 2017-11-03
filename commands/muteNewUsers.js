@@ -5,7 +5,6 @@ module.exports.alias = [
 module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
 	let nu = server.guild.roles.get('249695630606336000'); // New User
-
 	if (nu.hasPermission('SEND_MESSAGES')) { // Get rid of all permissions.
 		nu.setPermissions(['VIEW_CHANNEL', 'READ_MESSAGE_HISTORY']);
 		server.guild.defaultRole.setPermissions(['VIEW_CHANNEL', 'READ_MESSAGE_HISTORY']);
