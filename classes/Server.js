@@ -64,20 +64,24 @@ module.exports = class Server {
       userRec.add(message.content, channel, this.today);
 
       // Notify via LINE
-      if (message.mentions.members[bot.owner_ID] || message.mentions.roles['240647591770062848']) {
-        if (message.content.startsWith('t!')) return; // ignore tatsumaki
-        const LINEmsg = [];
-        LINEmsg.push({
-          type: 'text',
-          text: `${message.content}`
-        });
-        LINEmsg.push({
-          type: 'text',
-          text: `In #${message.channel.name} by ${message.author.username}`
-        });
-        LINEclient.pushMessage(config.LINEuserID, LINEmsg)
-          .catch((err) => {
-            throw new Error(err);
+      if (message.mentions.users.has(config.owner_ID) || message.mentions.roles.has('240647591770062848')) {
+        this.guild.fetchMember(config.owner_ID)
+          .then((member) => {
+            if (member.presence.status != 'offline') return; // if I'm offline
+            if (message.content.startsWith('t!')) return; // ignore tatsumaki
+            const LINEmsg = [];
+            LINEmsg.push({
+              type: 'text',
+              text: `${message.cleanContent}`
+            });
+            LINEmsg.push({
+              type: 'text',
+              text: `In #${message.channel.name} by ${message.author.username}`
+            });
+            LINEclient.pushMessage(config.LINEuserID, LINEmsg)
+            .catch((err) => {
+              throw new Error(err);
+            });
           });
       }
     }
