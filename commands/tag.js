@@ -44,7 +44,7 @@ module.exports.command = async (message, content, bot, server) => {
   for (var r of oldRoles.keys()) {
     if (r == newRole) { // adding the same role.
       message.delete();
-      (await message.channel.send(`Already tagged as \"${crossGet(abbrev, roleNames, role)}\"`)).delete(4000);
+      (await message.channel.send(`Already tagged as \"${crossGet(abbrev, roleNames, role)}\"`)).delete(5000);
       return;
     }
     if (exists(roleIDs, r)) {
