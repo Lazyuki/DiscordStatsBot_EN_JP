@@ -37,8 +37,8 @@ module.exports = class Server {
           let dm = json['deletedMessages'][msg];
           this.deletedMessages.push(new SimpleMsg(dm.id, dm.del, dm.a, dm.atag, dm.aid, dm.apfp, dm.con, dm.acon, dm.ch, dm.chid, dm.time, dm.dur, dm.img));
         }
-        for (var wu in json['watchedUsers']) {
-          this.watchedUsers.push(wu);
+        this.watchedUsers = json['watchedUsers'];
+        // for (var wu in json['watchedUsers']) {
           // Uncomment below for restoring them
           // let dms = json['watchedUsers'][wu];
           // for (var i in dms) {
