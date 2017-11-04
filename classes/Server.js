@@ -45,7 +45,7 @@ module.exports = class Server {
           //   let dm = json['watchedUsers'][wu][i];
           //   this.watchedUsers[wu].push(new SimpleMsg(dm.id, dm.del, dm.a, dm.atag, dm.aid, dm.apfp, dm.con, dm.acon, dm.ch, dm.chid, dm.time, dm.dur, dm.img));
           // }
-        }
+        //}
       }
     }
 
