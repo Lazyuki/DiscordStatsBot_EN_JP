@@ -11,10 +11,10 @@ module.exports.alias = [
 
 module.exports.command = async (message, content, bot, server) => {
   var user = message.author; // default
-  let mentions = message.mentions.members;
+  let mentions = message.mentions.users;
 	var userFound = false;
   if (mentions.size != 0) {
-    user = mentions.get(mentions.firstKey()).user;
+    user = mentions.get(mentions.firstKey());
   } else if (content != '') { // search name
     content = content.toLowerCase();
     for (var id in server.users) {
