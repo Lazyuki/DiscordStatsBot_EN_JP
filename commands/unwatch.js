@@ -15,7 +15,8 @@ module.exports.command = async (message, content, bot, server) => {
   }
 
 	if (server.watchedUsers.includes(userID)) {
-		delete server.watchedUsers[userID];
+		var index = server.watchedUsers.indexOf(userID);
+    server.watchedUsers.splice(index, 1);
 		message.channel.send(`<@${userID}> is now off the hook`);
 	} else {
 		message.channel.send(`<@${userID}> wasn\'t being watched tho :cirithink:`);
