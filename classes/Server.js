@@ -100,7 +100,7 @@ module.exports = class Server {
       }
       let simple = new SimpleMsg(message);
       var arr;
-      if (message.author.id in this.watchedUsers) {
+      if (this.watchedUsers.includes(message.author.id)) {
         // arr = this.watchedUsers[message.author.id];
         if (imageURL != '') {
           // Use IMGUR
@@ -128,7 +128,7 @@ module.exports = class Server {
       if (message.mentions.members.size > 20) { // SPAM alert!
         let chan = this.guild.channels.get('366692441442615306'); // #mod_log
         if (chan == undefined) return;
-        if (message.author.id in this.watchedUsers) {
+        if (this.watchedUsers.includes(message.author.id)) {
           message.member.addRole(`259181555803619329`); // muted role
           chan.send(`**USER MUTED** ${message.author} has been muted. <@&240647591770062848> if this was a mistake, unmute them by removing the mute tag. If not, BAN THEM!`);
         } else {
@@ -139,7 +139,7 @@ module.exports = class Server {
     }
 
     addEdits(oldMessage, newMessage) {
-      if (oldMessage.author.id in this.watchedUsers) {
+      if (this.watchedUsers.includes(oldMessage.author.id)) {
         let simple = new SimpleMsg(oldMessage);
         simple.del = false;
         simple.acon = newMessage.content;

@@ -22,7 +22,7 @@ module.exports.command = async (message, content, bot, server) => {
 		user = member.user;
 	}
 
-	if (user.id in server.watchedUsers) {
+	if (server.watchedUsers.includes(user.id)) {
 		message.channel.send(user.username + ' is already being watched');
 	} else {
 		server.watchedUsers.push(user.id);

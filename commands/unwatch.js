@@ -14,7 +14,7 @@ module.exports.command = async (message, content, bot, server) => {
     userID = mentions.firstKey();
   }
 
-	if (userID in server.watchedUsers) {
+	if (server.watchedUsers.includes(userID)) {
 		delete server.watchedUsers[userID];
 		message.channel.send(`<@${userID}> is now off the hook`);
 	} else {
