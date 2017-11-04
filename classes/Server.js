@@ -118,7 +118,7 @@ module.exports = class Server {
             simple.img =  ret.data.link;
           });
         }
-        postLogs(simple);
+        this.postLogs(simple);
       } else {
         arr = this.deletedMessages;
         // Move the next two outside of the brackets if you don't want to post.
@@ -143,7 +143,7 @@ module.exports = class Server {
         let simple = new SimpleMsg(oldMessage);
         simple.del = false;
         simple.acon = newMessage.content;
-        postLogs(simple);
+        this.postLogs(simple);
         // Uncomment below for storing messages
         // this.watchedUsers[oldMessage.author.id].push(simple);
         // if (this.watchedUsers[oldMessage.author.id].length > 30) this.watchedUsers[oldMessage.author.id].shift();
