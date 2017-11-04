@@ -70,7 +70,7 @@ module.exports = class UserRecord {
     for (var chan in this.record[earliestDay]) {
       if (chan == 'jpn') {
         this.jp -= this.record[earliestDay]['jpn'];
-        this.record[earliestDay]['jpn'] = 0; // or delete?
+        delete this.record[earliestDay]['jpn']; // or delete?
         continue;
       }
       if (chan == 'rxn') { // reactions

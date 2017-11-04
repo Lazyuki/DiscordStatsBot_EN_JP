@@ -21,7 +21,7 @@ module.exports = class Server {
       this.users = {};
       this.deletedMessages = [];
       this.today = 0;
-      this.watchedUsers = {}; // surveillance
+      this.watchedUsers = []; // surveillance
       this.newUsers = [];
       if (fs.existsSync(`./.${this.guild.id}_restore.json`)) {
         let json = JSON.parse(fs.readFileSync(`./.${this.guild.id}_restore.json`, 'utf8'));
@@ -38,7 +38,7 @@ module.exports = class Server {
           this.deletedMessages.push(new SimpleMsg(dm.id, dm.del, dm.a, dm.atag, dm.aid, dm.apfp, dm.con, dm.acon, dm.ch, dm.chid, dm.time, dm.dur, dm.img));
         }
         for (var wu in json['watchedUsers']) {
-          this.watchedUsers[wu] = [];
+          this.watchedUsers.push(wu);
           // Uncomment below for restoring them
           // let dms = json['watchedUsers'][wu];
           // for (var i in dms) {
@@ -100,7 +100,7 @@ module.exports = class Server {
       }
       let simple = new SimpleMsg(message);
       var arr;
-      if (this.watchedUsers[message.author.id]) {
+      if (message.author.id in this.watchedUsers) {
         // arr = this.watchedUsers[message.author.id];
         if (imageURL != '') {
           // Use IMGUR
@@ -128,18 +128,18 @@ module.exports = class Server {
       if (message.mentions.members.size > 20) { // SPAM alert!
         let chan = this.guild.channels.get('366692441442615306'); // #mod_log
         if (chan == undefined) return;
-        if (this.watchedUsers[message.author.id]) {
+        if (message.author.id in this.watchedUsers) {
           message.member.addRole(`259181555803619329`); // muted role
           chan.send(`**USER MUTED** ${message.author} has been muted. <@&240647591770062848> if this was a mistake, unmute them by removing the mute tag. If not, BAN THEM!`);
         } else {
-          this.watchedUsers[message.author.id] = [];
+          this.watchedUsers.push(message.author.id);
           chan.send(`**POSSIBLE SPAM ALERT** (deleting a message with 20+ mentions) by ${message.author} in ${message.channel} ! Automatically added to the watchlist`);
         }
       }
     }
 
     addEdits(oldMessage, newMessage) {
-      if (this.watchedUsers[oldMessage.author.id]) {
+      if (oldMessage.author.id in this.watchedUsers) {
         let simple = new SimpleMsg(oldMessage);
         simple.del = false;
         simple.acon = newMessage.content;

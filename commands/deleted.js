@@ -2,9 +2,7 @@ const Discord = require('discord.js');
 const sleep = require('sleep');
 
 module.exports.alias = [
-  'deleted',
-  'del',
-  'dm'
+  'depr'
 ];
 
 module.exports.command = async (message, content, bot, server) => {
