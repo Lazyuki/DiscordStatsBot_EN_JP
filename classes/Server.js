@@ -101,6 +101,7 @@ module.exports = class Server {
       let content = message.content;
       for (var i = 0; i < content.length; i++) {
         let l = content[i];
+        if (l == '*') return;
         if (keepIgnoring) {
           if (l == '>') {
             keepIgnoring = false;
