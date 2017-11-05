@@ -2,7 +2,7 @@
 // 30A0-30FF : katakana
 // FF66-FF9D : half-width katakana
 // 4E00-9FAF : common and uncommon kanji
-const regex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/g;
+const regex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/;
 
 // /^(?:<:[^:]+:\d+>|:[^:]+:)$/.test(message.content)
 // example <:turboRAGE:312737141509586945> 📠
