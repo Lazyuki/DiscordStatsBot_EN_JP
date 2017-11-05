@@ -98,7 +98,9 @@ module.exports = class Server {
       var jpCount = 0;
       var enCount = 0;
       var keepIgnoring = false;
-      for (var l of message.content) {
+      let content = message.content;
+      for (var i = 0; i < content.length; i++) {
+        let l = content[i];
         if (keepIgnoring) {
           if (l == '>') {
             keepIgnoring = false;
@@ -107,6 +109,7 @@ module.exports = class Server {
           }
         } else if (l == '<') {
           keepIgnoring = true;
+          i += 18; // skip snowflake id
           continue;
         }
         if (jpregex.test(l)) {
