@@ -16,7 +16,7 @@ const LINEclient = new LINE.Client({
 
 // Langex regex
 const jpregex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/;
-const enregex = /[a-zA-Z]/;
+const enregex = /[a-zA-Z]|[Ａ-ｚ]/;
 
 
 module.exports = class Server {
