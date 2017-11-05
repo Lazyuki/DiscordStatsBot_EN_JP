@@ -14,6 +14,11 @@ const LINEclient = new LINE.Client({
   channelAccessToken: config.LINEchannelAccessToken
 });
 
+// Langex regex
+const jpregex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/g;
+const enregex = /[a-zA-Z]/g;
+
+
 module.exports = class Server {
     constructor(guild) {
       this.guild = guild;
@@ -63,6 +68,8 @@ module.exports = class Server {
       let userRec = this.users[author];
       userRec.add(message.content, channel, this.today);
 
+      if (message.channel.id == '376574779316109313') this.checkLanEx(message); // Check language exchange.
+
       // Notify via LINE
       if (message.mentions.users.has(config.owner_ID) || message.mentions.roles.has('240647591770062848')) {
         this.guild.fetchMember(config.owner_ID)
@@ -83,6 +90,33 @@ module.exports = class Server {
               throw new Error(err);
             });
           });
+      }
+    }
+
+    checkLanEx(message) {
+      var japanese = message.member.roles.has('196765998706196480');
+      var jpCount = 0;
+      var enCount = 0;
+      var keepIgnoring = false;
+      for (var l of message.content) {
+        if (keepIgnoring) {
+          if (l == '>') {
+            keepIgnoring = false;
+          } else {
+            continue;
+          }
+        } else if (l == '<') {
+          keepIgnoring = true;
+          continue;
+        }
+        if (jpregex.test(l)) {
+          jpCount++;
+        } else if (enregex.test(l)) {
+          enCount++;
+        }
+      }
+      if ((japanese && jpCount > enCount) || (!japanese && enCount > jpCount)) {
+        message.react('❌');
       }
     }
 
