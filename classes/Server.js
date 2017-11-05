@@ -94,14 +94,14 @@ module.exports = class Server {
     }
 
     checkLanEx(message) {
-      var japanese = message.member.roles.has('196765998706196480');
-      var jpCount = 0;
-      var enCount = 0;
-      var keepIgnoring = false;
+      let japanese = message.member.roles.has('196765998706196480');
+      let jpCount = 0;
+      let enCount = 0;
+      let keepIgnoring = false;
       let content = message.content;
       for (var i = 0; i < content.length; i++) {
         let l = content[i];
-        if (l == '*') return;
+        if (l == '*' || l == '＊') return;
         if (keepIgnoring) {
           if (l == '>') {
             keepIgnoring = false;
