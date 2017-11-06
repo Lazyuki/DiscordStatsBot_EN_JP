@@ -120,7 +120,6 @@ module.exports = class Server {
         }
       }
       if ((japanese && jpCount > enCount) || (!japanese && enCount > jpCount)) {
-        console.log('rec')
         message.react('🚫');
       }
     }
