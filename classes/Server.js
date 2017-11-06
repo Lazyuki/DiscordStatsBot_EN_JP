@@ -17,7 +17,7 @@ const LINEclient = new LINE.Client({
 // Langex regex
 const jpregex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/;
 const enregex = /[a-vx-zA-Z]|[Ａ-ｖｘ-ｚ]/;
-
+const urlregex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
 
 module.exports = class Server {
     constructor(guild) {
@@ -98,7 +98,7 @@ module.exports = class Server {
       let jpCount = 0;
       let enCount = 0;
       let keepIgnoring = false;
-      let content = message.content;
+      let content = message.content.replace(urlregex, '');
       for (var i = 0; i < content.length; i++) {
         let l = content[i];
         if (l == '*' || l == '＊') return;
@@ -120,7 +120,8 @@ module.exports = class Server {
         }
       }
       if ((japanese && jpCount > enCount) || (!japanese && enCount > jpCount)) {
-        message.react('❌');
+        console.log('rec')
+        message.react('🚫');
       }
     }
 
