@@ -39,7 +39,7 @@ module.exports.command = async (message, content, bot, server) => {
 	// the user hasn't sent anything in the past 30 days
 	if (record == undefined) {
 		let embed = new Discord.RichEmbed();
-		embed.title = `Stats for ${user.username}`;
+		embed.title = `Stats for ${user.tag}`;
 		embed.description = 'Hasn\'t said anything in the past 30 days'
 		embed.color = Number('0x3A8EDB');
 		if (member) { // ban check
@@ -107,7 +107,7 @@ module.exports.command = async (message, content, bot, server) => {
               'Thursday', 'Friday', 'Saturday'];
 
   let embed = new Discord.RichEmbed();
-  embed.title = `Stats for ${user.username}`;
+  embed.title = `Stats for ${user.tag}`;
   embed.description = 'For the last 30 days (UTC time)'
   embed.color = Number('0x3A8EDB');
 

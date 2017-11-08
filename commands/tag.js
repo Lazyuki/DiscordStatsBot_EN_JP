@@ -52,7 +52,7 @@ module.exports.command = async (message, content, bot, server) => {
       await member.removeRole(r);
     }
   }
-  await member.addRole(newRole);
+  await member.addRole(newRole, `command used by ${message.author.username}`);
   message.delete();
   if (oldRole != '' && oldRole != crossGet(abbrev, roleIDs, 'nu')){
   	message.channel.send(`${member.user.username}, you\'ve been tagged as \"${crossGet(abbrev, roleNames, role)}\" by ${message.author.username} instead of \"${crossGet(roleIDs, roleNames, oldRole)}\"!`);

@@ -26,8 +26,7 @@ module.exports.command = (message, content, bot) => {
 			embed.setFooter(`UTC | ${dateStr } --- Local`);
 			embed.color = Number('0x3A8EDB');
 			embed.timestamp = date;
-			chan.send({embed});
-			sleep.msleep(300);
+			chan.send(c, {embed});
 		}
 	}
 	if (userMention) {
@@ -40,8 +39,7 @@ module.exports.command = (message, content, bot) => {
 			embed.setFooter(`UTC | ${dateStr } --- Local`);
 			embed.color = Number('0x3A8EDB');
 			embed.timestamp = date;
-			chan.send({embed});
-			sleep.msleep(300);
+			chan.send(u, {embed});
 		}
 	}
 	if (!chanMention && !userMention) {
