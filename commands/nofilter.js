@@ -1,5 +1,5 @@
 const nofilterOnlyRole = '378668720417013760';
-const nofilterROle = '196106229813215234';
+const nofilterRole = '196106229813215234';
 const nofilterChan = '193966083886153729';
 
 module.exports.alias = [
