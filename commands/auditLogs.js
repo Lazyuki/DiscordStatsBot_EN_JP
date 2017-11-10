@@ -47,7 +47,8 @@ function embedEntry(entries) {
 		if (ent.changes) {
 			let title = ent.changes[0].key;
 			if (ent.reason) title += ` with reason: ${ent.reason}`;
-			embed.addField(title, ent.changes[0].new[0].name, false);
+			if (ent.changes[0].new[0]) embed.addField(title, ent.changes[0].new[0].name, false);
+			else embed.addField(title, ent.changes[0].new, false)
 		}
 	}
 	switch (e.actionType) {

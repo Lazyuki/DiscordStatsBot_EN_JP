@@ -12,6 +12,7 @@ module.exports.command = (message, content, bot, server) => {
 	if (message.member.hasPermission('ADMINISTRATOR') && server.hiddenChannels.includes(message.channel.id)) {
 		chan.send('Current mod commands are \n\`hide\`, \`hidden\`, and \`unhide\` for hiding channels (use IDs).\n' +
 			'\`watch\`, \`watched\`, and \`unwatch\` for tracking deleted messages of a specific user. Use ID or mention. Names won\'t work. \n' +
-		  '\`deleted\` shows the deleted messages from the watched user.\n `,del ID/@mention [(optional) number of messages to show. MAX: 30, DEFAULT: 5]`');
+		  '\`mutenew\` mutes new users in text chat. do the same command again to disable. **Intended for raids**\n' +
+			'\`auditlog\` shows the last 5 interesting audit logs. ');
 	}
 };
