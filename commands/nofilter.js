@@ -23,15 +23,17 @@ module.exports.command = async (message, content, bot, server) => {
   }
   let members = mentions.values();
   var names = '';
+  let forlater = [];
   for (var mem of members) {
     mem.addRole(nofilterOnlyRole);
     mem.addRole(nofilterRole);
+    forlater.push(mem);
     names += mem + ' ';
   }
   let nofilter = server.guild.channels.get(nofilterChan);
   nofilter.send(names + 'you have been muted in all channels but here for 5 minutes.');
 
   setTimeout(() => {
-    remove(members);
+    remove(forlater);
   }, 5*60*1000);
 };
