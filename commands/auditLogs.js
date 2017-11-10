@@ -69,7 +69,9 @@ module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
 	try {
 		let guild = server.guild;
-		if (content == '') { // last 5 changes
+		var max = parseInt(content);
+		if (!max || max > 10) max = 5;
+		if (true) { // last 5 changes
 			let al = await guild.fetchAuditLogs({limit:100});
 			var count = 0;
 			var prev = {'action':'', 'exeID':'', 'targetID': '', 'entries': []};
@@ -88,7 +90,7 @@ module.exports.command = async (message, content, bot, server) => {
 				if (preves.length) {
 					let embed = embedEntry(preves);
 					await message.channel.send({embed});
-					if (++count == 5) break;
+					if (++count == max) break;
 				}
 			}
 			if (prev['entries'].length > 1) { // run out of entries
