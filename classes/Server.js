@@ -155,7 +155,7 @@ module.exports = class Server {
             var ret = JSON.parse(body);
             simple.img =  ret.data.link;
             this.postLogs(simple);
-          });
+          }.bind(this));
         } else {
           this.postLogs(simple);
         }
