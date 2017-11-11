@@ -32,6 +32,8 @@ bot.on('ready', () => {
     if (guild.id == '293787390710120449') continue; // My testing server
     bot.servers[guild.id] = new Server(guild);
   }
+  let helps = [',help',',h',',halp',',tasukete'];
+  bot.user.setPresence({ game: { name: helps[Math.floor(Math.random() * helps.length)], type: 0 } });
 });
 
 bot.on('message', async message => {
