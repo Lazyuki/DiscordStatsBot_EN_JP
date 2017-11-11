@@ -154,9 +154,11 @@ module.exports = class Server {
             if (error) throw new Error(error);
             var ret = JSON.parse(body);
             simple.img =  ret.data.link;
+            this.postLogs(simple);
           });
+        } else {
+          this.postLogs(simple);
         }
-        this.postLogs(simple);
       } else {
         arr = this.deletedMessages;
         // Move the next two outside of the brackets if you don't want to post.
@@ -204,7 +206,7 @@ module.exports = class Server {
       }
       embed.setFooter(`#${msg.ch}`)
       embed.timestamp = date;
-      if (msg.img) { // if != null
+      if (msg.img != '') { // if != null
         embed.setImage(msg.img);
       }
       let chan = this.guild.channels.get('366692441442615306'); // #mod_log
