@@ -72,7 +72,7 @@ module.exports.command = async (message, content, bot, server) => {
 		var max = parseInt(content);
 		if (!max || max > 10) max = 5;
 		if (true) { // last 5 changes
-			let al = await guild.fetchAuditLogs({limit:100});
+			let al = await guild.fetchAuditLogs({limit:300});
 			var count = 0;
 			var prev = {'action':'', 'exeID':'', 'targetID': '', 'entries': []};
 			for (var e of al.entries.values()) {

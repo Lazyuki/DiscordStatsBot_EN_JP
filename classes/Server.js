@@ -16,7 +16,7 @@ const LINEclient = new LINE.Client({
 
 // Langex regex
 const jpregex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/;
-const enregex = /[a-vx-zA-Z]|[Ａ-ｖｘ-ｚ]/;
+const enregex = /[a-vx-zA-Z]|[Ａ-ＶＸ-Ｚａ-ｖｘ-ｚ]/;
 const urlregex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
 
 module.exports = class Server {
