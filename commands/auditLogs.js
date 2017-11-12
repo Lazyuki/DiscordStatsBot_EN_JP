@@ -69,10 +69,16 @@ module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
 	try {
 		let guild = server.guild;
+		var loopCount = 0;
+		var beforeEnt = null;
 		var max = parseInt(content);
 		if (!max || max > 10) max = 5;
-		if (true) { // last 5 changes
-			let al = await guild.fetchAuditLogs({limit:300});
+		while (loopCount < 10) { // last 5 changes
+			var params = {limit:100};
+			if (beforeEnt) {
+				params = {before:beforeID, limit:100}
+			}
+			let al = await guild.fetchAuditLogs(params);
 			var count = 0;
 			var prev = {'action':'', 'exeID':'', 'targetID': '', 'entries': []};
 			for (var e of al.entries.values()) {
@@ -96,6 +102,13 @@ module.exports.command = async (message, content, bot, server) => {
 			if (prev['entries'].length > 1) { // run out of entries
 				let embed = embedEntry(prev['entries']);
 				message.channel.send({embed});
+			}
+			if (count < max) {
+				loopCount++;
+				let ents = prev['entries'];
+				beforeEnt = ents[ents.length - 1];
+			} else {
+				break;
 			}
 		}
 	} catch (e) {
