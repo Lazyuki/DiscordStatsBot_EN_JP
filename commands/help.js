@@ -16,7 +16,7 @@ module.exports.command = (message, content, bot, server) => {
 		msg += '**Mod Commands** \n\`hide\`, \`hidden\`, and \`unhide\` for hiding channels (use IDs).\n' +
 			'\`watch\`, \`watched\`, and \`unwatch\` for tracking deleted messages of a specific user. Use ID or mention. Names won\'t work. \n' +
 		  '\`mutenew\` mutes new users in text chat. Type the same command again to disable it. **Intended for raids**\n' +
-			'\`auditlog (al)\` shows the last 5 interesting audit logs. \`,al 2\` shows the last 2 (MAX is 10). More options coming soon...';
+			'\`auditlog (al)\` shows the last 3 interesting audit logs. \`,al 1 @someone\` shows the last audit log involving the person. More options coming soon...';
 	}
 	chan.send(msg);
 

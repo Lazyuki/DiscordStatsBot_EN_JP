@@ -29,26 +29,26 @@ function embedEntry(entries) {
 	embed.title = `${e.action}`;
 	switch (e.targetType) {
 		case 'USER':
-			embed.addField('Target User', e.target.tag, false);
+			embed.addField('Target User', e.target.tag, true);
 			break;
 		case 'ROLE':
-			embed.addField('Target Role', e.target.name, false);
+			embed.addField('Target Role', e.target.name, true);
 			break;
 		default:
 			if (e.action == 'MESSAGE_DELETE') {
-				embed.addField('Message Author', e.target.tag, false);
-				embed.addField('Channel', `#${e.extra.channel.name}`, false);
+				embed.addField('Message Author', e.target.tag, true);
+				embed.addField('Channel', `#${e.extra.channel.name}`, true);
 				break;
 			}
-			embed.addField('TargetType', e.targetType, false);
+			embed.addField('TargetType', e.targetType, true);
 	}
 	for (var i in entries) {
 		let ent = entries[entries.length - 1 - i];
 		if (ent.changes) {
 			let title = ent.changes[0].key;
 			if (ent.reason) title += ` with reason: ${ent.reason}`;
-			if (ent.changes[0].new[0]) embed.addField(title, ent.changes[0].new[0].name, false);
-			else embed.addField(title, ent.changes[0].new, false)
+			if (ent.changes[0].new[0]) embed.addField(title, ent.changes[0].new[0].name, true);
+			else embed.addField(title, ent.changes[0].new, true)
 		}
 	}
 	switch (e.actionType) {
@@ -70,16 +70,18 @@ module.exports.command = async (message, content, bot, server) => {
 	try {
 		let guild = server.guild;
 		var loopCount = 0;
-		var beforeEnt = null;
-		var max = parseInt(content);
-		if (!max || max > 10) max = 5;
-		while (loopCount < 10) { // last 5 changes
+    var count = 0;
+    var beforeID = null;
+    let contents = content.split(' ');
+    var user = null;
+    if (message.mentions.users) user = message.mentions.users.first();
+    var max = parseInt(contents[0]);
+		if (!max || max > 10) max = 3;
+		while (loopCount < 15) { // last 5 changes
 			var params = {limit:100};
-			if (beforeEnt) {
-				params = {before:beforeID, limit:100}
-			}
+			if (beforeID) params.before = beforeID;
+      if (user) params.user = user.id;
 			let al = await guild.fetchAuditLogs(params);
-			var count = 0;
 			var prev = {'action':'', 'exeID':'', 'targetID': '', 'entries': []};
 			for (var e of al.entries.values()) {
 				if (!isInteresting(e)) continue;
@@ -96,17 +98,18 @@ module.exports.command = async (message, content, bot, server) => {
 				if (preves.length) {
 					let embed = embedEntry(preves);
 					await message.channel.send({embed});
-					if (++count == max) break;
+          if (++count == max) {
+            break;
+          }
 				}
 			}
-			if (prev['entries'].length > 1) { // run out of entries
-				let embed = embedEntry(prev['entries']);
-				message.channel.send({embed});
-			}
+      if (prev['entries'].length > 1) { // run out of entries
+        let embed = embedEntry(prev['entries']);
+        message.channel.send({embed});
+      }
 			if (count < max) {
 				loopCount++;
-				let ents = prev['entries'];
-				beforeEnt = ents[ents.length - 1];
+				beforeID = al.entries.lastKey();
 			} else {
 				break;
 			}
