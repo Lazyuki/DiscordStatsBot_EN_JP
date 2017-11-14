@@ -65,6 +65,49 @@ function embedEntry(entries) {
 	return embed;
 }
 
+function capsToNormal(caps) {
+	let res = caps.replace('_', '');
+	return res;
+}
+
+function normalEntry(entries) {
+	var str = '';
+	let e = entries[0];
+	str += `__**${e.action}**__ by ${e.executor.tag}\n`
+	switch (e.targetType) {
+		case 'USER':
+			str += `**Target User**: ${e.target.tag}\n`);
+			break;
+		case 'ROLE':
+			str += `**Target Role**: ${e.target.name}\n`);
+			break;
+		case 'CHANNEL':
+			str += `**Target Channel**: ${e.target.name}\n`);
+			break;
+		default:
+			if (e.action == 'MESSAGE_DELETE') {
+				str += `**Message by**: ${e.target.tag} in #${e.extra.channel.name}\n`);
+				break;
+			}
+			str += `**TargetType**: ${e.targetType}\n`);
+	}
+	for (var i in entries) {
+		let ent = entries[entries.length - 1 - i];
+		if (ent.changes) {
+			let title = ent.changes[0].key.replace('$', '');
+			let reason = '';
+			if (ent.reason) reason = ` with reason: ${ent.reason}`;
+			if (ent.changes[0].new[0]) { // Roles
+				str += `**${title}**: ${ent.changes[0].new[0].name}${reason}\n`
+			} else {
+				str += `**${title}**: ${ent.changes[0].new}${reason}\n`
+			}
+		}
+	}
+	//embed.timestamp = e.createdAt;
+	return str;
+}
+
 module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) return;
 	try {
@@ -96,16 +139,18 @@ module.exports.command = async (message, content, bot, server) => {
 				prev['targetID'] = e.target.id;
 				prev['entries'] = [e];
 				if (preves.length) {
-					let embed = embedEntry(preves);
-					await message.channel.send({embed});
+					//let embed = embedEntry(preves);
+					//await message.channel.send({embed});
+					await message.channel.send(normalEntry(preves));
           if (++count == max) {
             break;
           }
 				}
 			}
       if (prev['entries'].length > 1) { // run out of entries
-        let embed = embedEntry(prev['entries']);
-        message.channel.send({embed});
+        // let embed = embedEntry(prev['entries']);
+        // message.channel.send({embed});
+				await message.channel.send(normalEntry(preves));
       }
 			if (count < max) {
 				loopCount++;
