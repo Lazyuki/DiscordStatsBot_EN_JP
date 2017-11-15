@@ -33,7 +33,7 @@ bot.on('ready', () => {
     bot.servers[guild.id] = new Server(guild);
   }
   let helps = [',help',',h',',halp',',tasukete'];
-  bot.user.setPresence({ game: { name: helps[Math.floor(Math.random() * helps.length)], type: 0 } });
+  bot.user.setGame(helps[Math.floor(Math.random() * helps.length)]);
 });
 
 bot.on('message', async message => {
