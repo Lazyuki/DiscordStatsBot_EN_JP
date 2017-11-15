@@ -149,13 +149,13 @@ module.exports = class Server {
                'cache-control': 'no-cache',
                authorization: `Bearer ${config.imgurAccessToken}`,
                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' },
-            formData: {image: imageURL, album: config.imgurAlbum } };
+            formData: {image: imageURL, album: config.imgurAlbum, type: 'URL'} };
           request(options, function (error, response, body) {
             if (error) console.log(error);
             var ret = JSON.parse(body);
             simple.img =  ret.data.link;
             this.postLogs(simple);
-          }.bind(this, simple));
+          }.bind(this));
         } else {
           this.postLogs(simple);
         }
