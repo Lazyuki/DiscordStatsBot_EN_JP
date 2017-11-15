@@ -91,6 +91,12 @@ bot.on('messageDeleteBulk', messages => {
   }
 });
 
+bot.on('guildBanAdd', (guild, user) => {
+  var index = bot.servers[guild.id].watchedUsers.indexOf(user.id);
+  if (index == -1) return;
+  bot.servers[guild.id].watchedUsers.splice(index, 1);
+});
+
 bot.on('guildCreate', guild => {
   bot.servers[guild.id] = new Server(guild);
   console.log(`Server added: ${guild.name}`);
