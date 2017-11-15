@@ -10,6 +10,7 @@ module.exports.command = async (message, content, bot, server) => {
 	var now = (new Date()).getTime();
 	var day = 24 * 60 * 60 * 1000;
   var count = 0;
+  var delCount = 0;
 	while (!done) {
 		let messages = await message.channel.fetchMessages({limit:100,before:lastMessageID});
     let delMsgs = [];
@@ -25,12 +26,13 @@ module.exports.command = async (message, content, bot, server) => {
         }
 			};
 			if (ids.indexOf(m.author.id) != -1) {
-				delMsgs.push(m);
+        delMsgs.push(m);
+        delCount++;
 			}
 		}
-    if (delMsgs.length > 1) {
+    if (delMsgs.length > 0) {
 		  message.channel.bulkDelete(delMsgs);
     }
 	}
-	message.channel.send(`Checked ${count} messages and it's all clear!`);
+	message.channel.send(`Checked ${count} messages and deleted ${delCount} messages!`);
 };
