@@ -73,23 +73,23 @@ function capsToNormal(caps) {
 function normalEntry(entries) {
 	var str = '';
 	let e = entries[0];
-	str += `__**${capsToNormal(e.action)}**__ by ${e.executor.tag}\n`
+	str += `__${capsToNormal(e.action)}__ by ${e.executor.tag}\n`
 	switch (e.targetType) {
 		case 'USER':
-			str += `･**Target User**: ${e.target.tag}\n`;
+			str += `・**Target User**: ${e.target.tag}\n`;
 			break;
 		case 'ROLE':
-			str += `･**Target Role**: ${e.target.name}\n`;
+			str += `・**Target Role**: ${e.target.name}\n`;
 			break;
 		case 'CHANNEL':
-			str += `･**Target Channel**: #${e.target.name}\n`;
+			str += `・**Target Channel**: #${e.target.name}\n`;
 			break;
 		default:
 			if (e.action == 'MESSAGE_DELETE') {
-				str += `･**Message by**: ${e.target.tag} in #${e.extra.channel.name}\n`;
+				str += `・**Message by**: ${e.target.tag} in #${e.extra.channel.name}\n`;
 				break;
 			}
-			str += `･**TargetType**: ${e.targetType}\n`;
+			str += `・**TargetType**: ${e.targetType}\n`;
 	}
 	for (var i in entries) {
 		let ent = entries[entries.length - 1 - i];
@@ -98,11 +98,11 @@ function normalEntry(entries) {
 			let reason = '';
 			if (ent.reason) reason = ` with reason: ${ent.reason}`;
 			if (ent.changes[0].new[0].name) { // Roles
-				str += `･**${title}**: ${ent.changes[0].new[0].name}${reason}\n`;
+				str += `・**${title}**: ${ent.changes[0].new[0].name}${reason}\n`;
       } else if (ent.changes[0].new) {
-        str += `･**${title}**: ${ent.changes[0].new}${reason}\n`;
+        str += `・**${title}**: ${ent.changes[0].new}${reason}\n`;
       } else {
-				str += `･**${title}**: ${JSON.stringify(ent.changes)}${reason}\n`;
+				str += `・**${title}**: ${JSON.stringify(ent.changes)}${reason}\n`;
 			}
 		}
 	}

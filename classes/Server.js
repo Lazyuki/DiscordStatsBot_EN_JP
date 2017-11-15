@@ -119,7 +119,7 @@ module.exports = class Server {
           enCount++;
         }
       }
-      if ((japanese && jpCount > enCount) || (!japanese && enCount > jpCount)) {
+      if ((japanese && jpCount * 1.5 > enCount) || (!japanese && enCount > jpCount * 1.5)) {
         message.react('🚫');
       }
     }
@@ -136,7 +136,7 @@ module.exports = class Server {
       } else if (message.content.length < 3) {
         return;
       }
-      let simple = new SimpleMsg(message);
+      var simple = new SimpleMsg(message);
       var arr;
       if (this.watchedUsers.includes(message.author.id)) {
         // arr = this.watchedUsers[message.author.id];
@@ -151,11 +151,11 @@ module.exports = class Server {
                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' },
             formData: {image: imageURL, album: config.imgurAlbum } };
           request(options, function (error, response, body) {
-            if (error) throw new Error(error);
+            if (error) console.log(error);
             var ret = JSON.parse(body);
             simple.img =  ret.data.link;
             this.postLogs(simple);
-          }.bind(this));
+          }.bind(this, simple));
         } else {
           this.postLogs(simple);
         }
@@ -207,6 +207,7 @@ module.exports = class Server {
       embed.setFooter(`#${msg.ch}`)
       embed.timestamp = date;
       if (msg.img != '') { // if != null
+        embed.addField('imgur link', msg.img, false);
         embed.setImage(msg.img);
       }
       let chan = this.guild.channels.get('366692441442615306'); // #mod_log
