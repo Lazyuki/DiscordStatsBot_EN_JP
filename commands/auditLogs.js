@@ -109,10 +109,10 @@ function normalEntry(entries) {
 					let perm2 = ent.changes[0].old - ent.changes[0].new;
 					let key1 = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm1);
 					let key2 = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm2);
-					if (perm1) {
-						str += `・granted: ${perm1}${reason}\n`;
-					} else if (perm2) {
-						str += `・denied: ${perm2}${reason}\n`;
+					if (key1) {
+						str += `・**granted**: ${key1}${reason}\n`;
+					} else if (key2) {
+						str += `・**denied**: ${key2}${reason}\n`;
 					}
 
 				} else {
