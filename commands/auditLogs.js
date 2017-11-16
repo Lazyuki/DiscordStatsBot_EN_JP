@@ -115,7 +115,7 @@ function normalEntry(entries) {
 }
 
 module.exports.command = async (message, content, bot, server) => {
-  if (!message.member.hasPermission('ADMINISTRATOR')) return;
+	if (!message.member.hasPermission('MANAGE_ROLES')) return;
 	try {
 		let guild = server.guild;
 		var loopCount = 0;
