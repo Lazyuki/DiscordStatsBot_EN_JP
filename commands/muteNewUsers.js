@@ -8,7 +8,7 @@ module.exports.command = async (message, content, bot, server) => {
 	if (nu.hasPermission('SEND_MESSAGES')) { // Get rid of all permissions.
 		nu.setPermissions(['VIEW_CHANNEL', 'READ_MESSAGE_HISTORY']);
 		server.guild.defaultRole.setPermissions(['VIEW_CHANNEL', 'READ_MESSAGE_HISTORY']);
-		message.channel.send('New Users are now *muted*. Please type the same command again once the raid is done.');
+		message.channel.send('New Users are now *muted*. Please type the same command again once the raid is over.');
 	} else { // restore the old state
 		nu.setPermissions(['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'ATTACH_FILES',
 		'READ_MESSAGE_HISTORY', 'USE_EXTERNAL_EMOJIS', 'CHANGE_NICKNAME']);
