@@ -21,7 +21,7 @@ function sameEntry(e, prev) {
 	if (e.target.id != prev['targetID']) return false;
 	return true;
 }
-
+/**
 function embedEntry(entries) {
 	let embed = new Discord.RichEmbed();
 	let e = entries[0];
@@ -64,7 +64,7 @@ function embedEntry(entries) {
 	embed.timestamp = e.createdAt;
 	return embed;
 }
-
+**/
 function capsToNormal(caps) {
   let res = caps.replace(/_/g, ' ');
 	return res;
@@ -96,9 +96,13 @@ function normalEntry(entries) {
 		if (ent.changes) {
 			let title = ent.changes[0].key.replace('$', '');
 			let reason = '';
-			if (ent.reason) reason = ` with reason: ${ent.reason}`;
-			if (ent.changes[0].new[0].name) { // Roles
-				str += `・**${title}**: ${ent.changes[0].new[0].name}${reason}\n`;
+			if (ent.reason) reason = ` **with reason:** ${ent.reason}`;
+			if (ent.changes[0].new[0]) { // Roles
+				if (ent.changes[0].new[0].name) {
+					str += `・**${title}**: ${ent.changes[0].new[0].name}${reason}\n`;
+				} else {
+					str += `・**${title}**: ${JSON.stringify(ent.changes[0].new[0])}${reason}\n`;
+				}
       } else if (ent.changes[0].new) {
         str += `・**${title}**: ${ent.changes[0].new}${reason}\n`;
       } else {
