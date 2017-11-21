@@ -83,7 +83,7 @@ module.exports = class Server {
                'cache-control': 'no-cache',
                authorization: `Bearer ${config.imgurAccessToken}`,
                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' },
-            formData: {image: imageURL, album: config.imgurAlbum, description: `In #${message.channel.name} by ${message.author.tag}`, type: 'URL'} };
+            formData: {image: imageURL, album: config.imgurAlbum, description: `In ${message.channel.name} by ${message.author.tag}`, type: 'URL'} };
           request(options, function (error, response, body) {
             if (error) console.log(error);
             var ret = JSON.parse(body);
@@ -98,6 +98,7 @@ module.exports = class Server {
               }
             }
           }.bind(this));
+        }
       }
       // Notify via LINE
       if (message.mentions.users.has(config.owner_ID) || message.mentions.roles.has('240647591770062848')) {
