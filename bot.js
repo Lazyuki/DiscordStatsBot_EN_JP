@@ -109,5 +109,7 @@ bot.on('guildDelete', guild => {
   console.log(`Server removed: ${guild.name}`);
 });
 
+process.on('unhandledRejection', console.dir);
+
 // Log in. This should be the last call
 bot.login(token);

@@ -27,6 +27,8 @@ module.exports = class Server {
       this.deletedMessages = [];
       this.today = 0;
       this.watchedUsers = []; // surveillance
+      this.watchedImagesID = [];
+      this.watchedImagesLink = [];
       this.newUsers = [];
       if (fs.existsSync(`./.${this.guild.id}_restore.json`)) {
         let json = JSON.parse(fs.readFileSync(`./.${this.guild.id}_restore.json`, 'utf8'));
@@ -70,6 +72,33 @@ module.exports = class Server {
 
       if (message.channel.id == '376574779316109313') this.checkLanEx(message); // Check language exchange.
 
+      if (this.watchedUsers.indexOf(author) != -1) { // add images by watched users.
+        if (message.attachments.size > 0) {
+          let imageURL = message.attachments.first().url;
+          // Use IMGUR
+          var options = { method: 'POST',
+            url: 'https://api.imgur.com/3/image',
+            headers:
+             {
+               'cache-control': 'no-cache',
+               authorization: `Bearer ${config.imgurAccessToken}`,
+               'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' },
+            formData: {image: imageURL, album: config.imgurAlbum, description: `In #${message.channel.name} by ${message.author.tag}`, type: 'URL'} };
+          request(options, function (error, response, body) {
+            if (error) console.log(error);
+            var ret = JSON.parse(body);
+            if (ret.data.link == undefined) {
+              console.log(JSON.stringify(ret));
+            } else {
+              this.watchedImagesID.push(message.id);
+              this.watchedImagesLink.push(ret.data.link);
+              if (this.watchedImagesID.length > 50) {
+                this.watchedImagesID.shift();
+                this.watchedImagesLink.shift();
+              }
+            }
+          }.bind(this));
+      }
       // Notify via LINE
       if (message.mentions.users.has(config.owner_ID) || message.mentions.roles.has('240647591770062848')) {
         this.guild.fetchMember(config.owner_ID)
@@ -132,33 +161,18 @@ module.exports = class Server {
       var imageURL = '';
       if (message.attachments.size > 0) {
         imageURL = message.attachments.first().url;
-        message.content += `\n{Attachment (expires soon): ${imageURL} }`;
+        message.content += `\n{Attachment (expired): ${imageURL} }`;
       } else if (message.content.length < 3) {
         return;
       }
       var simple = new SimpleMsg(message);
       var arr;
       if (this.watchedUsers.includes(message.author.id)) {
-        // arr = this.watchedUsers[message.author.id];
-        if (imageURL != '') {
-          // Use IMGUR
-          var options = { method: 'POST',
-            url: 'https://api.imgur.com/3/image',
-            headers:
-             {
-               'cache-control': 'no-cache',
-               authorization: `Bearer ${config.imgurAccessToken}`,
-               'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' },
-            formData: {image: imageURL, album: config.imgurAlbum, type: 'URL'} };
-          request(options, function (error, response, body) {
-            if (error) console.log(error);
-            var ret = JSON.parse(body);
-            simple.img =  ret.data.link;
-            this.postLogs(simple);
-          }.bind(this));
-        } else {
-          this.postLogs(simple);
+        let index = this.watchedImagesID.indexOf(message.id);
+        if (index != -1) {
+          simple.img = this.watchedImagesLink[index];
         }
+        this.postLogs(simple);
       } else {
         arr = this.deletedMessages;
         // Move the next two outside of the brackets if you don't want to post.
