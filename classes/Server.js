@@ -228,7 +228,7 @@ module.exports = class Server {
 
     addEdits(oldMessage, newMessage) {
       if (message.channel.id == '376574779316109313') this.checkLanEx(newMessage); // Check language exchange.
-      if (message.channel.id == '208118574974238721') this.checkBegJp(oldMessage); // Check beginner jpn chat
+      if (message.channel.id == '208118574974238721') this.checkBegJp(newMessage); // Check beginner jpn chat
       if (this.watchedUsers.includes(oldMessage.author.id)) {
         let simple = new SimpleMsg(oldMessage);
         simple.del = false;
