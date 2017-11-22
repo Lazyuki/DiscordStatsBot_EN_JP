@@ -160,6 +160,10 @@ module.exports = class Server {
       }
       if ((japanese && jpCount * 1.5 > enCount) || (!japanese && enCount > jpCount * 1.5)) {
         message.react('🚫');
+      } else {
+        for (var r of message.reactions.values()) {
+          if (r.me) r.remove();
+        }
       }
     }
 
@@ -169,7 +173,11 @@ module.exports = class Server {
         let l = content[i];
         if (/[\u4E00-\u9FAF]/.test(l) && !(N5.test(l) || N4.test(l))) {
           message.react('😣');
+          return;
         }
+      }
+      for (var r of message.reactions.values()) {
+        if (r.me) r.remove();
       }
     }
 
@@ -219,6 +227,8 @@ module.exports = class Server {
     }
 
     addEdits(oldMessage, newMessage) {
+      if (message.channel.id == '376574779316109313') this.checkLanEx(newMessage); // Check language exchange.
+      if (message.channel.id == '208118574974238721') this.checkBegJp(oldMessage); // Check beginner jpn chat
       if (this.watchedUsers.includes(oldMessage.author.id)) {
         let simple = new SimpleMsg(oldMessage);
         simple.del = false;
