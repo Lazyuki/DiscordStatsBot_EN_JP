@@ -34,6 +34,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
   let nofilter = server.guild.channels.get(nofilterChan);
   nofilter.send(names + 'you have been muted in all channels but here for 5 minutes.');
+  message.channel.send(`Sent to <#${nofilterChan}>`);
 
   setTimeout(() => {
     remove(forlater);

@@ -45,6 +45,8 @@ module.exports = class Server {
           this.deletedMessages.push(new SimpleMsg(dm.id, dm.del, dm.a, dm.atag, dm.aid, dm.apfp, dm.con, dm.acon, dm.ch, dm.chid, dm.time, dm.dur, dm.img));
         }
         this.watchedUsers = json['watchedUsers'];
+        this.watchedImagesID = json['watchedImagesID'];
+        this.watchedImagesLink = json['watchedImagesLink'];
         // for (var wu in json['watchedUsers']) {
           // Uncomment below for restoring them
           // let dms = json['watchedUsers'][wu];
@@ -169,11 +171,17 @@ module.exports = class Server {
       var simple = new SimpleMsg(message);
       var arr;
       if (this.watchedUsers.includes(message.author.id)) {
-        let index = this.watchedImagesID.indexOf(message.id);
-        if (index != -1) {
-          simple.img = this.watchedImagesLink[index];
+        let timeout = 0;
+        if (simple.dur < 5) {
+          timeout = 5 - simple.dur * 1000;
         }
-        this.postLogs(simple);
+        setTimeout(function() {
+          let index = this.watchedImagesID.indexOf(message.id);
+          if (index != -1) {
+            simple.img = this.watchedImagesLink[index];
+          }
+          this.postLogs(simple);
+        }.bind(this), timeout);
       } else {
         arr = this.deletedMessages;
         // Move the next two outside of the brackets if you don't want to post.
