@@ -21,34 +21,56 @@ function sameEntry(e, prev) {
 	if (e.target.id != prev['targetID']) return false;
 	return true;
 }
-/**
+
 function embedEntry(entries) {
 	let embed = new Discord.RichEmbed();
 	let e = entries[0];
-	embed.setAuthor(`${e.executor.tag}`, e.executor.avatarURL)
-	embed.title = `${e.action}`;
+	embed.setAuthor(`${capsToNormal(e.action)} by ${e.executor.username}`, e.executor.avatarURL);
+	var str = '\`\`\`\n';
 	switch (e.targetType) {
 		case 'USER':
-			embed.addField('Target User', e.target.tag, true);
+			str += `・Target User: \`${e.target.tag}\`\n`;
 			break;
 		case 'ROLE':
-			embed.addField('Target Role', e.target.name, true);
+			str += `・Target Role: \`${e.target.name}\`\n`;
+			break;
+		case 'CHANNEL':
+			str += `・Target Channel: \`#${e.target.name}\`\n`;
 			break;
 		default:
 			if (e.action == 'MESSAGE_DELETE') {
-				embed.addField('Message Author', e.target.tag, true);
-				embed.addField('Channel', `#${e.extra.channel.name}`, true);
+				str += `・Message by: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;
 				break;
 			}
-			embed.addField('TargetType', e.targetType, true);
+			str += `・TargetType: \`${e.targetType}\`\n`;
 	}
 	for (var i in entries) {
 		let ent = entries[entries.length - 1 - i];
 		if (ent.changes) {
-			let title = ent.changes[0].key;
-			if (ent.reason) title += ` with reason: ${ent.reason}`;
-			if (ent.changes[0].new[0]) embed.addField(title, ent.changes[0].new[0].name, true);
-			else embed.addField(title, ent.changes[0].new, true)
+			let title = ent.changes[0].key.replace('$', '');
+			let reason = '';
+			if (ent.reason) reason = ` : ${ent.reason}`;
+			if (ent.changes[0].new[0]) { // Roles
+				if (ent.changes[0].new[0].name) {
+					str += `・${capsToNormal(title.toUpperCase())}: ${ent.changes[0].new[0].name}${reason}\n`;
+				} else {
+					str += `・${capsToNormal(title.toUpperCase())}: ${JSON.stringify(ent.changes[0].new[0])}${reason}\n`;
+				}
+      } else if (ent.changes[0].new) {
+				if (title == 'permissions') {
+					let perm = ent.changes[0].new ^ ent.changes[0].old;
+					let key = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
+					if (perm & ent.changes[0].old == 0) {
+						str += `・Granted: ${key1}${reason}\n`;
+					} else {
+						str += `・Denied: ${key2}${reason}\n`;
+					}
+				} else {
+					str += `・${title}: ${ent.changes[0].new}${reason}\n`;
+				}
+      } else {
+				str += `・${title}: ${JSON.stringify(ent.changes)}${reason}\n`;
+			}
 		}
 	}
 	switch (e.actionType) {
@@ -64,10 +86,14 @@ function embedEntry(entries) {
 	embed.timestamp = e.createdAt;
 	return embed;
 }
-**/
+
 function capsToNormal(caps) {
-  let res = caps.replace(/_/g, ' ');
-	return res;
+	let arr = [];
+	for (var w of caps.split('_')) {
+		w = w[0] + w.substr(1, w.length).toLowerCase();
+		arr.push(w)
+	}
+	return arr.join('');
 }
 
 function normalEntry(entries) {
@@ -158,18 +184,16 @@ module.exports.command = async (message, content, bot, server) => {
 				prev['targetID'] = e.target.id;
 				prev['entries'] = [e];
 				if (preves.length) {
-					//let embed = embedEntry(preves);
-					//await message.channel.send({embed});
-					await message.channel.send(normalEntry(preves));
+					await message.channel.send({embedEntry(preves)});
+					//await message.channel.send(normalEntry(preves));
           if (++count == max) {
             break;
           }
 				}
 			}
       if (prev['entries'].length > 1) { // run out of entries
-        // let embed = embedEntry(prev['entries']);
-        // message.channel.send({embed});
-				await message.channel.send(normalEntry(preves));
+        await message.channel.send({embedEntry(prev['entries'])});
+				//await message.channel.send(normalEntry(preves));
       }
 			if (count < max) {
 				loopCount++;
@@ -179,6 +203,7 @@ module.exports.command = async (message, content, bot, server) => {
 			}
 		}
 	} catch (e) {
+		console.log(e);
 		message.channel.send(`${e.message}\nYou better fix this shit <@${bot.owner_ID}>`);
 	}
 };
