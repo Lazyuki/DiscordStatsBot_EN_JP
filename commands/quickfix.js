@@ -6,7 +6,7 @@ module.exports.command = (message, content, bot, server) => {
 	if (message.author.id != bot.owner_ID) return;
 	switch (content) {
 		case 'list':
-			message.channel.send(server.kanjis);
+			message.channel.send(JSON.stringify(server.kanjis));
 			break;
 		default:
 			server.kanjiCheck = !server.kanjiCheck;

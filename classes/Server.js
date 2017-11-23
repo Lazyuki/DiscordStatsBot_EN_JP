@@ -57,6 +57,7 @@ module.exports = class Server {
         this.watchedUsers = json['watchedUsers'];
         this.watchedImagesID = json['watchedImagesID'];
         this.watchedImagesLink = json['watchedImagesLink'];
+        this.kanjis = json['kanjis'];
         // for (var wu in json['watchedUsers']) {
           // Uncomment below for restoring them
           // let dms = json['watchedUsers'][wu];
