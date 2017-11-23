@@ -7,14 +7,19 @@ module.exports.command = (message, content, bot, server) => {
 	switch (content) {
 		case 'list':
 			// Sorts the kanjis
-		  var sortable = [];
+		  let sortable = [];
 			for (var k in server.kanjis) {
 			  sortable.push([k, server.kanjis[k]]);
 			}
 			sortable.sort(function(a, b) {
 			  return b[1] - a[1];
 			});
-			message.channel.send(JSON.stringify(sortable));
+			let str = '';
+			for (var k in sortable) {
+				str += sortable[k][0] + ':' + sortable[k][1] + ','
+			}
+			str = str.substr(0, str.length - 1);
+			message.channel.send(str);
 			break;
 		default:
 			server.kanjiCheck = !server.kanjiCheck;
