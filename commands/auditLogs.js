@@ -60,7 +60,7 @@ function embedEntry(entries) {
 				if (title == 'permissions') {
 					let perm = ent.changes[0].new ^ ent.changes[0].old;
 					let key = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
-					if (perm & ent.changes[0].old == 0) {
+					if ((perm & ent.changes[0].old) == 0) {
 						str += `・**Granted**: \`${key}${reason}\`\n`;
 					} else {
 						str += `・**Denied**: \`${key}${reason}\`\n`;
@@ -132,16 +132,13 @@ function normalEntry(entries) {
 				}
       } else if (ent.changes[0].new) {
 				if (title == 'permissions') {
-					let perm1 = ent.changes[0].new - ent.changes[0].old;
-					let perm2 = ent.changes[0].old - ent.changes[0].new;
-					let key1 = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm1);
-					let key2 = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm2);
-					if (key1) {
-						str += `・**granted**: ${key1}${reason}\n`;
-					} else if (key2) {
-						str += `・**denied**: ${key2}${reason}\n`;
+					let perm = ent.changes[0].new ^ ent.changes[0].old;
+					let key = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
+					if ((perm & ent.changes[0].old) == 0) {
+						str += `・**Granted**: \`${key}${reason}\`\n`;
+					} else {
+						str += `・**Denied**: \`${key}${reason}\`\n`;
 					}
-
 				} else {
 					str += `・**${title}**: ${ent.changes[0].new}${reason}\n`;
 				}
