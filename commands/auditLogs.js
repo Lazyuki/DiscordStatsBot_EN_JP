@@ -50,32 +50,34 @@ function embedEntry(entries) {
 			let title = ent.changes[0].key.replace('$', '');
 			let reason = '';
 			if (ent.reason) reason = ` : ${ent.reason}`;
-			if (ent.changes[0].new[0]) { // Roles
-				if (ent.changes[0].new[0].name) {
-					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new[0].name}\`${reason}\n`;
-				} else {
-					str += `・**${capsToNormal(title.toUpperCase())}**: \`${JSON.stringify(ent.changes[0].new)}\`${reason}\n`;
-				}
-      } else if (ent.changes[0].new) {
-				if (title == 'permissions') {
-					let perm = ent.changes[0].new ^ ent.changes[0].old;
-					let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
-					if ((perm & ent.changes[0].old) == 0) {
-						str += `・**Granted**: \`${permKey}${reason}\`\n`;
-					} else {
-						str += `・**Denied**: \`${permKey}${reason}\`\n`;
-					}
-				} else if (title == 'deny') {
-					let perm = ent.changes[0].new ^ ent.changes[0].old;
-					let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
-					if ((perm & ent.changes[0].old) == 0) { // TODO this is fucked up. the order is opposite. LMAO
-						str += `・**Denied**: \`${permKey} from ${JSON.stringify(e.extra)}${reason}\`\n`;
-					} else {
-						str += `・**Granted**: \`${permKey} from ${JSON.stringify(e.extra)}${reason}\`\n`;
-					}
-				} else {
-					str += `・**${title}**: \`${ent.changes[0].new}\`${reason}\n`;
-				}
+      if (ent.changes[0].new) {
+        if (ent.changes[0].new[0]) { // Roles
+          if (ent.changes[0].new[0].name) {
+            str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new[0].name}\`${reason}\n`;
+          } else {
+            str += `・**${capsToNormal(title.toUpperCase())}**: \`${JSON.stringify(ent.changes[0].new)}\`${reason}\n`;
+          }
+        } else {
+          if (title == 'permissions') {
+            let perm = ent.changes[0].new ^ ent.changes[0].old;
+            let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
+            if ((perm & ent.changes[0].old) == 0) {
+              str += `・**Granted**: \`${permKey}${reason}\`\n`;
+            } else {
+              str += `・**Denied**: \`${permKey}${reason}\`\n`;
+            }
+          } else if (title == 'deny') {
+            let perm = ent.changes[0].new ^ ent.changes[0].old;
+            let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
+            if ((perm & ent.changes[0].old) == 0) { // TODO this is fucked up. the order is opposite. LMAO
+              str += `・**Denied**: \`${permKey}\` for \`${e.extra.name}\`${reason}\n`;
+            } else {
+              str += `・**Granted**: \`${permKey}\` for \`${e.extra.name}\`${reason}\n`;
+            }
+          } else {
+            str += `・**${title}**: \`${ent.changes[0].new}\`${reason}\n`;
+          }
+        }
       } else {
 				str += `・**${title}**: \`${JSON.stringify(ent.changes)}\`${reason}\n`;
 			}
