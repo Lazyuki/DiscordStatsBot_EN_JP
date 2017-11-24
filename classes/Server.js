@@ -145,7 +145,11 @@ module.exports = class Server {
       let content = message.content.replace(urlregex, '');
       for (var i = 0; i < content.length; i++) {
         let l = content[i];
-        if (l == '*' || l == '＊') return;
+        if (l == '*' || l == '＊') {
+          for (var r of message.reactions.values()) {
+            if (r.me) r.remove();
+          }
+        }
         if (keepIgnoring) {
           if (l == '>') {
             keepIgnoring = false;
