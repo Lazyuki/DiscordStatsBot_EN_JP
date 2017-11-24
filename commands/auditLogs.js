@@ -65,6 +65,14 @@ function embedEntry(entries) {
 					} else {
 						str += `・**Denied**: \`${permKey}${reason}\`\n`;
 					}
+				} else if (title == 'deny') {
+					let perm = ent.changes[0].new ^ ent.changes[0].old;
+					let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
+					if ((perm & ent.changes[0].old) == 0) { // TODO this is fucked up. the order is opposite. LMAO
+						str += `・**Denied**: \`${permKey} from ${JSON.stringify(e.extra)}${reason}\`\n`;
+					} else {
+						str += `・**Granted**: \`${permKey} from ${JSON.stringify(e.extra)}${reason}\`\n`;
+					}
 				} else {
 					str += `・**${title}**: \`${ent.changes[0].new}\`${reason}\n`;
 				}
