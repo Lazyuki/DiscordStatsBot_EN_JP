@@ -39,7 +39,7 @@ function embedEntry(entries) {
 			break;
 		default:
 			if (e.action == 'MESSAGE_DELETE') {
-				str += `**Message by**: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;
+				str += `__Message by__: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;
 				break;
 			}
 			str += `__TargetType__: \`${e.targetType}\`\n`;
@@ -59,11 +59,11 @@ function embedEntry(entries) {
       } else if (ent.changes[0].new) {
 				if (title == 'permissions') {
 					let perm = ent.changes[0].new ^ ent.changes[0].old;
-					let key = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
+					let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
 					if ((perm & ent.changes[0].old) == 0) {
-						str += `・**Granted**: \`${key}${reason}\`\n`;
+						str += `・**Granted**: \`${permKey}${reason}\`\n`;
 					} else {
-						str += `・**Denied**: \`${key}${reason}\`\n`;
+						str += `・**Denied**: \`${permKey}${reason}\`\n`;
 					}
 				} else {
 					str += `・**${title}**: \`${ent.changes[0].new}\`${reason}\n`;
@@ -128,16 +128,16 @@ function normalEntry(entries) {
 				if (ent.changes[0].new[0].name) {
 					str += `・**${title}**: ${ent.changes[0].new[0].name}${reason}\n`;
 				} else {
-					str += `・**${title}**: ${JSON.stringify(ent.changes[0].new[0])}${reason}\n`;
+					str += `・**${title}**: ${JSON.stringify(ent.changes[0].new)}${reason}\n`;
 				}
       } else if (ent.changes[0].new) {
 				if (title == 'permissions') {
 					let perm = ent.changes[0].new ^ ent.changes[0].old;
-					let key = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
+					let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
 					if ((perm & ent.changes[0].old) == 0) {
-						str += `・**Granted**: \`${key}${reason}\`\n`;
+						str += `・**Granted**: \`${permKey}${reason}\`\n`;
 					} else {
-						str += `・**Denied**: \`${key}${reason}\`\n`;
+						str += `・**Denied**: \`${permKey}${reason}\`\n`;
 					}
 				} else {
 					str += `・**${title}**: ${ent.changes[0].new}${reason}\n`;
@@ -184,7 +184,7 @@ module.exports.command = async (message, content, bot, server) => {
 				prev['entries'] = [e];
         if (preves.length) {
           if (beautiful) {
-            let embed = embedEntry(preves); 
+            let embed = embedEntry(preves);
             await message.channel.send({embed});
           } else {
             await message.channel.send(normalEntry(preves));
@@ -196,7 +196,7 @@ module.exports.command = async (message, content, bot, server) => {
 			}
       if (prev['entries'].length > 1) { // run out of entries
         if (beautiful) {
-          let embed = embedEntry(preves); 
+          let embed = embedEntry(preves);
           await message.channel.send({embed});
         } else {
           await message.channel.send(normalEntry(preves));

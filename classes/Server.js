@@ -279,7 +279,7 @@ module.exports = class Server {
       embed.timestamp = date;
       if (msg.img != '') { // if != null
         embed.addField('imgur link', msg.img, false);
-        embed.setImage(msg.img);
+        embed.setThumbnail(msg.img);
       }
       let chan = this.guild.channels.get('366692441442615306'); // #mod_log
       if (chan == undefined) return;
