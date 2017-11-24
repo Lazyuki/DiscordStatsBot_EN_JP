@@ -149,6 +149,7 @@ module.exports = class Server {
           for (var r of message.reactions.values()) {
             if (r.me) r.remove();
           }
+          return;
         }
         if (keepIgnoring) {
           if (l == '>') {
