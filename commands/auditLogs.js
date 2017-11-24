@@ -25,6 +25,7 @@ function sameEntry(e, prev) {
 function embedEntry(entries) {
 	let embed = new Discord.RichEmbed();
 	let e = entries[0];
+
 	embed.setAuthor(`${capsToNormal(e.action)} by ${e.executor.username}`, e.executor.avatarURL);
 	var str = '';
 	switch (e.targetType) {
@@ -39,7 +40,7 @@ function embedEntry(entries) {
 			break;
 		default:
 			if (e.action == 'MESSAGE_DELETE') {
-				str += `__Message by__: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;
+				str += `__Message by__: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;//TODO num of messages?
 				break;
 			}
 			str += `__TargetType__: \`${e.targetType}\`\n`;
@@ -50,36 +51,35 @@ function embedEntry(entries) {
 			let title = ent.changes[0].key.replace('$', '');
 			let reason = '';
 			if (ent.reason) reason = ` : ${ent.reason}`;
-      if (ent.changes[0].new) {
-        if (ent.changes[0].new[0]) { // Roles
-          if (ent.changes[0].new[0].name) {
-            str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new[0].name}\`${reason}\n`;
-          } else {
-            str += `・**${capsToNormal(title.toUpperCase())}**: \`${JSON.stringify(ent.changes[0].new)}\`${reason}\n`;
-          }
-        } else {
-          if (title == 'permissions') {
-            let perm = ent.changes[0].new ^ ent.changes[0].old;
-            let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
-            if ((perm & ent.changes[0].old) == 0) {
-              str += `・**Granted**: \`${permKey}${reason}\`\n`;
-            } else {
-              str += `・**Denied**: \`${permKey}${reason}\`\n`;
-            }
-          } else if (title == 'deny') {
-            let perm = ent.changes[0].new ^ ent.changes[0].old;
-            let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
-            if ((perm & ent.changes[0].old) == 0) { // TODO this is fucked up. the order is opposite. LMAO
-              str += `・**Denied**: \`${permKey}\` for \`${e.extra.name}\`${reason}\n`;
-            } else {
-              str += `・**Granted**: \`${permKey}\` for \`${e.extra.name}\`${reason}\n`;
-            }
-          } else {
-            str += `・**${title}**: \`${ent.changes[0].new}\`${reason}\n`;
-          }
-        }
-      } else {
-				str += `・**${title}**: \`${JSON.stringify(ent.changes)}\`${reason}\n`;
+			let vars = {};
+			switch (e.action) {
+				case 'MEMBER_ROLE_UPDATE':
+					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new[0].name}\`${reason}\n`;
+					break;
+				case "ROLE_UPDATE":
+					vars.flip = true;
+				case "CHANNEL_OVERWRITE_UPDATE":
+					let perm = ent.changes[0].new ^ ent.changes[0].old;
+					let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
+					if (((perm & ent.changes[0].old) == 0) ^ (vars.flip ? 1 : 0)) { // TODO this is fucked up. the order is opposite. LMAO
+						str += `・**Denied**: \`${permKey}\` for \`${e.extra.name}\`\n`;
+					} else {
+						str += `・**Granted**: \`${permKey}\` for \`${e.extra.name}\`\n`;
+					}
+					break;
+				case "CHANNEL_UPDATE":
+					str += `・**New ${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new}\`\n`;
+					break;
+				case "CHANNEL_DELETE":
+					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new}\`\n`;
+					break;
+				case "CHANNEL_OVERWRITE_DELETE":
+					str += `・**${capsToNormal(title.toUpperCase())}**: <@${ent.changes[2].old}>\n`;
+					break;
+				case:
+				default:
+					str += `・**${title}**: \`${JSON.stringify(ent.changes)}\`${reason}\n`;
+					console.log(`Extra for ${e.action} = ${JSON.stringify(e.extra)}`);
 			}
 		}
 	}
@@ -165,19 +165,28 @@ module.exports.command = async (message, content, bot, server) => {
 	if (!message.member.hasPermission('MANAGE_ROLES')) return;
 	try {
 		let guild = server.guild;
-		var loopCount = 0;
-    var count = 0;
-    var beforeID = null;
+		let loopCount = 0;
+    let count = 0;
+    let beforeID = null;
     let contents = content.split(' ');
-    var user = null;
+    let user = null;
     if (message.mentions.users) user = message.mentions.users.first();
-    var max = parseInt(contents[0]);
-    var beautiful = contents[contents.length - 1] == '--e';
+    let max = parseInt(contents[0]);
+    let beautiful = contents[contents.length - 1] == '--e';
+		let type = null;
+		for (var c of contents) {
+			if (Discord.GuildAuditLogs.Actions[c]) {
+				if (!IgnoredActions[c])
+					type = c;
+				break;
+			}
+		}
 		if (!max || max > 10) max = 3;
 		while (loopCount < 15) { // last 5 changes
 			var params = {limit:100};
 			if (beforeID) params.before = beforeID;
       if (user) params.user = user.id;
+			if (type) params.
 			let al = await guild.fetchAuditLogs(params);
 			var prev = {'action':'', 'exeID':'', 'targetID': '', 'entries': []};
 			for (var e of al.entries.values()) {
