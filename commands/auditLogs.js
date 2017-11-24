@@ -48,23 +48,32 @@ function embedEntry(entries) {
 	for (var i in entries) {
 		let ent = entries[entries.length - 1 - i];
 		if (ent.changes) {
-			let title = ent.changes[0].key.replace('$', '');
+			let title = ent.changes[0].key;
 			let reason = '';
 			if (ent.reason) reason = ` : ${ent.reason}`;
-			let vars = {};
+      let vars = {};
 			switch (e.action) {
 				case 'MEMBER_ROLE_UPDATE':
+          title = title.replace('$', '');
 					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new[0].name}\`${reason}\n`;
 					break;
 				case "ROLE_UPDATE":
-					vars.flip = true;
+          vars.flip = true;
 				case "CHANNEL_OVERWRITE_UPDATE":
 					let perm = ent.changes[0].new ^ ent.changes[0].old;
 					let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
-					if (((perm & ent.changes[0].old) == 0) ^ (vars.flip ? 1 : 0)) { // TODO this is fucked up. the order is opposite. LMAO
-						str += `・**Denied**: \`${permKey}\` for \`${e.extra.name}\`\n`;
+					if ((perm & ent.changes[0].old) == 0) { // TODO this is fucked up. the order is opposite. LMAO
+            if (vars.flip) { 
+              str += `・**Granted**: \`${permKey}\`\n`;
+            } else {
+              str += `・**Denied**: \`${permKey}\` for \`${e.extra.name}\`\n`;
+            }
 					} else {
-						str += `・**Granted**: \`${permKey}\` for \`${e.extra.name}\`\n`;
+            if (vars.flip) { 
+						  str += `・**Denied**: \`${permKey}\`\n`;
+            } else {
+						  str += `・**Granted**: \`${permKey}\` for \`${e.extra.name}\`\n`;
+            }
 					}
 					break;
 				case "CHANNEL_UPDATE":
@@ -76,7 +85,7 @@ function embedEntry(entries) {
 				case "CHANNEL_OVERWRITE_DELETE":
 					str += `・**${capsToNormal(title.toUpperCase())}**: <@${ent.changes[2].old}>\n`;
 					break;
-				case:
+
 				default:
 					str += `・**${title}**: \`${JSON.stringify(ent.changes)}\`${reason}\n`;
 					console.log(`Extra for ${e.action} = ${JSON.stringify(e.extra)}`);
@@ -172,6 +181,7 @@ module.exports.command = async (message, content, bot, server) => {
     let user = null;
     if (message.mentions.users) user = message.mentions.users.first();
     let max = parseInt(contents[0]);
+		if (!max || max > 10) max = 3;
     let beautiful = contents[contents.length - 1] == '--e';
 		let type = null;
 		for (var c of contents) {
@@ -181,15 +191,15 @@ module.exports.command = async (message, content, bot, server) => {
 				break;
 			}
 		}
-		if (!max || max > 10) max = 3;
-		while (loopCount < 15) { // last 5 changes
+		while (loopCount < 15) { // dont go too much
 			var params = {limit:100};
 			if (beforeID) params.before = beforeID;
       if (user) params.user = user.id;
-			if (type) params.
+			if (type) params.type = type;
 			let al = await guild.fetchAuditLogs(params);
 			var prev = {'action':'', 'exeID':'', 'targetID': '', 'entries': []};
 			for (var e of al.entries.values()) {
+
 				if (!isInteresting(e)) continue;
 				if (sameEntry(e, prev)) {
 					if (!e.changes) continue;
@@ -199,6 +209,10 @@ module.exports.command = async (message, content, bot, server) => {
 				let preves = prev['entries'];
 				prev['action'] = e.action;
 				prev['exeID'] = e.executor.id;
+        if (e.target == null) {
+          await message.channel.send('AuditLogEntry too old; it has no "target" in it');
+          return;
+        }
 				prev['targetID'] = e.target.id;
 				prev['entries'] = [e];
         if (preves.length) {
@@ -211,7 +225,7 @@ module.exports.command = async (message, content, bot, server) => {
           if (++count == max) {
             break;
           }
-				}
+        }
 			}
       if (prev['entries'].length > 1) { // run out of entries
         if (beautiful) {
@@ -226,7 +240,7 @@ module.exports.command = async (message, content, bot, server) => {
 				beforeID = al.entries.lastKey();
 			} else {
 				break;
-			}
+      }
 		}
 	} catch (e) {
 		console.log(e);
