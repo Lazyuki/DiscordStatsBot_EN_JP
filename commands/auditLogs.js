@@ -81,17 +81,20 @@ function embedEntry(entries) {
             }
 					}
 					break;
+				case "CHANNEL_CREATE":
+				case "EMOJI_CREATE":
+					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new}\`\n`;
+					break;
 				case "CHANNEL_UPDATE":
+				case "EMOJI_UPDATE":
 					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].old}\` to \`${ent.changes[0].new}\`\n`;
 					break;
 				case "CHANNEL_DELETE":
-					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new}\`\n`;
+				case "EMOJI_DELETE":
+					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].old}\`\n`;
 					break;
 				case "CHANNEL_OVERWRITE_DELETE":
 					str += `・**${capsToNormal(title.toUpperCase())}**: <@${ent.changes[2].old}>\n`;
-					break;
-				case "EMOJI_UPDATE":
-					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].old}\` to \`${ent.changes[0].new}\`\n`;
 					break;
 				default:
 					str += `・**${title}**: \`${JSON.stringify(ent.changes)}\`${reason}\n`;
