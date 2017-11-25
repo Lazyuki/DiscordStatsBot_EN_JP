@@ -18,6 +18,7 @@ function isInteresting(e) {
 function sameEntry(e, prev) {
 	if (e.action != prev['action']) return false;
 	if (e.executor.id != prev['exeID']) return false;
+	if (e.target == null) return prev['targetID'] == null;
 	if (e.target.id != prev['targetID']) return false;
 	return true;
 }
@@ -28,22 +29,26 @@ function embedEntry(entries) {
 
 	embed.setAuthor(`${capsToNormal(e.action)} by ${e.executor.username}`, e.executor.avatarURL);
 	var str = '';
-	switch (e.targetType) {
-		case 'USER':
-			str += `__Target User__: \`${e.target.tag}\`\n`;
-			break;
-		case 'ROLE':
-			str += `__Target Role__: \`${e.target.name}\`\n`;
-			break;
-		case 'CHANNEL':
-			str += `__Target Channel__: \`#${e.target.name}\`\n`;
-			break;
-		default:
-			if (e.action == 'MESSAGE_DELETE') {
-				str += `__Message by__: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;//TODO num of messages?
+	if (e.target != null) {
+		switch (e.targetType) {
+			case 'USER':
+				str += `__Target User__: \`${e.target.tag}\`\n`;
 				break;
-			}
-			str += `__TargetType__: \`${e.targetType}\`\n`;
+			case 'ROLE':
+				str += `__Target Role__: \`${e.target.name}\`\n`;
+				break;
+			case 'CHANNEL':
+				str += `__Target Channel__: \`#${e.target.name}\`\n`;
+				break;
+			default:
+				if (e.action == 'MESSAGE_DELETE') {
+					str += `__Message by__: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;//TODO num of messages?
+					break;
+				}
+				str += `__TargetType__: \`${e.targetType}\`\n`;
+		}
+	} else {
+		str += `__TargetType__: \`${e.targetType}\`\n`;
 	}
 	for (var i in entries) {
 		let ent = entries[entries.length - 1 - i];
@@ -63,13 +68,13 @@ function embedEntry(entries) {
 					let perm = ent.changes[0].new ^ ent.changes[0].old;
 					let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
 					if ((perm & ent.changes[0].old) == 0) { // TODO this is fucked up. the order is opposite. LMAO
-            if (vars.flip) { 
+            if (vars.flip) {
               str += `・**Granted**: \`${permKey}\`\n`;
             } else {
               str += `・**Denied**: \`${permKey}\` for \`${e.extra.name}\`\n`;
             }
 					} else {
-            if (vars.flip) { 
+            if (vars.flip) {
 						  str += `・**Denied**: \`${permKey}\`\n`;
             } else {
 						  str += `・**Granted**: \`${permKey}\` for \`${e.extra.name}\`\n`;
@@ -77,7 +82,7 @@ function embedEntry(entries) {
 					}
 					break;
 				case "CHANNEL_UPDATE":
-					str += `・**New ${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new}\`\n`;
+					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].old}\` to \`${ent.changes[0].new}\`\n`;
 					break;
 				case "CHANNEL_DELETE":
 					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new}\`\n`;
@@ -85,7 +90,9 @@ function embedEntry(entries) {
 				case "CHANNEL_OVERWRITE_DELETE":
 					str += `・**${capsToNormal(title.toUpperCase())}**: <@${ent.changes[2].old}>\n`;
 					break;
-
+				case "EMOJI_UPDATE":
+					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].old}\` to \`${ent.changes[0].new}\`\n`;
+					break;
 				default:
 					str += `・**${title}**: \`${JSON.stringify(ent.changes)}\`${reason}\n`;
 					console.log(`Extra for ${e.action} = ${JSON.stringify(e.extra)}`);
@@ -210,10 +217,10 @@ module.exports.command = async (message, content, bot, server) => {
 				prev['action'] = e.action;
 				prev['exeID'] = e.executor.id;
         if (e.target == null) {
-          await message.channel.send('AuditLogEntry too old; it has no "target" in it');
-          return;
-        }
-				prev['targetID'] = e.target.id;
+          prev['targetID'] = null;
+        } else {
+					prev['targetID'] = e.target.id;
+				}
 				prev['entries'] = [e];
         if (preves.length) {
           if (beautiful) {
