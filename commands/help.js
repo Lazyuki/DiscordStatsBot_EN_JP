@@ -11,7 +11,7 @@ module.exports.command = (message, content, bot, server) => {
 	if (message.member.hasPermission('MANAGE_ROLES')) {
 		msg += '\n**Welcoming Party Commands:**\n\`tag (t)\`:  See the pin in <#277384105245802497> `,t <nj | fj | ne | fe | ol> [(optional) @someone, 1, 2, or 3 ]`\n';
 		msg += '\`nofilter (nf)\`: sends people to ~~oblivion~~ <#193966083886153729> for 5 minutes. ***__YOU SHOULD WARN THEM FIRST.__*** Only meant to be used as a last resort. \`,nf @someone @sometwo @somethree\`\n';
-		msg += '\`auditlog (al)\` shows the last 3 interesting audit logs. \`,al 1 @someone\` shows the last 1 audit log involving the person. More options coming soon...\n';
+		msg += '\`auditlog (al)\` shows the last 3 interesting audit logs. \`,al [number < 10 (default = 3)] [ALL_CAPS_ACTION] [@mention] \` Actions: <https://github.com/hydrabolt/discord.js/blob/stable/src/structures/GuildAuditLogs.js#L16>\n';
 
 	}
 	if (message.member.hasPermission('ADMINISTRATOR') && server.hiddenChannels.includes(message.channel.id)) {
