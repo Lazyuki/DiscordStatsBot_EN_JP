@@ -42,7 +42,7 @@ function embedEntry(entries) {
 				break;
 			default:
 				if (e.action == 'MESSAGE_DELETE') {
-					str += `__Message by__: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;//TODO num of messages?
+					str += `__${e.extra.count} Messages by__: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;//TODO num of messages?
 					break;
 				}
 				str += `__TargetType__: \`${e.targetType}\`\n`;
@@ -93,6 +93,18 @@ function embedEntry(entries) {
 				case "EMOJI_DELETE":
 					str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].old}\`\n`;
 					break;
+        case "ROLE_CREATE":
+          title = e.changes[3].key;
+          str += `・**${capsToNormal(title.toUpperCase())}**: ${ent.changes[3].new}\n`;
+          break;
+        case "ROLE_DELETE":
+          title = e.changes[3].key;
+          str += `・**${capsToNormal(title.toUpperCase())}**: ${ent.changes[3].old}\n`;
+          break;
+        case "CHANNEL_OVERWRITE_CREATE":
+          title = e.changes[3].key;
+          str += `・**${capsToNormal(title.toUpperCase())}**: <@${ent.changes[2].new}>\n`
+          break;
 				case "CHANNEL_OVERWRITE_DELETE":
 					str += `・**${capsToNormal(title.toUpperCase())}**: <@${ent.changes[2].old}>\n`;
 					break;
@@ -104,7 +116,7 @@ function embedEntry(entries) {
 	}
 	switch (e.actionType) {
 		case 'CREATE':
-			embed.color = Number('0x66ff33');
+			embed.color = Number('0x87E966');
 			break;
 		case 'UPDATE':
 			embed.color = Number('0xff9900');
@@ -192,7 +204,7 @@ module.exports.command = async (message, content, bot, server) => {
     if (message.mentions.users) user = message.mentions.users.first();
     let max = parseInt(contents[0]);
 		if (!max || max > 10) max = 3;
-    let beautiful = contents[contents.length - 1] == '--e';
+    let beautiful = contents[contents.length - 1] == '--m';
 		let type = null;
 		for (var c of contents) {
 			if (Discord.GuildAuditLogs.Actions[c]) {
@@ -209,14 +221,13 @@ module.exports.command = async (message, content, bot, server) => {
 			let al = await guild.fetchAuditLogs(params);
 			var prev = {'action':'', 'exeID':'', 'targetID': '', 'entries': []};
 			for (var e of al.entries.values()) {
-
 				if (!isInteresting(e)) continue;
 				if (sameEntry(e, prev)) {
 					if (!e.changes) continue;
 					prev['entries'].push(e);
 					continue;
 				}
-				let preves = prev['entries'];
+			  let	preves = prev['entries'];
 				prev['action'] = e.action;
 				prev['exeID'] = e.executor.id;
         if (e.target == null) {
@@ -226,7 +237,7 @@ module.exports.command = async (message, content, bot, server) => {
 				}
 				prev['entries'] = [e];
         if (preves.length) {
-          if (beautiful) {
+          if (!beautiful) {
             let embed = embedEntry(preves);
             await message.channel.send({embed});
           } else {
@@ -238,14 +249,15 @@ module.exports.command = async (message, content, bot, server) => {
         }
 			}
       if (prev['entries'].length > 1) { // run out of entries
-        if (beautiful) {
-          let embed = embedEntry(preves);
+        if (!beautiful) {
+          let embed = embedEntry(prev['entries']);
           await message.channel.send({embed});
         } else {
-          await message.channel.send(normalEntry(preves));
+          await message.channel.send(normalEntry(prev['entries']));
         }
       }
 			if (count < max) {
+        if (al.entries.size < 100) break;
 				loopCount++;
 				beforeID = al.entries.lastKey();
 			} else {
