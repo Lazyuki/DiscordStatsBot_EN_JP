@@ -65,19 +65,23 @@ function embedEntry(entries) {
 				case "ROLE_UPDATE":
           vars.flip = true;
 				case "CHANNEL_OVERWRITE_UPDATE":
-					let perm = ent.changes[0].new ^ ent.changes[0].old;
-					let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
-					if ((perm & ent.changes[0].old) == 0) { // TODO this is fucked up. the order is opposite. LMAO
+          let perm = ent.changes[0].new ^ ent.changes[0].old;
+					let perms = new Discord.Permissions(null, perm).serialize(false);
+          let permKey = [];
+          for (var name in perms) {
+            if (perms[name]) permKey.push(name);
+          }
+          if ((perm & ent.changes[0].old) == 0) { // TODO this is fucked up. the order is opposite. LMAO
             if (vars.flip) {
-              str += `・**Granted**: \`${permKey}\`\n`;
+              str += `・**Allow**: \`${permKey.join(', ')}\`\n`;
             } else {
-              str += `・**Denied**: \`${permKey}\` for \`${e.extra.name}\`\n`;
+              str += `・**${e.extra.name ? 'Deny' : capsToNormal(title.toUpperCase())}**: \`${permKey.join(', ')}\` for \`${e.extra.name ? e.extra.name : e.extra.user.tag}\`\n`;
             }
 					} else {
             if (vars.flip) {
-						  str += `・**Denied**: \`${permKey}\`\n`;
+						  str += `・**Deny**: \`${permKey.join(', ')}\`\n`;
             } else {
-						  str += `・**Granted**: \`${permKey}\` for \`${e.extra.name}\`\n`;
+						  str += `・**${e.extra.name ? 'Allow' : capsToNormal(title.toUpperCase())}**: \`${permKey.join(', ')}\` for \`${e.extra.name ? e.extra.name : e.extra.user.tag}\`\n`;
             }
 					}
 					break;
