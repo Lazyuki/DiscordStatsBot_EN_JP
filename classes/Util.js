@@ -1,7 +1,7 @@
 module.exports = class Util {
   static searchUser(message, content, server) {
     let mentions = message.mentions.users;
-    let uesr = null;
+    let user = null;
     if (mentions.size != 0) {
       user = mentions.first();
     } else if (content != '') { // search name

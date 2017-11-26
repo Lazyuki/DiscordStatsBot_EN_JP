@@ -9,7 +9,7 @@ module.exports.alias = [
   'id'
 ];
 
-module.exports.command = (message, content, bot) => {
+module.exports.command = (message, content, bot, server) => {
 	if (content == '') {
 		message.channel.send('Give me either \`@mention\`, \`#channel\`, \`valid snowflake ID\`, or the user\'s name');
 		return
@@ -48,13 +48,15 @@ module.exports.command = (message, content, bot) => {
 		}
 	}
 	if (!chanMention && !userMention) {
-		let default = new Date(Date.UTC(2015, 1, 1, 0));
+		let def = '1420070400000' 
+    let id = content;
 		let date = Discord.SnowflakeUtil.deconstruct(content).date;
 		let u = Util.searchUser(message, content, server);
 		if (u) {
 			date = Discord.SnowflakeUtil.deconstruct(u.id).date;
+      id = u.id;
 		} else {
-			if (default.getTime() == date.getTime()) {
+			if (def == date.getTime()) {
 				message.channel.send('Invalid snowflake ID');
 				return;
 			}
@@ -62,10 +64,10 @@ module.exports.command = (message, content, bot) => {
 		let embed = new Discord.RichEmbed();
 		let dateStr = dateFormat(date, "UTC:ddd mmm dS, yyyy 'at' h:MM TT");
 		embed.title = `Creation time in UTC and your local time`;
-		embed.description = 'Snowflake ID: ' + content;
+		embed.description = 'Snowflake ID: ' + id;
 		embed.setFooter(`UTC | ${dateStr } --- Local`);
 		embed.color = Number('0x3A8EDB');
 		embed.timestamp = date;
-		chan.send({embed});
+		chan.send(id, {embed});
 	}
 };
