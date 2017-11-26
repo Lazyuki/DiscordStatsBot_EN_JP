@@ -15,7 +15,7 @@ module.exports.command = async (message, content, bot, server) => {
 	if (!user) return;
 
   var record = server.users[user.id];
-	let member = await server.guild.fetchMember(user);
+	let member = await server.guild.fetchMember(user.id);
 
 	// the user hasn't sent anything in the past 30 days
 	if (record == undefined) {
@@ -86,11 +86,11 @@ module.exports.command = async (message, content, bot, server) => {
 
   let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
               'Thursday', 'Friday', 'Saturday'];
-	let hardcore = member.roles.has('196765998706196480') ? '🔥' : '';
+	let fire = member.roles.has('196765998706196480');
   let embed = new Discord.RichEmbed();
-	embed.setAuthor(`${hardcore}Stats for ${user.tag}${hardcore}` , user.avatarURL);
+	embed.setAuthor(`${fire ? '🔥' : ''}Stats for ${user.tag}${fire ? '🔥' : ''}` , user.avatarURL);
   embed.description = 'For the last 30 days (UTC time)'
-  embed.color = Number('0x3A8EDB');
+  embed.color = fire ? Number('0xFF5500') : Number('0x3A8EDB');
   let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
   let jpnPercent = (record.jp / record.thirty * 100).toFixed(2);
   embed.addField('Messages sent ', record.thirty, true);
