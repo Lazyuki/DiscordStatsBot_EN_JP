@@ -56,7 +56,7 @@ module.exports = class Util {
         jpCount++;
       } else if (enregex.test(l)) {
         enCount++;
-      } else if (l != ' '){
+      } else if (l != ' ' && l != 'w'){
         other++;
       }
     }
