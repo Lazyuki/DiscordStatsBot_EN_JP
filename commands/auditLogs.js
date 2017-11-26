@@ -18,8 +18,11 @@ function isInteresting(e) {
 function sameEntry(e, prev) {
 	if (e.action != prev['action']) return false;
 	if (e.executor.id != prev['exeID']) return false;
-	if (e.target == null) return prev['targetID'] == null;
-	if (e.target.id != prev['targetID']) return false;
+	if (e.target == null) {
+		if (prev['targetID'] != null) return false;
+	} else if (e.target.id != prev['targetID']) return false;
+	if (e.extra == null) return prev['extraID'] == null;
+	if (e.extra.channel) return e.extra.channel.id == prev['extraID'];
 	return true;
 }
 
@@ -42,7 +45,7 @@ function embedEntry(entries) {
 				break;
 			default:
 				if (e.action == 'MESSAGE_DELETE') {
-					str += `__${e.extra.count} Messages by__: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;//TODO num of messages?
+					str += `__${e.extra.count} Messages by__: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;
 					break;
 				}
 				str += `__TargetType__: \`${e.targetType}\`\n`;
@@ -223,7 +226,7 @@ module.exports.command = async (message, content, bot, server) => {
       if (user) params.user = user.id;
 			if (type) params.type = type;
 			let al = await guild.fetchAuditLogs(params);
-			var prev = {'action':'', 'exeID':'', 'targetID': '', 'entries': []};
+			var prev = {'action': null, 'exeID': null, 'targetID': null, 'extraID': null, 'entries': []};
 			for (var e of al.entries.values()) {
 				if (!isInteresting(e)) continue;
 				if (sameEntry(e, prev)) {
@@ -238,6 +241,15 @@ module.exports.command = async (message, content, bot, server) => {
           prev['targetID'] = null;
         } else {
 					prev['targetID'] = e.target.id;
+				}
+				if (e.extra) {
+					if (e.extra.channel) {
+						prev['extraID'] == e.extra.channel.id;
+					} else {
+						prev['extraID'] = null;
+					}
+				} else {
+					prev['extraID'] = null;
 				}
 				prev['entries'] = [e];
         if (preves.length) {

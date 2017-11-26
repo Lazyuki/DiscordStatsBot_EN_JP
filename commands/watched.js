@@ -1,5 +1,6 @@
 module.exports.alias = [
-	'watched'
+	'watched',
+	'watchlist'
 ];
 
 module.exports.command = async (message, content, bot, server) => {

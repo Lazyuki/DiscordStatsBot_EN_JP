@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const dateFormat = require('dateformat');
 const sleep = require('sleep');
+const Util = require('../classes/Util.js');
 
 module.exports.alias = [
 	'snowflake',
@@ -9,6 +10,10 @@ module.exports.alias = [
 ];
 
 module.exports.command = (message, content, bot) => {
+	if (content == '') {
+		message.channel.send('Give me either \`@mention\`, \`#channel\`, \`valid snowflake ID\`, or the user\'s name');
+		return
+	}
   let chan = message.channel;
 	let mentions = message.mentions;
   let chans = mentions.channels;
@@ -43,7 +48,17 @@ module.exports.command = (message, content, bot) => {
 		}
 	}
 	if (!chanMention && !userMention) {
+		let default = new Date(Date.UTC(2015, 1, 1, 0));
 		let date = Discord.SnowflakeUtil.deconstruct(content).date;
+		let u = Util.searchUser(message, content, server);
+		if (u) {
+			date = Discord.SnowflakeUtil.deconstruct(u.id).date;
+		} else {
+			if (default.getTime() == date.getTime()) {
+				message.channel.send('Invalid snowflake ID');
+				return;
+			}
+		}
 		let embed = new Discord.RichEmbed();
 		let dateStr = dateFormat(date, "UTC:ddd mmm dS, yyyy 'at' h:MM TT");
 		embed.title = `Creation time in UTC and your local time`;

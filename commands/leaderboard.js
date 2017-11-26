@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const BST = require('../classes/BST.js');
+const Util = require('../classes/Util.js');
 
 module.exports.alias = [
 	'lb',
@@ -9,22 +10,9 @@ module.exports.alias = [
 
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
-	var memberID = message.author.id;
-	var mentions = message.mentions.members;
-	if (mentions.size != 0) {
-    memberID = mentions.firstKey();
-  } else if (content != '') {
-		content = content.toLowerCase();
-    for (var id in server.users) {
-      let u = server.guild.members.get(id);
-			if (u == undefined) continue; // if banned
-      if (u.user.username.toLowerCase().startsWith(content)
-					|| u.displayName.toLowerCase().startsWith(content)) {
-        memberID = id;
-        break;
-			}
-    }
-  }
+	let u = content == '' ? message.author : Util.searchUser(message, content, server);
+	if (!u) return;
+	var memberID = u.id;
 
 	let users = server.users;
 	var result = new BST();

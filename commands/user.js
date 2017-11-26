@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const Util = require('../classes/Util.js');
 
 module.exports.alias = [
 	'u',
@@ -10,28 +11,8 @@ module.exports.alias = [
 ];
 
 module.exports.command = async (message, content, bot, server) => {
-  var user = message.author; // default
-  let mentions = message.mentions.users;
-	var userFound = false;
-  if (mentions.size != 0) {
-    user = mentions.get(mentions.firstKey());
-  } else if (content != '') { // search name
-    content = content.toLowerCase();
-    for (var id in server.users) {
-      let u = server.guild.members.get(id);
-      if (u == undefined) continue; // if banned or left
-      if (u.user.username.toLowerCase().startsWith(content)
-          || u.displayName.toLowerCase().startsWith(content)) {
-        user = u.user;
-				userFound = true;
-        break;
-      }
-    }
-    if (!userFound) { // Search failed
-			message.react('❓');
-      return;
-    }
-  }
+  let user = content == '' ? message.author : Util.searchUser(message, content, server);
+	if (!user) return;
 
   var record = server.users[user.id];
 	let member = await server.guild.fetchMember(user);
