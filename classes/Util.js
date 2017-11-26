@@ -8,8 +8,8 @@ const urlregex = /https?:\/\/(www\.)?\S{2,256}\.[a-z]{2,6}\S*/g;
 const reactregex = /<:[\w-]+:\d+>/g
 const userregex = /<@\d+>/g
 const channelregex = /<#\d+>/g
-const roleregex = /<&\d+>/g
-const idregex = /<([@#&]|:[\w-]+:)\d+>/g
+const roleregex = /<@&\d+>/g
+const idregex = /<([@#]|@&|:[\w-]+:)\d+>/g
 
 module.exports = class Util {
 
