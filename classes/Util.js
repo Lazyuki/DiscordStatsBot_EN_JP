@@ -1,4 +1,18 @@
+// 3040-309F : hiragana
+// 30A0-30FF : katakana
+// FF66-FF9D : half-width katakana
+// 4E00-9FAF : common and uncommon kanji
+const jpregex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/;
+const enregex = /[a-vx-zA-VX-Z]|[ａ-ｖｘ-ｚＡ-ＶＸ-Ｚ]/;
+const urlregex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+const reactregex = /<:[\w-]+:\d+>/g
+const userregex = /<@\d+>/g
+const channelregex = /<#\d+>/g
+const roleregex = /<&\d+>/g
+const idregex = /<([@#&]|:[\w-]+:)\d+>/g
+
 module.exports = class Util {
+
   static searchUser(message, content, server) {
     let mentions = message.mentions.users;
     let user = null;
@@ -25,5 +39,33 @@ module.exports = class Util {
       }
     }
     return user;
+  }
+
+// returns true if japanese, false if english, null if inconclusive (or it has *)
+  static isJapanese(message) {
+    let jpCount = 0;
+    let enCount = 0;
+    let other = 0
+    let content = message.content.replace(urlregex, '');
+    content = content.replace(idregex, '');
+    for (var l of content) {
+      if (l == '*' || l == '＊') {
+        return null;
+      }
+      if (jpregex.test(l)) {
+        jpCount++;
+      } else if (enregex.test(l)) {
+        enCount++;
+      } else if (l != ' '){
+        other++;
+      }
+    }
+    if (jpCount < 3 && enCount < 3 && other > 0) return null; // it's probably a face
+    if (jpCount * 1.5 > enCount) {
+      return true;
+    } if (enCount > jpCount * 1.5) {
+      return false;
+    }
+    return null;
   }
 }
