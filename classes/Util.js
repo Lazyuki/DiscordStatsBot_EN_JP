@@ -61,11 +61,6 @@ module.exports = class Util {
       }
     }
     if (jpCount < 3 && enCount < 3 && other > 0) return null; // it's probably a face
-    if (jpCount * 1.5 > enCount) {
-      return true;
-    } if (enCount > jpCount * 1.5) {
-      return false;
-    }
-    return null;
+    return jpCount == enCount ? null : jpCount * 1.7 > enCount
   }
 }
