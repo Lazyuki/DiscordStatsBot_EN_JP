@@ -137,7 +137,7 @@ module.exports = class Server {
 
     checkLanEx(message) {
       let japanese = message.member.roles.has('196765998706196480'); // native japanese
-      let isJp = Util.isJapanese(message, false);
+      let isJp = Util.isJapanese(message);
       if ((isJp && japanese) || (isJp == false && !japanese)) { // test for == false because it could be null
         message.react('🚫');
       } else {
@@ -177,7 +177,7 @@ module.exports = class Server {
       if (LangException.includes(message.channel.id)) return;
       if (this.hiddenChannels.includes(message.channel.id)) return;
       if (message.channel.id == '225828894765350913' && /^(k!|t!|[!.&])[^\n]*/.test(message.content)) return; // bot
-      let isJp = Util.isJapanese(message);
+      let isJp = Util.isJapanese(message, false);
       if (!jpMuted && isJp == false) message.delete(500);
       if (jpMuted && isJp) message.delete(500);
     }
