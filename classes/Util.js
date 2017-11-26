@@ -42,7 +42,7 @@ module.exports = class Util {
   }
 
 // returns true if japanese, false if english, null if inconclusive (or it has *)
-  static isJapanese(message) {
+  static isJapanese(message, escapeStar=true) {
     let jpCount = 0;
     let enCount = 0;
     let other = 0
@@ -50,7 +50,7 @@ module.exports = class Util {
     content = content.replace(idregex, '');
     for (var l of content) {
       if (l == '*' || l == '＊') {
-        return null;
+        if (escapeStar) return null;
       }
       if (jpregex.test(l)) {
         jpCount++;

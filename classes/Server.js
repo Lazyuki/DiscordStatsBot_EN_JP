@@ -24,7 +24,7 @@ const N3plus = /[誰俺難違僕他付伝位例全公内初助化君和変丈夫
 // 丁両丸予争交他付令仲伝位例係信倉倍候停健側億兆児全公共兵具典内冷刀列初利刷副功加助努労勇勝包化卒協単博印原参反取受史号司各向君告周命和唱商喜器囲固園坂型塩士変夫央失委季孫守完官定実客宮害宿察寺対局岩岸島州巣差希席帯帳平幸底府庫庭康式弓当形役径徒得必念息悲想愛感成戦戸才打投折拾指挙改放救敗散数整旗昔星昨昭景晴曲最望期未末札材束松板果柱栄根案梅械植極様標横橋機欠次歯歴残殺毒毛氏氷求決汽油治法波泣泳活流浅浴消深清温港湖湯満漁灯炭点無然焼照熱牧玉王球由申畑番登的皮皿直相省矢石礼祝神票祭福科秒種積章童競竹笑笛第筆等算管箱節米粉糸紀約級細組結給絵続緑線練置羊美羽老育胃脈腸臣航船良芸芽苦草荷落葉虫血街衣表要覚観角訓記詩課調談議谷豆象貝負貨貯費賞路身軍輪辞農辺返追速連遊達選郡部配酒里量鉄録鏡関陸陽隊階雪雲静面順願類飛養馬鳴麦黄鼻
 const parensregex = /[\u4E00-\u9FAF]+[\u3040-\u309F]{0,2}[\(（【][\u3040-\u309F]+[\)）】]/g
 const urlregex = /https?:\/\/(www\.)?\S{2,256}\.[a-z]{2,6}\S*/g;
-const LangException = ['189601264424714241', '193959229030268938', '314193922761031680']; // jp qs, en qs, correct me
+const LangException = ['189601264424714241', '193959229030268938', '314193922761031680', '376574779316109313']; // jp qs, en qs, correct me, lang ex
 
 module.exports = class Server {
     constructor(guild) {
@@ -137,7 +137,7 @@ module.exports = class Server {
 
     checkLanEx(message) {
       let japanese = message.member.roles.has('196765998706196480'); // native japanese
-      let isJp = Util.isJapanese(message);
+      let isJp = Util.isJapanese(message, false);
       if ((isJp && japanese) || (isJp == false && !japanese)) { // test for == false because it could be null
         message.react('🚫');
       } else {
@@ -176,7 +176,7 @@ module.exports = class Server {
     langMuted(message, jpMuted) {
       if (LangException.includes(message.channel.id)) return;
       if (this.hiddenChannels.includes(message.channel.id)) return;
-      if (/^(k!|t!|[!,.&])[^\n]*/.test(message.content)) return;
+      if (message.channel.id == '225828894765350913' && /^(k!|t!|[!.&])[^\n]*/.test(message.content)) return; // bot
       let isJp = Util.isJapanese(message);
       if (!jpMuted && isJp == false) message.delete(500);
       if (jpMuted && isJp) message.delete(500);
