@@ -177,7 +177,13 @@ module.exports = class Server {
       if (LangException.includes(message.channel.id)) return;
       if (this.hiddenChannels.includes(message.channel.id)) return;
       if (message.channel.id == '225828894765350913' && /^(k!|t!|[!.&%=+$])[^\n]*/.test(message.content)) return; // bot
-      if (/^\.\.\.\s[\S]+$/.test(message.content)) return;
+      if (/^\.\.\.\s[\S]+$/.test(message.content)) return; // nadeko quote
+      if (jpMuted)
+        message.content = message.content.replace(/\*([\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]){1,6}/,''); // only the first match
+      else {
+        message.content = message.content.replace(/\*[\w]{1,10}/,''); // only the first match of correction
+        message.content = message.content.replace(/what'?s?\s(yo)?ur\snative\slang(uage)?/i, '');
+      }
       let isJp = Util.isJapanese(message, false);
       if (!jpMuted && isJp == false) {
         if (message.content.length > 200) {
