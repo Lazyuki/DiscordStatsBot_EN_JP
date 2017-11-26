@@ -178,8 +178,8 @@ module.exports = class Server {
       if (this.hiddenChannels.includes(message.channel.id)) return;
       if (/^(k!|t!|[!,.&])[^\n]*/.test(message.content)) return;
       let isJp = Util.isJapanese(message);
-      if (!jpMuted && isJp == false) message.delete();
-      if (jpMuted && isJp) message.delete();
+      if (!jpMuted && isJp == false) message.delete(500);
+      if (jpMuted && isJp) message.delete(500);
     }
 
     addDeletedMessage(message) {
