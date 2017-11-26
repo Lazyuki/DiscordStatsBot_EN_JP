@@ -181,7 +181,7 @@ module.exports = class Server {
       if (jpMuted)
         message.content = message.content.replace(/[*＊]([\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]){1,6}/,''); // only the first match
       else {
-        message.content = message.content.replace(/[*＊][\w\s]{1,10}/,''); // only the first match of correction
+        message.content = message.content.replace(/[*＊]([\w\s]{1,10}|\w{1,15})/,''); // only the first match of correction
         message.content = message.content.replace(/what'?s?\s(yo)?ur\snative\slang(uage)?/i, '');
       }
       let isJp = Util.isJapanese(message, false);
