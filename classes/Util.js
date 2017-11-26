@@ -27,7 +27,7 @@ module.exports = class Util {
         }
         let u = server.guild.members.get(id);
         if (u == undefined) continue; // if banned or left
-        if (u.user.username.toLowerCase().startsWith(content)
+        if (u.user.tag.toLowerCase().startsWith(content)
             || u.displayName.toLowerCase().startsWith(content)) {
           user = u.user;
           break;
