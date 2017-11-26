@@ -88,10 +88,9 @@ module.exports.command = async (message, content, bot, server) => {
               'Thursday', 'Friday', 'Saturday'];
 
   let embed = new Discord.RichEmbed();
-  embed.title = `Stats for ${user.tag}`;
+	embed.setAuthor(`Stats for ${user.tag}` , user.avatarURL);
   embed.description = 'For the last 30 days (UTC time)'
   embed.color = Number('0x3A8EDB');
-
   let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
   let jpnPercent = (record.jp / record.thirty * 100).toFixed(2);
   embed.addField('Messages sent ', record.thirty, true);
