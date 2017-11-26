@@ -12,7 +12,7 @@ module.exports.command = (message) => {
 	embed.addField('英語で雑談', '#language_exchange', true);
 	embed.addField('英語で言語交換', '#language_exchange', true);
 	embed.addField('英語に関する質問', '#english_questions', true);
-	embed.addField('その他ルールは #server_rules の下の方に日本語で説明があります', '', true);
+	embed.addField('その他ルール', '#server_rules の下の方に日本語で説明があります', true);
 	embed.color = 16711935;
 	message.channel.send({embed});
 }
