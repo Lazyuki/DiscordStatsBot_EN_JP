@@ -45,7 +45,9 @@ bot.on('message', async message => {
       '*sigh* Why did you PM me https://68.media.tumblr.com/d0238a0224ac18b47d1ac2fbbb6dd168/tumblr_nselfnnY3l1rpd9dfo1_250.gif',
       'I don\'t work here ¯\\\_(ツ)\_/¯ http://cloud-3.steamusercontent.com/ugc/576816221180356023/FF4FF60F13F2A773123B3B26A19935944480F510/'];
     var msg = msgs[Math.floor(Math.random() * msgs.length)];
-    message.channel.send(msg);
+    if (message.content.startsWith(prefix)) {
+      message.channel.send(msg);
+    }
     return;
   }
   let testServer = message.guild.id == '293787390710120449'; // My testing server

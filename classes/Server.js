@@ -177,10 +177,29 @@ module.exports = class Server {
       if (LangException.includes(message.channel.id)) return;
       if (this.hiddenChannels.includes(message.channel.id)) return;
       if (message.channel.id == '225828894765350913' && /^(k!|t!|[!.&])[^\n]*/.test(message.content)) return; // bot
-      if (message.content.startsWith('...')) return;
+      if (/^\.\.\.\s[\S]+$/.test(message.content)) return;
       let isJp = Util.isJapanese(message, false);
-      if (!jpMuted && isJp == false) message.delete(500);
-      if (jpMuted && isJp) message.delete(500);
+      if (!jpMuted && isJp == false) {
+        if (message.content.length > 200) {
+          let embed = new Discord.RichEmbed();
+          embed.description = message.content;
+          embed.setFooter(`#${message.channel.name}`);
+          embed.color = Number('0xDB3C3C');
+          message.author.send('It seems like I deleted your long message that might be important.', {embed})
+        }
+        message.delete(500);
+        return;
+      }
+      if (jpMuted && isJp) {
+        if (message.content.length > 120) {
+          let embed = new Discord.RichEmbed();
+          embed.description = message.content;
+          embed.setFooter(`#${message.channel.name}`);
+          embed.color = Number('0xDB3C3C');
+          message.author.send('どうやら長いメッセージを消してしまったみたいです。重要だといけないので一応送っておきます。', {embed})
+        }
+        message.delete(500);
+      }
     }
 
     addDeletedMessage(message) {
@@ -248,7 +267,7 @@ module.exports = class Server {
       embed.setAuthor(`${msg.atag} ID: ${msg.aid}` ,msg.apfp);
       if (msg.del) { // message was deleted
         embed.title = `Message Deleted after ${msg.dur} seconds`;
-        embed.description = `${msg.con}`;
+        embed.description = msg.con;
         embed.color = Number('0xDB3C3C');
       } else { // message was edited
         embed.title = `Message Edited after ${msg.dur} seconds`;
