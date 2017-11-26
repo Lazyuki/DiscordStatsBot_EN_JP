@@ -86,7 +86,7 @@ module.exports.command = async (message, content, bot, server) => {
 
   let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
               'Thursday', 'Friday', 'Saturday'];
-	let fire = member.roles.has('196765998706196480');
+	let fire = member.roles.has('384286851260743680');
   let embed = new Discord.RichEmbed();
 	embed.setAuthor(`${fire ? '🔥' : ''}Stats for ${user.tag}${fire ? '🔥' : ''}` , user.avatarURL);
   embed.description = 'For the last 30 days (UTC time)'
