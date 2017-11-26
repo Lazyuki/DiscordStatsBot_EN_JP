@@ -177,6 +177,7 @@ module.exports = class Server {
       if (LangException.includes(message.channel.id)) return;
       if (this.hiddenChannels.includes(message.channel.id)) return;
       if (message.channel.id == '225828894765350913' && /^(k!|t!|[!.&])[^\n]*/.test(message.content)) return; // bot
+      if (message.content.startsWith('...')) return;
       let isJp = Util.isJapanese(message, false);
       if (!jpMuted && isJp == false) message.delete(500);
       if (jpMuted && isJp) message.delete(500);
