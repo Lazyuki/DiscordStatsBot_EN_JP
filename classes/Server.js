@@ -256,7 +256,7 @@ module.exports = class Server {
     addEdits(oldMessage, newMessage) {
       if (newMessage.channel.id == '376574779316109313') this.checkLanEx(newMessage); // Check language exchange.
       if (newMessage.channel.id == '208118574974238721') this.checkBegJp(newMessage); // Check beginner jpn chat
-      if (message.member.roles.has('384286851260743680')) { // HARDCORE MODE
+      if (newMessage.member.roles.has('384286851260743680')) { // HARDCORE MODE
         this.langMuted(message, message.member.roles.has('196765998706196480'));
       }
       if (this.watchedUsers.includes(oldMessage.author.id)) {
