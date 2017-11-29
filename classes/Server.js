@@ -175,20 +175,21 @@ module.exports = class Server {
     langMuted(message, jpMuted) {
       if (~LangException.indexOf(message.channel.id)) return;
       if (~this.hiddenChannels.indexOf(message.channel.id)) return;
-      if (message.channel.id == '225828894765350913' && /^(k!|t!|[!.&%=+$])[^\n]*/.test(message.content)) return; // bot
-      if (/^\.\.\.\s[\S]+$/.test(message.content)) return; // nadeko quote
+      let content = message.content;
+      if (message.channel.id == '225828894765350913' && /^(k!|t!|[!.&%=+$])[^\n]*/.test(content)) return; // bot
+      if (/^\.\.\.\s[\S]+$/.test(content)) return; // nadeko quote
       if (jpMuted)
-        message.content = message.content.replace(/[*＊]([\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]){1,6}/,''); // only the first match
+        content = content.replace(/[*＊]([\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]){1,6}/,''); // only the first match
       else {
-        message.content = message.content.replace(/[*＊]([\w\s]{1,10}|\w{1,15})/,''); // only the first match of correction
-        message.content = message.content.replace(/what'?s?\s(yo)?ur\snative\slang(uage)?/i, '');
-        message.content = message.content.replace(/welcome/i, '');
+        content = content.replace(/[*＊]([\w\s]{1,10}|\w{1,15})/,''); // only the first match of correction
+        content = content.replace(/what'?s?\s(yo)?ur\snative\slang(uage)?/i, '');
+        content = content.replace(/welcome/i, '');
       }
-      let isJp = Util.isJapanese(message.content, false);
+      let isJp = Util.isJapanese(content, false);
       if (!jpMuted && isJp == -1) {
-        if (message.content.length > 200) {
+        if (content.length > 200) {
           let embed = new Discord.RichEmbed();
-          embed.description = message.content;
+          embed.description = content;
           embed.setFooter(`#${message.channel.name}`);
           embed.color = Number('0xDB3C3C');
           message.author.send('It seems like I deleted your long message that might be important.', {embed})
@@ -197,9 +198,9 @@ module.exports = class Server {
         return;
       }
       if (jpMuted && isJp == 1) {
-        if (message.content.length > 120) {
+        if (content.length > 120) {
           let embed = new Discord.RichEmbed();
-          embed.description = message.content;
+          embed.description = content;
           embed.setFooter(`#${message.channel.name}`);
           embed.color = Number('0xDB3C3C');
           message.author.send('どうやら長いメッセージを消してしまったみたいです。重要だといけないので一応送っておきます。', {embed})

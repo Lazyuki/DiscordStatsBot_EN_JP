@@ -145,57 +145,14 @@ function capsToNormal(caps) {
 	return arr.join('');
 }
 
-function normalEntry(entries) {
-	var str = '';
-	let e = entries[0];
-	str += `__${capsToNormal(e.action)}__ by \`${e.executor.tag}\`\n`
-	switch (e.targetType) {
-		case 'USER':
-			str += `・**Target User**: \`${e.target.tag}\`\n`;
-			break;
-		case 'ROLE':
-			str += `・**Target Role**: \`${e.target.name}\`\n`;
-			break;
-		case 'CHANNEL':
-			str += `・**Target Channel**: \`#${e.target.name}\`\n`;
-			break;
-		default:
-			if (e.action == 'MESSAGE_DELETE') {
-				str += `・**Message by**: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;
-				break;
-			}
-			str += `・**TargetType**: \`${e.targetType}\`\n`;
-	}
-	for (var i in entries) {
-		let ent = entries[entries.length - 1 - i];
-		if (ent.changes) {
-			let title = ent.changes[0].key.replace('$', '');
-			let reason = '';
-			if (ent.reason) reason = ` **with reason:** ${ent.reason}`;
-			if (ent.changes[0].new[0]) { // Roles
-				if (ent.changes[0].new[0].name) {
-					str += `・**${title}**: ${ent.changes[0].new[0].name}${reason}\n`;
-				} else {
-					str += `・**${title}**: ${JSON.stringify(ent.changes[0].new)}${reason}\n`;
-				}
-      } else if (ent.changes[0].new) {
-				if (title == 'permissions') {
-					let perm = ent.changes[0].new ^ ent.changes[0].old;
-					let permKey = Object.keys(Discord.Permissions.FLAGS).find(key => Discord.Permissions.FLAGS[key] == perm);
-					if ((perm & ent.changes[0].old) == 0) {
-						str += `・**Granted**: \`${permKey}${reason}\`\n`;
-					} else {
-						str += `・**Denied**: \`${permKey}${reason}\`\n`;
-					}
-				} else {
-					str += `・**${title}**: ${ent.changes[0].new}${reason}\n`;
-				}
-      } else {
-				str += `・**${title}**: ${JSON.stringify(ent.changes)}${reason}\n`;
-			}
+function normalToCaps(normal) {
+	let str = normal[0];
+	for (var i = 0; i < normal.length - 1; i++) {
+		if (/[A-Z]/.test(normal[i + 1])) {
+			str += '_'
 		}
+		str += normal[i + 1].toUpperCase();
 	}
-	//embed.timestamp = e.createdAt;
 	return str;
 }
 
@@ -211,9 +168,11 @@ module.exports.command = async (message, content, bot, server) => {
     if (message.mentions.users) user = message.mentions.users.first();
     let max = parseInt(contents[0]);
 		if (!max || max > 10) max = 3;
-    let beautiful = contents[contents.length - 1] == '--m';
 		let type = null;
 		for (var c of contents) {
+			if (/[a-z]/g.test(c)) {
+				c = normalToCaps(c);
+			}
 			if (Discord.GuildAuditLogs.Actions[c]) {
 				if (!IgnoredActions[c])
 					type = c;
@@ -253,24 +212,16 @@ module.exports.command = async (message, content, bot, server) => {
 				}
 				prev['entries'] = [e];
         if (preves.length) {
-          if (!beautiful) {
-            let embed = embedEntry(preves);
-            await message.channel.send({embed});
-          } else {
-            await message.channel.send(normalEntry(preves));
-          }
+          let embed = embedEntry(preves);
+          await message.channel.send({embed});
           if (++count == max) {
             break;
           }
         }
 			}
       if (prev['entries'].length > 1) { // run out of entries
-        if (!beautiful) {
-          let embed = embedEntry(prev['entries']);
-          await message.channel.send({embed});
-        } else {
-          await message.channel.send(normalEntry(prev['entries']));
-        }
+        let embed = embedEntry(prev['entries']);
+        await message.channel.send({embed});
       }
 			if (count < max) {
         if (al.entries.size < 100) break;
