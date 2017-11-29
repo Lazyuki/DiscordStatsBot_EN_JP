@@ -42,25 +42,28 @@ module.exports = class Util {
   }
 
 // returns true if japanese, false if english, null if inconclusive (or it has *)
-  static isJapanese(message, escapeStar=true) {
+// Returns 1 if Japanese, -1 if English, 0 otherwise.
+  static isJapanese(content, escapeStar=true) {
     let jpCount = 0;
     let enCount = 0;
     let other = 0
-    let content = message.content.replace(urlregex, '');
+    content = content.replace(urlregex, '');
     content = content.replace(idregex, '');
+    content = content.replace(/o.o/i, '');
     for (var l of content) {
       if (l == '*' || l == '＊') {
-        if (escapeStar) return null;
+        if (escapeStar) return 0;
       }
       if (jpregex.test(l)) {
         jpCount++;
       } else if (enregex.test(l)) {
         enCount++;
-      } else if (l != ' ' && l != 'w'){
+      } else if (!/[\sw]/i.test(l)){
         other++;
       }
     }
-    if (jpCount < 3 && enCount < 3 && other > 0) return null; // it's probably a face
-    return jpCount == enCount ? null : jpCount * 1.7 > enCount
+    if (jpCount == enCount) return 0;
+    if (jpCount < 3 && enCount < 3 && other > 0) return 0; // it's probably a face
+    return  jpCount * 1.7 > enCount ? 1 : -1;
   }
 }

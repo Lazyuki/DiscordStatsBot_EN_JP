@@ -13,9 +13,8 @@ module.exports.command = async (message, content, bot, server) => {
   if (mentions.size != 0) {
     userID = mentions.firstKey();
   }
-
-	if (server.watchedUsers.includes(userID)) {
-		var index = server.watchedUsers.indexOf(userID);
+	let index = server.watchedUsers.indexOf(userID);
+	if (~index) {
     server.watchedUsers.splice(index, 1);
 		message.channel.send(`<@${userID}> is now off the hook`);
 	} else {

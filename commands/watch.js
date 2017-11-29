@@ -5,7 +5,7 @@ module.exports.alias = [
 module.exports.command = async (message, content, bot, server) => {
 	if (server.guild.id != '189571157446492161') return; // Only for EJLX server
 	if (!message.member.hasPermission('ADMINISTRATOR')) {
-		if (!server.hiddenChannels.includes(message.channel.id)) return;
+		if (!~server.hiddenChannels.indexOf(message.channel.id)) return;
 	};
 
 	if (content == '') {
@@ -17,13 +17,13 @@ module.exports.command = async (message, content, bot, server) => {
   if (mentions.size != 0) {
     user = mentions.get(mentions.firstKey()).user;
   } else if (content != '') {
-		// fetchUser first to cache?
+		// TODO: fetchUser first to cache?
 	  let member = await server.guild.fetchMember(content);
 		if (member == undefined) return;
 		user = member.user;
 	}
 
-	if (server.watchedUsers.includes(user.id)) {
+	if (~server.watchedUsers.indexOf(user.id)) {
 		message.channel.send(user.username + ' is already being watched');
 	} else {
 		server.watchedUsers.push(user.id);

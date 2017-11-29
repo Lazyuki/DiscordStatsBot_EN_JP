@@ -46,12 +46,11 @@ module.exports = class Server {
         this.newUsers = json['newUsers'];
         for (var user in json['users']) {
           let uRec = json['users'][user]
-          this.users[user] = new UserRecord(uRec['record'], uRec['thirty'],
-            uRec['jp'], uRec['chans']); // TODO fix to new var names
+          this.users[user] = new UserRecord(uRec);
         }
         for (var msg in json['deletedMessages']) {
           let dm = json['deletedMessages'][msg];
-          this.deletedMessages.push(new SimpleMsg(dm.id, dm.del, dm.a, dm.atag, dm.aid, dm.apfp, dm.con, dm.acon, dm.ch, dm.chid, dm.time, dm.dur, dm.img));
+          this.deletedMessages.push(new SimpleMsg({simple:dm}));
         }
         this.watchedUsers = json['watchedUsers'];
         this.watchedImagesID = json['watchedImagesID'];
@@ -69,7 +68,7 @@ module.exports = class Server {
     }
 
     hideChannel(channel) {
-      if (this.hiddenChannels.includes(channel)) return;
+      if (~this.hiddenChannels.indexOf(channel)) return;
       this.hiddenChannels.push(channel);
     }
 
@@ -137,8 +136,8 @@ module.exports = class Server {
 
     checkLanEx(message) {
       let japanese = message.member.roles.has('196765998706196480'); // native japanese
-      let isJp = Util.isJapanese(message);
-      if ((isJp && japanese) || (isJp == false && !japanese)) { // test for == false because it could be null
+      let isJp = Util.isJapanese(message.content);
+      if ((isJp == 1 && japanese) || (isJp == -1 && !japanese)) {
         message.react('🚫');
       } else {
         for (var r of message.reactions.values()) {
@@ -174,8 +173,8 @@ module.exports = class Server {
     }
 
     langMuted(message, jpMuted) {
-      if (LangException.includes(message.channel.id)) return;
-      if (this.hiddenChannels.includes(message.channel.id)) return;
+      if (~LangException.indexOf(message.channel.id)) return;
+      if (~this.hiddenChannels.indexOf(message.channel.id)) return;
       if (message.channel.id == '225828894765350913' && /^(k!|t!|[!.&%=+$])[^\n]*/.test(message.content)) return; // bot
       if (/^\.\.\.\s[\S]+$/.test(message.content)) return; // nadeko quote
       if (jpMuted)
@@ -185,8 +184,8 @@ module.exports = class Server {
         message.content = message.content.replace(/what'?s?\s(yo)?ur\snative\slang(uage)?/i, '');
         message.content = message.content.replace(/welcome/i, '');
       }
-      let isJp = Util.isJapanese(message, false);
-      if (!jpMuted && isJp == false) {
+      let isJp = Util.isJapanese(message.content, false);
+      if (!jpMuted && isJp == -1) {
         if (message.content.length > 200) {
           let embed = new Discord.RichEmbed();
           embed.description = message.content;
@@ -197,7 +196,7 @@ module.exports = class Server {
         message.delete(500);
         return;
       }
-      if (jpMuted && isJp) {
+      if (jpMuted && isJp == 1) {
         if (message.content.length > 120) {
           let embed = new Discord.RichEmbed();
           embed.description = message.content;
@@ -221,9 +220,9 @@ module.exports = class Server {
       } else if (message.content.length < 3) {
         return;
       }
-      var simple = new SimpleMsg(message);
+      var simple = new SimpleMsg({message : message});
       var arr;
-      if (this.watchedUsers.includes(message.author.id)) {
+      if (~this.watchedUsers.indexOf(message.author.id)) {
         let timeout = 0;
         if (simple.dur < 5) {
           timeout = 5 - simple.dur * 1000;
@@ -244,7 +243,7 @@ module.exports = class Server {
       if (message.mentions.members.size > 20) { // SPAM alert!
         let chan = this.guild.channels.get('366692441442615306'); // #mod_log
         if (chan == undefined) return;
-        if (this.watchedUsers.includes(message.author.id)) {
+        if (~this.watchedUsers.indexOf(message.author.id)) {
           message.member.addRole(`259181555803619329`); // muted role
           chan.send(`**USER MUTED** ${message.author} has been muted. <@&240647591770062848> if this was a mistake, unmute them by removing the mute tag. If not, BAN THEM!`);
         } else {
@@ -260,8 +259,8 @@ module.exports = class Server {
       if (newMessage.member.roles.has('384286851260743680')) { // HARDCORE MODE
         this.langMuted(newMessage, newMessage.member.roles.has('196765998706196480'));
       }
-      if (this.watchedUsers.includes(oldMessage.author.id)) {
-        let simple = new SimpleMsg(oldMessage);
+      if (~this.watchedUsers.indexOf(oldMessage.author.id)) {
+        let simple = new SimpleMsg({message : oldMessage});
         simple.del = false;
         simple.acon = newMessage.content;
         this.postLogs(simple);

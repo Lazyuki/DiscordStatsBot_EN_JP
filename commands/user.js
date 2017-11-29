@@ -32,12 +32,12 @@ module.exports.command = async (message, content, bot, server) => {
 	}
 
   var chans = record.chans;
-  let ignoreHidden = !server.hiddenChannels.includes(message.channel.id);
+  let ignoreHidden = !~server.hiddenChannels.indexOf(message.channel.id);
 
   // Most active channels
   var topCHannels = {};
 	for (var ch in chans) {
-    if (server.hiddenChannels.includes(ch) && ignoreHidden) continue;
+    if (~server.hiddenChannels.indexOf(ch) && ignoreHidden) continue;
 		if (topCHannels[ch]) {
 			topCHannels[ch] += chans[ch];
 		} else {

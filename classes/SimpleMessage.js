@@ -1,6 +1,7 @@
 module.exports = class SimpleMessage {
-  constructor(message, del, a, atag, aid, apfp, con, acon, chn, chid, time, dur, img) {
-    if (arguments.length == 1) {
+  constructor(arg) {
+    if (arg.message) {
+      let message = arg.message;
       this.id = message.id; // Message ID.
       this.del = true; // Deleted or edited message
       this.a = message.author.username; // Author username
@@ -14,20 +15,21 @@ module.exports = class SimpleMessage {
       this.time = message.createdTimestamp; // Message time stamp
       this.dur = ((new Date()).getTime() / 1000 - this.time / 1000).toFixed(1); // Message uptime duration in seconds
       this.img = ''; // ImageURL
-    } else if (arguments.length == 13) {
-      this.id = message;
-      this.del = del;
-      this.a = a;
-      this.atag = atag;
-      this.aid = aid;
-      this.apfp = apfp;
-      this.con = con;
-      this.acon = acon;
-      this.ch = chn;
-      this.chid = chid;
-      this.time = time;
-      this.dur = dur;
-      this.img = img;
+    } else if (arg.simple) {
+      let simple = arg.simple;
+      this.id = simple.id;
+      this.del = simple.del;
+      this.a = simple.a;
+      this.atag = simple.atag;
+      this.aid = simple.aid;
+      this.apfp = simple.apfp;
+      this.con = simple.con;
+      this.acon = simple.acon;
+      this.ch = simple.ch;
+      this.chid = simple.chid;
+      this.time = simple.time;
+      this.dur = simple.dur;
+      this.img = simple.img;
     }
   }
 }

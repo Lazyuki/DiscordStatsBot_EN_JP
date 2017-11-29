@@ -4,7 +4,7 @@ module.exports.alias = [
 ];
 
 module.exports.command = (message, content, bot, server) => {
-	let ignoreHidden = !server.hiddenChannels.includes(message.channel.id);
+	let ignoreHidden = !~server.hiddenChannels.indexOf(message.channel.id);
 
 	var allch = {};
 	for (var user in server.users) {
@@ -14,8 +14,7 @@ module.exports.command = (message, content, bot, server) => {
 				delete u.chans[ch];
 				continue;
 			}
-			if (server.hiddenChannels.includes(ch) && ignoreHidden) continue;
-			if (ch == '293787390710120449') continue; // #testing-ground
+			if (~server.hiddenChannels.indexOf(ch) && ignoreHidden) continue;
 			if (allch[ch]) {
 				if (!allch[ch] > 0) continue;
 				allch[ch] += u.chans[ch];

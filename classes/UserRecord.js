@@ -1,32 +1,26 @@
-// 3040-309F : hiragana
-// 30A0-30FF : katakana
-// FF66-FF9D : half-width katakana
-// 4E00-9FAF : common and uncommon kanji
-const regex = /[\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]/;
+const Util = require('./Util.js');
 
-// /^(?:<:[^:]+:\d+>|:[^:]+:)$/.test(message.content)
-// example <:turboRAGE:312737141509586945> 📠
-
-//
 module.exports = class UserRecord {
-  constructor(record, thirty, jp, chans) {
-    if (arguments.length != 4) { // build from scratch
+  constructor(arg) {
+    if (arg) { // build from scratch
+      this.record = arg.record;
+      this.thirty = arg.thirty;
+      this.jp = arg.jp;
+      this.en = arg.en ? arg.en : 0;
+      this.chans = arg.chans;
+    } else { // build from backup
       this.record = new Array(31); //31 days
       this.thirty = 0;
       this.jp = 0;
+      this.en = 0;
       this.chans = {}; // {<channel ID>: # messages, <ID>: #}
-    } else { // build from backup
-      this.record = record;
-      this.thirty = thirty;
-      this.jp = jp;
-      this.chans = chans;
     }
   }
 
   // channelID in string, today is an int between 0-30
   add(content, channelID, today) {
     this.thirty++;
-    let jp = regex.test(content);
+    let isJp = Util.isJapanese(content);
     if (!this.record[today]) {
       this.record[today] = {};
       this.record[today][channelID] = 0;
@@ -36,12 +30,18 @@ module.exports = class UserRecord {
     if (!this.chans[channelID]) {
       this.chans[channelID] = 0;
     }
-    if (jp) { // contains some jp characters
+    if (isJp == 1) { // is Japanese
       if (!this.record[today]['jpn']) {
         this.record[today]['jpn'] = 0;
       }
       this.record[today]['jpn']++;
       this.jp++;
+    } else if (isJp == -1) {
+      if (!this.record[today]['eng']) {
+        this.record[today]['eng'] = 0;
+      }
+      this.record[today]['eng']++;
+      this.en++;
     }
     this.chans[channelID]++;
     this.record[today][channelID]++;
@@ -70,7 +70,12 @@ module.exports = class UserRecord {
     for (var chan in this.record[earliestDay]) {
       if (chan == 'jpn') {
         this.jp -= this.record[earliestDay]['jpn'];
-        delete this.record[earliestDay]['jpn']; // or delete?
+        delete this.record[earliestDay]['jpn'];
+        continue;
+      }
+      if (chan == 'eng') {
+        this.en -= this.record[earliestDay]['eng'];
+        delete this.record[earliestDay]['eng'];
         continue;
       }
       if (chan == 'rxn') { // reactions
