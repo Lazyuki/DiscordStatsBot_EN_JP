@@ -91,7 +91,7 @@ bot.on('messageDelete', message => {
 });
 
 bot.on('messageDeleteBulk', messages => {
-  let m = messages[0][1];
+  let m = messages.first();
   if (m.author.bot) return;
   if (m.channel.type != 'text') return;
   if (m.guild.id == '293787390710120449') return; // Ignore my server

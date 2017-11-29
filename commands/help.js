@@ -14,7 +14,7 @@ module.exports.command = (message, content, bot, server) => {
 		msg += '\`auditlog (al)\` shows the last few interesting audit logs. \`,al [number <= 10 (default = 3)] [ALL_CAPS_ACTION] [@mention] \` Actions: <https://github.com/hydrabolt/discord.js/blob/stable/src/structures/GuildAuditLogs.js#L16>\n';
 	}
 	if (message.member.hasPermission('ADMINISTRATOR')) {
-		msg += '\n**Mod Commands** \n' +
+		msg += '\n**Mod Commands**:\n' +
 		  '\`mutenew\` mutes new users in text chat. Type the same command again to disable it. **Intended for raids**\n' +
       '\`prune\` deletes messages sent by specified users in the channel in the past 24 hours. Use their IDs. \`,prune 123454323454 2345432345643 4543246543234\`\n';
 			if (server.hiddenChannels.includes(message.channel.id)) {
