@@ -70,6 +70,7 @@ bot.on('message', async message => {
 
 bot.on('guildMemberAdd', member => {
   // check mee6 message?
+  if (member.guild.id == '293787390710120449') return;
   bot.servers[member.guild.id].addNewUser(member.id);
 });
 
@@ -90,12 +91,17 @@ bot.on('messageDelete', message => {
 });
 
 bot.on('messageDeleteBulk', messages => {
+  let m = messages[0][1];
+  if (m.author.bot) return;
+  if (m.channel.type != 'text') return;
+  if (m.guild.id == '293787390710120449') return; // Ignore my server
   for (var [id, message] of messages) {
     bot.servers[message.guild.id].addDeletedMessage(message);
   }
 });
 
 bot.on('guildBanAdd', (guild, user) => {
+  if (guild.id == '293787390710120449') return;
   var index = bot.servers[guild.id].watchedUsers.indexOf(user.id);
   if (index == -1) return;
   bot.servers[guild.id].watchedUsers.splice(index, 1);
