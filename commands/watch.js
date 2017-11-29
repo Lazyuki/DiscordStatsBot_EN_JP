@@ -17,6 +17,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (mentions.size != 0) {
     user = mentions.get(mentions.firstKey()).user;
   } else if (content != '') {
+		// fetchUser first to cache?
 	  let member = await server.guild.fetchMember(content);
 		if (member == undefined) return;
 		user = member.user;

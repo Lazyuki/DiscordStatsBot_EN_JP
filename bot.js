@@ -74,16 +74,18 @@ bot.on('guildMemberAdd', member => {
 });
 
 bot.on('messageUpdate', (oldMessage, newMessage) => {
-  if (oldMessage.guild.id == '293787390710120449') return; // Ignore my server
   if (oldMessage.content == newMessage.content) return; // Discord auto embed for links.
   if (oldMessage.channel.type != 'text') return;
+  if (oldMessage.guild.id == '293787390710120449') return; // Ignore my server
+
   bot.servers[oldMessage.guild.id].addEdits(oldMessage, newMessage);
 });
 
 bot.on('messageDelete', message => {
   if (message.author.bot) return;
-  if (message.guild.id == '293787390710120449') return; // Ignore my server
   if (message.channel.type != 'text') return;
+  if (message.guild.id == '293787390710120449') return; // Ignore my server
+
   bot.servers[message.guild.id].addDeletedMessage(message);
 });
 
