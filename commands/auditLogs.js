@@ -167,9 +167,14 @@ module.exports.command = async (message, content, bot, server) => {
     let user = null;
     if (message.mentions.users) user = message.mentions.users.first();
     let max = parseInt(contents[0]);
-		if (!max || max > 10) max = 3;
+		if (!max || max > 20) max = 3;
 		let type = null;
+		let targID = null;
 		for (var c of contents) {
+			if (/^\d{17,19}$/.test(c)) {
+				targID = c;
+				break;
+			}
 			if (/[a-z]/g.test(c)) {
 				c = normalToCaps(c);
 			}
@@ -179,7 +184,7 @@ module.exports.command = async (message, content, bot, server) => {
 				break;
 			}
 		}
-		while (loopCount < 15) { // dont go too much
+		while (loopCount < 20) { // dont go too much
 			var params = {limit:100};
 			if (beforeID) params.before = beforeID;
       if (user) params.user = user.id;
@@ -192,6 +197,9 @@ module.exports.command = async (message, content, bot, server) => {
 					if (!e.changes) continue;
 					prev['entries'].push(e);
 					continue;
+				}
+				if (targID && e.extra) {
+					if (e.extra.id && e.extra.id != targID) continue;
 				}
 			  let	preves = prev['entries'];
 				prev['action'] = e.action;
