@@ -40,6 +40,7 @@ module.exports.command = (message, content, bot, server) => {
 			let embed = new Discord.RichEmbed();
 			let dateStr = dateFormat(date, "UTC:ddd mmm dS, yyyy 'at' h:MM TT");
 			embed.title = `Creation time in UTC and your local time`;
+			embed.setAuthor(u.tag, u.avatarURL);
 			embed.description = 'Snowflake ID: ' + u + ` (<@${u}>)`;
 			embed.setFooter(`UTC | ${dateStr } --- Local`);
 			embed.color = Number('0x3A8EDB');
@@ -48,12 +49,14 @@ module.exports.command = (message, content, bot, server) => {
 		}
 	}
 	if (!chanMention && !userMention) {
-		let def = '1420070400000' 
+		let embed = new Discord.RichEmbed();
+		let def = '1420070400000'
     let id = content;
 		let date = Discord.SnowflakeUtil.deconstruct(content).date;
 		let u = Util.searchUser(message, content, server);
 		if (u) {
 			date = Discord.SnowflakeUtil.deconstruct(u.id).date;
+			embed.setAuthor(u.tag, u.avatarURL);
       id = u.id;
 		} else {
 			if (def == date.getTime()) {
@@ -61,7 +64,6 @@ module.exports.command = (message, content, bot, server) => {
 				return;
 			}
 		}
-		let embed = new Discord.RichEmbed();
 		let dateStr = dateFormat(date, "UTC:ddd mmm dS, yyyy 'at' h:MM TT");
 		embed.title = `Creation time in UTC and your local time`;
 		embed.description = 'Snowflake ID: ' + id;
