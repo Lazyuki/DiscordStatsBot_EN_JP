@@ -171,9 +171,8 @@ module.exports.command = async (message, content, bot, server) => {
 		let type = null;
 		let targID = null;
 		for (var c of contents) {
-			if (/^\d{17,19}$/.test(c)) {
-				targID = c;
-				break;
+			if (/\d{17,19}/.test(c)) {
+				targID = c;	
 			}
 			if (/[a-z]/g.test(c)) {
 				c = normalToCaps(c);
@@ -181,7 +180,6 @@ module.exports.command = async (message, content, bot, server) => {
 			if (Discord.GuildAuditLogs.Actions[c]) {
 				if (!IgnoredActions[c])
 					type = c;
-				break;
 			}
 		}
 		while (loopCount < 20) { // dont go too much
@@ -198,8 +196,8 @@ module.exports.command = async (message, content, bot, server) => {
 					prev['entries'].push(e);
 					continue;
 				}
-				if (targID && e.extra) {
-					if (e.extra.id && e.extra.id != targID) continue;
+				if (targID && e.target) {
+					if (e.target.id && e.target.id != targID) continue;
 				}
 			  let	preves = prev['entries'];
 				prev['action'] = e.action;
