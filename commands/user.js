@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
 const Util = require('../classes/Util.js');
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
+						'Thursday', 'Friday', 'Saturday'];
 
 module.exports.alias = [
 	'u',
@@ -11,24 +13,28 @@ module.exports.alias = [
 ];
 
 module.exports.command = async (message, content, bot, server) => {
+
   let user = content == '' ? message.author : Util.searchUser(message, content, server);
-	if (!user) return;
-
-  var record = server.users[user.id];
-	let member = await server.guild.fetchMember(user.id);
-
-	// the user hasn't sent anything in the past 30 days
-	if (record == undefined) {
-		let embed = new Discord.RichEmbed();
-		embed.title = `Stats for ${user.tag}`;
-		embed.description = 'Hasn\'t said anything in the past 30 days'
-		embed.color = Number('0x3A8EDB');
-		if (member) { // ban check
-			embed.setFooter('Joined ');
-			embed.timestamp = member.joinedAt;
+	let record;
+	let member;
+	if (!user) {
+		if (!(record = server.users[content])) return;
+	} else {
+		record = server.users[user.id];
+		member = await server.guild.fetchMember(user.id);
+		// the user hasn't sent anything in the past 30 days
+		if (record == undefined) {
+			let embed = new Discord.RichEmbed();
+			embed.title = `Stats for ${user.tag}`;
+			embed.description = 'Hasn\'t said anything in the past 30 days'
+			embed.color = Number('0x3A8EDB');
+			if (member) { // ban check
+				embed.setFooter('Joined ');
+				embed.timestamp = member.joinedAt;
+			}
+			message.channel.send({embed});
+			return;
 		}
-		message.channel.send({embed});
-		return;
 	}
 
   var chans = record.chans;
@@ -84,8 +90,23 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
 
-  let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
-              'Thursday', 'Friday', 'Saturday'];
+	if (!user) {
+		let embed = new Discord.RichEmbed();
+		embed.setAuthor(`Stats for <@${content}`);
+		embed.description = 'For the last 30 days (UTC time)'
+		embed.color = Number('0x3A8EDB');
+		let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
+		let jpnPercent = (record.jp / record.thirty * 100).toFixed(2);
+		embed.addField('Messages sent ', record.thirty, true);
+		embed.addField('Most active channels', topChans, true);
+		if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
+		//embed.addField('Emojis used', , true);
+		//embed.addField('Time Spent in VC', , true);
+		//embed.addField('Reacted', record.reactions, true);
+		embed.addField('Japanese usage', jpnPercent + '%', true);
+		message.channel.send({embed});
+		return;
+	}
 	let fire = member.roles.has('384286851260743680');
   let embed = new Discord.RichEmbed();
 	embed.setAuthor(`${fire ? '🔥' : ''}Stats for ${user.tag}${fire ? '🔥' : ''}` , user.avatarURL);
