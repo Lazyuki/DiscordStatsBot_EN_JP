@@ -93,7 +93,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
 
-	if (!user) {
+  if (!user) { // For users who left
 		let embed = new Discord.RichEmbed();
     embed.setAuthor(`Stats for <@${content}>`);
 		embed.description = 'For the last 30 days (UTC time)'
@@ -101,7 +101,7 @@ module.exports.command = async (message, content, bot, server) => {
 		let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
 		let jpnPercent = (record.jp / record.thirty * 100).toFixed(2);
 		embed.addField('Messages sent ', record.thirty, true);
-		embed.addField('Most active channels', topChans, true);
+		embed.addField('Most active channels', topChans ? topChans : 'none', true);
 		if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
 		//embed.addField('Emojis used', , true);
 		//embed.addField('Time Spent in VC', , true);
@@ -118,7 +118,7 @@ module.exports.command = async (message, content, bot, server) => {
   let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
   let jpnPercent = (record.jp / record.thirty * 100).toFixed(2);
   embed.addField('Messages sent ', record.thirty, true);
-  embed.addField('Most active channels', topChans, true);
+  embed.addField('Most active channels', topChans ? topChans : 'none', true);
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   //embed.addField('Emojis used', , true);
 	//embed.addField('Time Spent in VC', , true);
