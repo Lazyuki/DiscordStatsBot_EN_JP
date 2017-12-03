@@ -7,5 +7,5 @@ module.exports.alias = [
 module.exports.command = (message, content, bot, server) => {
 	let now = new Date().getTime();
 	let date = Discord.SnowflakeUtil.deconstruct(message.id).date;
-	message.channel.send(`${now - date.getTime())} ms`;
+	message.channel.send(`${now - date.getTime()} ms`;
 };
