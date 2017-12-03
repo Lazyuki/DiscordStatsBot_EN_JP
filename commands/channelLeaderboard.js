@@ -1,6 +1,8 @@
 const Discord = require('discord.js');
 const BST = require('../classes/BST.js');
 const channelregex = /<#\d+>/g;
+const Util = require('../classes/Util.js');
+
 
 module.exports.alias = [
 	'chlb',
@@ -43,7 +45,7 @@ module.exports.command = async (message, content, bot, server) => {
 		chanNames += `#${chan.name} `;
 	}
   let embed = new Discord.RichEmbed();
-	embed.title = `Channel-Leaderboard for ${chanNames}`;
+	embed.title = `Channel-Leaderboard for ${chanNames}`.substr(0, 256);
   embed.description = 'For the last 30 days (UTC time)'
 	embed.color = Number('0x3A8EDB');
   let count = 1;
@@ -64,5 +66,5 @@ module.exports.command = async (message, content, bot, server) => {
 		embed.addField(count++ + ') ' + us.username, result[user], true)
   }
   embed.setFooter('Current UTC time: ' + new Date().toUTCString());
-  sendChannel.send({embed});
+  ch.send({embed});
 };

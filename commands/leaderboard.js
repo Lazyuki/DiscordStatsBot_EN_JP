@@ -31,8 +31,7 @@ module.exports.command = async (message, content, bot, server) => {
 	embed.description = 'For the last 30 days (UTC time)';
 	embed.color = Number('0x3A8EDB');
 	let count = 1;
-	let found = false;
-	let
+	let found = false;	
 
   for (var user in result) {
 		if (count >= 25) { // the 25th person is either the 25th one or the user
