@@ -13,11 +13,7 @@ module.exports.alias = [
 ];
 
 module.exports.command = async (message, content, bot, server) => {
-  let startTime = new Date().getTime();
   let user = content == '' ? message.author : Util.searchUser(message, content, server);
-  let endTime = new Date().getTime();
-	message.channel.send(endTime - startTime);
-	startTime = new Date().getTime();
 	let record;
 	let member;
 	if (!user) {
@@ -131,6 +127,5 @@ module.exports.command = async (message, content, bot, server) => {
 		embed.setFooter('Joined this server');
 		embed.timestamp = member.joinedAt;
 	}
-	endTime = new Date().getTime();
-  message.channel.send(endTime - startTime, {embed});
+  message.channel.send({embed});
 };
