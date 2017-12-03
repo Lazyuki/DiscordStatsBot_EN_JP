@@ -20,7 +20,7 @@ module.exports = class UserRecord {
   // channelID in string, today is an int between 0-30
   add(content, channelID, today) {
     this.thirty++;
-    let isJp = Util.isJapanese(content);
+    let lang = Util.lang(content, false);
     if (!this.record[today]) {
       this.record[today] = {};
       this.record[today][channelID] = 0;
@@ -30,13 +30,13 @@ module.exports = class UserRecord {
     if (!this.chans[channelID]) {
       this.chans[channelID] = 0;
     }
-    if (isJp == 1) { // is Japanese
+    if (lang == Util.LANG.JPN) { // is Japanese
       if (!this.record[today]['jpn']) {
         this.record[today]['jpn'] = 0;
       }
       this.record[today]['jpn']++;
       this.jp++;
-    } else if (isJp == -1) {
+    } else if (lang == Util.LANG.ENG) {
       if (!this.record[today]['eng']) {
         this.record[today]['eng'] = 0;
       }
