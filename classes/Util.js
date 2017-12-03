@@ -15,34 +15,35 @@ module.exports = class Util {
 
   static searchUser(message, content, server) {
     let mentions = message.mentions.users;
+    content = content.trim();
     let user = null;
     if (mentions.size != 0) {
-      user = mentions.first();
+      return mentions.first();
     } else if (content != '') { // search name
       content = content.toLowerCase();
       for (var id in server.users) {
-        if (id == content) {
-          let member = server.guild.members.get(id);
-          if (member) {
-            user = member.user;
-            break;
-          } else {
-            return null;
-          }
+        if (id == content) { // ID search
+          server.guild.fetchMember(id).then((member) => {
+            return member ? member.user : null;
+          });
         }
-        let u = server.guild.members.get(id);
-        if (u == undefined) continue; // if banned or left
-        if (u.user.tag.toLowerCase().startsWith(content)
-            || u.displayName.toLowerCase().startsWith(content)) {
-          user = u.user;
-          break;
+        let u = server.guild.members.get(id); // TODO change to fetch?
+        if (u == undefined) continue; // if left
+        if (content[0] == '*') {
+          content = content.substr(1, content.length);
+        } else {
+          content = '^' + content;
+        }
+        let r = new RegExp(content);
+        if (content.test(u.user.tag.toLowerCase()) || content.test(u.displayName.toLowerCase())) {
+          return u.user;
         }
       }
       if (!user) { // Search failed
         return null;
       }
     }
-    return user;
+    return null;
   }
 
 // returns true if japanese, false if english, null if inconclusive (or it has *)
