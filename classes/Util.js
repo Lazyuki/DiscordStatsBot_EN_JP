@@ -20,27 +20,30 @@ module.exports = class Util {
     if (mentions.size != 0) {
       return mentions.first();
     } else if (content != '') { // search name
-      content = content.toLowerCase();
-      for (var id in server.users) {
-        if (id == content) { // ID search
-          server.guild.fetchMember(id).then((member) => {
-            return member ? member.user : null;
-          });
+      let regex = content[0] == '*';
+      if (regex) {
+        let r = new RegExp(content.substr(1, content.length), 'i');
+        for (var id in server.users) {
+          let u = server.guild.members.get(id); // TODO change to fetch?
+          if (u == undefined) continue; // if left
+          if (r.test(u.user.tag) || r.test(u.nickname)) {
+            return u.user;
+          }
         }
-        let u = server.guild.members.get(id); // TODO change to fetch?
-        if (u == undefined) continue; // if left
-        if (content[0] == '*') {
-          content = content.substr(1, content.length);
-        } else {
-          content = '^' + content;
+      } else { 
+        content = content.toLowerCase();
+        for (var id in server.users) {
+          if (id == content) { // ID search
+            server.guild.fetchMember(id).then((member) => {
+              return member ? member.user : null;
+            });
+          }
+          let u = server.guild.members.get(id); // TODO change to fetch?
+          if (u == undefined) continue; // if left
+          if (u.user.tag.toLowerCase().startsWith(content) || (u.nickname && u.nickname.toLowerCase().startsWith(content))) {
+            return u.user;
+          }
         }
-        let r = new RegExp(content);
-        if (content.test(u.user.tag.toLowerCase()) || content.test(u.displayName.toLowerCase())) {
-          return u.user;
-        }
-      }
-      if (!user) { // Search failed
-        return null;
       }
     }
     return null;
