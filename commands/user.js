@@ -109,7 +109,7 @@ module.exports.command = async (message, content, bot, server) => {
 	}
 	let fire = member.roles.has('384286851260743680');
   let embed = new Discord.RichEmbed();
-	embed.setAuthor(`${fire ? '🔥' : ''}Stats for ${user.tag}${fire ? '🔥' : ''}` , user.avatarURL);
+	embed.setAuthor(`${fire ? '🔥' : ''}Stats for ${user.tag}${fire ? '🔥' : ''}${member.nickname ? ' aka ' + member.nickname : ''}` , user.avatarURL);
   embed.description = 'For the last 30 days (UTC time)'
   embed.color = fire ? Number('0xFF5500') : Number('0x3A8EDB');
   let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
