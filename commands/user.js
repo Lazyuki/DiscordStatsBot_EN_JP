@@ -18,7 +18,10 @@ module.exports.command = async (message, content, bot, server) => {
 	let record;
 	let member;
 	if (!user) {
-		if (!(record = server.users[content])) return;
+		if (!(record = server.users[content])) {
+			message.react('❓');
+			return;
+		}
 	} else {
 		record = server.users[user.id];
 		member = await server.guild.fetchMember(user.id);

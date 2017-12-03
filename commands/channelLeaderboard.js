@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const BST = require('../classes/BST.js');
+const channelregex = /<#\d+>/g;
 
 module.exports.alias = [
 	'chlb',
@@ -8,42 +9,59 @@ module.exports.alias = [
 ];
 
 module.exports.command = async (message, content, bot, server) => {
-  let sendChannel = message.channel;
-  var chlb = message.channel;
-  var chMentions = message.mentions.channels;
-  if (chMentions.size != 0) {
-    chlb = chMentions.get(chMentions.firstKey());
-  } else if (content != '') {
-    chlb = server.guild.channels.get(content);
-    if (chlb == undefined) return; // invalid channel;
-  }
-
-  if (~server.hiddenChannels.indexOf(chlb.id)) { // It's a hidden channel
-    if (!~server.hiddenChannels.indexOf(sendChannel.id)) {
-      chlb = sendChannel;
-    }
-  }
+  let ch = message.channel;
+  let channels = null;
+  if (message.mentions.channels.size == 0) {
+		channels = [ch];
+  } else {
+		channels = Array.from(message.mentions.channels.values());
+	}
+	content = content.replace(channelregex, '').trim();
+	let u = content == '' ? message.author : Util.searchUser(message, content, server);
+	if (!u) {
+		message.react('❓');
+		return;
+	}
+	var memberID = u.id;
 
   let users = server.users;
-  var result = new BST();
-  let channelID = chlb.id;
+  let result = new BST();
+
   for (var user in users) {
-    let res = users[user].channelStats(channelID);
-    if (res != 0) {
-      result.add(user, res);
-    }
+		let count = 0;
+		for (let chan of channels) {
+			count += users[user].channelStats(chan.id);
+		}
+		if (count != 0) {
+			result.add(user, count);
+		}
   }
   result = result.toMap();
 
+	let chanNames = '';
+	for (let chan of channels) {
+		chanNames += `#${chan.name} `;
+	}
   let embed = new Discord.RichEmbed();
-	embed.title = `Channel-Leaderboard for #${chlb.name}`;
+	embed.title = `Channel-Leaderboard for ${chanNames}`;
   embed.description = 'For the last 30 days (UTC time)'
 	embed.color = Number('0x3A8EDB');
-  var count = 0;
-  for (var user in result) {
-    count++;
-    embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true)
-    if (count >= 25) break;
+  let count = 1;
+	let found = false;
+
+	for (var user in result) {
+		if (count >= 25) { // the 25th person is either the 25th one or the user
+			if (!found) {
+				count++;
+				if (user != memberID) continue;
+			}
+			embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true);
+			break;
+		}
+		let us = await bot.fetchUser(user);
+		if (!us) continue;
+		if (user == memberID) found = true;
+		embed.addField(count++ + ') ' + us.username, result[user], true)
   }
   embed.setFooter('Current UTC time: ' + new Date().toUTCString());
   sendChannel.send({embed});

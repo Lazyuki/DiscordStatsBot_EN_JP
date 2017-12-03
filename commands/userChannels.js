@@ -8,7 +8,10 @@ module.exports.alias = [
 
 module.exports.command = async (message, content, bot, server) => {
 	let user = content == '' ? message.author : Util.searchUser(message, content, server);
-	if (!user) return;
+	if (!user) {
+		message.react('❓');
+		return;
+	}
 
   var record = server.users[user.id];
 	let member = await server.guild.fetchMember(user);

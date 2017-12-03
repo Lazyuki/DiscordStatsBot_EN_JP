@@ -59,8 +59,8 @@ module.exports.command = (message, content, bot, server) => {
 			embed.setAuthor(u.tag, u.avatarURL);
       id = u.id;
 		} else {
-			if (def == date.getTime()) {
-				message.channel.send('Invalid snowflake ID');
+			if (date.getTime() == def) {
+				message.react('❓');
 				return;
 			}
 		}

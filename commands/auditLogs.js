@@ -172,7 +172,7 @@ module.exports.command = async (message, content, bot, server) => {
 		let targID = null;
 		for (var c of contents) {
 			if (/\d{17,19}/.test(c)) {
-				targID = c;	
+				targID = c;
 			}
 			if (/[a-z]/g.test(c)) {
 				c = normalToCaps(c);
@@ -182,13 +182,13 @@ module.exports.command = async (message, content, bot, server) => {
 					type = c;
 			}
 		}
+		let prev = {'action': null, 'exeID': null, 'targetID': null, 'extraID': null, 'entries': []};
 		while (loopCount < 20) { // dont go too much
 			var params = {limit:100};
 			if (beforeID) params.before = beforeID;
       if (user) params.user = user.id;
 			if (type) params.type = type;
 			let al = await guild.fetchAuditLogs(params);
-			var prev = {'action': null, 'exeID': null, 'targetID': null, 'extraID': null, 'entries': []};
 			for (var e of al.entries.values()) {
 				if (!isInteresting(e)) continue;
 				if (sameEntry(e, prev)) {
@@ -225,10 +225,6 @@ module.exports.command = async (message, content, bot, server) => {
           }
         }
 			}
-      if (prev['entries'].length > 1) { // run out of entries
-        let embed = embedEntry(prev['entries']);
-        await message.channel.send({embed});
-      }
 			if (count < max) {
         if (al.entries.size < 100) break;
 				loopCount++;

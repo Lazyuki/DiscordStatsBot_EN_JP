@@ -39,7 +39,6 @@ module.exports = class Util {
         }
       }
       if (!user) { // Search failed
-  			message.react('❓');
         return null;
       }
     }

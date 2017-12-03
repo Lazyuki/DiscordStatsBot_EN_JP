@@ -11,11 +11,14 @@ module.exports.alias = [
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
 	let u = content == '' ? message.author : Util.searchUser(message, content, server);
-	if (!u) return;
+	if (!u) {
+		message.react('❓');
+		return;
+	}
 	var memberID = u.id;
 
 	let users = server.users;
-	var result = new BST();
+	let result = new BST();
 	for (var user in users) {
 		let res = users[user].totalStats();
 		if (res != 0) {
@@ -27,33 +30,24 @@ module.exports.command = async (message, content, bot, server) => {
 	embed.title = 'Leaderboard';
 	embed.description = 'For the last 30 days (UTC time)';
 	embed.color = Number('0x3A8EDB');
-	var count = 0;
-	var found = false;
-	var twentyfive = true;
+	let count = 1;
+	let found = false;
+	let
 
   for (var user in result) {
-		count++; // this also counts banned people
-		if (count == 25) { // the 25th person is either the 25th one or the user
-			if (found) {
-				embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true);
-				break;
-			};
-			twentyfive = false; // 25th person is normal
-		}
-		if (!found) {
-			if (user == memberID) {
-				found = true;
-				if (!twentyfive) {
-					embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user]);
-					break;
-				}
+		if (count >= 25) { // the 25th person is either the 25th one or the user
+			if (!found) {
+				count++;
+				if (user != memberID) continue;
 			}
+			embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true);
+			break;
 		}
-		if (twentyfive) { // if left, wont show up.
-			embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true)
-		}
+		let us = await bot.fetchUser(user);
+		if (!us) continue;
+		if (user == memberID) found = true;
+		embed.addField(count++ + ') ' + us.username, result[user], true)
   }
-	//console.log(moreThan);
 	embed.setFooter('Current UTC time: ' + new Date().toUTCString());
   channel.send({embed});
 };
