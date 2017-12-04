@@ -37,6 +37,7 @@ module.exports = class Server {
       this.watchedImagesLink = [];
       this.newUsers = [];
       this.kanjis = {};
+      this.sars = {};
       this.kanjiCheck = true;
       if (fs.existsSync(`./.${this.guild.id}_restore.json`)) {
         let json = JSON.parse(fs.readFileSync(`./.${this.guild.id}_restore.json`, 'utf8'));
@@ -55,6 +56,7 @@ module.exports = class Server {
         this.watchedImagesID = json['watchedImagesID'];
         this.watchedImagesLink = json['watchedImagesLink'];
         this.kanjis = json['kanjis'];
+        this.sars = json['sars'] ? json['sars'] : {};
         // for (var wu in json['watchedUsers']) {
           // Uncomment below for restoring them
           // let dms = json['watchedUsers'][wu];
@@ -64,11 +66,6 @@ module.exports = class Server {
           // }
         //}
       }
-    }
-
-    hideChannel(channel) {
-      if (~this.hiddenChannels.indexOf(channel)) return;
-      this.hiddenChannels.push(channel);
     }
 
     addMessage(message) {
@@ -83,7 +80,7 @@ module.exports = class Server {
       if (message.channel.id == '376574779316109313') this.checkLanEx(message); // Check language exchange.
       if (message.channel.id == '208118574974238721') this.checkBegJp(message); // Check beginner jpn chat
       if (message.member.roles.has('384286851260743680')) { // HARDCORE MODE
-        this.langMuted(message, message.member.roles.has('196765998706196480'));
+        this.hardcore(message, message.member.roles.has('196765998706196480'));
       }
 
       if (this.watchedUsers.indexOf(author) != -1) { // add images by watched users.
@@ -171,7 +168,7 @@ module.exports = class Server {
       }
     }
 
-    langMuted(message, jpMuted) {
+    hardcore(message, jpMuted) {
       if (~LangException.indexOf(message.channel.id)) return;
       if (~this.hiddenChannels.indexOf(message.channel.id)) return;
       let content = message.content;
@@ -205,6 +202,18 @@ module.exports = class Server {
           message.author.send('どうやら長いメッセージを消してしまったみたいです。重要だといけないので一応送っておきます。', {embed})
         }
         message.delete(500);
+      }
+    }
+
+    async processReaction(reaction, user, added) {
+      let msg = reaction.message;
+      if (msg.author.id == bot.user.id && msg.content.startsWith('React with')) { // Assign Roles
+        if (this.sars[reaction.emoji.id]) {
+          let roleID = this.sars[reaction.emoji.toString()];
+          let member = await server.guild.fetchMember(user);
+          if (member.roles.has(roleID)) member.removeRole(roleID);
+          else member.addRole(roleOD);
+        }
       }
     }
 
@@ -257,7 +266,7 @@ module.exports = class Server {
       if (newMessage.channel.id == '376574779316109313') this.checkLanEx(newMessage); // Check language exchange.
       if (newMessage.channel.id == '208118574974238721') this.checkBegJp(newMessage); // Check beginner jpn chat
       if (newMessage.member.roles.has('384286851260743680')) { // HARDCORE MODE
-        this.langMuted(newMessage, newMessage.member.roles.has('196765998706196480'));
+        this.hardcore(newMessage, newMessage.member.roles.has('196765998706196480'));
       }
       if (~this.watchedUsers.indexOf(oldMessage.author.id)) {
         let simple = new SimpleMsg({message : oldMessage});

@@ -68,12 +68,6 @@ bot.on('message', async message => {
   commands[command].command(message, content, bot, server);
 });
 
-bot.on('guildMemberAdd', member => {
-  // check mee6 message?
-  if (member.guild.id == '293787390710120449') return;
-  bot.servers[member.guild.id].addNewUser(member.id);
-});
-
 bot.on('messageUpdate', (oldMessage, newMessage) => {
   if (oldMessage.content == newMessage.content) return; // Discord auto embed for links.
   if (oldMessage.channel.type != 'text') return;
@@ -98,6 +92,29 @@ bot.on('messageDeleteBulk', messages => {
   for (var [id, message] of messages) {
     bot.servers[message.guild.id].addDeletedMessage(message);
   }
+});
+
+bot.on('messageReactionAdd', (reaction, user) => {
+  let m = reaction.message;
+  if (m.author.bot) return;
+  if (m.channel.type != 'text') return;
+  if (m.guild.id == '293787390710120449') return; // Ignore my server
+  bot.servers[reaction.message.guild.id].processReaction(reaction, user, true);
+});
+
+bot.on('messageReactionRemove', (reaction, user) => {
+  let m = reaction.message;
+  if (m.author.bot) return;
+  if (m.channel.type != 'text') return;
+  if (m.guild.id == '293787390710120449') return; // Ignore my server
+  bot.servers[reaction.message.guild.id].processReaction(reaction, user, false);
+
+});
+
+bot.on('guildMemberAdd', member => {
+  // check mee6 message?
+  if (member.guild.id == '293787390710120449') return;
+  bot.servers[member.guild.id].addNewUser(member.id);
 });
 
 bot.on('guildBanAdd', (guild, user) => {
