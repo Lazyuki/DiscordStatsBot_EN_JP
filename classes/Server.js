@@ -210,7 +210,7 @@ module.exports = class Server {
       if (msg.author.id == '299335689558949888' && msg.content.startsWith('React with')) { // Assign Roles
         if (this.sars[reaction.emoji.toString()]) {
           let roleID = this.sars[reaction.emoji.toString()];
-          let member = await server.guild.fetchMember(user);
+          let member = await this.guild.fetchMember(user);
           if (!member) return;
           if (member.roles.has(roleID)) {
             member.removeRole(roleID);

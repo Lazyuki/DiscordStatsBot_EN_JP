@@ -96,6 +96,7 @@ bot.on('messageDeleteBulk', messages => {
 
 bot.on('messageReactionAdd', async (reaction, user) => {
   let m = reaction.message;
+  if (user.bot) return;
   if (m.channel.type != 'text') return;
   if (m.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[m.guild.id].processReaction(reaction, user, true);
@@ -103,6 +104,7 @@ bot.on('messageReactionAdd', async (reaction, user) => {
 
 bot.on('messageReactionRemove', async (reaction, user) => {
   let m = reaction.message;
+  if (user.bot) return;
   if (m.channel.type != 'text') return;
   if (m.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[reaction.message.guild.id].processReaction(reaction, user, false);
