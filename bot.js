@@ -94,7 +94,7 @@ bot.on('messageDeleteBulk', messages => {
   }
 });
 
-bot.on('messageReactionAdd', (reaction, user) => {
+bot.on('messageReactionAdd', async (reaction, user) => {
   let m = reaction.message;
   if (m.author.bot) return;
   if (m.channel.type != 'text') return;
@@ -102,7 +102,7 @@ bot.on('messageReactionAdd', (reaction, user) => {
   bot.servers[reaction.message.guild.id].processReaction(reaction, user, true);
 });
 
-bot.on('messageReactionRemove', (reaction, user) => {
+bot.on('messageReactionRemove', async (reaction, user) => {
   let m = reaction.message;
   if (m.author.bot) return;
   if (m.channel.type != 'text') return;

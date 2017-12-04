@@ -211,8 +211,12 @@ module.exports = class Server {
         if (this.sars[reaction.emoji.toString()]) {
           let roleID = this.sars[reaction.emoji.toString()];
           let member = await server.guild.fetchMember(user);
-          if (member.roles.has(roleID)) member.removeRole(roleID);
-          else member.addRole(roleID);
+          if (!member) return;
+          if (member.roles.has(roleID)) {
+            member.removeRole(roleID);
+          } else {
+            member.addRole(roleID);
+          }
         }
       }
     }
