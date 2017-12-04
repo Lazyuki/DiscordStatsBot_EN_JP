@@ -1,9 +1,10 @@
 module.exports.alias = [
-	'sars'
+	'sars',
+	'sar',
+	'lsar'
 ];
 
 module.exports.command = (message, content, bot, server) => {
-	if (!message.member.hasPermission('ADMINISTRATOR')) return;
 	let str = 'React with those emojis to toggle the role.\n'
 	let sortable = [];
 	for (let emoji in server.sars) {
