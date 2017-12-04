@@ -56,7 +56,7 @@ module.exports = class Server {
         this.watchedImagesID = json['watchedImagesID'];
         this.watchedImagesLink = json['watchedImagesLink'];
         this.kanjis = json['kanjis'];
-        this.sars = json['sars'] ? json['sars'] : {};
+        this.sars = json['sars'];
         // for (var wu in json['watchedUsers']) {
           // Uncomment below for restoring them
           // let dms = json['watchedUsers'][wu];
@@ -208,7 +208,7 @@ module.exports = class Server {
     async processReaction(reaction, user, added) {
       let msg = reaction.message;
       if (msg.author.id == '299335689558949888' && msg.content.startsWith('React with')) { // Assign Roles
-        if (this.sars[reaction.emoji.id]) {
+        if (this.sars[reaction.emoji.toString()]) {
           let roleID = this.sars[reaction.emoji.toString()];
           let member = await server.guild.fetchMember(user);
           if (member.roles.has(roleID)) member.removeRole(roleID);
