@@ -4,7 +4,7 @@ module.exports.alias = [
 	'lsar'
 ];
 
-module.exports.command = (message, content, bot, server) => {
+module.exports.command = async (message, content, bot, server) => {
 	let str = 'React with those emojis to toggle the role.\n'
 	let sortable = [];
 	for (let emoji in server.sars) {
