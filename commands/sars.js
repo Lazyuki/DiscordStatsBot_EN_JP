@@ -13,7 +13,7 @@ module.exports.command = (message, content, bot, server) => {
 	}
 	// Sorts the active channels
 	sortable.sort(function(a, b) {
-			return b[0] < a[0];
+			return a[0] < b[0] ? -1 : (a[0] > b[0] ? 1 : 0);
 	});
 	for (let i in sortable) {
 		str += sortable[i][1];
