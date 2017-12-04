@@ -136,7 +136,7 @@ module.exports = class Server {
     checkLanEx(message) {
       let japanese = message.member.roles.has('196765998706196480'); // native japanese
       let lang = Util.lang(message.content);
-      if ((lang == Util.LANG.JPN && japanese) || (Util.LANG.ENG && !japanese)) {
+      if ((lang == Util.LANG.JPN && japanese) || (lang == Util.LANG.ENG && !japanese)) {
         message.react('🚫');
       } else {
         for (var r of message.reactions.values()) {

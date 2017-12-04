@@ -11,7 +11,9 @@ module.exports.command = (message, content, bot) => {
 		fs.writeFile(nohup, '', function (err) {
 			if (err) {
 				message.channel.send('write failed: ' + err);
+				return;
 			};
+			message.channel.send('done');
 		})
 	} else {
 		fs.readFile(nohup, 'utf8', function (err, data) {
@@ -25,6 +27,5 @@ module.exports.command = (message, content, bot) => {
 				message.channel.send(`\`\`\`${data ? data : 'Empty'}\`\`\``);
 			}
 		});
-
 	}
 };
