@@ -5,10 +5,18 @@ module.exports.alias = [
 module.exports.command = (message, content, bot, server) => {
 	if (!message.member.hasPermission('ADMINISTRATOR')) return;
 	let str = 'React with those emojis to toggle the role.\n'
+	let sortable = [];
 	for (let emoji in server.sars) {
 		let role = server.guild.roles.get(server.sars[emoji]);
 		if (!role) continue;
-		str += `${emoji} => **${role.name}**\n`
+		sortable.push([role.name, `${emoji} => **${role.name}**\n`]);
+	}
+	// Sorts the active channels
+	sortable.sort(function(a, b) {
+			return b[0] < a[0];
+	});
+	for (let i in sortable) {
+		str += sortable[i][1];
 	}
 	message.channel.send(str);
 };

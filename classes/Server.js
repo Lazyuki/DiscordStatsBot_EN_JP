@@ -207,7 +207,7 @@ module.exports = class Server {
 
     async processReaction(reaction, user, added) {
       let msg = reaction.message;
-      if (msg.author.id == bot.user.id && msg.content.startsWith('React with')) { // Assign Roles
+      if (msg.author.id == '299335689558949888' && msg.content.startsWith('React with')) { // Assign Roles
         if (this.sars[reaction.emoji.id]) {
           let roleID = this.sars[reaction.emoji.toString()];
           let member = await server.guild.fetchMember(user);
