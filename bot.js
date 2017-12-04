@@ -1,10 +1,21 @@
 const Discord = require('discord.js');
 const config = require('./config.json');
-const bot = new Discord.Client();
 const Server = require('./classes/Server.js');
 const midnightTask = require('./classes/midnightTask.js');
 const savingTask = require('./classes/savingTask.js');
 const commands = require('./cmds.js');
+
+
+const bot = new Discord.Client({
+  disableEveryone: true,
+  disabledEvents: [
+    'TYPING_START',
+    'USER_NOTE_UPDATE',
+    'USER_SETTINGS_UPDATE',
+    'PRESENCE_UPDATE',
+    'VOICE_STATE_UPDATE'
+  ]
+});
 
 // Load configurations.
 const token = config.token;
@@ -30,7 +41,11 @@ bot.on('ready', () => {
   bot.servers = {};
   for (var guild of bot.guilds.values()) {
     if (guild.id == '293787390710120449') continue; // My testing server
+    if (guild.id == '189571157446492161') { // Fetch the self assignable role message
+      guild.channels.get('189585230972190720').fetchMessages()
+    }
     bot.servers[guild.id] = new Server(guild);
+
   }
   let helps = [',help',',h',',halp',',tasukete'];
   bot.user.setGame(helps[Math.floor(Math.random() * helps.length)]);

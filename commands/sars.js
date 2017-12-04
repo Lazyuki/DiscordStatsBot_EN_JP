@@ -5,6 +5,7 @@ module.exports.alias = [
 ];
 
 module.exports.command = async (message, content, bot, server) => {
+	if (!message.member.hasPermission('ADMINISTRATOR')) return;
 	let str = 'React with those emojis to toggle the role.\n'
 	let sortable = [];
 	for (let emoji in server.sars) {
@@ -12,7 +13,7 @@ module.exports.command = async (message, content, bot, server) => {
 		if (!role) continue;
 		sortable.push([role.name, `${emoji} => **${role.name}**\n`]);
 	}
-	// Sorts the active channels
+	// Sorts roles
 	sortable.sort(function(a, b) {
 			return a[0] < b[0] ? -1 : (a[0] > b[0] ? 1 : 0);
 	});
