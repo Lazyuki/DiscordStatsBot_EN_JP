@@ -10,8 +10,6 @@ const bot = new Discord.Client({
   disableEveryone: true,
   disabledEvents: [
     'TYPING_START',
-    'GUILD_MEMBER_UPDATE',
-    'USER_UPDATE',
     'USER_NOTE_UPDATE',
     'USER_SETTINGS_UPDATE',
     'PRESENCE_UPDATE',
