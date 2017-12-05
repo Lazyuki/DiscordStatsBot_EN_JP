@@ -79,6 +79,10 @@ module.exports = class Server {
 
       if (message.channel.id == '376574779316109313') this.checkLanEx(message); // Check language exchange.
       if (message.channel.id == '208118574974238721') this.checkBegJp(message); // Check beginner jpn chat
+      if (!message.member) {
+        console.log(JSON.stringify(message));
+        return;
+      }
       if (message.member.roles.has('384286851260743680')) { // HARDCORE MODE
         this.hardcore(message, message.member.roles.has('196765998706196480'));
       }

@@ -8,6 +8,10 @@ module.exports.alias = [
 module.exports.command = (message, content, bot, server) => {
   let chan = message.channel;
 	var msg = '**Commands:**\n\`leaderboard (,lb)\`\n\`channel-leaderboard (,chlb [#channel])\`\n\`user (,u [name])\`\n\`channels (,ch)\`\n\`snowflake (,id)\`\n\`clear (,clr [num])\`\n';
+	if (server.guild.id == '292389599982911488') {
+		chan.send(msg);
+		return;
+	}
 	if (message.member.hasPermission('MANAGE_ROLES')) {
 		msg += '\n**Welcoming Party Commands:**\n\`tag (t)\`:  See the pin in <#277384105245802497> `,t <nj | fj | ne | fe | ol> [(optional) @someone, 1, 2, or 3 ]`\n';
 		msg += '\`nofilter (nf)\`: sends people to ~~oblivion~~ <#193966083886153729> for 5 minutes. ***__YOU SHOULD WARN THEM FIRST.__*** Only meant to be used as a last resort. \`,nf @someone @sometwo @somethree\`\n';

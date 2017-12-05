@@ -7,7 +7,7 @@ module.exports.command = (message, content, bot, server) => {
 	if (!message.member.hasPermission('ADMINISTRATOR')) return;
 	let captured = /^(\S+)\s(.+)/i.exec(content);
 	if (!captured) {
-		message.channel.send('It should be \`,asar <emoji> <role name>');
+		message.channel.send('It should be \`,asar <emoji> <role name>\`');
 		return;
 	}
 	let emoji = captured[1];
@@ -24,5 +24,5 @@ module.exports.command = (message, content, bot, server) => {
 			return;
 		}
 	}
-	message.channel.send(`No role that matches \`${rolename}\` found`)
+	message.channel.send(`No role matched \`${rolename}\``)
 };

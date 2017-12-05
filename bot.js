@@ -10,6 +10,8 @@ const bot = new Discord.Client({
   disableEveryone: true,
   disabledEvents: [
     'TYPING_START',
+    'GUILD_MEMBER_UPDATE',
+    'USER_UPDATE',
     'USER_NOTE_UPDATE',
     'USER_SETTINGS_UPDATE',
     'PRESENCE_UPDATE',
@@ -84,6 +86,7 @@ bot.on('message', async message => {
 });
 
 bot.on('messageUpdate', (oldMessage, newMessage) => {
+  if (oldMessage.author.bot) return;
   if (oldMessage.content == newMessage.content) return; // Discord auto embed for links.
   if (oldMessage.channel.type != 'text') return;
   if (oldMessage.guild.id == '293787390710120449') return; // Ignore my server
