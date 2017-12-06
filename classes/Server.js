@@ -181,7 +181,7 @@ module.exports = class Server {
       if (jpMuted)
         content = content.replace(/[*＊]([\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]){1,6}/,''); // only the first match
       else {
-        content = content.replace(/[*＊]([\w\s]{1,10}|\w{1,15})/,''); // only the first match of correction
+        content = content.replace(/[*＊](\w{1,12}\s){1,3}/, ''); // only the first match of correction
         content = content.replace(/what'?s?\s(is\s)?(yo)?ur\snative\slang(uage)?/i, '');
         content = content.replace(/welcome/i, '');
       }
