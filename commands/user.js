@@ -70,14 +70,17 @@ module.exports.command = async (message, content, bot, server) => {
 	}
 
   // Most active day in the last 4 weeks, excluding today.
-  var d = new Date().getUTCDay() - 1; // Sunday = 0, do not count today.
+  let d = new Date().getUTCDay() - 1; // Sunday = 0, do not count today.
   if (d == -1) d = 6;
   let dayArr = [0, 0, 0, 0, 0, 0, 0]; // Su Mo Tu We Th Fr Sa
-  var daySum = 0;
+  let daySum = 0;
+	let count = 0;
+	let week = 0;
   for (var i = server.today - 1; i > server.today - 28; i--) { // 4 weeks
     var chans = record.record[((i % 31) + 31) % 31]; // in case it over flows
     for (var ch in chans) {
 			if (ch == 'jpn') continue;
+			if (count++ < 7) week += chans[ch];
       dayArr[d] += chans[ch];
       daySum += chans[ch];
     }
@@ -92,40 +95,26 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
 
-  if (!user) { // For users who left
-		let embed = new Discord.RichEmbed();
-    embed.setAuthor(`Stats for <@${content}>`);
-		embed.description = 'For the last 30 days (UTC time)'
-		embed.color = Number('0x3A8EDB');
-		let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
-		let jpnPercent = (record.jp / record.thirty * 100).toFixed(2);
-		embed.addField('Messages sent ', record.thirty, true);
-		embed.addField('Most active channels', topChans ? topChans : 'none', true);
-		if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
-		//embed.addField('Emojis used', , true);
-		//embed.addField('Time Spent in VC', , true);
-		//embed.addField('Reacted', record.reactions, true);
-		embed.addField('Japanese usage', jpnPercent + '%', true);
-		message.channel.send({embed});
-		return;
-	}
-	let fire = member.roles.has('384286851260743680');
   let embed = new Discord.RichEmbed();
-	embed.setAuthor(`${fire ? '🔥' : ''}Stats for ${user.tag}${member.nickname ? ' aka ' + member.nickname : ''}` , user.avatarURL);
+	if (user) {
+		let fire = member.roles.has('384286851260743680');
+		embed.setAuthor(`${fire ? '🔥' : ''}Stats for ${user.tag}${member.nickname ? ' aka ' + member.nickname : ''}` , user.avatarURL);
+		embed.color = fire ? Number('0xFF5500') : Number('0x3A8EDB');
+		embed.setFooter('Joined this server');
+		embed.timestamp = member.joinedAt;
+	} else { // user left
+		embed.setAuthor(`Stats for <@${content}>`);
+		embed.color = Number('0x3A8EDB');
+	}
   embed.description = 'For the last 30 days (UTC time)'
-  embed.color = fire ? Number('0xFF5500') : Number('0x3A8EDB');
   let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
   let jpnPercent = (record.jp / record.thirty * 100).toFixed(2);
-  embed.addField('Messages sent ', record.thirty, true);
+  embed.addField('Messages sent M | W', `${record.thirty} | ${week}`, true);
   embed.addField('Most active channels', topChans ? topChans : 'none', true);
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   //embed.addField('Emojis used', , true);
 	//embed.addField('Time Spent in VC', , true);
 	//embed.addField('Reacted', record.reactions, true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
-	if (member) { // ban check
-		embed.setFooter('Joined this server');
-		embed.timestamp = member.joinedAt;
-	}
   message.channel.send({embed});
 };
