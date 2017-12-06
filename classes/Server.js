@@ -227,9 +227,7 @@ module.exports = class Server {
 
     addDeletedMessage(message) {
       let con = message.content;
-      if (con.startsWith('.') || con.startsWith('t!') ||
-        con.startsWith(',') || con.startsWith('k!') ||
-        con.startsWith('&') || con.startsWith('!')) return; // no bot messages
+
       var imageURL = '';
       if (message.attachments.size > 0) {
         imageURL = message.attachments.first().url;
@@ -252,6 +250,9 @@ module.exports = class Server {
           this.postLogs(simple);
         }.bind(this), timeout);
       } else {
+        if (con.startsWith('.') || con.startsWith('t!') ||
+          con.startsWith(',') || con.startsWith('k!') ||
+          con.startsWith('&') || con.startsWith('!')) return; // no bot messages
         arr = this.deletedMessages;
         // Move the next two outside of the brackets if you don't want to post.
         arr.push(simple);

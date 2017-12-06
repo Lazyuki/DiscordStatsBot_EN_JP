@@ -4,8 +4,9 @@ module.exports.alias = [
   'rs'
 ];
 
-module.exports.command = (message, cont, bot) => {
+module.exports.command = async (message, cont, bot) => {
   if (message.author.id != bot.owner_ID) return;
+  await message.channel.send("Restarting...");
   for (var s in bot.servers) {
     bot.servers[s].save();
   }
