@@ -76,8 +76,8 @@ module.exports.command = async (message, content, bot, server) => {
   let daySum = 0;
 	let count = 0;
 	let week = 0;
-  for (var i = server.today - 1; i > server.today - 28; i--) { // 4 weeks
-    var chans = record.record[((i % 31) + 31) % 31]; // in case it over flows
+  for (var i = server.today - 1; i >= server.today - 28; i--) { // 4 weeks
+    var chans = record.record[((i % 31) + 31) % 31]; // for under flows
     for (var ch in chans) {
 			if (ch == 'jpn') continue;
 			if (count < 7) week += chans[ch];

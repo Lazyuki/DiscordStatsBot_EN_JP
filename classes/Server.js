@@ -227,7 +227,6 @@ module.exports = class Server {
 
     addDeletedMessage(message) {
       let con = message.content;
-
       var imageURL = '';
       if (message.attachments.size > 0) {
         imageURL = message.attachments.first().url;
