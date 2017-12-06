@@ -80,7 +80,7 @@ module.exports = class Server {
       if (message.channel.id == '376574779316109313') this.checkLanEx(message); // Check language exchange.
       if (message.channel.id == '208118574974238721') this.checkBegJp(message); // Check beginner jpn chat
       if (!message.member) {
-        console.log(JSON.stringify(message));
+        console.log(`#${message.channel.name}, by ${message.author.name}, ${message.content}`);
         return;
       }
       if (message.member.roles.has('384286851260743680')) { // HARDCORE MODE
@@ -274,6 +274,10 @@ module.exports = class Server {
       if (newMessage.channel.id == '376574779316109313') this.checkLanEx(newMessage); // Check language exchange.
       if (newMessage.channel.id == '208118574974238721') this.checkBegJp(newMessage); // Check beginner jpn chat
       if (newMessage.member.roles.has('384286851260743680')) { // HARDCORE MODE
+      if (!newMessage.member) {
+        console.log(`#${newMessage.channel.name}, by ${newMessage.author.name}, ${newMessage.content}`);
+        return;
+      }
         this.hardcore(newMessage, newMessage.member.roles.has('196765998706196480'));
       }
       if (~this.watchedUsers.indexOf(oldMessage.author.id)) {
