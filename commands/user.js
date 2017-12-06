@@ -80,10 +80,11 @@ module.exports.command = async (message, content, bot, server) => {
     var chans = record.record[((i % 31) + 31) % 31]; // in case it over flows
     for (var ch in chans) {
 			if (ch == 'jpn') continue;
-			if (count++ < 7) week += chans[ch];
+			if (count < 7) week += chans[ch];
       dayArr[d] += chans[ch];
       daySum += chans[ch];
     }
+		count++;
     d = ((d - 1) % 7 + 7) % 7;
   }
   var maxDayNum = 0;
