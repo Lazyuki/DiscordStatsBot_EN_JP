@@ -69,6 +69,7 @@ module.exports = class Server {
     }
 
     addMessage(message) {
+      await message.guild.fetchMember(message.author);
       let author = message.author.id;
       let channel = message.channel.id;
       if (!this.users[author]) {
@@ -271,6 +272,7 @@ module.exports = class Server {
     }
 
     addEdits(oldMessage, newMessage) {
+      await newMessage.guild.fetchMember(newMessage.author);
       if (newMessage.channel.id == '376574779316109313') this.checkLanEx(newMessage); // Check language exchange.
       if (newMessage.channel.id == '208118574974238721') this.checkBegJp(newMessage); // Check beginner jpn chat
       if (!newMessage.member) {
