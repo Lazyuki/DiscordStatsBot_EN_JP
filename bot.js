@@ -9,11 +9,7 @@ const commands = require('./cmds.js');
 const bot = new Discord.Client({
   disableEveryone: true,
   disabledEvents: [
-    'TYPING_START',
-    'USER_NOTE_UPDATE',
-    'USER_SETTINGS_UPDATE',
-    'PRESENCE_UPDATE',
-    'VOICE_STATE_UPDATE'
+    'TYPING_START'
   ]
 });
 
