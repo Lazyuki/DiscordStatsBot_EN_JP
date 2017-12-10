@@ -188,7 +188,7 @@ module.exports = class Server {
       }
       let lang = Util.lang(content, false);
       if (!jpMuted && lang == Util.LANG.ENG) {
-        if (content.length > 200) {
+        if (content.length > 150) {
           let embed = new Discord.RichEmbed();
           embed.description = content;
           embed.setFooter(`#${message.channel.name}`);
@@ -199,7 +199,7 @@ module.exports = class Server {
         return;
       }
       if (jpMuted && lang == Util.LANG.JPN) {
-        if (content.length > 120) {
+        if (content.length > 80) {
           let embed = new Discord.RichEmbed();
           embed.description = content;
           embed.setFooter(`#${message.channel.name}`);

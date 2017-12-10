@@ -40,7 +40,7 @@ module.exports.command = (message, content, bot, server) => {
 			let embed = new Discord.RichEmbed();
 			let dateStr = dateFormat(date, "UTC:ddd mmm dS, yyyy 'at' h:MM TT");
 			embed.title = `Creation time in UTC and your local time`;
-			embed.setAuthor(u.tag, u.avatarURL);
+			embed.setAuthor(users.get(u).tag, users.get(u).avatarURL);
 			embed.description = 'Snowflake ID: ' + u + ` (<@${u}>)`;
 			embed.setFooter(`UTC | ${dateStr } --- Local`);
 			embed.color = Number('0x3A8EDB');
