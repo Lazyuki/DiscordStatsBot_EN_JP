@@ -1,13 +1,19 @@
+module.exports.name = 'watched';
 module.exports.alias = [
-	'watched',
-	'watchlist'
+  'watched',
+  'watchlist'
 ];
+module.exports.isAllowed = (message, server) => {
+  if (server.guild.id != '189571157446492161') return false;
+  return server.hiddenChannels.includes(message.channel.id) && message.member.hasPermission('ADMINISTRATOR');
+};
+
+module.exports.help = 'Shows users on the watchlist.';
 
 module.exports.command = async (message, content, bot, server) => {
-  if (!message.member.hasPermission('ADMINISTRATOR')) return;
   let res = 'Watched users:\n';
-	for (var i in server.watchedUsers) {
-		res += '<@' + server.watchedUsers[i] + '>\n';
-	}
-	message.channel.send(res);
+  for (var i in server.watchedUsers) {
+    res += '<@' + server.watchedUsers[i] + '>\n';
+  }
+  message.channel.send(res);
 };

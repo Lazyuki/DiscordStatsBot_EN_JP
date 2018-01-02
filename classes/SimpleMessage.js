@@ -3,13 +3,13 @@ module.exports = class SimpleMessage {
     if (arg.message) {
       let message = arg.message;
       this.id = message.id; // Message ID.
-      this.del = true; // Deleted or edited message
+      this.del = arg.del;
       this.a = message.author.username; // Author username
       this.atag = message.author.tag; // Author username with the tag
       this.aid = message.author.id; // Author id
       this.apfp = message.author.avatarURL; // Author avatarURL
-      this.con = message.content; // Message content
-      this.acon = ''; // Message content after edit (only for edited messages)
+      this.con = this.del ?  message.content : message.edits[1].content; // Message content
+      this.acon = this.del ? '' : message.content; // Message content after edit (only for edited messages)
       this.ch = message.channel.name; // Message channel name
       this.chid = message.channel.id; // Message channel id
       this.time = message.createdTimestamp; // Message time stamp

@@ -1,19 +1,32 @@
+module.exports.name = 'clear';
+
 module.exports.alias = [
-	'clear',
-	'clean',
+  'clear',
   'clr'
 ];
 
+module.exports.isAllowed = () => {
+  return true;
+};
+
+module.exports.help = '`,clr [number of messages to delete]` Clear messages by Ciri. Defaults to 1 message.';
+
 module.exports.command = async (message, content, bot) => {
   let chan = message.channel;
-	var messages = await chan.fetchMessages({limit:30});
-	var deleteCount = parseInt(content);
-	if (!deleteCount) deleteCount = 1;
-	for (var m of messages.values()) {
-		if (m.author.id == bot.user.id) {
-			m.delete();
-			if (--deleteCount <= 0) break;
-		}
-	}
-	message.delete();
+  let messages = await chan.fetchMessages({limit:30});
+  let deleteCount = parseInt(content);
+  let messagesToDelete = [];
+  if (!deleteCount) deleteCount = 1;
+  for (let m of messages.values()) {
+    if (m.author.id == bot.user.id) {
+      messagesToDelete.push(m);
+      if (--deleteCount <= 0) break;
+    }
+  }
+  if (deleteCount > 0) return;
+  if (messagesToDelete.length > 1) {
+    message.channel.bulkDelete(messagesToDelete);
+  } else {
+    messagesToDelete[0].delete();
+  }
 };

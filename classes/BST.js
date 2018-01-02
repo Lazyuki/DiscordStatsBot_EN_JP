@@ -37,7 +37,7 @@ module.exports = class BST {
     }
   }
 
-// Same KEY name replaces the former value
+  // Same KEY name replaces the former value
   toMap() {
     var map = {};
     if (!this.root) return map;
@@ -61,4 +61,4 @@ module.exports = class BST {
     rec(map, this.root);
     return map;
   }
-}
+};

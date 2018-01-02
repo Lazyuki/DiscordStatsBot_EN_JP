@@ -1,11 +1,15 @@
 const Discord = require('discord.js');
-const config = require('./config.json');
+const init = require('./init.json');
 const Server = require('./classes/Server.js');
 const midnightTask = require('./classes/midnightTask.js');
 const savingTask = require('./classes/savingTask.js');
-const commands = require('./cmds.js');
+let cmds = require('./cmds.js');
+const commands = cmds.commands;
+const inits = cmds.inits;
+const prcs = require('./prcs.js');
 
-
+// Set up Discord client settings.
+// Note: Disabling other events such as user update tends to break the code.
 const bot = new Discord.Client({
   disableEveryone: true,
   disabledEvents: [
@@ -13,14 +17,13 @@ const bot = new Discord.Client({
   ]
 });
 
-// Load configurations.
-const token = config.token;
-bot.owner_ID = config.owner_ID;
-const prefix = config.prefix;
+// Load initial configurations.
+const token = init.token;
+bot.owner_ID = init.owner_ID;
 
-
+// Initialize bot and servers.
 bot.on('ready', () => {
-  setTimeout(() => { // sets up the saving restore state task
+  setTimeout(() => { // Set up hourly backup state task
     savingTask(bot);
   },  60*60*1000);
   let time = new Date();
@@ -28,80 +31,65 @@ bot.on('ready', () => {
   let m = time.getUTCMinutes();
   let s = time.getUTCSeconds();
   let timeLeft = (24*60*60) - (h*60*60) - (m*60) - s;
-  setTimeout(() => { // sets up the day changing task
+  setTimeout(() => { // Set up the day changing task
     midnightTask(bot);
-  },  timeLeft * 1000); // timeLeft * 1000
+  },  timeLeft * 1000); // Time left until the next day
   console.log('Logged in as ' + bot.user.username);
   console.log(`${time.toLocaleDateString()} ${time.toLocaleTimeString()}`);
   console.log('--------------------------');
   bot.servers = {};
-  for (var guild of bot.guilds.values()) {
-    if (guild.id == '293787390710120449') continue; // My testing server
-    if (guild.id == '189571157446492161') { // Fetch the self assignable role message
-      guild.channels.get('189585230972190720').fetchMessages()
-    }
-    bot.servers[guild.id] = new Server(guild);
-
+  for (let guild of bot.guilds.values()) {
+    bot.servers[guild.id] = new Server(guild, inits, prcs);
   }
   let helps = [',help',',h',',halp',',tasukete'];
   bot.user.setGame(helps[Math.floor(Math.random() * helps.length)]);
 });
 
 bot.on('message', async message => {
-  if (message.author.bot) return;
-  if (message.system) return;
-  if (message.channel.type != 'text') {
-    let msgs = [
-      'Come on... I\'m not available here... \n https://media3.giphy.com/media/mfGYunx8bcWJy/giphy.gif',
-      '*sigh* Why did you PM me https://68.media.tumblr.com/d0238a0224ac18b47d1ac2fbbb6dd168/tumblr_nselfnnY3l1rpd9dfo1_250.gif',
-      'I don\'t work here ¯\\\_(ツ)\_/¯ http://cloud-3.steamusercontent.com/ugc/576816221180356023/FF4FF60F13F2A773123B3B26A19935944480F510/'];
-    var msg = msgs[Math.floor(Math.random() * msgs.length)];
-    if (message.content.startsWith(prefix)) {
-      message.channel.send(msg);
-    }
+  if (message.author.bot || message.system) return;
+  if (message.channel.type != 'text') { // Direct message.
+    respondDM(message);
     return;
   }
-  let testServer = message.guild.id == '293787390710120449'; // My testing server
-  if (!message.content.startsWith(prefix)) {
-    if (testServer) return;// Ignore my server
-    bot.servers[message.guild.id].addMessage(message);
+  let server = bot.servers[message.guild.id];
+  // Is it a command?
+  if (!message.content.startsWith(server.prefix)) {
+    server.processNewMessage(message, bot);
     return;
   }
-
+  // Separate the command and the content
   let command = message.content.split(' ')[0].slice(1).toLowerCase();
   let content = message.content.substr(command.length + 2).trim();
   if (!commands[command]) { // if not Ciri bot command, add it.
-    if (testServer) return;
-    bot.servers[message.guild.id].addMessage(message);
+    server.processNewMessage(message, bot);
     return;
   }
-  let server = testServer ? bot.servers['189571157446492161'] : bot.servers[message.guild.id]; // defaults commands to EJLX
-  commands[command].command(message, content, bot, server);
+  // Defaults to EJLX 
+  if (message.guild.id == '293787390710120449') server = bot.servers['189571157446492161']; 
+  commands[command].command(message, content, bot, server, cmds);
 });
 
 bot.on('messageUpdate', (oldMessage, newMessage) => {
-  if (oldMessage.author.bot) return;
+  if (oldMessage.author.bot || oldMessage.system) return;
   if (oldMessage.content == newMessage.content) return; // Discord auto embed for links.
   if (oldMessage.channel.type != 'text') return;
   if (oldMessage.guild.id == '293787390710120449') return; // Ignore my server
-
-  bot.servers[oldMessage.guild.id].addEdits(oldMessage, newMessage);
+  bot.servers[oldMessage.guild.id].addEdits(oldMessage, newMessage, bot);
 });
 
 bot.on('messageDelete', message => {
-  if (message.author.bot) return;
+  if (message.author.bot || message.system) return;
   if (message.channel.type != 'text') return;
   if (message.guild.id == '293787390710120449') return; // Ignore my server
-
   bot.servers[message.guild.id].addDeletedMessage(message);
 });
 
 bot.on('messageDeleteBulk', messages => {
   let m = messages.first();
-  if (m.author.bot) return;
+  if (m.author.bot || m.system) return;
   if (m.channel.type != 'text') return;
   if (m.guild.id == '293787390710120449') return; // Ignore my server
-  for (var [id, message] of messages) {
+  for (let [, message] of messages) {
     bot.servers[message.guild.id].addDeletedMessage(message);
   }
 });
@@ -120,35 +108,43 @@ bot.on('messageReactionRemove', async (reaction, user) => {
   if (m.channel.type != 'text') return;
   if (m.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[reaction.message.guild.id].processReaction(reaction, user, false);
-
 });
 
 bot.on('guildMemberAdd', member => {
-  // check mee6 message?
-  if (member.guild.id == '293787390710120449') return;
+  if (member.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[member.guild.id].addNewUser(member.id);
 });
 
 bot.on('guildBanAdd', (guild, user) => {
-  if (guild.id == '293787390710120449') return;
-  var index = bot.servers[guild.id].watchedUsers.indexOf(user.id);
+  if (guild.id == '293787390710120449') return;// Ignore my server
+  let index = bot.servers[guild.id].watchedUsers.indexOf(user.id);
   if (index == -1) return;
   bot.servers[guild.id].watchedUsers.splice(index, 1);
 });
 
 bot.on('guildCreate', guild => {
-  bot.servers[guild.id] = new Server(guild);
+  bot.servers[guild.id] = new Server(guild, inits, prcs);
   console.log(`Server added: ${guild.name}`);
 });
 
 bot.on('guildDelete', guild => {
-  var index = bot.servers.indexOf(guild.id);
+  let index = bot.servers.indexOf(guild.id);
   if (index == -1) return;
-	bot.servers.splice(index, 1);
+  bot.servers.splice(index, 1);
   console.log(`Server removed: ${guild.name}`);
 });
 
-process.on('unhandledRejection', console.dir);
+// Response to a DM since it's not supported there
+function respondDM(message) {
+  let msgs = [
+    'Come on... I\'m not available here... \n https://media3.giphy.com/media/mfGYunx8bcWJy/giphy.gif',
+    '*sigh* Why did you PM me https://68.media.tumblr.com/d0238a0224ac18b47d1ac2fbbb6dd168/tumblr_nselfnnY3l1rpd9dfo1_250.gif',
+    'I don\'t work here ¯\\\_(ツ)_/¯ http://cloud-3.steamusercontent.com/ugc/576816221180356023/FF4FF60F13F2A773123B3B26A19935944480F510/'];
+  let msg = msgs[Math.floor(Math.random() * msgs.length)];
+  message.channel.send(msg);
+}
+
+process.on('unhandledRejection', console.dir); // Show stack trace on unhandled rejection.
 
 // Log in. This should be the last call
 bot.login(token);

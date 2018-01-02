@@ -1,50 +1,60 @@
+module.exports.name = 'tag';
+module.exports.alias = [
+  'tag',
+  't'
+];
+
+// Initialized in ../messageProcessors/userJoin.js
+
+module.exports.isAllowed = (message, server) => {
+  if (server.guild.id != '189571157446492161') return false;
+  return message.member.hasPermission('MANAGE_ROLES');
+};
+
+module.exports.help = '*WP only* See the pin in <#277384105245802497> `,t < nj | fj | ne | fe | ol > [ @mention, 1, 2, or 3 ]`';
+
 const abbrev = ['nj', 'jp', 'fj', 'ne', 'en', 'fe', 'ol', 'nu'];
-const roleNames = ['Native Japanese', 'Native Japanese', 'Fluent Japanese',
-        			        'Native English', 'Native English', 'Fluent English',
-        			        'Other Language', 'New User'];
+const roleNames = ['Native Japanese', 'Native Japanese', 'Fluent Japanese', 
+  'Native English', 'Native English', 'Fluent English',
+  'Other Language', 'New User'];
 const roleIDs = ['196765998706196480', '196765998706196480', '270391106955509770',
-         			   '197100137665921024', '197100137665921024', '241997079168155649',
-         			   '248982130246418433', '249695630606336000'];
+  '197100137665921024', '197100137665921024', '241997079168155649',
+  '248982130246418433', '249695630606336000'];
+
 function exists(array, value) {
   return array.indexOf(value) >= 0;
-};
+}
 
 function crossGet(src, dest, value) {
   return dest[src.indexOf(value)];
 }
 
-module.exports.alias = [
-	'tag',
-	't'
-];
-
 module.exports.command = async (message, content, bot, server) => {
-  if (!message.member.hasPermission('MANAGE_ROLES')) return;
   var role = content.substr(0, 2);
-	if (!exists(abbrev, role)) return; // no such role
+  if (!exists(abbrev, role)) return; // no such role
   var newRole = crossGet(abbrev, roleIDs, role);
-	var member;
-	var mentions = message.mentions.members;
-	if (mentions.size != 0) {
+  var member;
+  var mentions = message.mentions.members;
+  if (mentions.size != 0) {
     member = mentions.first();
   } else {
-		var memberID;
-		if (content.substr(3) == '2') {
-			memberID = server.newUsers[1];
-		} else if (content.substr(3) == '3') {
-			memberID = server.newUsers[2];
-		} else {
-			memberID = server.newUsers[0];
-	  }
-		if (memberID == undefined) return; // error
-		member = await server.guild.fetchMember(memberID);
-	}
+    var memberID;
+    if (content.substr(3) == '2') {
+      memberID = server.newUsers[1];
+    } else if (content.substr(3) == '3') {
+      memberID = server.newUsers[2];
+    } else {
+      memberID = server.newUsers[0];
+    }
+    if (memberID == undefined) return; // error
+    member = await server.guild.fetchMember(memberID);
+  }
   let oldRoles = member.roles;
   var oldRole = '';
   for (var r of oldRoles.keys()) {
     if (r == newRole) { // adding the same role.
       message.delete();
-      (await message.channel.send(`Already tagged as \"${crossGet(abbrev, roleNames, role)}\"`)).delete(5000);
+      (await message.channel.send(`Already tagged as "${crossGet(abbrev, roleNames, role)}"`)).delete(5000);
       return;
     }
     if (exists(roleIDs, r)) {
@@ -55,8 +65,8 @@ module.exports.command = async (message, content, bot, server) => {
   await member.addRole(newRole, `by ${message.author.username}`);
   message.delete();
   if (oldRole != '' && oldRole != crossGet(abbrev, roleIDs, 'nu')){
-  	message.channel.send(`${member.user.username}, you\'ve been tagged as \"${crossGet(abbrev, roleNames, role)}\" by ${message.author.username} instead of \"${crossGet(roleIDs, roleNames, oldRole)}\"!`);
+    message.channel.send(`${member.user.username}, you've been tagged as "${crossGet(abbrev, roleNames, role)}" by ${message.author.username} instead of "${crossGet(roleIDs, roleNames, oldRole)}"!`);
   } else {
-  	message.channel.send(`${member.user.username}, you\'ve been tagged as \"${crossGet(abbrev, roleNames, role)}\" by ${message.author.username}!`);
-  };
+    message.channel.send(`${member.user.username}, you've been tagged as "${crossGet(abbrev, roleNames, role)}" by ${message.author.username}!`);
+  }
 };
