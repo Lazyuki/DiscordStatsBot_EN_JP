@@ -20,7 +20,7 @@ function remove(members) {
   }
 }
 
-module.exports.help = '*WP only* `,nf @someone @sometwo @somethree` Sends people to ~~oblivion~~ <#193966083886153729> for 5 minutes. ***__YOU SHOULD WARN THEM FIRST.__*** Only meant to be used as a last resort.';
+module.exports.help = '__WP only__ `,nf @someone @sometwo @somethree` Sends people to ~~oblivion~~ <#193966083886153729> for 5 minutes. ***__YOU SHOULD WARN THEM FIRST.__*** Only meant to be used as a last resort.';
 
 module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('MANAGE_ROLES')) return;

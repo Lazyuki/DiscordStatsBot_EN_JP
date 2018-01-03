@@ -9,10 +9,9 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = '*Mods only* Mutes new users in text chat. Type the same command again to disable it. **Intended for raids**';
+module.exports.help = '__Mods Only__ Mute new users in text chat. Type the same command again to disable it. **Intended for raids**';
 
 module.exports.command = async (message, content, bot, server) => {
-  if (!message.member.hasPermission('ADMINISTRATOR')) return;
   let nu = server.guild.roles.get('249695630606336000'); // New User
   if (nu.hasPermission('SEND_MESSAGES')) { // Get rid of all permissions.
     nu.setPermissions(['VIEW_CHANNEL', 'READ_MESSAGE_HISTORY']);

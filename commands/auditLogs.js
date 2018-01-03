@@ -9,7 +9,7 @@ module.exports.isAllowed = (message) => {
   return message.member.hasPermission('VIEW_AUDIT_LOG');
 };
 
-module.exports.help = '`,al [number <= 20 (default = 3)] [ALL_CAPS_ACTION] [Target User ID] [@mention the executor]` View audit log. Actions: <https://github.com/hydrabolt/discord.js/blob/stable/src/structures/GuildAuditLogs.js#L16>\n';
+module.exports.help = '__WP Only__ `,al [number <= 20 (default = 3)] [ALL_CAPS_ACTION] [Target User ID] [@mention the executor]` View audit log. Actions: <https://github.com/hydrabolt/discord.js/blob/stable/src/structures/GuildAuditLogs.js#L16>\n';
 
 const Discord = require('discord.js');
 const IgnoredActions = ['INVITE_CREATE', 'MEMBER_UPDATE'];

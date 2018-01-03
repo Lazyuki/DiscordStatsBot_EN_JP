@@ -9,7 +9,7 @@ module,exports.isAllowed = (message) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = '`,dsar <role emoji>` Delete self assignable roles.';
+module.exports.help = '__Mods Only__ `,dsar <role emoji>` Delete self assignable roles.';
 
 module.exports.command = (message, content, bot, server) => {
   if (server.sars[content]) {

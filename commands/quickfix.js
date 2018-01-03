@@ -23,5 +23,5 @@ module.exports.command = (message, content, bot, server) => {
     str += sortable[k][0] + ':' + sortable[k][1] + ',';
   }
   str = str.substr(0, str.length - 1);
-  message.channel.send(str);
+  message.channel.send(str.substr(0, 2000));
 };

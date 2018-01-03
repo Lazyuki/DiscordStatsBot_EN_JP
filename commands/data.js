@@ -9,7 +9,7 @@ module.exports.isAllowed = (message, server, bot) => {
   return message.author.id == bot.owner_ID;
 };
 
-module.exports.help = '`,data [number of min messages]` Shows the bot\'s statistics.';
+module.exports.help = '__Bot Owner Only__ `,data [number of min messages]` Shows the bot\'s statistics.';
 
 function msToTime(duration) {
   let seconds = parseInt((duration/1000)%60)

@@ -7,7 +7,7 @@ module.exports.isAllowed = (message) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = '*Mods only* Deletes messages sent by specified users in the channel in the past 24 hours. Use their IDs. `,prune 123454323454 2345432345643 4543246543234`';
+module.exports.help = '__Mods Only__ Deletes messages sent by specified users in the channel in the past 24 hours. Use their IDs. `,prune 123454323454 2345432345643 4543246543234`';
 
 module.exports.command = async (message, content) => {
   var ids = content.split(' ');
