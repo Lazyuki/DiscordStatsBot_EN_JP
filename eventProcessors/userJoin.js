@@ -4,7 +4,7 @@ module.exports.actions = ['JOIN'];
 module.exports.initialize = (json, server) => {
   server.newUsers = [];
   if (!json || !json['newUsers']) return;
-  server.newUsers = json['newUsers'];
+  server.newUsers = Array.prototype.slice.call(json['newUsers']); // Why is it an object???
 };
 module.exports.isAllowed = () => {
   return true;
