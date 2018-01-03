@@ -14,14 +14,15 @@ module.exports.isAllowed = (message, server, bot) => {
 module.exports.help = 'Talk through Ciri. `,s [#channel] [things to say]`';
 
 let channel;
-const Util = require('../classes/Util.js');
+const channelIDRegex = /(\d{17,20})>/g;
 
-module.exports.command = (message, content) => {
-  if (message.mentions.channels.size > 0) {
-    channel = message.mentions.channels.first();
+module.exports.command = (message, content, bot, server) => {
+  let match = channelIDRegex.exec(content);
+  if (match) {
+    channel = server.guild.channels.get(match[1]);
   }
   if (channel) {
-    content = content.replace(Util.REGEX_CHAN, '');
+    content = content.replace(channelIDRegex, '');
     channel.send(content);
   }
 };
