@@ -42,9 +42,9 @@ module.exports.command = async (message, content, bot, server) => {
     if (content.substr(3) == '2') {
       memberID = server.newUsers[1];
     } else if (content.substr(3) == '3') {
-      memberID = server.newUsers[2];
-    } else {
       memberID = server.newUsers[0];
+    } else {
+      memberID = server.newUsers[2];
     }
     if (memberID == undefined) return; // error
     member = await server.guild.fetchMember(memberID);
