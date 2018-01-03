@@ -109,13 +109,13 @@ bot.on('messageReactionRemove', async (reaction, user) => {
   if (m.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[reaction.message.guild.id].processReaction(reaction, user, false);
 });
-
+/*
 bot.on('userUpdate', (oldUser, newUser) => {
   for (let server of bot.servers.values()) {
     server.userUpdate(oldUser, newUser);
   }
 });
-
+*/
 bot.on('guildMemberAdd', member => {
   if (member.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[member.guild.id].addNewUser(member.id);

@@ -19,7 +19,7 @@ module.exports.command = (message, content, bot, server, cmds) => {
   if (cmd && cmd.isAllowed(message, server, bot)) {
     msg = `**${cmd.name}**: <this is required> [this is optional]\n${cmd.help} \n__Aliases__: \`${cmd.alias.join('`, `')}\``;
   } else {
-    msg = 'Available commands are:\n';
+    msg = '`,help [command]` for more info. Available commands are:\n';
     for (let c in cmds.commandNames) {
       if (cmds.commandNames[c].isAllowed(message, server, bot)) {
         msg += `\`${cmds.commandNames[c].alias[0]}\`, `;
