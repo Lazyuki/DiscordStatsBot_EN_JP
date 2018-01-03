@@ -1,7 +1,6 @@
-module.exports.name = 'quickfix';
+module.exports.name = 'kanjiCheck';
 module.exports.alias = [
-  'kc',
-  'fix'
+  'kc'
 ];
 
 module.exports.isAllowed = (message, server, bot) => {

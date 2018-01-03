@@ -2,13 +2,13 @@ const Util = require('./Util.js');
 
 module.exports = class UserRecord {
   constructor(arg) {
-    if (arg) { // build from scratch
+    if (arg) { // build from backup
       this.record = arg.record;
       this.thirty = arg.thirty;
       this.jp = arg.jp;
-      this.en = arg.en ? arg.en : 0;
+      this.en = arg.en;
       this.chans = arg.chans;
-    } else { // build from backup
+    } else { // build from scratch
       this.record = new Array(31); //31 days
       this.thirty = 0;
       this.jp = 0;

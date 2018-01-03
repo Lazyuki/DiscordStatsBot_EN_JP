@@ -6,10 +6,9 @@ module.exports.alias = [
   's'
 ];
 
-
 module.exports.isAllowed = (message, server, bot) => {
   if (message.guild.id != '293787390710120449') return false;  // My server  
-  return message.author.id == bot.ownerID;
+  return message.author.id == bot.owner_ID;
 };
 
 module.exports.help = 'Talk through Ciri. `,s [#channel] [things to say]`';

@@ -4,7 +4,7 @@ module.exports.alias = [
   't'
 ];
 
-// Initialized in ../messageProcessors/userJoin.js
+// Initialized in ../eventProcessors/userJoin.js
 
 module.exports.isAllowed = (message, server) => {
   if (server.guild.id != '189571157446492161') return false;
