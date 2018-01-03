@@ -3,9 +3,9 @@ const fs = require('fs');
 let processors = {};
 let inits = [];
 
-fs.readdir('./messageProcessors/', (err, files) => {
+fs.readdir('./eventProcessors/', (err, files) => {
   files.forEach((file) => {
-    let processor = require(`./messageProcessors/${file}`);
+    let processor = require(`./eventProcessors/${file}`);
     processor.actions.forEach((action) => {
       if (processors[action]) {
         processors[action].push(processor);

@@ -45,7 +45,6 @@ module.exports = class Server {
   }
 
   async addEdits(oldMessage, newMessage, bot) {
-    await newMessage.guild.fetchMember(newMessage.author);
     let language = Util.lang(newMessage.content);
     this.processors['EDIT'].forEach((p) => {
       if (p.isAllowed(newMessage, this, bot)) {
@@ -59,7 +58,15 @@ module.exports = class Server {
       p.process(memberID, this);
     });
   }
-
+/*
+  async userUpdate(oldUser, newUser) { 
+    this.processors['USER_UPDATE'].forEach((p) => {
+      if (p.isAllowed(newUser.id, this)) {
+        p.process(newUser, this);
+      }
+    });
+  }
+*/
   save(backup = false) {
     // Store the actual date?
     if (backup) {

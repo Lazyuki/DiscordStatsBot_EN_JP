@@ -77,12 +77,13 @@ module.exports.command = async (message, content, bot, server) => {
   let dayArr = [0, 0, 0, 0, 0, 0, 0]; // Su Mo Tu We Th Fr Sa
   let daySum = 0;
   let count = 0;
-  let week = record.record[server.today];
-  for (let i = server.today - 1; i >= server.today - 28; i--) { // 4 weeks
+  let week = 0;
+  for (let i = server.today; i >= server.today - 28; i--) { // 4 weeks
     let chans = record.record[((i % 31) + 31) % 31]; // for under flows
     for (let ch in chans) {
       if (ch == 'jpn' || ch == 'eng') continue;
-      if (count < 6) week += chans[ch]; // TODO count today
+      if (count < 7) week += chans[ch];
+      if (count == 0) continue;
       dayArr[d] += chans[ch];
       daySum += chans[ch];
     }
