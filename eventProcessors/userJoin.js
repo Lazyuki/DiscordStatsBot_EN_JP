@@ -4,7 +4,7 @@ module.exports.actions = ['JOIN'];
 module.exports.initialize = (json, server) => {
   server.newUsers = [];
   if (!json || !json['newUsers']) return;
-  server.newUsers = json['newUsers'];
+  //server.newUsers = json['newUsers'];
   console.log(server.newUsers);
 };
 module.exports.isAllowed = () => {
