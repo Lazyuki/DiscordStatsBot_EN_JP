@@ -30,13 +30,13 @@ module.exports = class UserRecord {
     if (!this.chans[channelID]) {
       this.chans[channelID] = 0;
     }
-    if (lang == Util.LANG.JPN) { // is Japanese
+    if (lang & Util.LANG.JPN) { // is Japanese
       if (!this.record[today]['jpn']) {
         this.record[today]['jpn'] = 0;
       }
       this.record[today]['jpn']++;
       this.jp++;
-    } else if (lang == Util.LANG.ENG) {
+    } else if (lang & Util.LANG.ENG) {
       if (!this.record[today]['eng']) {
         this.record[today]['eng'] = 0;
       }
