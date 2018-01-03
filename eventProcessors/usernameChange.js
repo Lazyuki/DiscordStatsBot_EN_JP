@@ -4,7 +4,7 @@ module.exports.actions = ['USER_UPDATE'];
 module.exports.initialize = (json, server) => {
   server.watchedUsersNotes = {};
   if (!json || !json['watchedUsersNotes']) return;
-  server.newUsers = json['watchedUsersNotes'];
+  server.watchedUsersNotes = json['watchedUsersNotes'];
 };
 module.exports.isAllowed = (memberID, server) => {
   return server.watchedUsers.includes(memberID);
