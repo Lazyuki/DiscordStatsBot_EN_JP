@@ -14,7 +14,7 @@ module.exports.help = '__Mods Only__ `,dsar <role emoji>` Delete self assignable
 module.exports.command = (message, content, bot, server) => {
   if (server.sars[content]) {
     delete server.sars[content];
-    message.channel.send(`Deleted \`${content}\`'s mapping`);
+    message.channel.send(`Deleted \`${content}\`'s role`);
     return;
   }
   message.channel.send(`Not found \`${content}\``);

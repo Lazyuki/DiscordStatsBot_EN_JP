@@ -11,7 +11,7 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('MANAGE_ROLES');
 };
 
-module.exports.help = '*WP only* See the pin in <#277384105245802497> `,t < nj | fj | ne | fe | ol > [ @mention, 1, 2, or 3 ]`';
+module.exports.help = '__WP Only__ See the pin in <#277384105245802497> `,t < nj | fj | ne | fe | ol > [ @mention, 1, 2, or 3 ]`';
 
 const abbrev = ['nj', 'jp', 'fj', 'ne', 'en', 'fe', 'ol', 'nu'];
 const roleNames = ['Native Japanese', 'Native Japanese', 'Fluent Japanese', 
