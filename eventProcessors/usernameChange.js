@@ -1,5 +1,5 @@
 module.exports.name = 'usernameChange';
-module.exports.actions = ['USER_UPDATE'];
+module.exports.events = ['USER_UPDATE'];
 
 module.exports.initialize = (json, server) => {
   server.watchedUsersNotes = {};

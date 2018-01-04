@@ -1,5 +1,5 @@
 module.exports.name = 'imgurUploads';
-module.exports.actions = ['NEW'];
+module.exports.events = ['NEW'];
 
 module.exports.initialize = (json, server) => {
   server.watchedImagesID = [];

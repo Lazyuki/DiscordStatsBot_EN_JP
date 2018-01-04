@@ -1,5 +1,5 @@
 module.exports.name = 'addMessages';
-module.exports.actions = ['NEW'];
+module.exports.events = ['NEW'];
 
 const UserRecord = require('../classes/UserRecord.js');
 

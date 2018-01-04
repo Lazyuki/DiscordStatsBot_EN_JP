@@ -1,5 +1,5 @@
 module.exports.name = 'addEditedMessages';
-module.exports.actions = ['EDIT'];
+module.exports.events = ['EDIT'];
 
 const SimpleMsg = require('../classes/SimpleMessage.js');
 const Util = require('../classes/Util.js');

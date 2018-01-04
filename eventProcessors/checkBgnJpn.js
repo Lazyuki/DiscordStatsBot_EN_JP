@@ -1,5 +1,5 @@
 module.exports.name = 'checkBeginnerJapanese';
-module.exports.actions = ['NEW', 'EDIT'];
+module.exports.events = ['NEW', 'EDIT'];
 
 module.exports.initialize = (json, server) => {
   server.kanjis = {};

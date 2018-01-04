@@ -1,5 +1,5 @@
 module.exports.name = 'reactionSelfAssignableRoles';
-module.exports.actions = ['REACT'];
+module.exports.events = ['REACT'];
 
 module.exports.initialize = (json, server) => {
   server.sars = {};

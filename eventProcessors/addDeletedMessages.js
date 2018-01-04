@@ -1,5 +1,5 @@
 module.exports.name = 'addDeletedMessages';
-module.exports.actions = ['DELETE'];
+module.exports.events = ['DELETE'];
 
 
 const SimpleMsg = require('../classes/SimpleMessage.js');

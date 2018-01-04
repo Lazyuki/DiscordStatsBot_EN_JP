@@ -1,5 +1,5 @@
 module.exports.name = 'notifyLINE';
-module.exports.actions = ['NEW'];
+module.exports.events = ['NEW'];
 
 
 module.exports.isAllowed = (message, server, bot) => {

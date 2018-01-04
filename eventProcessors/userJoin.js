@@ -1,5 +1,5 @@
 module.exports.name = 'userJoin';
-module.exports.actions = ['JOIN'];
+module.exports.events = ['JOIN'];
 
 module.exports.initialize = (json, server) => {
   server.newUsers = [];

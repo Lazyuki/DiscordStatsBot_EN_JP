@@ -1,5 +1,5 @@
 module.exports.name = 'checkLanguageExchange';
-module.exports.actions = ['NEW', 'EDIT'];
+module.exports.events = ['NEW', 'EDIT'];
 
 
 module.exports.isAllowed = (message) => {

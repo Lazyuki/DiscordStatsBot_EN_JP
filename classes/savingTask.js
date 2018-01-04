@@ -5,4 +5,4 @@ module.exports = function savingTask(bot) {
   setTimeout(() => {
     savingTask(bot);
   }, 60*60*1000); // 60*60*1000 = every hour
-}
+};

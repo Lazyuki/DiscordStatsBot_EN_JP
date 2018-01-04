@@ -1,5 +1,5 @@
 module.exports.name = 'checkHardCore';
-module.exports.actions = ['NEW', 'EDIT'];
+module.exports.events = ['NEW', 'EDIT'];
 
 module.exports.isAllowed = (message, server) => {
   if (!message.member.roles.has('384286851260743680')) return false; // Hardcore role
@@ -17,14 +17,12 @@ module.exports.process = (message) => {
   let isJapanese = message.member.roles.has('196765998706196480'); // has native japanese  
   if (message.channel.id == '225828894765350913' && /^(k!|t!|[!.&%=+$])[^\n]*/.test(content)) return; // #bot
   if (/^\.\.\.\s[\S]+$/.test(content)) return; // nadeko quote
-  if (isJapanese)
-    content = content.replace(/[*＊]([\u3040-\u30FF]|[\uFF66-\uFF9D]|[\u4E00-\u9FAF]){1,6}/,''); // only the first match
-  else {
-    content = content.replace(/[*＊](\w{1,12}\s){1,3}/, ''); // only the first match of correction
+  if (!isJapanese) { // for welcoming
     content = content.replace(/what'?s?\s(is\s)?(yo)?ur\snative\slang(uage)?/i, '');
     content = content.replace(/welcome/i, '');
   }
   let lang = Util.lang(content); // Since it deletes special messages.
+  if (lang & Util.LANG.ESC) return;
   if (isJapanese && (lang & Util.LANG.JPN)) { // Japanese
     if (content.length > 80) {
       let embed = new Discord.RichEmbed();

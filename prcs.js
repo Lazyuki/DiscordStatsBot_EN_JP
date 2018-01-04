@@ -6,11 +6,11 @@ let inits = [];
 fs.readdir('./eventProcessors/', (err, files) => {
   files.forEach((file) => {
     let processor = require(`./eventProcessors/${file}`);
-    processor.actions.forEach((action) => {
-      if (processors[action]) {
-        processors[action].push(processor);
+    processor.events.forEach((event) => {
+      if (processors[event]) {
+        processors[event].push(processor);
       } else {
-        processors[action] = [processor];
+        processors[event] = [processor];
       }
     });
     if (processor.initialize) inits.push(processor.initialize);
