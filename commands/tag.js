@@ -38,20 +38,20 @@ module.exports.command = async (message, content, bot, server) => {
   if (mentions.size != 0) {
     member = mentions.first();
   } else {
-    var memberID;
+    let memberID;
     if (content.substr(3) == '2') {
       memberID = server.newUsers[1];
     } else if (content.substr(3) == '3') {
-      memberID = server.newUsers[0];
-    } else {
       memberID = server.newUsers[2];
+    } else {
+      memberID = server.newUsers[0];
     }
     if (memberID == undefined) return; // error
     member = await server.guild.fetchMember(memberID);
   }
   let oldRoles = member.roles;
-  var oldRole = '';
-  for (var r of oldRoles.keys()) {
+  let oldRole = '';
+  for (let r of oldRoles.keys()) {
     if (r == newRole) { // adding the same role.
       message.delete();
       (await message.channel.send(`Already tagged as "${crossGet(abbrev, roleNames, role)}"`)).delete(5000);

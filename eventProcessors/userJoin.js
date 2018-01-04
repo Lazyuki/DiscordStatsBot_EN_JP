@@ -11,5 +11,5 @@ module.exports.isAllowed = () => {
 };
 
 module.exports.process = async (memberID, server) => {
-  if (server.newUsers.push(memberID) > 3) server.newUsers.shift();
+  if (server.newUsers.unshift(memberID) > 3) server.newUsers.pop();
 };
