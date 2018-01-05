@@ -39,7 +39,7 @@ module.exports.process = async function(message, server) {
         simple.img = server.watchedImagesLink[index];
       }
       Util.postLogs(simple, server);
-    }.bind(server), timeout);
+    }, timeout);
   } else {
     if (con.startsWith('.') || con.startsWith('t!') ||
         con.startsWith(',') || con.startsWith('k!') ||

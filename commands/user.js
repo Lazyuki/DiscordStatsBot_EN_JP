@@ -42,7 +42,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
 
   let chans = record.chans;
-  let ignoreHidden = server.hiddenChannels.includes(message.channel.id);
+  let ignoreHidden = !server.hiddenChannels.includes(message.channel.id);
 
   // Most active channels
   let topCHannels = {};

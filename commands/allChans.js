@@ -12,7 +12,7 @@ module.exports.isAllowed = () => {
 module.exports.help = '`,ch` Displays all the channels in the message count order';
 
 module.exports.command = (message, content, bot, server) => {
-  let ignoreHidden = server.hiddenChannels.includes(message.channel.id);
+  let ignoreHidden = !server.hiddenChannels.includes(message.channel.id);
   let allch = {};
   for (let id in server.users) {
     let user = server.users[id];

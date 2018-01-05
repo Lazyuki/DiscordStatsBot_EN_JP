@@ -28,6 +28,10 @@ module.exports.command = async (message, content, bot, server) => {
   }
   let msg = await message.channel.send(str);
   for (let i in sortable) {
-    await msg.react(sortable[i][1]);
+    try {
+      await msg.react(sortable[i][1]);      
+    } catch (e) {
+      message.channel.send('Reaction failed');
+    }
   }
 };
