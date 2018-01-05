@@ -37,7 +37,7 @@ module.exports.command = (message, content, bot, server) => {
 
   let s = '';
   for (let i in sortable) {
-    s += `<# ${sortable[i][0]}> : ${sortable[i][1]}\n`;
+    s += `<#${sortable[i][0]}> : ${sortable[i][1]}\n`;
   }
   message.channel.send(s);
 };
