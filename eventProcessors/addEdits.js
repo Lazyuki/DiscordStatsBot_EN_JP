@@ -9,7 +9,7 @@ module.exports.isAllowed = (message, server) => {
 };
 
 
-module.exports.process = async function(message) {
+module.exports.process = async function(message, server) {
   let simple = new SimpleMsg({message : message, del: false});
-  Util.postLogs(simple);
+  Util.postLogs(simple, server);
 };

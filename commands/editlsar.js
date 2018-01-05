@@ -5,6 +5,7 @@ module.exports.alias = [
 ];
 
 module.exports.isAllowed = (message, server, bot) => {
+  if (message.guild.id != '293787390710120449') return false;  // My server    
   return message.author.id == bot.owner_ID; // Or Admins?
 };
 
