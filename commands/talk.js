@@ -23,6 +23,12 @@ module.exports.command = (message, content, bot, server) => {
   }
   if (channel) {
     content = content.replace(channelIDRegex, '');
+    if (content.replace(' ', '') == '') {
+      channel.send(`Channel set to #${channel.name}`);          
+      return;
+    }
     channel.send(content);
+  } else {
+    channel.send('Define channel');    
   }
 };
