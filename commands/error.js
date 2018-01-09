@@ -13,8 +13,7 @@ module.exports.isAllowed = (message, server, bot) => {
 
 module.exports.help = '`,error` Shows Ciri\'s error log.';
 
-module.exports.command = (message, content, bot) => {
-  if (message.author.id != bot.owner_ID) return;
+module.exports.command = (message, content) => {
   if (content == 'reset') {
     fs.writeFile(nohup, '', function (err) {
       if (err) {
