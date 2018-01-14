@@ -6,7 +6,7 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('ADMINISTRATOR') && server.hiddenChannels.includes(message.channel.id);
 };
 
-module.exports.help = 'Unhide a channel from the list of hidden channels.';
+module.exports.help = '`,unhide <#channel | ID>` Unhide a channel from the list of hidden channels.';
 
 module.exports.command = (message, content, bot, server) => {
   let arr = server.hiddenChannels;

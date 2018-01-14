@@ -13,8 +13,8 @@ module.exports.initialize = (json, server) => {
     server.users[user] = new UserRecord(uRec);
   }
 };
-module.exports.isAllowed = () => {
-  return true;
+module.exports.isAllowed = (message, server) => {
+  return !server.ignoredChannels.includes(message.channel.id);
 };
 
 module.exports.process = async function(message, server, bot, language) {

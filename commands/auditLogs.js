@@ -178,7 +178,7 @@ module.exports.command = async (message, content, bot, server) => {
     let type = null;
     let targID = null;
     for (let c of contents) {
-      if (/\d{17,19}/.test(c)) {
+      if (/\d{17,20}/.test(c)) {
         targID = c;
       }
       if (/[a-z]/g.test(c)) {
@@ -190,7 +190,7 @@ module.exports.command = async (message, content, bot, server) => {
       }
     }
     let prev = {'action': null, 'exeID': null, 'targetID': null, 'extraID': null, 'entries': []};
-    while (loopCount < 20) { // dont go too much
+    while (loopCount < 20) { // dont go too much loopCount < 20
       let params = {limit:100};
       if (beforeID) params.before = beforeID;
       if (user) params.user = user.id;
@@ -203,8 +203,14 @@ module.exports.command = async (message, content, bot, server) => {
           prev['entries'].push(e);
           continue;
         }
-        if (targID && e.target) {
-          if (e.target.id && e.target.id != targID) continue;
+        if (targID) {
+          if (e.target) {
+            if (e.target.id) {
+              if (e.target.id != targID) {
+                continue;
+              }
+            } else continue;
+          } else continue;
         }
         let	preves = prev['entries'];
         prev['action'] = e.action;
