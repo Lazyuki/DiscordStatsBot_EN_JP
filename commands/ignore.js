@@ -17,12 +17,12 @@ module.exports.help = '`,ignore <#channel>` ignores a channel from leaderboards.
 module.exports.command = (message, content, bot, server) => {
   let chan = server.guild.channels.get(content);
   if (chan) {
-    if (server.ignoredChannels.has(content)) return;
+    if (server.ignoredChannels.includes(content)) return;
     server.ignoredChannels.push(chan);
     message.channel.send(`#${chan.name} is ignored now.`);
   } else if (message.mentions.channels.size != 0) {
     for (let [id, ch] of message.mentions.channels) {
-      if (server.ignoredChannels.has(id)) return;
+      if (server.ignoredChannels.includes(id)) return;
       server.ignoredChannels.push(id);
       message.channel.send(`#${ch.name} is ignored now.`);
     }
