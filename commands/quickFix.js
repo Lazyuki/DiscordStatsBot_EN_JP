@@ -15,7 +15,7 @@ module.exports.command = (message, content, bot, server) => {
     let user = server.users[id];
     let rec = user.record;
     for (let day in rec) {
-      if (rec[day]['vc']) {
+      if (rec[day] && rec[day]['vc']) {
         delete server.users[id].record[day]['vc'];
       }
     }
