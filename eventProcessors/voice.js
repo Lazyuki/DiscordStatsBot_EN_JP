@@ -5,7 +5,7 @@ let temp = {};
 module.exports.initialize = (json, server) => {
   for (let [id, vc] of server.guild.channels.filter(c => {return c.type == 'voice';})) {    
     for (let [memid, mem] of vc.members) {
-      temp[mem.id] = new Date();
+      temp[mem.id] = new Date().getTime();
     }
   }
 };
@@ -21,21 +21,24 @@ let UserRecord = require('../classes/UserRecord.js');
 module.exports.process = async (oldMember, newMember, server) => {
   let id = oldMember.id;
   if (!isVC(oldMember) && isVC(newMember)) {
-    temp[id] = new Date();
-  } else if(isVC(oldMember) && !isVC(newMember)) {
+    temp[id] = new Date().getTime();
+  } else if (isVC(oldMember) && !isVC(newMember)) {
     if (!server.users[id]) {
       server.users[id] = new UserRecord();
     }
-    if (!temp[id]) return; 
-    server.users[id].addVoiceTime(server.today, new Date() - temp[id]); // millisecond    
+    if (!temp[id]) return;
+    console.log(`---- For ${id} ----`); 
+    server.users[id].addVoiceTime(server.today, new Date().getTime() - temp[id]); // millisecond
+    delete temp[id];    
   }
 };
 
 module.exports.end = (server) => {
+  console.log('eng voice called');
   for (let id in temp) {
     if (!server.users[id]) {
       server.users[id] = new UserRecord();
     }
-    server.users[id].addVoiceTime(server.today, new Date() - temp[id]); // millisecond
+    server.users[id].addVoiceTime(server.today, new Date().getTime() - temp[id]); // millisecond
   }
 };

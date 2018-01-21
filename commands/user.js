@@ -119,7 +119,7 @@ module.exports.command = async (message, content, bot, server) => {
   //embed.addField('Emojis used', , true);
   //embed.addField('Reacted', record.reactions, true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
-  if (message.author.id == bot.owner_ID) embed.addField('Minutes Spent in VC', record.vc , true);
+  if (message.author.id == bot.owner_ID) embed.addField('Time Spent in VC', record.vc , true);
   
   message.channel.send({embed});
 };

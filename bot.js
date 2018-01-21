@@ -52,6 +52,7 @@ bot.on('message', async message => {
     return;
   }
   let server = bot.servers[message.guild.id];
+  await server.guild.fetchMember(message.author); // Cache member.
   // Is it a command?
   if (!message.content.startsWith(server.prefix)) {
     server.processNewMessage(message, bot);

@@ -7,7 +7,7 @@ module.exports = class UserRecord {
       this.thirty = arg.thirty;
       this.jp = arg.jp;
       this.en = arg.en;
-      this.vc = arg.vc ? arg.vc : 0;
+      this.vc = 0; //arg.vc ? arg.vc : 0;
       this.chans = arg.chans;
     } else { // build from scratch
       this.record = new Array(31); //31 days
@@ -63,8 +63,10 @@ module.exports = class UserRecord {
     if (!this.record[today]['vc']) {
       this.record[today]['vc'] = 0;
     }
-    this.record[today]['vc'] += Math.round(ms / 60000);
-    this.vc += Math.round(ms / 60000);
+    let min = Math.round(ms / 60000);
+    console.log(`VC added: ${min} min`);
+    this.record[today]['vc'] += min;
+    this.vc += min;
   }
 
   totalStats() {
