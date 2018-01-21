@@ -109,6 +109,11 @@ bot.on('messageReactionRemove', async (reaction, user) => {
   if (m.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[reaction.message.guild.id].processReaction(reaction, user, false);
 });
+
+bot.on('voiceStateUpdate', async (oldMember, newMember) => {
+  if (oldMember.user.bot) return;
+  bot.servers[oldMember.guild.id].processVoice(oldMember, newMember);
+});
 /*
 bot.on('userUpdate', (oldUser, newUser) => {
   for (let server of bot.servers.values()) {

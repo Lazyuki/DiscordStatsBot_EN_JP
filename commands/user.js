@@ -117,8 +117,9 @@ module.exports.command = async (message, content, bot, server) => {
   embed.addField('Most active channels', topChans ? topChans : 'none', true);
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   //embed.addField('Emojis used', , true);
-  //embed.addField('Time Spent in VC', , true);
   //embed.addField('Reacted', record.reactions, true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
+  embed.addField('Minutes Spent in VC', record.vc , true);
+  
   message.channel.send({embed});
 };

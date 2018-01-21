@@ -7,12 +7,14 @@ module.exports = class UserRecord {
       this.thirty = arg.thirty;
       this.jp = arg.jp;
       this.en = arg.en;
+      this.vc = arg.vc ? arg.vc : 0;
       this.chans = arg.chans;
     } else { // build from scratch
       this.record = new Array(31); //31 days
       this.thirty = 0;
       this.jp = 0;
       this.en = 0;
+      this.vc = 0;
       this.chans = {}; // {<channel ID>: # messages, <ID>: #}
     }
   }
@@ -54,6 +56,14 @@ module.exports = class UserRecord {
     this.record[today]['rxn']++;
   }
 
+  addVoiceTime(today, ms) {
+    if (!this.record[today]['vc']) {
+      this.record[today]['vc'] = 0;
+    }
+    this.record[today]['vc'] += Math.round(ms / 60000);
+    this.vc += Math.round(ms / 60000);
+  }
+
   totalStats() {
     return this.thirty;
   }
@@ -81,6 +91,11 @@ module.exports = class UserRecord {
       if (chan == 'rxn') { // reactions
         this.rxn -= this.record[earliestDay]['rxn'];
         this.record[earliestDay]['rxn'] = 0;
+        continue;
+      }
+      if (chan == 'vc') { // voice
+        this.vc -= this.record[earliestDay]['vc'];
+        this.record[earliestDay]['vc'] = 0;
         continue;
       }
       let num = this.record[earliestDay][chan];

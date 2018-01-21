@@ -36,6 +36,15 @@ module.exports = class Server {
     });
   }
 
+
+  async processVoice(oldMember, newMember) {
+    this.processors['VOICE'].forEach((p) => {
+      if (p.isAllowed(oldMember)) {
+        p.process(oldMember, newMember, this);
+      }
+    });
+  }
+
   async addDeletedMessage(message) {
     this.processors['DELETE'].forEach((p) => {
       if (p.isAllowed(message)) {
