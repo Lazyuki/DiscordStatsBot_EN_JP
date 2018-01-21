@@ -99,6 +99,9 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
 
+  let hours = Math.floor(record.vc / 60); 
+  let vcTime = `${hours ? hours + 'hr '  : ''}${record.vc % 60}min`;
+
   let embed = new Discord.RichEmbed();
   if (user) {
     let fire = member.roles.has('384286851260743680');
@@ -119,7 +122,7 @@ module.exports.command = async (message, content, bot, server) => {
   //embed.addField('Emojis used', , true);
   //embed.addField('Reacted', record.reactions, true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
-  if (message.author.id == bot.owner_ID) embed.addField('Time Spent in VC', record.vc , true);
+  if (message.author.id == bot.owner_ID) embed.addField('Time Spent in VC', vcTime , true);
   
   message.channel.send({embed});
 };
