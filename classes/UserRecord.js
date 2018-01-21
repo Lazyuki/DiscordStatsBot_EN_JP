@@ -57,6 +57,9 @@ module.exports = class UserRecord {
   }
 
   addVoiceTime(today, ms) {
+    if (!this.record[today]) {
+      this.record[today] = {};
+    }
     if (!this.record[today]['vc']) {
       this.record[today]['vc'] = 0;
     }
