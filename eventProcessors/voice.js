@@ -3,9 +3,9 @@ module.exports.events = ['VOICE'];
 
 let temp = {};
 module.exports.initialize = (json, server) => {
-  for (let [id, vc] of server.guild.channels.filter((i, c) => {return c.type == 'voice';})) {
+  for (let [id, vc] of server.guild.channels.filter(c => {return c.type == 'voice';})) {    
     for (let [memid, mem] of vc.members) {
-      temp[memid] = new Date();
+      temp[mem.id] = new Date();
     }
   }
 };
@@ -26,6 +26,7 @@ module.exports.process = async (oldMember, newMember, server) => {
     if (!server.users[id]) {
       server.users[id] = new UserRecord();
     }
+    if (!temp[id]) return; 
     server.users[id].addVoiceTime(server.today, new Date() - temp[id]); // millisecond    
   }
 };
