@@ -7,7 +7,7 @@ module.exports = class UserRecord {
       this.thirty = arg.thirty;
       this.jp = arg.jp;
       this.en = arg.en;
-      this.vc = 0; //arg.vc ? arg.vc : 0;
+      this.vc = arg.vc; // ? arg.vc : 0;
       this.chans = arg.chans;
     } else { // build from scratch
       this.record = new Array(31); //31 days

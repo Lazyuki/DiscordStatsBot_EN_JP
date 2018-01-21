@@ -27,18 +27,18 @@ module.exports.process = async (oldMember, newMember, server) => {
       server.users[id] = new UserRecord();
     }
     if (!temp[id]) return;
-    console.log(`---- For ${id} ----`); 
+    console.log(`---- Normal Add For ${id} ----`); 
     server.users[id].addVoiceTime(server.today, new Date().getTime() - temp[id]); // millisecond
     delete temp[id];    
   }
 };
 
 module.exports.end = (server) => {
-  console.log('eng voice called');
   for (let id in temp) {
     if (!server.users[id]) {
       server.users[id] = new UserRecord();
     }
+    console.log(`---- Left Over Add For ${id} ----`);    
     server.users[id].addVoiceTime(server.today, new Date().getTime() - temp[id]); // millisecond
   }
 };

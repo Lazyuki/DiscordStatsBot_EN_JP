@@ -20,4 +20,5 @@ module.exports.command = (message, content, bot, server) => {
       }
     }
   }
+  message.channel.send('done');
 };
