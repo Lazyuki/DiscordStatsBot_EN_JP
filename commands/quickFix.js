@@ -10,15 +10,19 @@ module.exports.isAllowed = (message, server, bot) => {
 
 module.exports.help = '*Bot owner only* hot fix';
 
-module.exports.command = (message, content, bot, server) => {
-  for (let id in server.users) {
-    let user = server.users[id];
-    let rec = user.record;
-    for (let day in rec) {
-      if (rec[day] && rec[day]['vc']) {
-        delete server.users[id].record[day]['vc'];
+module.exports.command = (message, content, bot) => {
+  for (let sid in bot.servers) {
+    let server = bot.servers[sid];
+    for (let id in server.users) {
+      let user = server.users[id];
+      let rec = user.record;
+      for (let day in rec) {
+        if (rec[day] && rec[day]['vc']) {
+          delete server.users[id].record[day]['vc'];
+        }
       }
     }
   }
+
   message.channel.send('done');
 };
