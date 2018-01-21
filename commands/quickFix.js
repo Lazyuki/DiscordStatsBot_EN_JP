@@ -15,6 +15,7 @@ module.exports.command = (message, content, bot) => {
     let server = bot.servers[sid];
     for (let id in server.users) {
       let user = server.users[id];
+      user.vc = 0;
       let rec = user.record;
       for (let day in rec) {
         if (rec[day] && rec[day]['vc']) {
