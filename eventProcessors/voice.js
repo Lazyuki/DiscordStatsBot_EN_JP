@@ -19,6 +19,10 @@ function isVC(member) {
 
 let UserRecord = require('../classes/UserRecord.js');
 module.exports.process = async (oldMember, newMember, server) => {
+  if (!server.tempvc) {
+    console.log('server.tempvc undefined');
+    return;
+  }
   let id = oldMember.id;
   if (!isVC(oldMember) && isVC(newMember)) {
     server.tempvc[id] = new Date().getTime();

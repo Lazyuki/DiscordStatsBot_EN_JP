@@ -1,4 +1,4 @@
-const config = require('../config.json');
+const config = require('./config.json');
 const request = require('request');
 const fs = require('fs');
 
@@ -16,7 +16,7 @@ function updateImgur() {
     config.imgurAccessToken = ret.access_token;
     config.lastUpdate = new Date().getTime();
     console.log('imgurAccessToken updated: ' + ret.access_token);
-    fs.writeFileSync('../config.json', JSON.stringify(config, null, 2), function (err) {
+    fs.writeFileSync('./config.json', JSON.stringify(config, null, 2), function (err) {
       if (err) return console.log(err);
     });
   });
