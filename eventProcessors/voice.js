@@ -20,7 +20,7 @@ function isVC(member) {
 let UserRecord = require('../classes/UserRecord.js');
 module.exports.process = async (oldMember, newMember, server) => {
   if (!server.tempvc) {
-    console.log('server.tempvc undefined');
+    console.log('server.tempvc undefined: ' + server.guild.id);
     return;
   }
   let id = oldMember.id;
