@@ -15,8 +15,12 @@ module.exports.help = 'Restart the bot.';
 
 module.exports.command = async (message, cont, bot) => {
   if (message.author.id != bot.owner_ID) return;
+  
   await message.channel.send('Restarting...');
   for (var s in bot.servers) {
+    s.processors['VOICE'].forEach((p) => {
+      p.end(s);    
+    });
     bot.servers[s].save();
   }
   bot.destroy().then(() => {

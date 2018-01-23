@@ -87,9 +87,6 @@ module.exports = class Server {
       }
       console.log(`Backup has been created for ${this.guild.id}: ${date}`);
     } else {
-      this.processors['VOICE'].forEach((p) => {
-        p.end(this);    
-      });
       try {
         fs.writeFileSync(`./.${this.guild.id}_restore.json`, JSON.stringify(this), 'utf8');
       } catch (e) {
