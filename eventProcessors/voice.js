@@ -19,10 +19,6 @@ function isVC(member) {
 
 let UserRecord = require('../classes/UserRecord.js');
 module.exports.process = async (oldMember, newMember, server) => {
-  if (!server.tempvc) {
-    console.log('server.tempvc undefined: ' + server.guild.id);
-    return;
-  }
   let id = oldMember.id;
   if (!isVC(oldMember) && isVC(newMember)) {
     server.tempvc[id] = new Date().getTime();
@@ -31,7 +27,6 @@ module.exports.process = async (oldMember, newMember, server) => {
       server.users[id] = new UserRecord();
     }
     if (!server.tempvc[id]) return;
-    console.log(`---- Normal Add For ${id} ----`); 
     server.users[id].addVoiceTime(server.today, new Date().getTime() - server.tempvc[id]); // millisecond
     delete server.tempvc[id];    
   }
@@ -42,7 +37,6 @@ module.exports.end = (server) => {
     if (!server.users[id]) {
       server.users[id] = new UserRecord();
     }
-    console.log(`---- Left Over Add For ${id} ----`);    
     server.users[id].addVoiceTime(server.today, new Date().getTime() - server.tempvc[id]); // millisecond
   }
   delete server.tempvc;

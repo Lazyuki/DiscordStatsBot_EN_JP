@@ -14,7 +14,7 @@ module.exports.isAllowed = (message, server, bot) => {
 module.exports.help = 'Talk through Ciri. `,s [#channel] [things to say]`';
 
 let channel;
-const channelIDRegex = /(\d{17,20})/g;
+const channelIDRegex = /<#(\d{17,20})>/g;
 
 module.exports.command = (message, content, bot, server) => {
   let match = channelIDRegex.exec(content);
