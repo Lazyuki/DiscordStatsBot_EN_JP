@@ -1,11 +1,10 @@
 module.exports.name = 'checkHardCore';
 module.exports.events = ['NEW', 'EDIT'];
 
-module.exports.isAllowed = async (message, server) => {
+module.exports.isAllowed = (message, server) => {
   if (!message.member) {
     console.log(`chkHrdCr: ${message.content} in #${message.channel.name}`);
-    await server.guild.fetchMember(message.author);
-    return;
+    return false;
   }
   if (!message.member.roles.has('384286851260743680')) return false; // Hardcore role
   // disabled in #japanese_questions, #english_questions, #correct_me, #language_exchange
