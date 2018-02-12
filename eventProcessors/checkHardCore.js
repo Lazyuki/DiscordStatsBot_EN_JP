@@ -1,11 +1,12 @@
 module.exports.name = 'checkHardCore';
 module.exports.events = ['NEW', 'EDIT'];
 
-module.exports.isAllowed = (message, server) => {
+module.exports.isAllowed = async (message, server) => {
   if (!message.member) {
-    console.log(`${message.content} in #${message.channel.name}`);
+    console.log(`chkHrdCr: ${message.content} in #${message.channel.name}`);
+    await server.guild.fetchMember(message.author);
     return;
-  } // It's sometimes null...
+  }
   if (!message.member.roles.has('384286851260743680')) return false; // Hardcore role
   // disabled in #japanese_questions, #english_questions, #correct_me, #language_exchange
   if (['189601264424714241', '193959229030268938', '314193922761031680', '376574779316109313'].includes(message.channel.id)) return false;

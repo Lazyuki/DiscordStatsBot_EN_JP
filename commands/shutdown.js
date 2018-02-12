@@ -10,9 +10,17 @@ module.exports.isAllowed = (message, server, bot) => {
   return message.author.id == bot.owner_ID;
 };
 
-module.exports.help = 'Shuts down the bot';
+module.exports.help = '`,kill [False (if not saving the state)]` Shuts down the bot';
 
-module.exports.command = (message, _, bot) => {
+module.exports.command = (message, content, bot) => {
+  for (var s in bot.servers) {
+    let server = bot.servers[s];
+    server.processors['VOICE'].forEach((p) => {
+      p.end(server);    
+    });
+    if (content.toLowerCase() != 'false')
+      server.save();
+  }
   console.log('Shutting down...');
   bot.destroy();
   setTimeout(process.exit, 0);

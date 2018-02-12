@@ -31,7 +31,7 @@ module.exports = class Server {
   async processReaction(reaction, user, added) {
     this.processors['REACT'].forEach((p) => {
       if (p.isAllowed(reaction.message)) {
-        p.process(reaction, user, this);
+        p.process(reaction, user, added, this);
       }
     });
   }

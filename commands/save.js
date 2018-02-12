@@ -14,6 +14,7 @@ module.exports.help = 'Save the server state.';
 module.exports.command = (message, _, bot) => {
   if (message.author.id != bot.owner_ID) return;
   for (var s in bot.servers) {
-    bot.servers[s].save();
+    let server = bot.servers[s];
+    server.save();
   }
 };
