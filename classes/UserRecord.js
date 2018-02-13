@@ -64,6 +64,7 @@ module.exports = class UserRecord {
       this.record[today]['vc'] = 0;
     }
     let min = Math.round(ms / 60000);
+    console.log(`--- ${min} added`);
     this.record[today]['vc'] += min;
     this.vc += min;
   }

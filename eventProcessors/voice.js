@@ -2,7 +2,7 @@ module.exports.name = 'voiceStateChange';
 module.exports.events = ['VOICE'];
 
 function isVC(member) {
-  return member.voiceChannel && member.voiceChannel.id != member.guild.afkChannelID && !member.deaf;
+  return member.voiceChannel && (member.voiceChannel.id != member.guild.afkChannelID) && !member.deaf;
 }
 
 module.exports.initialize = (json, server) => {
@@ -29,6 +29,7 @@ module.exports.process = async (oldMember, newMember, server) => {
     }
     if (!server.tempvc[id]) return;
     server.users[id].addVoiceTime(server.today, new Date().getTime() - server.tempvc[id]); // millisecond
+    console.log(`VC added for ${newMember.user.username}`);
     delete server.tempvc[id];    
   }
 };
@@ -38,6 +39,7 @@ module.exports.end = (server) => {
     if (!server.users[id]) {
       server.users[id] = new UserRecord();
     }
+    console.log(`VC added for ${id}`);    
     server.users[id].addVoiceTime(server.today, new Date().getTime() - server.tempvc[id]); // millisecond
   }
   delete server.tempvc;
