@@ -24,7 +24,7 @@ module.exports.command = (message, content, bot) => {
         if (day <= 4) {
           if (rec[day] && rec[day]['vc']) {
             let  v = server.users[id].record[day]['vc'];
-            server.users[id] -= v;
+            server.users[id].vc -= v;
             delete server.users[id].record[day]['vc'];
           }
         } else {
