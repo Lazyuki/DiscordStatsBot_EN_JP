@@ -116,7 +116,7 @@ module.exports.command = async (message, content, bot, server) => {
   embed.description = 'For the last 30 days (UTC time)';
   let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
   let jpnPercent = (record.jp / (record.jp + record.en) * 100).toFixed(2);
-  embed.addField('Messages sent M | W', `${record.thirty} | ${week}`, true);
+  embed.addField('Messages sent\n Month | Week', `${record.thirty} | ${week}`, true);
   embed.addField('Most active channels', topChans ? topChans : 'none', true);
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   //embed.addField('Emojis used', , true);

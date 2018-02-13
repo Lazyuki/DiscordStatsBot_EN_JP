@@ -72,6 +72,10 @@ module.exports = class UserRecord {
     return this.thirty;
   }
 
+  voiceTime() {
+    return this.vc;
+  }
+
   channelStats(channelID) {
     let result = this.chans[channelID];
     return result ? result : 0;
@@ -99,7 +103,7 @@ module.exports = class UserRecord {
       }
       if (chan == 'vc') { // voice
         this.vc -= this.record[earliestDay]['vc'];
-        this.record[earliestDay]['vc'] = 0;
+        delete this.record[earliestDay]['vc'];
         continue;
       }
       let num = this.record[earliestDay][chan];

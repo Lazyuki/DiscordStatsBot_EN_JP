@@ -2,6 +2,7 @@ module.exports.name = 'checkHardCore';
 module.exports.events = ['NEW', 'EDIT'];
 
 module.exports.isAllowed = (message, server) => {
+  // DONT MESS WITH THE CODE HERE!!!!!!!!
   if (!message.member) {
     console.log(`chkHrdCr: ${message.content} in #${message.channel.name}`);
     return false;
