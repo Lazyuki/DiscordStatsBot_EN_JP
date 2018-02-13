@@ -14,12 +14,21 @@ module.exports.command = (message, content, bot) => {
   for (let sid in bot.servers) {
     let server = bot.servers[sid];
     for (let id in server.users) {
+      if (id == '408971129336758272') {
+        delete server.users[id];
+        continue;
+      }
       let user = server.users[id];
-      user.vc = 0;
       let rec = user.record;
       for (let day in rec) {
-        if (rec[day] && rec[day]['vc']) {
-          delete server.users[id].record[day]['vc'];
+        if (day <= 4) {
+          if (rec[day] && rec[day]['vc']) {
+            let  v = server.users[id].record[day]['vc'];
+            server.users[id] -= v;
+            delete server.users[id].record[day]['vc'];
+          }
+        } else {
+          break;
         }
       }
     }

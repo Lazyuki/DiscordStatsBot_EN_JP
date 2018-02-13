@@ -1,3 +1,5 @@
+import { SIGSTKFLT } from 'constants';
+
 const Util = require('./Util.js');
 
 module.exports = class UserRecord {
@@ -73,7 +75,7 @@ module.exports = class UserRecord {
   }
 
   voiceTime() {
-    return this.vc;
+    return this.vc; SIGSTKFLT
   }
 
   channelStats(channelID) {
