@@ -28,8 +28,8 @@ module.exports.process = async (oldMember, newMember, server) => {
       server.users[id] = new UserRecord();
     }
     if (!server.tempvc[id]) return;
+    console.log(`VC added for ${newMember.user.username}`);    
     server.users[id].addVoiceTime(server.today, new Date().getTime() - server.tempvc[id]); // millisecond
-    console.log(`VC added for ${newMember.user.username}`);
     delete server.tempvc[id];    
   }
 };
