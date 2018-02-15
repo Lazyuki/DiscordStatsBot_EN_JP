@@ -15,6 +15,6 @@ module.exports.command = async (message, _, bot, server) => {
   for (var v in server.tempvc) {
     let t = server.tempvc[v];
     let member = await server.guild.fetchMember(v);
-    console.log(`${member.user.username}: ${Math.round((t - new Date().getTime()) / 60000)} min`);
+    console.log(`${member.user.username}: ${Math.round((new Date().getTime() - t) / 60000)} min`);
   }
 };
