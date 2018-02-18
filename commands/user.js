@@ -109,7 +109,6 @@ module.exports.command = async (message, content, bot, server) => {
     embed.color = fire ? Number('0xFF5500') : Number('0x3A8EDB');
     embed.setFooter('Joined this server');
     embed.timestamp = member.joinedAt;
-    console.log(member.joinedAt);
   } else { // user left
     embed.setAuthor(`Stats for <@${content}>`);
     embed.color = Number('0x3A8EDB');
