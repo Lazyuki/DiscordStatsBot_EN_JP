@@ -14,10 +14,11 @@ module.exports.command = (message, content, bot) => {
   for (let sid in bot.servers) {
     let server = bot.servers[sid];
     for (let id in server.users) {
-      if (id == '408971129336758272') {
+      if (id == '397334576650911744') {
         delete server.users[id];
         continue;
       }
+      /*
       let user = server.users[id];
       let rec = user.record;
       for (let day in rec) {
@@ -30,7 +31,7 @@ module.exports.command = (message, content, bot) => {
         } else {
           break;
         }
-      }
+      }*/
     }
   }
 

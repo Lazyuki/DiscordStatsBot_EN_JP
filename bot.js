@@ -134,6 +134,7 @@ bot.on('guildBanAdd', (guild, user) => {
   let index = bot.servers[guild.id].watchedUsers.indexOf(user.id);
   if (index == -1) return;
   bot.servers[guild.id].watchedUsers.splice(index, 1);
+  if (bot.servers[guild.id].tempvc[user.id]) delete bot.servers[guild.id].tempvc[user.id];
 });
 
 bot.on('guildCreate', guild => {
