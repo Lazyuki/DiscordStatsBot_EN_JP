@@ -63,13 +63,15 @@ bot.on('message', async message => {
   // Separate the command and the content
   let command = message.content.split(' ')[0].slice(1).toLowerCase();
   let content = message.content.substr(command.length + 2).trim();
-  if (!commands[command]) { // if not Ciri bot command, add it.
-    server.processNewMessage(message, bot);
-    return;
+  if (commands[command]) { // if Ciri bot command
+    // Defaults to EJLX 
+    if (message.guild.id == '293787390710120449') server = bot.servers['189571157446492161']; 
+    if (commands[command].isAllowed(message, server, bot)) {
+      commands[command].command(message, content, bot, server, cmds);
+      return;
+    }
   }
-  // Defaults to EJLX 
-  if (message.guild.id == '293787390710120449') server = bot.servers['189571157446492161']; 
-  commands[command].command(message, content, bot, server, cmds);
+  server.processNewMessage(message, bot);  
 });
 
 bot.on('messageUpdate', (oldMessage, newMessage) => {
