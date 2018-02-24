@@ -20,8 +20,6 @@ module.exports.command = async (message, content, bot, server) => {
     message.react('❓');
     return;
   }
-  var memberID = u.id;
-
   let users = server.users;
   let result = new BST();
   for (let user in users) {

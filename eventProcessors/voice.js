@@ -28,7 +28,6 @@ module.exports.process = async (oldMember, newMember, server) => {
       server.users[id] = new UserRecord();
     }
     if (!server.tempvc[id]) return;
-    console.log(`VC added for ${newMember.user.username}`);    
     server.users[id].addVoiceTime(server.today, new Date().getTime() - server.tempvc[id]); // millisecond
     delete server.tempvc[id];    
   }
@@ -39,7 +38,6 @@ module.exports.end = (server) => {
     if (!server.users[id]) {
       server.users[id] = new UserRecord();
     }
-    console.log(`VC added for ${id}`);    
     server.users[id].addVoiceTime(server.today, new Date().getTime() - server.tempvc[id]); // millisecond
   }
   delete server.tempvc;
