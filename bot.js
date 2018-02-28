@@ -39,6 +39,7 @@ bot.on('ready', () => {
   console.log('--------------------------');
   bot.servers = {};
   for (let guild of bot.guilds.values()) {
+    if (guild.id == '293787390710120449') continue;
     bot.servers[guild.id] = new Server(guild, inits, prcs);
   }
   let helps = [',help',',h',',halp',',tasukete'];
@@ -52,12 +53,17 @@ bot.on('message', async message => {
     return;
   }
   let server = bot.servers[message.guild.id];
+  let mine = false;
+  if (server == undefined) {
+    server = bot.servers['189571157446492161'];
+    mine = true;
+  }
   if (!message.member) {
     message.member = await server.guild.fetchMember(message.author); // Cache member.
   }
-  // Is it a command?
+  // Is it not a command?
   if (!message.content.startsWith(server.prefix)) {
-    server.processNewMessage(message, bot);
+    if (!mine) server.processNewMessage(message, bot);
     return;
   }
   // Separate the command and the content
@@ -65,13 +71,12 @@ bot.on('message', async message => {
   let content = message.content.substr(command.length + 2).trim();
   if (commands[command]) { // if Ciri bot command
     // Defaults to EJLX 
-    if (message.guild.id == '293787390710120449') server = bot.servers['189571157446492161']; 
     if (commands[command].isAllowed(message, server, bot)) {
       commands[command].command(message, content, bot, server, cmds);
       return;
     }
   }
-  server.processNewMessage(message, bot);  
+  if (!mine) server.processNewMessage(message, bot);  
 });
 
 bot.on('messageUpdate', (oldMessage, newMessage) => {
