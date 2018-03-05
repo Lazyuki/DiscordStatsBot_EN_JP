@@ -9,7 +9,7 @@ const inits = cmds.inits;
 const prcs = require('./prcs.js');
 
 // Set up Discord client settings.
-// Note: Disabling other events such as user update tends to break the code.
+// Note: Disabling other events such as user update tends to break everything.
 const bot = new Discord.Client({
   disableEveryone: true,
   disabledEvents: [
@@ -21,7 +21,7 @@ const bot = new Discord.Client({
 const token = init.token;
 bot.owner_ID = init.owner_ID;
 
-// Initialize bot and servers.
+// Initialize the bot and servers.
 bot.on('ready', () => {
   setTimeout(() => { // Set up hourly backup state task
     savingTask(bot);
@@ -47,19 +47,24 @@ bot.on('ready', () => {
 });
 
 bot.on('message', async message => {
-  if (message.author.bot || message.system) return;
+  if (message.author.bot || message.system) return; // Ignore messages by bots and system
   if (message.channel.type != 'text') { // Direct message.
     respondDM(message);
     return;
   }
-  let server = bot.servers[message.guild.id];
+
+  let server = bot.servers[message.guild.id]; 
+
+  // Changes my server to EJLX
   let mine = false;
   if (server == undefined) {
     server = bot.servers['189571157446492161'];
     mine = true;
   }
-  if (!message.member) {
-    message.member = await server.guild.fetchMember(message.author); // Cache member.
+
+  // Cache member => prevents weird errors 
+  if (!message.member) { 
+    message.member = await server.guild.fetchMember(message.author); 
   }
   // Is it not a command?
   if (!message.content.startsWith(server.prefix)) {
@@ -69,19 +74,18 @@ bot.on('message', async message => {
   // Separate the command and the content
   let command = message.content.split(' ')[0].slice(1).toLowerCase();
   let content = message.content.substr(command.length + 2).trim();
-  if (commands[command]) { // if Ciri bot command
-    // Defaults to EJLX 
-    if (commands[command].isAllowed(message, server, bot)) {
+  if (commands[command]) { // if Ciri's command
+    if (commands[command].isAllowed(message, server, bot)) { // Check permission
       commands[command].command(message, content, bot, server, cmds);
       return;
     }
   }
-  if (!mine) server.processNewMessage(message, bot);  
+  if (!mine) server.processNewMessage(message, bot); // Wasn't a valid command, so process it
 });
 
 bot.on('messageUpdate', (oldMessage, newMessage) => {
   if (oldMessage.author.bot || oldMessage.system) return;
-  if (oldMessage.content == newMessage.content) return; // Discord auto embed for links.
+  if (oldMessage.content == newMessage.content) return; // Discord's auto embed for links sends this event too
   if (oldMessage.channel.type != 'text') return;
   if (oldMessage.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[oldMessage.guild.id].addEdits(oldMessage, newMessage, bot);
@@ -138,6 +142,7 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('guildBanAdd', (guild, user) => {
   if (guild.id == '293787390710120449') return;// Ignore my server
+  // Clean up watchedUsers
   let index = bot.servers[guild.id].watchedUsers.indexOf(user.id);
   if (index == -1) return;
   bot.servers[guild.id].watchedUsers.splice(index, 1);
@@ -156,7 +161,7 @@ bot.on('guildDelete', guild => {
   console.log(`Server removed: ${guild.name}`);
 });
 
-// Response to a DM since it's not supported there
+// Respond to DMs since it's not supported there
 function respondDM(message) {
   let msgs = [
     'Come on... I\'m not available here... \n https://media3.giphy.com/media/mfGYunx8bcWJy/giphy.gif',

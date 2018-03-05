@@ -1,28 +1,42 @@
 module.exports.name = 'notifyLINE';
 module.exports.events = ['NEW'];
-
+const ryryID = '202995638860906496';
 
 module.exports.isAllowed = (message, server, bot) => {
-  return message.mentions.users.has(bot.owner_ID) || message.mentions.roles.has('240647591770062848');
+  return message.mentions.users.has(bot.owner_ID) || message.mentions.roles.has('240647591770062848')
+   || message.mentions.users.has(ryryID);
 };
 
-const LINE = require('@line/bot-sdk');
 const config = require('../config.json');
-const LINEclient = new LINE.Client({
-  channelAccessToken: config.LINEchannelAccessToken
-});
+const request = require('request');
+
+function notify(message, token) {
+  let options = { method: 'POST',
+    url: 'https://notify-api.line.me/api/notify',
+    headers:
+        {
+          'authorization': `Bearer ${token}`,
+          'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
+        },
+    formData: {message: `${message.cleanContent}\n#${message.channel.name} by ${message.author.username}`}
+  };
+  request(options, function (error) {
+    if (error) console.log(error);
+  });
+}
 
 module.exports.process = async (message, server, bot) => {
+  if (message.content.startsWith('t!') || message.content.startsWith('.')) return; // ignore bot commands
   let me = await server.guild.fetchMember(bot.owner_ID);
-  if (me.presence.status != 'offline') return; // if I'm online
-  if (message.content.startsWith('t!')) return; // ignore tatsumaki commands
-  const LINEmsg = [];
-  LINEmsg.push({
-    type: 'text',
-    text: `${message.cleanContent} | in #${message.channel.name} by ${message.author.username}`
-  });
-  LINEclient.pushMessage(config.LINEuserID, LINEmsg)
-    .catch((err) => {
-      console.error(err);
-    });
+  let ry = await server.guild.fetchMember(ryryID); // Ry
+  if (me.presence.status == 'offline'
+      &&  (message.mentions.users.has(bot.owner_ID) 
+           || message.mentions.roles.has('240647591770062848'))) { // If I'm offline
+    notify(message, config.LINEnotifyToken);
+  }
+  if ((ry.presence.status == 'offline' && message.mentions.users.has(ryryID))
+      || message.mentions.roles.has('240647591770062848')) {
+    notify(message, config.ryryLINEnotifyToken);
+  }
 };
+

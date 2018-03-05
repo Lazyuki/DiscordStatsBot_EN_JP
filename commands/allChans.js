@@ -18,10 +18,6 @@ module.exports.command = (message, content, bot, server) => {
     let user = server.users[id];
     for (let ch in user.chans) {
       if (server.hiddenChannels.includes(ch) && ignoreHidden) continue;
-      if (ch == '293787390710120449') {
-        delete server.users[id].chans[ch];
-        continue;
-      }
       if (allch[ch]) {
         allch[ch] += user.chans[ch];
       } else {

@@ -9,7 +9,7 @@ module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161';
 };
 
-module.exports.help = 'Readme message for new users in English. Use `,yonde` for English.';
+module.exports.help = 'Readme message for new users in English. Use `,yonde` for Japanese.';
 
 const Discord = require('discord.js');
 

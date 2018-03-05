@@ -35,7 +35,7 @@ module.exports.command = (message, content, bot) => {
         moreThan++;
       }
     }
-    res += `${moreThan} people have talked more than ${num} messages.\n`;
+    res += `${moreThan} people have sent more than ${num} messages.\n`;
     res += `Date number: ${server.today}\n\n`;
   }
   res += `UTC Time: ${new Date().toUTCString()}`;

@@ -7,8 +7,8 @@ function isVC(member) {
 
 module.exports.initialize = (json, server) => {
   server.tempvc = {};
-  for (let [id, vc] of server.guild.channels.filter(c => {return c.type == 'voice';})) {    
-    for (let [memid, mem] of vc.members) {
+  for (let [, vc] of server.guild.channels.filter(c => {return c.type == 'voice';})) {    
+    for (let [, mem] of vc.members) {
       if (isVC(mem))
         server.tempvc[mem.id] = new Date().getTime();
     }
