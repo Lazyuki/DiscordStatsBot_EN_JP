@@ -1,14 +1,14 @@
 module.exports.name = 'notifyLINE';
 module.exports.events = ['NEW'];
 const ryryID = '202995638860906496';
+const config = require('../config.json');
+const request = require('request');
 
 module.exports.isAllowed = (message, server, bot) => {
-  return message.mentions.users.has(bot.owner_ID) || message.mentions.roles.has('240647591770062848')
+  return message.mentions.users.has(bot.owner_ID) || message.mentions.roles.has('240647591770062848') // active staff
    || message.mentions.users.has(ryryID);
 };
 
-const config = require('../config.json');
-const request = require('request');
 
 function notify(message, token) {
   let options = { method: 'POST',
@@ -18,7 +18,7 @@ function notify(message, token) {
           'authorization': `Bearer ${token}`,
           'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
         },
-    formData: {message: `${message.cleanContent}\n#${message.channel.name} by ${message.author.username}`}
+    formData: {message: `${message.cleanContent}\nin #${message.channel.name}\nby @${message.author.username}`}
   };
   request(options, function (error) {
     if (error) console.log(error);
