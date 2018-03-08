@@ -30,6 +30,11 @@ module.exports.process = async (oldMember, newMember, server) => {
     server.users[id].addVoiceTime(server.today, new Date().getTime() - server.tempvc[id]); // millisecond
     delete server.tempvc[id];    
   }
+  if (server.unmuteQ.includes(id)) { // Unmutes people who are in the unmute queue
+    await newMember.setMute(false);
+    let index = server.unmuteQ.indexOf(id);
+    server.unmuteQ.splice(index, 1);
+  }
 };
 
 // called when restarting/shutting down the bot
