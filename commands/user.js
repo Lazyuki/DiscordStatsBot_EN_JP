@@ -15,7 +15,7 @@ const Util = require('../classes/Util.js');
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 module.exports.command = async (message, content, bot, server) => {
-  let user = content == '' ? message.author : Util.searchUser(message, content, server, bot);
+  let user = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
   let record;
   let member;
   if (!user) {

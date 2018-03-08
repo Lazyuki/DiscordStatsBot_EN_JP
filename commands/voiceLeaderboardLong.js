@@ -15,7 +15,7 @@ module.exports.help = '`,v [username (default = invoker)]` Voice leaderboard for
 
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
-  let u = content == '' ? message.author : Util.searchUser(message, content, server, bot);
+  let u = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
   if (!u) {
     message.react('❓');
     return;

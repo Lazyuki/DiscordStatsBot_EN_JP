@@ -14,12 +14,11 @@ const Util = require('../classes/Util.js');
 module.exports.help = 'List channels for the user `,uch [name, @mention]`';
 
 module.exports.command = async (message, content, bot, server) => {
-  let user = content == '' ? message.author : Util.searchUser(message, content, server, bot);
+  let user = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
   if (!user) {
     message.react('❓');
     return;
   }
-  
 
   var record = server.users[user.id];
   let member = await server.guild.fetchMember(user);

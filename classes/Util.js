@@ -12,7 +12,7 @@ exports.REGEX_CHAN = /<#\d+>/g;
 exports.REGEX_ROLE = /<@&\d+>/g;
 exports.REGEX_ID = /<(@!?|#|@&|a?:[\S]+:)\d+>/g;
 
-exports.searchUser = async function(message, content, server, bot) {
+exports.searchUser = unction(message, content, server, bot) {
   let mentions = message.mentions.users;
   content = content.trim();
   if (mentions.size != 0) {
@@ -31,11 +31,11 @@ exports.searchUser = async function(message, content, server, bot) {
     } else {
       content = content.toLowerCase();
       for (let id in server.users) {
-        if (id == content) { // ID search
-          return await bot.fetchUser(id);
+        let u = server.guild.members.get(id);
+        if (id == content) {
+          return bot.fetchUser(id); // This returns a Promise
         }
-        let u = server.guild.members.get(id); // TODO change to fetch?
-        if (u == undefined) continue; // if left
+        if (u == undefined) continue; // user left
         if (u.user.tag.toLowerCase().startsWith(content) || (u.nickname && u.nickname.toLowerCase().startsWith(content))) {
           return u.user;
         }

@@ -16,7 +16,7 @@ module.exports.isAllowed = () => {
 
 module.exports.help = 'Shows the Discord ID for an object and the creation time. `,id <@mention, #channel, ID, or username>`';
 
-module.exports.command = (message, content, bot, server) => {
+module.exports.command = async (message, content, bot, server) => {
   if (content == '') {
     message.channel.send('Give me either `@mention`, `#channel`, `valid snowflake ID`, or the user\'s name');
     return;
@@ -61,7 +61,7 @@ module.exports.command = (message, content, bot, server) => {
     let def = '1420070400000';
     let id = content;
     let date = Discord.SnowflakeUtil.deconstruct(content).date;
-    let u = Util.searchUser(message, content, server, bot);
+    let u = await Util.searchUser(message, content, server, bot);
     if (u) {
       date = Discord.SnowflakeUtil.deconstruct(u.id).date;
       embed.setAuthor(u.tag, u.avatarURL);
