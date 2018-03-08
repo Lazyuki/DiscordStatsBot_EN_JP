@@ -13,7 +13,7 @@ module.exports.help = 'JSON representation of the user.';
 
 module.exports.command = async (message, content, bot, server) => {
   if (message.author.id != bot.owner_ID) return;
-  let user = content == '' ? message.author : Util.searchUser(message, content, server);
+  let user = content == '' ? message.author : Util.searchUser(message, content, server, bot);
   if (!user) {
     message.react('❓');
     return;

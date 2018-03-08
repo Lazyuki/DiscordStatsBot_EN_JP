@@ -14,7 +14,7 @@ const Util = require('../classes/Util.js');
 module.exports.help = 'List channels for the user `,uch [name, @mention]`';
 
 module.exports.command = async (message, content, bot, server) => {
-  let user = content == '' ? message.author : Util.searchUser(message, content, server);
+  let user = content == '' ? message.author : Util.searchUser(message, content, server, bot);
   if (!user) {
     message.react('❓');
     return;

@@ -61,7 +61,7 @@ module.exports.command = (message, content, bot, server) => {
     let def = '1420070400000';
     let id = content;
     let date = Discord.SnowflakeUtil.deconstruct(content).date;
-    let u = Util.searchUser(message, content, server);
+    let u = Util.searchUser(message, content, server, bot);
     if (u) {
       date = Discord.SnowflakeUtil.deconstruct(u.id).date;
       embed.setAuthor(u.tag, u.avatarURL);

@@ -26,7 +26,7 @@ module.exports.command = async (message, content, bot, server) => {
     channels = Array.from(message.mentions.channels.values());
   }
   content = content.replace(channelregex, '').trim();
-  let u = content == '' ? message.author : Util.searchUser(message, content, server);
+  let u = content == '' ? message.author : Util.searchUser(message, content, server, bot);
   if (!u) {
     message.react('❓');
     return;
