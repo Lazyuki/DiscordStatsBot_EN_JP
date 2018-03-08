@@ -21,7 +21,7 @@ module.exports.command = async (message) => {
     let embed = new Discord.RichEmbed();
     embed.setAuthor(`${member.user.tag} has been unmuted in voice chat` , member.user.avatarURL);
     embed.color = Number('0x5EE07A');
-    embed.setFooter(`by **${message.author.tag}**`, message.author.avatarURL);
+    embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);
     embed.timestamp = new Date();
     message.channel.send({embed});
   }

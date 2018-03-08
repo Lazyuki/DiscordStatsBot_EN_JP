@@ -27,7 +27,7 @@ module.exports.command = async (message, content) => {
     embed.setAuthor(`${member.user.tag} has been muted in voice chat` , member.user.avatarURL);
     embed.description = `Reason: ${reason}`;
     embed.color = Number('0xEC891D');
-    embed.setFooter(`by **${message.author.tag}**`, message.author.avatarURL);
+    embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);
     embed.timestamp = new Date();
     message.channel.send({embed});
   }
