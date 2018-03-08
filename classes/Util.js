@@ -32,8 +32,7 @@ exports.searchUser = async function(message, content, server) {
       content = content.toLowerCase();
       for (let id in server.users) {
         if (id == content) { // ID search
-          let member = await server.guild.fetchMember(id);
-          return member ? member.user : null;
+          return await server.guild.fetchUser(id);
         }
         let u = server.guild.members.get(id); // TODO change to fetch?
         if (u == undefined) continue; // if left
