@@ -4,7 +4,6 @@ module.exports.events = ['VOICE'];
 function isVC(member) {
   return member.voiceChannel && (member.voiceChannel.id != member.guild.afkChannelID) && !member.deaf;
 }
-
 module.exports.initialize = (json, server) => {
   server.tempvc = {};
   for (let [, vc] of server.guild.channels.filter(c => {return c.type == 'voice';})) {    
@@ -33,6 +32,7 @@ module.exports.process = async (oldMember, newMember, server) => {
   }
 };
 
+// called when restarting/shutting down the bot
 module.exports.end = (server) => {
   for (let id in server.tempvc) {
     if (!server.users[id]) {

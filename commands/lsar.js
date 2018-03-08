@@ -9,7 +9,7 @@ module.exports.isAllowed = (message, server, bot) => {
   return message.author.id == bot.owner_ID; // Or Admins?
 };
 
-module.exports.help = '__Mods Only__ List self-assignable roles where people can react to them to get the roles.';
+module.exports.help = '__Owner Only__ List self-assignable roles where people can react to them to get the roles.';
 
 module.exports.command = async (message, content, bot, server) => {
   let str = 'React with those emojis to toggle the roles.\n';
