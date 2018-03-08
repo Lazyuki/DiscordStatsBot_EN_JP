@@ -12,7 +12,7 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('MUTE_MEMBERS');
 };
 
-module.exports.help = '__VW Only__ Voice mutes people. `,vm @someone @sometwo reason`';
+module.exports.help = '__VW Only__ Voice mutes people. `,vm <@someone> [@sometwo ...] [reason]`';
 
 module.exports.command = async (message, content) => {
   let targets = message.mentions.members;

@@ -12,7 +12,7 @@ exports.REGEX_CHAN = /<#\d+>/g;
 exports.REGEX_ROLE = /<@&\d+>/g;
 exports.REGEX_ID = /<(@!?|#|@&|a?:[\S]+:)\d+>/g;
 
-exports.searchUser = function(message, content, server) {
+exports.searchUser = async function(message, content, server) {
   let mentions = message.mentions.users;
   content = content.trim();
   if (mentions.size != 0) {
@@ -32,9 +32,8 @@ exports.searchUser = function(message, content, server) {
       content = content.toLowerCase();
       for (let id in server.users) {
         if (id == content) { // ID search
-          server.guild.fetchMember(id).then((member) => {
-            return member ? member.user : null;
-          });
+          let member = await server.guild.fetchMember(id);
+          return member ? member.user : null;
         }
         let u = server.guild.members.get(id); // TODO change to fetch?
         if (u == undefined) continue; // if left
