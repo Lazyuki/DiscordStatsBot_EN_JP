@@ -12,7 +12,7 @@ exports.REGEX_CHAN = /<#\d+>/g;
 exports.REGEX_ROLE = /<@&\d+>/g;
 exports.REGEX_ID = /<(@!?|#|@&|a?:[\S]+:)\d+>/g;
 
-exports.searchUser = unction(message, content, server, bot) {
+exports.searchUser = function(message, content, server, bot) {
   let mentions = message.mentions.users;
   content = content.trim();
   if (mentions.size != 0) {
