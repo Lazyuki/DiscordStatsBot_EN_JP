@@ -28,5 +28,5 @@ module.exports.command = async (message, content, bot, server) => {
   for (let i in sortable) {
     str += `${sortable[i][1]} => **${sortable[i][0]}**\n`;
   }
-  await msg.edit(str);
+  msg.edit(content); // USE str for auto change
 };
