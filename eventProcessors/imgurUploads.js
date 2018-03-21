@@ -29,7 +29,10 @@ module.exports.process = (message, server) => {
       formData: {image: imageURL, album: config.imgurAlbum, description: `In ${message.channel.name} by ${message.author.tag}`, type: 'URL'}
     };
     request(options, function (error, response, body) {
-      if (error) console.log(error);
+      if (error) {
+        console.log(error);
+        return;
+      }
       let ret = JSON.parse(body);
       if (ret.data.link == undefined) {
         console.log(JSON.stringify(ret));
