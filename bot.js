@@ -149,9 +149,9 @@ bot.on('guildBanAdd', (guild, user) => {
   bot.servers[guild.id].watchedUsers.splice(index, 1);
 });
 
-bot.on('guildMemberRemove', (guild, user) => {
-  if (guild.id == '293787390710120449') return;// Ignore my server
-  if (bot.servers[guild.id].tempvc[user.id]) delete bot.servers[guild.id].tempvc[user.id];
+bot.on('guildMemberRemove', (member) => {
+  if (member.guild.id == '293787390710120449') return;// Ignore my server
+  if (bot.servers[member.guild.id].tempvc[member.id]) delete bot.servers[member.guild.id].tempvc[member.id];
 });
 
 bot.on('guildCreate', guild => {
