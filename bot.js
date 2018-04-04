@@ -126,6 +126,7 @@ bot.on('messageReactionRemove', async (reaction, user) => {
 
 bot.on('voiceStateUpdate', async (oldMember, newMember) => {
   if (oldMember.user.bot) return;
+  if (oldMember.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[oldMember.guild.id].processVoice(oldMember, newMember);
 });
 /*
@@ -146,6 +147,10 @@ bot.on('guildBanAdd', (guild, user) => {
   let index = bot.servers[guild.id].watchedUsers.indexOf(user.id);
   if (index == -1) return;
   bot.servers[guild.id].watchedUsers.splice(index, 1);
+});
+
+bot.on('guildMemberRemove', (guild, user) => {
+  if (guild.id == '293787390710120449') return;// Ignore my server
   if (bot.servers[guild.id].tempvc[user.id]) delete bot.servers[guild.id].tempvc[user.id];
 });
 
