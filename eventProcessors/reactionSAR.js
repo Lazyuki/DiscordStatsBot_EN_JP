@@ -19,7 +19,10 @@ module.exports.process = async (reaction, user, added, server) => {
   if (server.sars[reaction.emoji.toString()]) {
     let roleID = server.sars[reaction.emoji.toString()];
     let member = await server.guild.fetchMember(user);
-    if (!member) return;
+    if (!member) {
+      console.log('SAR failed: ' + user.id);
+      return;
+    }
     if (added) {
       member.addRole(roleID, 'self assigned');
     } else {

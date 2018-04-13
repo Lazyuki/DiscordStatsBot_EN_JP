@@ -18,7 +18,7 @@ function notify(message, token) {
           'authorization': `Bearer ${token}`,
           'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
         },
-    formData: {message: `${message.cleanContent}\nin #${message.channel.name}\nby @${message.author.username}`}
+    formData: {message: `#${message.channel.name}\n@${message.author.username}:\n${message.cleanContent}`}
   };
   request(options, function (error) {
     if (error) console.log(error);
