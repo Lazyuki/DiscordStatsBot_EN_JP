@@ -44,10 +44,11 @@ module.exports.command = async (message, content, bot, server) => {
     let hours = Math.floor(result[user] / 60); 
     let vcTime = `${hours ? hours + 'hr '  : ''}${result[user] % 60}min`;
     if (count >= 25) { // the 25th person is either the 25th one or the user
-      if (!found) {
+      if (!found && user != memberID) {
         count++;
-        if (user != memberID) continue;
+        continue;
       }
+      
       embed.addField(count + ') ' + (await bot.fetchUser(user)).username, vcTime, true);
       break;
     }

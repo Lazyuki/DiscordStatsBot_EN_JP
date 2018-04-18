@@ -43,9 +43,9 @@ module.exports.command = async (message, content, bot, server) => {
 
   for (let user in result) {
     if (count >= 25) { // the 25th person is either the 25th one or the user
-      if (!found) {
+      if (!found && user != memberID) {
         count++;
-        if (user != memberID) continue;
+        continue;
       }
       embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true);
       break;
