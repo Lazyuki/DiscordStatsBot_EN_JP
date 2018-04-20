@@ -7,8 +7,8 @@ module.exports.isAllowed = (message, server) => {
     console.log(`chkHrdCr: ${message.content} in #${message.channel.name}`);
     return false;
   }
-  if (!message.member.roles.has('384286851260743680')) return false; // Hardcore role
-  // disabled in #japanese_questions, #english_questions, #correct_me, #language_exchange
+  if (!message.member.roles.has('384286851260743680') && !message.member.roles.has('436573300810973185')) return false; // Hardcore role
+  // disabled in #japanese_questions, #english_questions, #correct_me, #language_exchange, #nihongo-study, #eigo-no-beenkyo
   if (['189601264424714241', '193959229030268938', '314193922761031680', '376574779316109313'].includes(message.channel.id)) return false;
   if (server.hiddenChannels.includes(message.channel.id)) return false; // Not in mod room
   return true;
@@ -19,8 +19,10 @@ const Discord = require('discord.js');
 
 module.exports.process = (message) => {
   let content = message.content;
-  let isJapanese = message.member.roles.has('196765998706196480'); // has native japanese  
-  if (message.channel.id == '225828894765350913' && /^(k!|t!|[!.&%=+$])[^\n]*/.test(content)) return; // #bot
+  let isJapanese = message.member.roles.has('196765998706196480') || message.member.roles.has('292401145752846337'); // has native japanese  
+  if (message.channel.id == '225828894765350913' && /^(k!|t!|[!.&%=+$])/.test(content)) return; // #bot
+  if (message.channel.id == '343151415595892739' && /^(k!|t!|kq!|m!|[!<.])/.test(content)) return; // #bot-spam
+
   if (/^\.\.\.\s[\S]+$/.test(content)) return; // nadeko quote
   if (!isJapanese) { // for welcoming
     content = content.replace(/what'?s?\s(is\s)?(yo)?ur\snative\slang(uage)?/i, '');
