@@ -4,7 +4,8 @@ module.exports.alias = [
 ];
 
 module.exports.isAllowed = (message, server) => {
-  return true;
+  if (server.guild.id != '189571157446492161') return false;
+  return message.member.hasPermission('MANAGE_ROLES');
 };
 
 module.exports.help = 'Welcoming party stats';

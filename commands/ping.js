@@ -12,8 +12,10 @@ module.exports.isAllowed = () => {
 
 module.exports.help = 'Ping in milliseconds';
 
-module.exports.command = (message) => {
+module.exports.command = async (message) => {
   let now = new Date().getTime();
-  let date = Discord.SnowflakeUtil.deconstruct(message.id).date;
-  message.channel.send(`${now - date.getTime()} ms`);
+  // let dateBefore = Discord.SnowflakeUtil.deconstruct(message.id).date;
+  let sent = await message.channel.send('calculating...');
+  let now2 = new Date().getTime();
+  sent.edit(`${now2 - now} ms`);
 };

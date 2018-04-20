@@ -6,7 +6,7 @@ module.exports.alias = [
 ];
 
 module.exports.isAllowed = (message, server, bot) => {
-  return message.author.id == bot.owner_ID; // Or Admins?
+  return message.member.hasPermission('ADMINISTRATOR'); // Or Admins?
 };
 
 module.exports.help = '__Owner Only__ List self-assignable roles where people can react to them to get the roles.';
