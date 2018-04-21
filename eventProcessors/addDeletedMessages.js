@@ -13,7 +13,8 @@ module.exports.initialize = (json, server) => {
     server.deletedMessages.push(new SimpleMsg({simple:dm}));
   }
 };
-module.exports.isAllowed = () => {
+module.exports.isAllowed = (message) => {
+  if (message.guild.id != '189571157446492161') return false;
   return true;
 };
 

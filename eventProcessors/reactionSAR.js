@@ -3,9 +3,9 @@ module.exports.events = ['REACT'];
 
 module.exports.initialize = (json, server) => {
   server.sars = {};
-  if (server.guild.id == '189571157446492161') { // IF EJLX, fetch the self assignable role message in 
-    let server_rules = server.guild.channels.get('189585230972190720');
-    server_rules.fetchMessages(); // #server_rules
+  if (server.sticky) {
+    let stickied = server.guild.channels.get(server.sticky);
+    stickied.fetchMessages(); // #server_rules
   }
   if (!json || !json['sars']) return;
   server.sars = json['sars'];

@@ -165,6 +165,10 @@ function normalToCaps(normal) {
 }
 
 module.exports.command = async (message, content, bot, server) => {
+  if (!message.guild.me.hasPermission('VIEW_AUDIT_LOG')) {
+    message.channel.send('I need the View Audit Log permission.');
+    return;
+  }
   try {
     let guild = server.guild;
     let loopCount = 0;

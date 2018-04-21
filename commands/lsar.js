@@ -5,13 +5,17 @@ module.exports.alias = [
   'lsar'
 ];
 
-module.exports.isAllowed = (message, server, bot) => {
+module.exports.isAllowed = (message) => {
   return message.member.hasPermission('ADMINISTRATOR'); // Or Admins?
 };
 
 module.exports.help = '__Owner Only__ List self-assignable roles where people can react to them to get the roles.';
 
 module.exports.command = async (message, content, bot, server) => {
+  if (!message.guild.me.hasPermission('MANAGE_ROLES')) {
+    message.channel.send('I need the Mangae Roles permission.');
+    return;
+  }
   let str = 'React with those emojis to toggle the roles.\n';
   let sortable = [];
   for (let emoji in server.sars) {
