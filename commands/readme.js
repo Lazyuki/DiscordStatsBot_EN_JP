@@ -16,7 +16,7 @@ const Discord = require('discord.js');
 module.exports.command = (message) => {
   let mentioned = message.mentions.members.first();
   let embed = new Discord.RichEmbed();
-  embed.title = `**WELCOME ${mentioned ? mentioned: ''}!! :tada: READ ME!**`;
+  embed.title = `**WELCOME ${mentioned ? mentioned.username: ''}!! :tada: READ ME!**`;
   embed.description = '__**[Japanese Starting Guide<:externallink:437129837149159435>](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md)**__';
   embed.setImage('https://i.imgur.com/Wzy5eQD.png');
   //embed.addField('Ask Japanese Questions', '<#189601264424714241>', true);
