@@ -18,10 +18,11 @@ module.exports.isAllowed = (message) => {
 module.exports.help = '__Mods Only__ Set the sticky list-self-assingable-roles channel.\n `,sticky <#channel>`';
 
 module.exports.command = async (message, content, bot, server) => {
-  let channel = message.mentions.channels.firstKey();
+  let channel = message.mentions.channels.first();
   if (channel) {
-    server.sticky = channel;
-    message.channel.send(`LSAR sticky channel set to <#${channel}>`);
+    server.sticky = channel.id;
+    channel.fetchMessages();
+    message.channel.send(`LSAR sticky channel set to <#${channel.id}>`);
   } else {
     message.channel.send('Please provide a valid channel');
   }
