@@ -22,7 +22,7 @@ module.exports.command = (message) => {
   //embed.addField('Answer English Questions', '<#193959229030268938>', true);
   //embed.addField('Language Exchange', '<#376574779316109313>', true);
   embed.addField('Please read the rules carefully!', '<#189585230972190720>', false);
-  embed.addField('[Resources for learning Japanese](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md)', '', false);
+  embed.addField('[Resources for learning Japanese](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md)', 'welp', false);
 
   embed.color = 16711935;
   message.channel.send({embed});
