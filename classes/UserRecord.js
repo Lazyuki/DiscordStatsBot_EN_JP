@@ -116,6 +116,6 @@ module.exports = class UserRecord {
 
     }
     //this.record[earliestDay] == {};
-    return this.thirty == 0;
+    return this.thirty <= 0 && this.vc <= 0;
   }
 };

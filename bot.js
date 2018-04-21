@@ -43,7 +43,7 @@ bot.on('ready', () => {
     bot.servers[guild.id] = new Server(guild, inits, prcs);
   }
   let helps = [',help',',h',',halp',',tasukete'];
-  bot.user.setGame(helps[Math.floor(Math.random() * helps.length)]);
+  bot.user.setActivity(helps[Math.floor(Math.random() * helps.length)], {type:'LISTENING'});
 });
 
 bot.on('message', async message => {
