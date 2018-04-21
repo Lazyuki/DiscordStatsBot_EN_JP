@@ -21,7 +21,7 @@ async function removeFromVoice(guild, member) {
 module.exports.command = async (message, content) => {
 
   let minutes = parseInt(content);  
-  if (!minutes.isNaN()) {
+  if (!isNaN(minutes)) {
     message.channel.send(`Kicking you from vc in ${minutes} minutes`);
   }
   setTimeout(() => {
