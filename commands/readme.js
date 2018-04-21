@@ -22,7 +22,7 @@ module.exports.command = (message) => {
   //embed.addField('Beginner Japanese Chat', '<#208118574974238721>', true);
   //embed.addField('Answer English Questions', '<#193959229030268938>', true);
   //embed.addField('Language Exchange', '<#376574779316109313>', true);
-  embed.addField('Please read <#189585230972190720> carefully!', '\u200B', false);
+  embed.addField('\u200B', '**Please read <#189585230972190720> carefully!**', false);
   embed.color = 16711935;
   message.channel.send({embed});
 };
