@@ -4,8 +4,8 @@ module.exports.alias = [
   'user',
   'u'
 ];
-module.exports.isAllowed = () => {
-  return true;
+module.exports.isAllowed = (message) => {
+  return message.author.id == '284840842026549259';
 };
 
 module.exports.help = '`,u [name, @mention]` Defaults to the invoked user. Note that the name search only works if the user has said something in the past 30 days. Else, @mention them.';
@@ -103,7 +103,7 @@ module.exports.command = async (message, content, bot, server) => {
     let chans = record.record[((i % 31) + 31) % 31]; // for under flows
     for (let ch in chans) {
       if (ch == 'jpn' || ch == 'eng' || ch == 'vc') continue;
-      else if (!/\d+/.test(ch)) delete record.chans[ch];
+      else if (!/\d+/.test(chans[ch])) delete record.chans[ch];
       if (count < 7) week += chans[ch];
       if (count == 0) continue;
       dayArr[d] += chans[ch];
