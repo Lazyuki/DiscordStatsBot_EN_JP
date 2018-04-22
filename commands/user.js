@@ -89,7 +89,7 @@ module.exports.command = async (message, content, bot, server) => {
   for (let i = 0; i < 3 && i < topEmotesArr.length; i++) {
     let name = topEmotesArr[i][0];
     let regMatch = name.match(nameRegex);
-    if (regMatch) name = regMatch[1];
+    if (regMatch && !bot.usableEmotes.includes(name)) name = regMatch[1];
     topEmotes += `${name} ${topEmotesArr[i][1]} times\n`;
   }
 
@@ -143,7 +143,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   //embed.addField('Reacted', record.reactions, true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
-  embed.addField('Time Spent in VC', vcTime , true);
+  embed.addField('Time spent in VC', vcTime , true);
   if (topEmotes != '') embed.addField('Most used emotes', topEmotes, true);
   
   message.channel.send({embed});
