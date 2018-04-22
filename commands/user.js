@@ -71,6 +71,24 @@ module.exports.command = async (message, content, bot, server) => {
     topChans += '**#' + channel.name + '** : ' + perc + '%\n';
   }
 
+  // Most used emotes
+  let topEmotesArr = [];
+  let emotes = record.totalReactions();
+  for (let emote in emotes) {
+    topEmotesArr.push([emote, emotes[emote]]);
+  }
+  topEmotesArr.sort(function(a, b) {
+    return b[1] - a[1];
+  });
+  let topEmotes = '';
+  let nameRegex = /<a?(:[\S]+:)\d+>/;
+  for (let i = 0; i < 3; i++) {
+    let name = topEmotesArr[i][0];
+    let regMatch = name.match(nameRegex);
+    if (regMatch) name = regMatch[1];
+    topEmotes += `${name} ${topEmotesArr[i][1]} times\n`;
+  }
+
   // Most active day in the last 4 weeks, excluding today.
   let d = new Date().getUTCDay() - 1; // Sunday = 0, do not count today.
   if (d == -1) d = 6;
@@ -119,10 +137,10 @@ module.exports.command = async (message, content, bot, server) => {
   embed.addField('Messages sent\n M | W', `${record.thirty} | ${week}`, true);
   embed.addField('Most active channels', topChans ? topChans : 'none', true);
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
-  //embed.addField('Emojis used', , true);
   //embed.addField('Reacted', record.reactions, true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
   embed.addField('Time Spent in VC', vcTime , true);
+  embed.addField('Most used emotes', topEmotes, true);
   
   message.channel.send({embed});
 };
