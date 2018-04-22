@@ -65,7 +65,7 @@ module.exports = class UserRecord {
       this.rxn[reaction] = 1;
     }
   }
-  removeReacts(today, reaction) {
+  removeReacts(reaction, today) {
     if (!this.record[today]['rxn']) return;
     if (!this.record[today]['rxn'][reaction]) return;
     this.record[today]['rxn'][reaction]--;

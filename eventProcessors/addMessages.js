@@ -26,12 +26,16 @@ module.exports.process = async function(message, server, bot, language) {
   }
   let userRec = server.users[author];
   userRec.add(message.content, channel, server.today, language);
-  let emotes = message.content.match(Utils.REGEX_EMOJI);
+  let emotes = message.content.match(Utils.REGEX_CUSTOM_EMOTES);
   if (emotes) {
     for (let i = 1; i < emotes.length; i++) {
       let emote = emotes[i];
       console.log(emote);
       //userRec.add(server.today, emote);
     }
+  }
+  let emojis = message.content.replace(Utils.REGEX_EMOJIS, '');
+  for (let c in emojis) {
+    console.log(c);
   }
 };
