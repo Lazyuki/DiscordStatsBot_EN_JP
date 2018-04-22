@@ -103,8 +103,6 @@ module.exports.command = async (message, content, bot, server) => {
     let chans = record.record[((i % 31) + 31) % 31]; // for under flows
     for (let ch in chans) {
       if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn') continue;
-      else if (!/\d+/.test(chans[ch])) delete record.chans[ch];
-      console.log(chans[ch]);
       if (count < 7) week += chans[ch];
       if (count == 0) continue;
       dayArr[d] += chans[ch];
@@ -145,7 +143,7 @@ module.exports.command = async (message, content, bot, server) => {
   //embed.addField('Reacted', record.reactions, true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
   embed.addField('Time Spent in VC', vcTime , true);
-  embed.addField('Most used emotes', topEmotes, true);
+  if (topEmotes != '') embed.addField('Most used emotes', topEmotes, true);
   
   message.channel.send({embed});
 };
