@@ -75,7 +75,10 @@ module.exports.command = async (message, content, bot, server) => {
   let topEmotesArr = [];
   let emotes = record.totalReactions();
   for (let emote in emotes) {
-    if (emote == '�') delete record.rxn['�'];
+    if (emote == '�') {
+      delete record.rxn['�'];
+      continue;
+    }
     topEmotesArr.push([emote, emotes[emote]]);
   }
   topEmotesArr.sort(function(a, b) {
