@@ -32,8 +32,7 @@ module.exports.process = async function(message, server, bot, language) {
       userRec.addReacts(emote, server.today);
     }
   }
-  let emojis = message.content.replace(Utils.REGEX_EMOJIS, '');
-  if (emojis != '') console.log(message.content);
+  let emojis = message.content.match(Utils.REGEX_EMOJIS);
   for (let c of emojis) {
     console.log(c);
     userRec.addReacts(c, server.today);
