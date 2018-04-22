@@ -9,6 +9,7 @@ module.exports = class UserRecord {
       this.en = arg.en;
       this.vc = arg.vc; // ? arg.vc : 0;
       this.chans = arg.chans;
+      this.rxn = arg.rxn ? arg.rxn : {};
     } else { // build from scratch
       this.record = new Array(31); //31 days
       this.thirty = 0;
@@ -16,6 +17,7 @@ module.exports = class UserRecord {
       this.en = 0;
       this.vc = 0;
       this.chans = {}; // {<channel ID>: # messages, <ID>: #}
+      this.rxn = {};
     }
   }
 
@@ -49,11 +51,27 @@ module.exports = class UserRecord {
     this.record[today][channelID]++;
   }
 
-  addReacts(today) {
+  addReacts(reaction, today) {
     if (!this.record[today]['rxn']) {
-      this.record[today]['rxn'] = 0;
+      this.record[today]['rxn'] = {};
     }
-    this.record[today]['rxn']++;
+    if (!this.record[today]['rxn'][reaction]) {
+      this.record[today]['rxn'][reaction] = 0;
+    }
+    this.record[today]['rxn'][reaction]++;
+    if (this.rxn[reaction]) {
+      this.rxn[reaction]++;
+    } else {
+      this.rxn[reaction] = 1;
+    }
+  }
+  removeReacts(today, reaction) {
+    if (!this.record[today]['rxn']) return;
+    if (!this.record[today]['rxn'][reaction]) return;
+    this.record[today]['rxn'][reaction]--;
+    if (this.rxn[reaction]) {
+      this.rxn[reaction]--;
+    }
   }
 
   addVoiceTime(today, ms) {
@@ -74,6 +92,10 @@ module.exports = class UserRecord {
 
   voiceTime() {
     return this.vc; 
+  }
+
+  totalReactions() {
+    return this.rxn;
   }
 
   channelStats(channelID) {
@@ -97,8 +119,12 @@ module.exports = class UserRecord {
         continue;
       }
       if (chan == 'rxn') { // reactions
-        this.rxn -= this.record[earliestDay]['rxn'];
-        this.record[earliestDay]['rxn'] = 0;
+        let reactions = this.record[earliestDay]['rxn'];
+        for (let r in reactions) {
+          this.rxn[r] -= reactions[r];
+          if (this.rxn[r] <= 0) delete this.rxn[r];
+        }
+        delete this.record[earliestDay]['rxn'];
         continue;
       }
       if (chan == 'vc') { // voice
