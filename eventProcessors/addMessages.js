@@ -35,6 +35,7 @@ module.exports.process = async function(message, server, bot, language) {
   }
   let emojis = message.content.replace(Utils.REGEX_EMOJIS, '');
   for (let c of emojis) {
+    console.log(c);
     userRec.addReacts(c, server.today);
   }
 };

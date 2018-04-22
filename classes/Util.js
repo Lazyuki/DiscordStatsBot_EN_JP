@@ -8,7 +8,7 @@ exports.REGEX_ENG = /[a-vx-zA-VX-Z]|[ａ-ｖｘ-ｚＡ-ＶＸ-Ｚ]/;
 exports.REGEX_URL = /https?:\/\/(www\.)?\S{2,256}\.[a-z]{2,6}\S*/g;
 
 exports.REGEX_CUSTOM_EMOTES = /(<a?:[\S]+:\d+>)/g;
-exports.REGEX_EMOJIS = /[^😀😃😄😁😆😅😂🤣☺️😊😇🙂🙃😉😌😍😘😗😙😚😋😛😝😜🤪🤨🧐🤓😎🤩😏😒😞😔😟😕🙁☹️😣😖😫😩😢😭😤😠😡🤬🤯😳😱😨😰😥😓🤗🤔🤭🤫🤥😶😐😑😬🙄😯😦😧😮😲😴🤤😪😵🤐🤢🤮🤧😷🤒🤕🤑🤠😈👿😺😸😹😻😼😽🙀😿😾🤝👐☝️👆👋👊👍⭕️❌]/g;
+exports.REGEX_EMOJIS = /[^😀😃😄😁😆😅😂🤣😊😇🙂🙃😉😌😍😘😗😙😚😋😛😝😜🤪🤨🧐🤓😎🤩😏😒😞😔😟😕🙁☹️😣😖😫😩😢😭😤😠😡🤬🤯😳😱😨😰😥😓🤗🤔🤭🤫🤥😶😐😑😬🙄😯😦😧😮😲😴🤤😪😵🤐🤢🤮🤧😷🤒🤕🤑🤠😈👿😺😸😹😻😼😽🙀😿😾🐺💦🐱🐶🐧🦄🤝👐☝️👆👋👊👍⭕️❌]/g;
 exports.REGEX_USER = /<@!?\d+>/g;
 exports.REGEX_CHAN = /<#\d+>/g;
 exports.REGEX_ROLE = /<@&\d+>/g;
