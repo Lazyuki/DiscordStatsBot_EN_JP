@@ -74,12 +74,14 @@ module.exports.command = async (message, content, bot, server) => {
   // Most used emotes
   let topEmotesArr = [];
   let emotes = record.totalReactions();
+  console.log(emotes);
   for (let emote in emotes) {
     topEmotesArr.push([emote, emotes[emote]]);
   }
   topEmotesArr.sort(function(a, b) {
     return b[1] - a[1];
   });
+  console.log(topEmotesArr);
   let topEmotes = '';
   let nameRegex = /<a?(:[\S]+:)\d+>/;
   for (let i = 0; i < 3 || i < topEmotesArr.length; i++) {
