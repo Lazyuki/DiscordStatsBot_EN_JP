@@ -84,7 +84,7 @@ module.exports.command = async (message, content, bot, server) => {
   console.log(topEmotesArr);
   let topEmotes = '';
   let nameRegex = /<a?(:[\S]+:)\d+>/;
-  for (let i = 0; i < 3 || i < topEmotesArr.length; i++) {
+  for (let i = 0; i < 3 && i < topEmotesArr.length; i++) {
     let name = topEmotesArr[i][0];
     let regMatch = name.match(nameRegex);
     if (regMatch) name = regMatch[1];
