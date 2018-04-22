@@ -27,10 +27,9 @@ module.exports.process = async function(message, server, bot, language) {
   let userRec = server.users[author];
   userRec.add(message.content, channel, server.today, language);
   let emotes = message.content.match(Utils.REGEX_CUSTOM_EMOTES);
-  console.log(emotes);
   if (emotes) {
-    for (let i = 1; i < emotes.length; i++) {
-      let emote = emotes[i];
+    for (let emote of emotes) {
+      console.log(emote);
       userRec.addReacts(emote, server.today);
     }
   }
