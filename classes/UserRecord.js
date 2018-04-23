@@ -52,7 +52,10 @@ module.exports = class UserRecord {
   }
 
   addReacts(reaction, today) {
-    if (!this.record[today]['rxn']) {
+    if (!this.record[today]) {
+      this.record[today] = {};
+      this.record[today]['rxn'] = {};
+    } else if (!this.record[today]['rxn']) {
       this.record[today]['rxn'] = {};
     }
     if (!this.record[today]['rxn'][reaction]) {
@@ -66,7 +69,7 @@ module.exports = class UserRecord {
     }
   }
   removeReacts(reaction, today) {
-    if (!this.record[today]['rxn']) return;
+    if (!this.record[today] || !this.record[today]['rxn']) return;
     if (!this.record[today]['rxn'][reaction]) return;
     this.record[today]['rxn'][reaction]--;
     if (this.rxn[reaction]) {
