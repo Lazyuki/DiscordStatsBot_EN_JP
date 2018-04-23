@@ -35,6 +35,7 @@ module.exports = class BST {
         }
       } else { // append value!
         curr.value += value;
+        return;
       }
     }
   }
