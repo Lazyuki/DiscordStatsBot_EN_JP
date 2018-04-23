@@ -7,14 +7,20 @@ const Util = require('../classes/Util.js');
 
 module.exports.initialize = (json, server) => {
   server.deletedMessages = [];
-  if (!json || !json['deletedMessages']) return;
-  for (var msg in json['deletedMessages']) {
-    let dm = json['deletedMessages'][msg];
-    server.deletedMessages.push(new SimpleMsg({simple:dm}));
+  server.modLog = '';
+  if (!json) return;
+  if (json['deletedMessages']) {
+    for (var msg in json['deletedMessages']) {
+      let dm = json['deletedMessages'][msg];
+      server.deletedMessages.push(new SimpleMsg({simple:dm}));
+    }
+  }
+  if (json['modLog']) {
+    server.modLog = json['modLog'];
   }
 };
 module.exports.isAllowed = (message) => {
-  if (message.guild.id != '189571157446492161') return false;
+  if (!['189571157446492161', '206599473282023424'].includes(message.guild.id)) return false;
   return true;
 };
 
@@ -50,6 +56,7 @@ module.exports.process = async function(message, server) {
     arr.push(simple);
     if (arr.length > 30) arr.shift();
   }
+  if (message.guild.id == '206599473282023424') return; // ignore eikyuu's server
   if (message.mentions.members.size > 20) { // SPAM alert!
     let chan = server.guild.channels.get('366692441442615306'); // #mod_log
     if (chan == undefined) return;

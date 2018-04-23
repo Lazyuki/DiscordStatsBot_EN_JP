@@ -101,7 +101,7 @@ exports.postLogs = function(msg, server) {
     embed.addField('imgur link', msg.img, false);
     embed.setThumbnail(msg.img);
   }
-  let chan = server.guild.channels.get('366692441442615306'); // #mod_log
+  let chan = server.guild.channels.get(server.modLog); // #mod_log
   if (chan == undefined) return;
   chan.send({embed});
 };

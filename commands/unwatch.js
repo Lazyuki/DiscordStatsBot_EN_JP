@@ -3,7 +3,6 @@ module.exports.alias = [
   'unwatch'
 ];
 module.exports.isAllowed = (message, server) => {
-  if (server.guild.id != '189571157446492161') return false;  
   return server.hiddenChannels.includes(message.channel.id) && message.member.hasPermission('ADMINISTRATOR');
 };
 
