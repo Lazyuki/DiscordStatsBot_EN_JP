@@ -38,5 +38,4 @@ module.exports.process = async function(message, server, bot, language) {
       userRec.addReacts(c, server.today);
     }
   }
-
 };

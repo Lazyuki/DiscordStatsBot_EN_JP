@@ -45,28 +45,18 @@ module.exports.command = async (message, content, bot, server) => {
   let ignoreHidden = !server.hiddenChannels.includes(message.channel.id);
 
   // Most active channels
-  let topCHannels = {};
+  let topChannels = [];
   for (let ch in chans) {
     if (server.hiddenChannels.includes(ch) && ignoreHidden) continue;
-    if (topCHannels[ch]) {
-      topCHannels[ch] += chans[ch];
-    } else {
-      topCHannels[ch] = chans[ch];
-    }
+    topChannels.push([ch, chans[ch]]);
   }
-
-  // Sorts the active channels
-  let sortable = [];
-  for (let c in topCHannels) {
-    sortable.push([c, topCHannels[c]]);
-  }
-  sortable.sort(function(a, b) {
+  topChannels.sort(function(a, b) {
     return b[1] - a[1];
   });
   let topChans = '';
-  for (let i = 0; i < 3 && i < sortable.length; i++) {
-    let perc = (sortable[i][1] / record.thirty * 100).toFixed(1);
-    let channel = server.guild.channels.get(sortable[i][0]);
+  for (let i = 0; i < 3 && i < topChannels.length; i++) {
+    let perc = (topChannels[i][1] / record.thirty * 100).toFixed(1);
+    let channel = server.guild.channels.get(topChannels[i][0]);
     if (!channel) continue;
     topChans += '**#' + channel.name + '** : ' + perc + '%\n';
   }
@@ -75,7 +65,7 @@ module.exports.command = async (message, content, bot, server) => {
   let topEmotesArr = [];
   let emotes = record.totalReactions();
   for (let emote in emotes) {
-    if (emote == '�') {
+    if (emote == '�') { // TODO: delete this if statement later
       delete record.rxn['�'];
       continue;
     }
@@ -138,13 +128,12 @@ module.exports.command = async (message, content, bot, server) => {
   embed.description = 'For the last 30 days (UTC time)';
   let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
   let jpnPercent = (record.jp / (record.jp + record.en) * 100).toFixed(2);
-  embed.addField('Messages sent\n M | W', `${record.thirty} | ${week}`, true);
-  embed.addField('Most active channels', topChans ? topChans : 'none', true);
-  if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
-  //embed.addField('Reacted', record.reactions, true);
+  embed.addField('Messages sent M | W', `${record.thirty} | ${week}`, true);
   embed.addField('Japanese usage', jpnPercent + '%', true);
   embed.addField('Time spent in VC', vcTime , true);
-  if (topEmotes != '') embed.addField('Most used emotes', topEmotes, true);
+  if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
+  if (topChans) embed.addField('Most active channels', topChans, true);
+  if (topEmotes) embed.addField('Most used emotes', topEmotes, true);
   
   message.channel.send({embed});
 };

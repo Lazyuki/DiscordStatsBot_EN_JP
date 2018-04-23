@@ -6,8 +6,8 @@ module.exports.isAllowed = () => {
   return true; // Myself
 };
 
-//let rateLimit = new Array(3);
 module.exports.process = async (reaction, user, added, server) => {
+  if (reaction.message.author.bot) return; // Don't record reactions for bots
   let record = server.users[user.id];
   if (!record) return; // the user has no record
   if (added) {

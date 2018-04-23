@@ -26,13 +26,15 @@ module.exports = class BST {
           curr.left = new Node(key, value);
           return;
         }
-      } else {
+      } else if (value > curr.value) {
         if (curr.right) {
           curr = curr.right;
         } else {
           curr.right = new Node(key, value);
           return;
         }
+      } else { // append value!
+        curr.value += value;
       }
     }
   }
