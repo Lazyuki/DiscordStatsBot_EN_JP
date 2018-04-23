@@ -22,16 +22,19 @@ module.exports.command = async (message, content, bot, server) => {
   content = content.replace(/-s/, '').trim();
 
   let users = server.users;
-  let result = new BST();
+  let emDict = {};
   for (let user in users) {
     let reactions = users[user].totalReactions();
     if (reactions) {
       for (let r in reactions) {
         if (onlyServer && !onlyServer.includes(r)) continue;
-        result.add(r, reactions[r]);
+        if (!emDict[r]) emDict[r] = 0;
+        emDict[r] +=  reactions[r];
       }
     }
   }
+  let result = new BST();
+  for (let [e, v] of emDict) result.add(e, v);
   result = result.toMap();
   let embed = new Discord.RichEmbed();
   embed.title = 'Emote Leaderboard';
