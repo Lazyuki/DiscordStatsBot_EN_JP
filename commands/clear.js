@@ -29,4 +29,7 @@ module.exports.command = async (message, content, bot) => {
   } else {
     messagesToDelete[0].delete();
   }
+  if (message.guild.me.hasPermission('MANAGE_MESSAGES')) {
+    message.delete();
+  }
 };
