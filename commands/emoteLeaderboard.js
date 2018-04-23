@@ -34,7 +34,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   let result = new BST();
-  for (let [e, v] of emDict) result.add(e, v);
+  for (let e in emDict) result.add(e, emDict[e]);
   result = result.toMap();
   let embed = new Discord.RichEmbed();
   embed.title = 'Emote Leaderboard';
