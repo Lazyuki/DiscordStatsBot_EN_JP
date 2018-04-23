@@ -25,7 +25,8 @@ module.exports.command = (message, content, bot) => {
   let res = `Uptime: ${uptime}\n\n`;
   for (let s in bot.servers) {
     let server = bot.servers[s];
-    res += `Server: ${server.guild.name}\n`;
+    res += `ServerID: ${server.guild.id}\n`;
+    res += `ServerName: ${server.guild.name}\n`;
     res += `Number of tracked users: ${Object.keys(server.users).length}\n`;
     let num = parseInt(content);
     if (!num) num = 0;

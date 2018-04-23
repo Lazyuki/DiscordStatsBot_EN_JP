@@ -57,7 +57,13 @@ bot.on('message', async message => {
     return;
   }
 
-  let server = bot.servers[message.guild.id]; 
+  let server = bot.servers[message.guild.id];
+  let serverOverride = false;
+  if (/^!!\d+,/.test(message.content) && message.author.id == bot.owner_ID) {
+    server = bot.servers[message.content.match(/^!!(\d+),/)[1]];
+    message.content = message.content.replace(/^!!\d+/, '');
+    serverOverride = true;
+  }
 
   // Changes my server to EJLX
   let mine = false;
@@ -72,7 +78,7 @@ bot.on('message', async message => {
   }
   // Is it not a command?
   if (!message.content.startsWith(server.prefix)) {
-    if (!mine) server.processNewMessage(message, bot);
+    if (!mine && !serverOverride) server.processNewMessage(message, bot);
     return;
   }
   // Separate the command and the content
@@ -84,7 +90,7 @@ bot.on('message', async message => {
       return;
     }
   }
-  if (!mine) server.processNewMessage(message, bot); // Wasn't a valid command, so process it
+  if (!mine && !serverOverride) server.processNewMessage(message, bot); // Wasn't a valid command, so process it
 });
 
 bot.on('messageUpdate', (oldMessage, newMessage) => {
