@@ -18,7 +18,7 @@ const Discord = require('discord.js');
 module.exports.command = (message, content) => {
   let embed = new Discord.RichEmbed();
   content = content.toLowerCase();
-  embed.desctiption = '__[Complete Guide <:externallink:437129837149159435>](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#beginner-guide)__';
+  embed.description = '__[Complete Guide <:externallink:437129837149159435>](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#beginner-guide)__';
   if (content == '' || content == 'guide') {
     embed.title = 'All beginners should read one of the below guides';
     embed.addField('r/LearnJapanese\'s guide', 'https://www.reddit.com/r/LearnJapanese/wiki/index/startersguide', false);
