@@ -18,7 +18,7 @@ const Discord = require('discord.js');
 module.exports.command = (message, content) => {
   let embed = new Discord.RichEmbed();
   content = content.toLowerCase();
-  embed.title = '[Complete Guide<:externallink:437129837149159435>](https://github.com/ryry013/Awesome-Japanese#beginner-guide)';
+  embed.title = '__**[Complete Guide <:externallink:437129837149159435>](https://github.com/ryry013/Awesome-Japanese#beginner-guide)**__';
   if (content == '' || content == 'guide') {
     embed.description = 'All beginners should read one of the below guides';
     embed.addField('r/LearnJapanese\'s guide', 'https://www.reddit.com/r/LearnJapanese/wiki/index/startersguide', false);
@@ -56,6 +56,6 @@ module.exports.command = (message, content) => {
     message.channel.send('Usage: `,start [ guide | kana | kanji | grammar | vocab | IME | dictionary ]`');
     return;
   }
-  embed.color = 16711935;
+  embed.color = 8843151;
   message.channel.send({embed});
 };
