@@ -67,8 +67,9 @@ module.exports.command = (message, content) => {
     embed.addField('Tangorin', 'http://tangorin.com/', true);
     embed.addField('Weblio', 'http://www.weblio.jp/', true);
   } else {
-    embed.title = `__**New to Japanese? Start here! ${externalLink}**__`;
-    embed.url = 'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#beginner-guide';
+    // embed.title = `__**New to Japanese? Start here! ${externalLink}**__`;
+    // embed.url = 'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#beginner-guide';
+    embed.description =  `__**[New to Japanese? Start here! ${externalLink}](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#beginner-guide)**__`;
   }
   embed.color = 8843151;
   message.channel.send({embed});
