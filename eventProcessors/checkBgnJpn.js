@@ -30,7 +30,7 @@ module.exports.process = (message, server) => {
         server.kanjis[l] = 1;
       }
       if (!reacted) {
-        message.react('😣');
+        message.react('🔰');
         reacted = true;
       }
     }
