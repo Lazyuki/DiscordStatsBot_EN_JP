@@ -31,6 +31,7 @@ module.exports.command = async (message, content, bot, server) => {
     if (reactions) {
       for (let r in reactions) {
         if (onlyServer && !onlyServer.includes(r)) continue;
+        if (reactions[r] == 0) continue;
         if (!emDict[r]) emDict[r] = 0;
         emDict[r] +=  reactions[r];
       }
@@ -57,7 +58,8 @@ module.exports.command = async (message, content, bot, server) => {
     if (onlyServer) {
       for (let emote of onlyServer) {
         if (!result[emote]) {
-          let temp = count++ + ') ' + emote + ' : ' + 0 + '\n';
+          let temp = `${c ? count + ') ' : ''}${emote} : ${result[emote]}\n`;
+          count++;
           if (list.length + temp.length < 2000) list += temp;
           else {
             channel.send(list);
