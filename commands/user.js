@@ -129,7 +129,7 @@ module.exports.command = async (message, content, bot, server) => {
   let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
   let jpnPercent = (record.jp / (record.jp + record.en) * 100).toFixed(2);
   embed.addField('Messages sent M | W', `${record.thirty} | ${week}`, true);
-  if (server.guild.id != '206599473282023424') embed.addField('Japanese usage', jpnPercent + '%', true); // ignore Eikyuu server
+  if (server.guild.id != '206599473282023424' && !isNaN(jpnPercent)) embed.addField('Japanese usage', jpnPercent + '%', true); // ignore Eikyuu server
   embed.addField('Time spent in VC', vcTime , true);
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   if (topChans) embed.addField('Most active channels', topChans, true);
