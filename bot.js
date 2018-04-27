@@ -141,8 +141,8 @@ bot.on('voiceStateUpdate', async (oldMember, newMember) => {
 });
 
 bot.on('userUpdate', (oldUser, newUser) => {
-  for (let server of bot.servers.values()) {
-    server.userUpdate(oldUser, newUser);
+  for (let serverID in bot.servers) {
+    bot.servers[serverID].userUpdate(oldUser, newUser);
   }
 });
 
