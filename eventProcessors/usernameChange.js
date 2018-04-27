@@ -3,7 +3,7 @@ module.exports.events = ['USER_UPDATE'];
 
 module.exports.isAllowed = (userID, server) => {
   if (!server.guild.members.has(userID)) return;
-  return server.guild.id = '189571157446492161';
+  return server.guild.id == '189571157446492161';
 };
 const Discord = require('discord.js');
 
