@@ -119,6 +119,7 @@ bot.on('messageDeleteBulk', messages => {
 });
 
 bot.on('messageReactionAdd', async (reaction, user) => {
+  console.log('addReact by ' + user.username);
   let m = reaction.message;
   if (user.bot) return;
   if (m.channel.type != 'text') return;
@@ -127,11 +128,12 @@ bot.on('messageReactionAdd', async (reaction, user) => {
 });
 
 bot.on('messageReactionRemove', async (reaction, user) => {
+  console.log('removeReact by ' + user.username);
   let m = reaction.message;
   if (user.bot) return;
   if (m.channel.type != 'text') return;
   if (m.guild.id == '293787390710120449') return; // Ignore my server
-  bot.servers[reaction.message.guild.id].processReaction(reaction, user, false);
+  bot.servers[m.guild.id].processReaction(reaction, user, false);
 });
 
 bot.on('voiceStateUpdate', async (oldMember, newMember) => {

@@ -28,12 +28,5 @@ module.exports.process = async (reaction, user, added, server) => {
     } else {
       member.removeRole(roleID, 'self assigned');
     }
-    /*
-    if (member.roles.has(roleID)) {
-      member.removeRole(roleID, 'self assigned');
-    } else {
-      member.addRole(roleID, 'self assigned');
-    }
-    */
   }
 };

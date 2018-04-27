@@ -2,7 +2,7 @@ module.exports.name = 'memberChange';
 module.exports.events = ['MEMBER_UPDATE'];
 
 module.exports.isAllowed = (memberID, server) => {
-  return server.guild.id = '189571157446492161';
+  return server.guild.id == '189571157446492161';
 };
 const Discord = require('discord.js');
 
