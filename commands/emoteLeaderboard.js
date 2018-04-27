@@ -38,8 +38,6 @@ module.exports.command = async (message, content, bot, server) => {
   for (let e in emDict) result.add(e, emDict[e]);
   result = result.toMap();
   let count = 1;
-  let found = false;	
-  if (!result[content]) found = true; // If no such emote exists. 
 
   if (longList) {
     let list = '';
@@ -54,12 +52,26 @@ module.exports.command = async (message, content, bot, server) => {
         return;
       }
     }
+    if (onlyServer) {
+      for (let emote of onlyServer) {
+        if (!result[emote]) {
+          let temp = count++ + ') ' + emote + ' : ' + 0 + '\n';
+          if (list.length + temp.length < 2000) list += temp;
+          else {
+            channel.send(list);
+            return;
+          }
+        }
+      }
+    }
     channel.send(list);
   } else {
     let embed = new Discord.RichEmbed();
     embed.title = `Emote Leaderboard${onlyServer ? ' for server emotes' : ''}`;
     embed.description = 'For the last 30 days (UTC time)';
     embed.color = Number('0x3A8EDB');
+    let found = false;	
+    if (!result[content]) found = true; // If no such emote exists. 
     for (let emote in result) {
       if (count >= 25) { // the 25th person is either the 25th one or the user
         if (!found && emote != content) {
