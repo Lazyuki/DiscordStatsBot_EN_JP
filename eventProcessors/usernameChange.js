@@ -1,19 +1,18 @@
 module.exports.name = 'usernameChange';
 module.exports.events = ['USER_UPDATE'];
 
-module.exports.initialize = (json, server) => {
-  server.watchedUsersNotes = {};
-  if (!json || !json['watchedUsersNotes']) return;
-  server.watchedUsersNotes = json['watchedUsersNotes'];
+module.exports.isAllowed = (userID, server) => {
+  if (!server.guild.members.has(userID)) return;
+  return server.guild.id = '189571157446492161';
 };
-module.exports.isAllowed = (memberID, server) => {
-  return server.watchedUsers.includes(memberID);
-};
+const Discord = require('discord.js');
 
-module.exports.process = async (newUser, server) => {
-  if (server.watchedUsersNotes[newUser.id]) {
-    server.watchedUsersNotes[newUser.id].push(newUser.username);    
-  } else {
-    server.watchedUsersNotes[newUser.id] = [newUser.username];    
+module.exports.process = async (oldUser, newUser, server) => {
+  if (oldUser.tag != newUser.tag) {
+    let embed = new Discord.RichEmbed();
+    embed.title = `**${oldUser.tag}**'s username was changed to ${newUser.tag}`;
+    embed.color = Number('0x4286f4');
+    embed.setFooter(newUser.id ,newUser.avatarURL);
+    server.guild.channels.get('277384105245802497').send({embed});
   }
 };

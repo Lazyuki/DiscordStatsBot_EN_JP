@@ -139,13 +139,18 @@ bot.on('voiceStateUpdate', async (oldMember, newMember) => {
   if (oldMember.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[oldMember.guild.id].processVoice(oldMember, newMember);
 });
-/*
+
 bot.on('userUpdate', (oldUser, newUser) => {
   for (let server of bot.servers.values()) {
     server.userUpdate(oldUser, newUser);
   }
 });
-*/
+
+bot.on('guildMemberUpdate', (oldMember, newMember) => {
+  if (oldMember.guild.id == '293787390710120449') return; // Ignore my server
+  bot.servers[oldMember.guild.id].memberUpdate(oldMember, newMember);
+});
+
 bot.on('guildMemberAdd', member => {
   if (member.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[member.guild.id].addNewUser(member.id);
