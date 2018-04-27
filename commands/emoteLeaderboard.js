@@ -53,7 +53,7 @@ module.exports.command = async (message, content, bot, server) => {
         break;
       }
       if (emote == content) found = true;
-      list += count + ') ' + emote + ' : ' + result[emote] + '\n';
+      list += count++ + ') ' + emote + ' : ' + result[emote] + '\n';
     }
     channel.send(list);
   } else {
