@@ -18,9 +18,10 @@ module.exports.help = '`,emlb [-s]` Emote leaderboard for this server. Put `-s` 
 
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
-  let onlyServer = /-s/.test(content) ? server.guild.emojis.map((v) => {return v.toString();}) : null;
-  content = content.replace(/-s/, '').trim();
-
+  let onlyServer = /-l?s/.test(content) ? server.guild.emojis.map((v) => {return v.toString();}) : null;
+  let longList = /-s?l/g.test(content);
+  content = content.replace(/-[sl]+/g, '').trim();
+  
   let users = server.users;
   let emDict = {};
   for (let user in users) {
@@ -36,26 +37,43 @@ module.exports.command = async (message, content, bot, server) => {
   let result = new BST();
   for (let e in emDict) result.add(e, emDict[e]);
   result = result.toMap();
-  let embed = new Discord.RichEmbed();
-  embed.title = 'Emote Leaderboard';
-  embed.description = 'For the last 30 days (UTC time)';
-  embed.color = Number('0x3A8EDB');
   let count = 1;
   let found = false;	
   if (!result[content]) found = true; // If no such emote exists. 
-  
-  for (let emote in result) {
-    if (count >= 25) { // the 25th person is either the 25th one or the user
-      if (!found && emote != content) {
-        count++;
-        continue;
+
+  if (longList) {
+    let list = '';
+    for (let emote in result) {
+      if (count >= 50) {
+        if (!found && emote != content) {
+          count++;
+          continue;
+        }
+        list += count + ') ' + emote + ' : ' + result[emote] + '\n';
+        break;
       }
-      embed.addField(count + ') ' + emote, result[emote], true);
-      break;
+      if (emote == content) found = true;
+      list += count + ') ' + emote + ' : ' + result[emote] + '\n';
     }
-    if (emote == content) found = true;
-    embed.addField(count++ + ') ' + emote, result[emote], true);
+    channel.send(list);
+  } else {
+    let embed = new Discord.RichEmbed();
+    embed.title = `Emote Leaderboard${onlyServer ? ' for server emotes' : ''}`;
+    embed.description = 'For the last 30 days (UTC time)';
+    embed.color = Number('0x3A8EDB');
+    for (let emote in result) {
+      if (count >= 25) { // the 25th person is either the 25th one or the user
+        if (!found && emote != content) {
+          count++;
+          continue;
+        }
+        embed.addField(count + ') ' + emote, result[emote], true);
+        break;
+      }
+      if (emote == content) found = true;
+      embed.addField(count++ + ') ' + emote, result[emote], true);
+    }
+    embed.setFooter('Current UTC time: ' + new Date().toUTCString());
+    channel.send({embed});
   }
-  embed.setFooter('Current UTC time: ' + new Date().toUTCString());
-  channel.send({embed});
 };
