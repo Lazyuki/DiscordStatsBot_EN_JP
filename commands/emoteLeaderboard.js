@@ -7,7 +7,8 @@ module.exports.name = 'emoteLeaderboard';
 module.exports.alias = [
   'emotes',
   'emojis',  
-  'emlb'
+  'emlb',
+  'el'
 ];
 
 module.exports.isAllowed = () => {
@@ -18,9 +19,10 @@ module.exports.help = '`,emlb [-s]` Emote leaderboard for this server. Put `-s` 
 
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
-  let onlyServer = /-l?s/.test(content) ? server.guild.emojis.map((v) => {return v.toString();}) : null;
-  let longList = /-s?l/g.test(content);
-  content = content.replace(/-[sl]+/g, '').trim();
+  let onlyServer = /-l?c?s/g.test(content) ? server.guild.emojis.map((v) => {return v.toString();}) : null;
+  let longList = /-s?c?l/g.test(content);
+  let c = /-s?l?c/g.test(content);
+  content = content.replace(/-[slc]+/g, '').trim();
   
   let users = server.users;
   let emDict = {};
@@ -44,7 +46,8 @@ module.exports.command = async (message, content, bot, server) => {
     let nameRegex = /<a?(:[\S]+:)\d+>/;
     for (let emote in result) {
       let regMatch = emote.match(nameRegex);
-      let temp = `${count++}) ${regMatch && !bot.usableEmotes.includes(emote) ? regMatch[1] : emote} : ${result[emote]}\n`;
+      let temp = `${c ? count + ') ' : ''}${regMatch && !bot.usableEmotes.includes(emote) ? regMatch[1] : emote} : ${result[emote]}\n`;
+      count++;
       if (list.length + temp.length < 2000) list += temp;
       else {
         channel.send(list);
