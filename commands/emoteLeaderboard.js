@@ -58,7 +58,7 @@ module.exports.command = async (message, content, bot, server) => {
     if (onlyServer) {
       for (let emote of onlyServer) {
         if (!result[emote]) {
-          let temp = `${c ? count + ') ' : ''}${emote} : ${result[emote]}\n`;
+          let temp = `${c ? count + ') ' : ''}${emote} : 0\n`;
           count++;
           if (list.length + temp.length < 2000) list += temp;
           else {
