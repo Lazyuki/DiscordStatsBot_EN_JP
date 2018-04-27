@@ -12,7 +12,7 @@ module.exports.process = async (oldMember, newMember, server) => {
     if (!oldMember.nickname) {
       embed.description = `**${oldMember.user.username}**'s nickname was set to **${newMember.nickname}**`;
     } else if (!newMember.nickname) {
-      embed.description = `**${oldMember.nickname}**'s nickname was removed and now is **${newMember.user.username}**`;
+      embed.description = `**${oldMember.nickname}**'s nickname was removed`;
     } else {
       embed.description = `**${oldMember.nickname}**'s nickname was changed to **${newMember.nickname}**`;
     }
