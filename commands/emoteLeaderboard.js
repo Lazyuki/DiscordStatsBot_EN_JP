@@ -43,17 +43,16 @@ module.exports.command = async (message, content, bot, server) => {
 
   if (longList) {
     let list = '';
+    let nameRegex = /<a?(:[\S]+:)\d+>/;
     for (let emote in result) {
-      if (count >= 50) {
-        if (!found && emote != content) {
-          count++;
-          continue;
-        }
-        list += count + ') ' + emote + ' : ' + result[emote] + '\n';
-        break;
+      let regMatch = emote.match(nameRegex);
+      if (regMatch && !bot.usableEmotes.includes(emote)) emote = regMatch[1];
+      let temp = count++ + ') ' + emote + ' : ' + result[emote] + '\n';
+      if (list.length + temp.length < 2000) list += temp;
+      else {
+        channel.send(list);
+        return;
       }
-      if (emote == content) found = true;
-      list += count++ + ') ' + emote + ' : ' + result[emote] + '\n';
     }
     channel.send(list);
   } else {
