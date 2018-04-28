@@ -75,11 +75,11 @@ module.exports.command = async (message, content, bot, server) => {
     return b[1] - a[1];
   });
   let topEmotes = '';
-  let nameRegex = /<a?(:[\S]+:)\d+>/;
+  let nameRegex = /<a?(:[\S]+:)(\d+)>/;
   for (let i = 0; i < 3 && i < topEmotesArr.length; i++) {
     let name = topEmotesArr[i][0];
     let regMatch = name.match(nameRegex);
-    if (regMatch && !bot.usableEmotes.includes(name)) name = regMatch[1];
+    if (regMatch && !bot.emojis.has(regMatch[2])) name = regMatch[1];
     topEmotes += `${name} ${topEmotesArr[i][1]} times\n`;
   }
 

@@ -34,15 +34,15 @@ module.exports.command = async (message, content, bot, server) => {
   let msg = await message.channel.send(str);
   let nameRegex = /<a?:([\S]+):(\d+>)/;
   for (let i in sortable) {
+    let emote = sortable[i][1];
+    let regMatch = emote.match(nameRegex);
+    if (regMatch) {
+      emote = bot.emojis.get(regMatch[2]);
+    }
     try {
-      let emote = sortable[i][1];
-      let regMatch = emote.match(nameRegex);
-      if (regMatch) {
-        emote = new Discord.ReactionEmoji(message, regMatch[1], regMatch[2]);
-      }
       await msg.react(emote);      
     } catch (e) {
-      message.channel.send('Reaction failed');
+      message.channel.send('Reaction failed: ' + emote);
     }
   }
 };

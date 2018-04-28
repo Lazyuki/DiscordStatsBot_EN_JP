@@ -44,10 +44,10 @@ module.exports.command = async (message, content, bot, server) => {
 
   if (longList) {
     let list = '';
-    let nameRegex = /<a?(:[\S]+:)\d+>/;
+    let nameRegex = /<a?(:[\S]+:)(\d+)>/;
     for (let emote in result) {
       let regMatch = emote.match(nameRegex);
-      let temp = `${c ? count + ') ' : ''}${regMatch && !bot.usableEmotes.includes(emote) ? regMatch[1] : emote} : ${result[emote]}\n`;
+      let temp = `${c ? count + ') ' : ''}${regMatch && !bot.emojis.has(regMatch[2]) ? regMatch[1] : emote} : ${result[emote]}\n`;
       count++;
       if (list.length + temp.length < 2000) list += temp;
       else {

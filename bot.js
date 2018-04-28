@@ -40,9 +40,6 @@ bot.on('ready', () => {
   bot.servers = {};
   bot.usableEmotes = [];
   for (let guild of bot.guilds.values()) {
-    guild.emojis.forEach((v) => {
-      bot.usableEmotes.push(v.toString());
-    });
     if (guild.id == '293787390710120449') continue;
     bot.servers[guild.id] = new Server(guild, inits, prcs);
   }
