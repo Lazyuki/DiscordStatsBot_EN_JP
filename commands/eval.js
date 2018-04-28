@@ -11,6 +11,6 @@ module.exports.isAllowed = (message, server, bot) => {
 
 module.exports.help = 'Eval. Can access (message, content, bot, server)';
 
-module.exports.command = (message, content, bot, server) => {
+module.exports.command = async (message, content, bot, server) => {
   eval(content);
 };
