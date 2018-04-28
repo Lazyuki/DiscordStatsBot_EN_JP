@@ -10,6 +10,7 @@ module.exports.isAllowed = (message) => {
 };
 
 module.exports.help = '__Owner Only__ List self-assignable roles where people can react to them to get the roles.';
+const Discord = require('discord.js');
 
 module.exports.command = async (message, content, bot, server) => {
   if (!message.guild.me.hasPermission('MANAGE_ROLES')) {
@@ -31,9 +32,15 @@ module.exports.command = async (message, content, bot, server) => {
     str += `${sortable[i][1]} => **${sortable[i][0]}**\n`;
   }
   let msg = await message.channel.send(str);
+  let nameRegex = /<a?:([\S]+):(\d+>)/;
   for (let i in sortable) {
     try {
-      await msg.react(sortable[i][1]);      
+      let emote = sortable[i][1];
+      let regMatch = emote.match(nameRegex);
+      if (regMatch) {
+        emote = new Discord.ReactionEmoji(message, regMatch[1], regMatch[2]);
+      }
+      await msg.react(emote);      
     } catch (e) {
       message.channel.send('Reaction failed');
     }
