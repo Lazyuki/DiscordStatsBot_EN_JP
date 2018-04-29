@@ -6,6 +6,7 @@ let commandNames = {};
 
 fs.readdir('./commands/', (err, files) => {
   files.forEach((file) => {
+    if (!file.endsWith('.js')) return;
     let command = require(`./commands/${file}`);
     if (command.initialize) inits.push(command.initialize);
     commandNames[command.name] = command;
