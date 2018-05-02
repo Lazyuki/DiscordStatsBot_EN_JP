@@ -62,9 +62,15 @@ module.exports = class Server {
     });
   }
 
-  async addNewUser(memberID) { 
+  async addNewUser(member) { 
     this.processors['JOIN'].forEach((p) => {
-      p.process(memberID, this);
+      p.process(member, this);
+    });
+  }
+
+  async removeUser(member) { 
+    this.processors['LEAVE'].forEach((p) => {
+      p.process(member, this);
     });
   }
 

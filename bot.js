@@ -152,7 +152,7 @@ bot.on('guildMemberUpdate', (oldMember, newMember) => {
 
 bot.on('guildMemberAdd', member => {
   if (member.guild.id == '293787390710120449') return; // Ignore my server
-  bot.servers[member.guild.id].addNewUser(member.id);
+  bot.servers[member.guild.id].addNewUser(member);
 });
 
 bot.on('guildBanAdd', (guild, user) => {
@@ -165,7 +165,7 @@ bot.on('guildBanAdd', (guild, user) => {
 
 bot.on('guildMemberRemove', (member) => {
   if (member.guild.id == '293787390710120449') return;// Ignore my server
-  if (bot.servers[member.guild.id].tempvc[member.id]) delete bot.servers[member.guild.id].tempvc[member.id];
+  bot.servers[member.guild.id].removeUser(member);
 });
 
 bot.on('guildCreate', guild => {
