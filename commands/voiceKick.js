@@ -2,7 +2,7 @@
 
 module.exports.name = 'voiceKick';
 module.exports.alias = [
-  'voiceKick',
+  'voicekick',
   'vk'
 ];
 module.exports.isAllowed = async () => {
