@@ -7,7 +7,7 @@ module.exports.isAllowed = (message, server, bot) => {
 };
 
 module.exports.process = async (reaction, user, added, server, bot) => {
-  if (reaction.emoji.toString() != '▶️') return;
+  if (reaction.emoji.toString() != '▶') return;
   let message = reaction.message;
   message.react(reaction.emoji);
   let codeBlockRegex = /```\S*\n([\s\S]*?)```/g;
@@ -15,7 +15,7 @@ module.exports.process = async (reaction, user, added, server, bot) => {
   let match = codeBlockRegex.exec(content);
   if (match) {
     let code = match[1];
-    let send = message.channel.send;
+    let send = (str) => message.channel.send(str);
     try {
       eval(code);
     } catch (e) {
