@@ -28,10 +28,10 @@ module.exports = class Server {
     });
   }
 
-  async processReaction(reaction, user, added) {
+  async processReaction(reaction, user, added, bot) {
     this.processors['REACT'].forEach((p) => {
-      if (p.isAllowed(reaction.message)) {
-        p.process(reaction, user, added, this);
+      if (p.isAllowed(reaction.message, this, bot)) {
+        p.process(reaction, user, added, this, bot);
       }
     });
   }
