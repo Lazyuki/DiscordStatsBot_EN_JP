@@ -119,7 +119,12 @@ bot.on('messageReactionAdd', async (reaction, user) => {
   let m = reaction.message;
   if (user.bot) return;
   if (m.channel.type != 'text') return;
-  if (m.guild.id == '293787390710120449') return; // Ignore my server
+  if (m.guild.id == '293787390710120449') {
+    if (reaction.emoji.toString() == '▶️') {
+      prcs.processors['REACTION'][0].process(reaction, user, true, bot.servers['189571157446492161'], bot);
+    }
+    return; // Ignore my server
+  }
   bot.servers[m.guild.id].processReaction(reaction, user, true, bot);
 });
 
@@ -127,8 +132,12 @@ bot.on('messageReactionRemove', async (reaction, user) => {
   let m = reaction.message;
   if (user.bot) return;
   if (m.channel.type != 'text') return;
-  if (m.guild.id == '293787390710120449') return; // Ignore my server
-  bot.servers[m.guild.id].processReaction(reaction, user, false, bot);
+  if (m.guild.id == '293787390710120449') {
+    if (reaction.emoji.toString() == '▶️') {
+      prcs.processors['REACTION'][0].process(reaction, user, false, bot.servers['189571157446492161'], bot);
+    }
+    return; // Ignore my server
+  }  bot.servers[m.guild.id].processReaction(reaction, user, false, bot);
 });
 
 bot.on('voiceStateUpdate', async (oldMember, newMember) => {
