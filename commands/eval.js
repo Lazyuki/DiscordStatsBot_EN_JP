@@ -10,13 +10,16 @@ module.exports.isAllowed = (message, server, bot) => {
 
 module.exports.help = '__Owner only__: Eval. Can access message, content, bot, server. Send to the channel with `send()`';
 
+const Discord = require('discord.js');
+
 module.exports.command = async (message, content, bot, server) => {
   let send = (str) => message.channel.send(str);
   try {
     let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
     content = `try { ${content} } catch (e) { send(e.message) }`;
-    let func = new AsyncFunction('message', 'content', 'bot', 'server', 'send', content);
-    func(message, content, bot, server, send);
+    let embed = new Discord.RichEmbed();
+    let func = new AsyncFunction('message', 'content', 'bot', 'server', 'send', 'embed', content);
+    func(message, content, bot, server, send, embed);
   } catch (e) {
     send(e.message);
   }
