@@ -47,7 +47,7 @@ function distance(source, target) {
 
 
 module.exports.process = async function(message, server) {
-  let dist = distance(message.content, message.edits[message.edits.length - 1]); // distance from original
+  let dist = distance(message.content, message.edits[message.edits.length - 1].content); // distance from original
   if (dist <= 2) return;
   let simple = new SimpleMsg({message : message, del: false});
   Util.postLogs(simple, server);
