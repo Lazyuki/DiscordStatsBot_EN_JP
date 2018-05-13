@@ -142,8 +142,8 @@ bot.on('messageReactionRemove', async (reaction, user) => {
 });
 
 bot.on('voiceStateUpdate', async (oldMember, newMember) => {
-  if (oldMember.user.bot) return;
-  if (oldMember.guild.id == '293787390710120449') return; // Ignore my server
+  if (newMember.user.bot) return;
+  if (newMember.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[oldMember.guild.id].processVoice(oldMember, newMember);
 });
 

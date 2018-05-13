@@ -15,7 +15,7 @@ const Discord = require('discord.js');
 module.exports.process = async (member, server) => {
   if (server.newUsers.unshift(member.id) > 3) server.newUsers.pop();
   if (member.guild.id == '189571157446492161') {
-    if (member.guild.members.get('172002275412279296').presence.status == 'offline') { // tatsu
+    if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // tatsu
       let embed = new Discord.RichEmbed();
       embed.description = `📥**${member.user.tag}** has \`joined\` the server. (${member.id})`;
       embed.setFooter(`User Join (${member.guild.memberCount})`, member.user.avatarURL);
