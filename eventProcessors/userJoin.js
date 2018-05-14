@@ -35,11 +35,11 @@ module.exports.process = async (member, server) => {
       let old = server.invites.get(k);
       if (old) {
         if (old.uses < v.uses) {
-          inv = (k, v);
+          inv = [k, v];
           break;
         }
       } else if (v.uses > 0) {
-        inv = (k, v);
+        inv = [k, v];
         break;
       }
     }
