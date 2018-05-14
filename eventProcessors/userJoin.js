@@ -54,7 +54,7 @@ module.exports.process = async (member, server) => {
         for (let [, msg] of msgs) {
           if (msg.author.id == '270366726737231884' && msg.embeds.length && msg.embeds[0].description.includes(member.id)) return;
         }
-        let embed = joinNotif(member);
+        let embed = joinNotif(member, inv);
         EWBF.send({embed});
       }, 3000);
     }      
