@@ -29,7 +29,7 @@ module.exports.process = async (member, server) => {
       setTimeout(async () => {
         let msgs = await EWBF.fetchMessages({limit: 30});
         for (let [, msg] of msgs) {
-          if (msg.author.id == '270366726737231884' && msg.embeds && msg.embeds[0].description.includes(member.id)) return;
+          if (msg.author.id == '270366726737231884' && msg.embeds.length && msg.embeds[0].description.includes(member.id)) return;
         }
         let embed = leaveNotif(member);
         EWBF.send({embed});
