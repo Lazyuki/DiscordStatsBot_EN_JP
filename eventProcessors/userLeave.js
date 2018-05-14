@@ -13,7 +13,7 @@ module.exports.isAllowed = () => {
 const Discord = require('discord.js');
 function leaveNotif (member) {
   let embed = new Discord.RichEmbed();
-  embed.description = `📤**${member.user.tag}** has \`left\` the server. (${member.id})`;
+  embed.description = `📤 **${member.user.tag}** has \`left\` the server. (${member.id})`;
   embed.setFooter(`User Leave (${member.guild.memberCount})`, member.user.avatarURL);
   embed.setTimestamp();
   embed.setColor(0xc13c35);
@@ -28,7 +28,7 @@ module.exports.process = async (member, server) => {
     } else {
       setTimeout(async () => {
         let msgs = await EWBF.fetchMessages({limit: 30});
-        for (let [_, msg] of msgs) {
+        for (let [, msg] of msgs) {
           if (msg.author.id == '270366726737231884' && msg.embeds && msg.embeds[0].description.includes(member.id)) return;
         }
         let embed = leaveNotif(member);

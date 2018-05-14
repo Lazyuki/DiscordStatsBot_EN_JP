@@ -7,6 +7,7 @@ module.exports.initialize = async (json, server) => {
   server.newUsers = json['newUsers'];
   if (server.guild.id == '189571157446492161') {
     server.invites = await server.guild.fetchInvites(); // Cleanup when saving...?
+    EWBF = server.guild.channels.get('277384105245802497');
   } 
 };
 module.exports.isAllowed = () => {
@@ -16,7 +17,7 @@ module.exports.isAllowed = () => {
 const Discord = require('discord.js');
 function joinNotif(member, inv) {
   let embed = new Discord.RichEmbed();
-  embed.description = `📥**${member.user.tag}** has \`joined\` the server. (${member.id})`;
+  embed.description = `📥 **${member.user.tag}** has \`joined\` the server. (${member.id})`;
   if (inv) 
     embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL);
   else
@@ -49,7 +50,7 @@ module.exports.process = async (member, server) => {
     } else {
       setTimeout(async () => {
         let msgs = await EWBF.fetchMessages({limit: 30});
-        for (let [_, msg] of msgs) {
+        for (let [, msg] of msgs) {
           if (msg.author.id == '270366726737231884' && msg.embeds && msg.embeds[0].description.includes(member.id)) return;
         }
         let embed = joinNotif(member, inv);
