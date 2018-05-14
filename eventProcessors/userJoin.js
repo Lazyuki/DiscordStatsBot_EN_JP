@@ -44,18 +44,20 @@ module.exports.process = async (member, server) => {
       }
     }
     server.invites = newInvites;
-    console.log(inv[0]);
+    console.log(`${member.user.username} joined with ${inv[0]}`);
     if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
       let embed = joinNotif(member, inv);
       EWBF.send({embed});
     } else {
-      setTimeout(async () => {
-        let msgs = await EWBF.fetchMessages({limit: 30});
-        for (let [, msg] of msgs) {
-          if (msg.author.id == '270366726737231884' && msg.embeds.length && msg.embeds[0].description.includes(member.id)) return;
-        }
-        let embed = joinNotif(member, inv);
-        EWBF.send({embed});
+      setTimeout(() => {
+        EWBF.fetchMessages({limit: 20}).then((msgs) => {
+          console.log('msgs fetched');
+          for (let [, msg] of msgs) {
+            if (msg.author.id == '270366726737231884' && msg.embeds.length && msg.embeds[0].description.includes(member.id)) return;
+          }
+          let embed = joinNotif(member, inv);
+          EWBF.send({embed});
+        });
       }, 3000);
     }      
     if (member.guild.members.get('159985870458322944').presence.status == 'offline') { // mee6
