@@ -44,6 +44,7 @@ module.exports.process = async (member, server) => {
       }
     }
     server.invites = newInvites;
+    console.log(inv[0]);
     if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
       let embed = joinNotif(member, inv);
       EWBF.send({embed});
