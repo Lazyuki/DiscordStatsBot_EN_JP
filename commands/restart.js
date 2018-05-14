@@ -22,6 +22,7 @@ module.exports.command = async (message, cont, bot) => {
     server.processors['VOICE'].forEach((p) => {
       p.end(server);    
     });
+    delete server.invites;
     server.save();
   }
   bot.destroy().then(() => {
