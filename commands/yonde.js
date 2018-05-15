@@ -12,7 +12,7 @@ module.exports.help = 'Readme message for new users in Japanese. Use `,readme` f
 module.exports.command = (message) => {
   let mentioned = message.mentions.members.first();
   let embed = new Discord.RichEmbed();
-  embed.title = `${mentioned ? mentioned.user.username + 'さん': ''}ようこそ！！ 🎉 このサーバーの簡単な説明です`;
+  embed.title = `${mentioned ? mentioned.user.username + 'さん、': ''}ようこそ！！ 🎉 このサーバーの簡単な説明です`;
   embed.setImage('https://i.imgur.com/rXLn5Ay.png');
   //embed.addField('日本語で雑談', '<#189629338142900224>', true);
   //embed.addField('英語に関する質問', '<#193959229030268938>', true);

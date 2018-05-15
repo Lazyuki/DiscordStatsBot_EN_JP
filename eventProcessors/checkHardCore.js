@@ -24,10 +24,12 @@ module.exports.process = (message) => {
   if (['343151415595892739', '343057592467062795', '304758913914503168', '344541594755792896'].includes(message.channel.id) && /^(k!|t!|kq!|m!|[!<.])/.test(content)) return; // #bot-spam
 
   if (/^\.\.\.\s[\S]+$/.test(content)) return; // nadeko quote
-  if (!isJapanese) { // for welcoming
-    content = content.replace(/what'?s?\s(is\s)?(yo)?ur\snative\slang(uage)?/i, '');
-    content = content.replace(/welcome/i, '');
-  }
+  // if (!isJapanese) { // for welcoming
+  //   content = content.replace(/what'?s?\s(is\s)?(yo)?ur\snative\slang(uage)?/i, '');
+  //   content = content.replace(/welcome/i, '');
+  // }
+  content = content.replace(/```\S*\n[\s\S]*?```/g, ''); // ignore code block
+
   let lang = Util.lang(content); // Since it deletes special messages.
   if (lang & Util.LANG.ESC) return;
   if (isJapanese && (lang & Util.LANG.JPN)) { // Japanese
