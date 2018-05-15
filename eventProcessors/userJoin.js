@@ -56,7 +56,7 @@ module.exports.process = async (member, server) => {
         }
         let embed = joinNotif(member, inv);
         EWBF.send({embed});
-      }, 3000);
+      }, 5000);
     }      
     if (member.guild.members.get('159985870458322944').presence.status == 'offline') { // mee6
       let welcome = `Welcome ${member} to the English-Japanese Language Exchange. Please read the rules first If you have any questions feel free to message one of the Mods!  Tell us what your native language is and we'll get you properly tagged with a colored name.\n\n`;

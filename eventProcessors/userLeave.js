@@ -33,7 +33,7 @@ module.exports.process = async (member, server) => {
         }
         let embed = leaveNotif(member);
         EWBF.send({embed});
-      }, 3000);
+      }, 5000);
     }
   }
 };
