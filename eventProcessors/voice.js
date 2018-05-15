@@ -8,6 +8,7 @@ module.exports.initialize = (json, server) => {
   server.tempvc = {};
   for (let [, vc] of server.guild.channels.filter(c => {return c.type == 'voice';})) {    
     for (let [, mem] of vc.members) {
+      if (mem.user.bot) continue; // ignore bots
       if (isVC(mem))
         server.tempvc[mem.id] = new Date().getTime();
     }
