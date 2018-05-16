@@ -80,8 +80,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
 
   // Most active day in the last 4 weeks, excluding today.
-  let d = new Date().getUTCDay() - 1; // Sunday = 0, do not count today.
-  if (d == -1) d = 6;
+  let d = new Date().getUTCDay(); // Sunday = 0, do not count today.
   let dayArr = [0, 0, 0, 0, 0, 0, 0]; // Su Mo Tu We Th Fr Sa
   let daySum = 0;
   let count = 0;
