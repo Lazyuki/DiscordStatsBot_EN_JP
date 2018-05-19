@@ -16,7 +16,7 @@ async function removeFromVoice(guild, members) {
   let newChan = await guild.createChannel('/dev/null', 'voice');
   for (let member of members) {
     member = await guild.fetchMember(member.user);
-    if (!member.voiceChannel) continue;
+    if (!member || !member.voiceChannel) continue;
     await member.setVoiceChannel(newChan);
   }
   newChan.delete();
@@ -29,6 +29,10 @@ module.exports.command = async (message, content) => {
   let mentions = message.mentions.members;
   if (mentions && message.member.hasPermission('MUTE_MEMBERS')) {
     await removeFromVoice(message.guild, mentions.array());
+    return;
+  }
+  if (!message.member.voiceChannel) {
+    message.channel.send('You need to be in a voice channel');
     return;
   }
   let minutes = parseInt(content);  
