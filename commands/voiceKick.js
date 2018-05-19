@@ -27,7 +27,7 @@ module.exports.command = async (message, content) => {
     return;
   }
   let mentions = message.mentions.members;
-  if (mentions && message.member.hasPermission('MUTE_MEMBERS')) {
+  if (mentions.size && message.member.hasPermission('MUTE_MEMBERS')) {
     await removeFromVoice(message.guild, mentions.array());
     return;
   }
