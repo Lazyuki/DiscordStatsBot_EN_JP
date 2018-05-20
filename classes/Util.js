@@ -102,6 +102,6 @@ exports.postLogs = function(msg, server) {
     embed.setThumbnail(msg.img);
   }
   let chan = server.guild.channels.get(server.modLog); // #mod_log
-  if (chan == undefined) return;
+  if (!chan) return;
   chan.send({embed});
 };
