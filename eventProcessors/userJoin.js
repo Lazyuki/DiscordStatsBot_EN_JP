@@ -1,6 +1,7 @@
 module.exports.name = 'userJoin';
 module.exports.events = ['JOIN'];
 let EWBF = null;
+let JHO = null;
 module.exports.initialize = async (json, server) => {
   server.newUsers = [];
   if (!json || !json['newUsers']) return;
@@ -8,6 +9,7 @@ module.exports.initialize = async (json, server) => {
   if (server.guild.id == '189571157446492161') {
     server.invites = await server.guild.fetchInvites(); // Cleanup when saving...?
     EWBF = server.guild.channels.get('277384105245802497');
+    JHO = server.guild.channels.get('189571157446492161');
   } 
 };
 module.exports.isAllowed = () => {
@@ -15,6 +17,17 @@ module.exports.isAllowed = () => {
 };
 
 const Discord = require('discord.js');
+const EPOCH = 1420070400000;
+const Long = require('long');
+
+function generateSnowflake(date) {
+  function pad(v, n, c = '0') {
+    return String(v).length >= n ? String(v) : (String(c).repeat(n) + v).slice(-n);
+  }
+  let BINARY = `${pad((date.getTime() - EPOCH).toString(2), 42)}0000100000000000000000`;
+  return Long.fromString(BINARY, 2).toString();
+}
+
 function joinNotif(member, inv) {
   let embed = new Discord.RichEmbed();
   embed.description = `📥 **${member.user.tag}** has \`joined\` the server. (${member.id})`;
@@ -50,18 +63,31 @@ module.exports.process = async (member, server) => {
       EWBF.send({embed});
     } else {
       setTimeout(async () => {
-        let msgs = await EWBF.fetchMessages({limit: 20});
+        let joinedSnowflake = generateSnowflake(member.joinedAt);
+        let msgs = await EWBF.fetchMessages({limit: 20, after: joinedSnowflake});
         for (let [, msg] of msgs) {
-          if (msg.author.id == '270366726737231884' && msg.embeds.length && msg.embeds[0].description.includes(member.id)) return;
+          if (msg.author.id == '270366726737231884' && msg.embeds.length && msg.embeds[0].description.includes(member.id)) {
+            return;
+          }
         }
         let embed = joinNotif(member, inv);
         EWBF.send({embed});
       }, 5000);
-    }      
-    if (member.guild.members.get('159985870458322944').presence.status == 'offline') { // mee6
-      let welcome = `Welcome ${member} to the English-Japanese Language Exchange. Please read the rules first If you have any questions feel free to message one of the Mods!  Tell us what your native language is and we'll get you properly tagged with a colored name.\n\n`;
-      welcome += `${member}さん、ようこそEnglish-Japanese Language Exchangeへ!\nあなたの母語を教えてください!\n質問があれば、何でも遠慮なく聞いてくださいね。このチャンネルには日本語と英語で投稿できます。よろしくお願いします！ <@&357449148405907456>`;
-      member.guild.channels.get('189571157446492161').send(welcome);
     }
-  }
+    let welcome = `Welcome ${member} to the English-Japanese Language Exchange. Please read the rules first If you have any questions feel free to message one of the Mods!  Tell us what your native language is and we'll get you properly tagged with a colored name.\n\n`;
+    welcome += `${member}さん、ようこそEnglish-Japanese Language Exchangeへ!\nあなたの母語を教えてください!\n質問があれば、何でも遠慮なく聞いてくださいね。このチャンネルには日本語と英語で投稿できます。よろしくお願いします！ <@&357449148405907456>`;
+    if (member.guild.members.get('159985870458322944').presence.status == 'offline') { // mee6
+      JHO.send(welcome);
+    } else {
+      setTimeout(async () => {
+        let msgs = await JHO.fetchMessages({limit: 50});
+        for (let [, msg] of msgs) {
+          if (msg.author.id == '159985870458322944' && msg.mentions.members.has(member.id)) {
+            return;
+          }
+        }
+        JHO.send(welcome);
+      }, 3000);
+    }
+  } 
 };

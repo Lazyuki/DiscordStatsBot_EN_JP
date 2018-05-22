@@ -15,7 +15,7 @@ module.exports.isAllowed = () => {
   return true;
 };
 
-module.exports.help = '`,emlb [-s]` Emote leaderboard for this server. Put `-s` to show only the server emotes.';
+module.exports.help = '`,emlb [-sl]` Emote leaderboard for this server. Put `-s` to only show the server emotes. `-l` for the long list.';
 
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;

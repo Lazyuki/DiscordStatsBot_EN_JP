@@ -72,7 +72,7 @@ module.exports = class UserRecord {
     if (!this.record[today] || !this.record[today]['rxn']) return;
     if (!this.record[today]['rxn'][reaction]) return;
     this.record[today]['rxn'][reaction]--;
-    if (this.rxn[reaction]) {
+    if (this.rxn && this.rxn[reaction]) {
       this.rxn[reaction]--;
     }
   }

@@ -21,13 +21,22 @@ function remove(members) {
   }
 }
 
-module.exports.help = '__WP only__ `,nf @someone @sometwo @somethree` Sends people to ~~oblivion~~ <#193966083886153729> for 5 minutes. ***__YOU SHOULD WARN THEM FIRST.__*** Only meant to be used as a last resort.';
+module.exports.help = '__WP only__ `,nf @someone @sometwo... [minutes (default = 5)]` Sends people to ~~oblivion~~ <#193966083886153729> for some minutes. ***__YOU SHOULD WARN THEM FIRST.__***';
+
+const Util = require('../classes/Util.js');
 
 module.exports.command = async (message, content, bot, server) => {
   let mentions = message.mentions.members;
   if (mentions.size == 0) {
     message.channel.send('You have to mention them!');
     return;
+  }
+  content = content.replace(Util.REGEX_USER, '');
+  let min = parseInt(content);
+  if (!min || min <= 0) {
+    min = 5;
+  } else if (min > 1000) {
+    min = 1000;
   }
   let nofilter = server.guild.channels.get(nofilterChan);
   let members = mentions.values();
@@ -43,10 +52,10 @@ module.exports.command = async (message, content, bot, server) => {
     forlater.push(mem);
     names += mem + ' ';
   }
-  nofilter.send(names + 'you have been muted in all channels but here for 5 minutes.');
+  nofilter.send(`${names}you have been muted in all channels but here for ${min} minutes.`);
   message.channel.send(`Sent to ${nofilter}`);
 
   setTimeout(() => {
     remove(forlater);
-  }, 5*60*1000);
+  }, min*60*1000);
 };
