@@ -35,19 +35,20 @@ module.exports.command = async (message, content, bot, server) => {
   let result = new BST();
   for (let user in users) {
     let record = users[user];
-    try {
-      let mem = await server.guild.fetchMember(user);
-      if (!mem) continue;
-      let total = record.totalStats();
-      if (total >= num && !mem.roles.has('196765998706196480')) {
-        let jpnUsage = record.jp / (record.jp + record.en) * 100;
-        if (!jpnUsage) continue;
-        result.add(user, jpnUsage);
+    let mem = server.guild.members.get(user);
+    if (!mem) {
+      try {
+        mem = await server.guild.fetchMember(user);
+      } catch (e) {
+        continue;
       }
-    } catch (e) {
-      continue; // member not in the server
     }
-    
+    let total = record.totalStats();
+    if (total >= num && !mem.roles.has('196765998706196480')) {
+      let jpnUsage = record.jp / (record.jp + record.en) * 100;
+      if (!jpnUsage) continue;
+      result.add(user, jpnUsage);
+    }
   }
   result = result.toMap();
   let embed = new Discord.RichEmbed();
