@@ -20,7 +20,7 @@ module.exports.command = async (message, content, bot, server) => {
   let num = /-n (\d+)/.exec(content);
   if (num) {
     num = num[1];
-    content.replace(/-n \d+/, '');
+    content.replace(/-n \d+/, '').trim();
   } else {
     num = 500;
   }
@@ -29,18 +29,18 @@ module.exports.command = async (message, content, bot, server) => {
     message.react('❓');
     return;
   }
-  var memberID = u.id;
+  let memberID = u.id;
 
   let users = server.users;
   let result = new BST();
   for (let user in users) {
     let record = users[user];
     try {
-      let mem = await server.guild.fetchMember(user).catch();
+      let mem = await server.guild.fetchMember(user);
       if (!mem) continue;
       let total = record.totalStats();
       if (total >= num && mem.roles.has('196765998706196480')) {
-        let enUsage = (record.en / (record.jp + record.en) * 100).toFixed(2);
+        let enUsage = record.en / (record.jp + record.en) * 100;
         result.add(user, enUsage);
       }
     } catch (e) {
@@ -54,7 +54,8 @@ module.exports.command = async (message, content, bot, server) => {
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');
   let count = 1;
-  let found = false;	
+  let member = await server.guild.fetchMember(memberID);
+  let found = !member.roles.has('196765998706196480');	
 
   for (let user in result) {
     if (count >= 25) { // the 25th person is either the 25th one or the user
@@ -62,13 +63,13 @@ module.exports.command = async (message, content, bot, server) => {
         count++;
         continue;
       }
-      embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user] + '%', true);
+      embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user].toFixed(2) + '%', true);
       break;
     }
     let us = await bot.fetchUser(user);
     if (!us) continue;
     if (user == memberID) found = true;
-    embed.addField(count++ + ') ' + us.username, result[user] + '%', true);
+    embed.addField(count++ + ') ' + us.username, result[user].toFixed(2) + '%', true);
   }
   embed.setFooter('Current UTC time: ' + new Date().toUTCString());
   channel.send({embed});
