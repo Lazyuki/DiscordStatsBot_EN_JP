@@ -35,19 +35,21 @@ module.exports.command = async (message, content, bot, server) => {
   let result = new BST();
   for (let user in users) {
     let record = users[user];
-    let mem = server.guild.members.get(user);
-    if (!mem) {
-      try {
-        mem = await server.guild.fetchMember(user);
-      } catch (e) {
-        continue;
-      }
-    }
     let total = record.totalStats();
-    if (total >= num && mem.roles.has('196765998706196480')) {
-      let enUsage = record.en / (record.jp + record.en) * 100;
-      if (!enUsage) continue;
-      result.add(user, enUsage);
+    if (total >= num) {
+      let mem = server.guild.members.get(user);
+      if (!mem) {
+        try {
+          mem = await server.guild.fetchMember(user);
+        } catch (e) {
+          continue;
+        }
+      }
+      if (mem.roles.has('196765998706196480')) {
+        let enUsage = record.en / (record.jp + record.en) * 100;
+        if (!enUsage) continue;
+        result.add(user, enUsage);
+      }
     }
   }
   result = result.toMap();
