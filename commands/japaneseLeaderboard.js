@@ -20,7 +20,7 @@ module.exports.command = async (message, content, bot, server) => {
   let num = /-n (\d+)/.exec(content);
   if (num) {
     num = num[1];
-    content.replace(/-n \d+/, '').trim();
+    content = content.replace(/-n \d+/, '').trim();
   } else {
     num = 1000;
   }
