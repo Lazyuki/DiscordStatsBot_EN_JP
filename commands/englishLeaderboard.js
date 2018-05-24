@@ -5,7 +5,7 @@ const Util = require('../classes/Util.js');
 module.exports.name = 'englishLeaderboard';
 
 module.exports.alias = [
-  'english-leeaderboard',
+  'english-leaderboard',
   'enl'
 ];
 
@@ -41,6 +41,7 @@ module.exports.command = async (message, content, bot, server) => {
       let total = record.totalStats();
       if (total >= num && mem.roles.has('196765998706196480')) {
         let enUsage = record.en / (record.jp + record.en) * 100;
+        if (!enUsage) continue;
         result.add(user, enUsage);
       }
     } catch (e) {

@@ -5,7 +5,7 @@ const Util = require('../classes/Util.js');
 module.exports.name = 'japaneseLeaderboard';
 
 module.exports.alias = [
-  'japanese-leeaderboard',
+  'japanese-leaderboard',
   'jpl'
 ];
 
@@ -41,6 +41,7 @@ module.exports.command = async (message, content, bot, server) => {
       let total = record.totalStats();
       if (total >= num && !mem.roles.has('196765998706196480')) {
         let jpnUsage = record.jp / (record.jp + record.en) * 100;
+        if (!jpnUsage) continue;
         result.add(user, jpnUsage);
       }
     } catch (e) {
