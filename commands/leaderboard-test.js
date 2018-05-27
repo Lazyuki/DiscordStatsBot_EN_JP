@@ -41,7 +41,7 @@ module.exports.command = async (message, content, bot, server) => {
 
   for (let i in result) {
     let [key, val] = result[i];
-    let rank = parseInt(1) + i;
+    let rank = parseInt(i) + 1;
     if (rank >= 25) { // the 25th person is either the 25th one or the user
       if (!foundRank && key != memberID) {
         continue;
