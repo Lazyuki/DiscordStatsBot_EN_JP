@@ -106,21 +106,26 @@ exports.postLogs = function(msg, server) {
   chan.send({embed});
 };
 
-exports.paginate = async function(msg, embed, list, authorID, authorRank, bot) {
+exports.paginate = async function(msg, embed, list, authorID, searchRank, bot) {
   await msg.react('◀');
   await msg.react('▶');
-  let authorPage = Math.floor((authorRank - 1) / 25);
-  if (authorPage != 0) msg.react('⏭');
+  msg.react('🔻');
+  msg.react('⏮');
+  let authorPage = Math.floor((searchRank - 1) / 25);
   let maxPageNum = Math.floor(list.length / 25);
   let pageNum = 0;
   async function reload() {
     for (let i = 0; i < 25; i++) {
       let rank = i + pageNum * 25;
       if (list[rank]) {
-        let [key, val] = list[rank];
-        let user = await bot.fetchUser(key);
-        if (!user) return;
-        embed.fields[i] = {name: `${rank + 1}) ${user.username}`, value: val, inline:true };
+        let [key, val, username] = list[rank];
+        if (!username) {
+          let user = await bot.fetchUser(key);
+          if (!user) continue;
+          username = user.username;
+          list[rank][2] = username;
+        }
+        embed.fields[i] = {name: `${rank + 1}) ${username}`, value: val, inline:true };
       } else {
         embed.fields.length = i;
         break;
@@ -130,6 +135,7 @@ exports.paginate = async function(msg, embed, list, authorID, authorRank, bot) {
   }
   const filter = (reaction, user) => /[◀▶⏭]/.test(reaction.emoji.name) && user.id === authorID;
   const collector = msg.createReactionCollector(filter, { time: 60 * 1000 });
+  collector.client.on('messageReactionRemove', collector.listener);
   collector.on('collect', r => {
     switch(r.emoji.name) {
     case '▶':
@@ -144,13 +150,22 @@ exports.paginate = async function(msg, embed, list, authorID, authorRank, bot) {
         reload();
       }
       break;
-    case '⏭':
+    case '🔻':
       if (pageNum != authorPage) {
         pageNum = authorPage;
         reload();
       }
       break;
+    case '⏮':
+      if (pageNum != 0) {
+        pageNum = 0;
+        reload();
+      }
+      break;
     }
   });
-  collector.on('end', () => msg.clearReactions());
+  collector.on('end', () => {
+    msg.clearReactions();
+    collector.client.removeListener('messageReactionRemove', collector.listener);
+  });
 };

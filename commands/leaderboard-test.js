@@ -52,6 +52,7 @@ module.exports.command = async (message, content, bot, server) => {
     } else {
       let user = await bot.fetchUser(key);
       if (!user) continue;
+      result[i][2] = user.username;
       if (key == memberID) foundRank = rank;
       embed.addField(rank + ') ' + user.username, val, true);
     }
