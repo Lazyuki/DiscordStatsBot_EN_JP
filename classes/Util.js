@@ -196,7 +196,7 @@ exports.userLeaderboard = async function(channel, embed, list, authorID, searchU
   const msg = await channel.send({embed});
   let reloadingNum = 0;
   async function reload(pageNum) {
-    let myReloadingNum = reloadingNum++;
+    let myReloadingNum = ++reloadingNum;
     for (let i = 0; i < 25; i++) {
       let rank = i + pageNum * 25;
       if (list[rank]) {
@@ -208,7 +208,7 @@ exports.userLeaderboard = async function(channel, embed, list, authorID, searchU
           list[rank][2] = username;
         }
         if (reloadingNum == myReloadingNum) embed.fields[i] = {name: `${rank + 1}) ${username}`, value: val, inline:true };
-        else return;
+        else break;
       } else {
         embed.fields.length = i;
         break;

@@ -15,7 +15,6 @@ module.exports.isAllowed = (message, server, bot) => {
 module.exports.help = '`,l [username (default = invoker)]` Leaderboard for this server.';
 
 module.exports.command = async (message, content, bot, server) => {
-  let channel = message.channel;
   let searchUser = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
   if (!searchUser) {
     message.react('❓');
@@ -37,5 +36,5 @@ module.exports.command = async (message, content, bot, server) => {
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');
 
-  Util.userLeaderboard(channel, embed, result, message.author.id, searchUser, bot);
+  Util.userLeaderboard(message.channel, embed, result, message.author.id, searchUser, bot);
 };
