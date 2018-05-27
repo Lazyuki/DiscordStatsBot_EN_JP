@@ -42,13 +42,13 @@ module.exports.command = async (message, content, bot, server) => {
   for (let i in result) {
     let [key, val] = result[i];
     let rank = parseInt(i) + 1;
-    if (rank >= 25) { // the 25th person is either the 25th one or the user
-      if (!foundRank && key != memberID) {
-        continue;
-      } else {
+    if (rank > 25) { // the 25th person is either the 25th one or the user
+      if (foundRank) break;
+      if (key == memberID) {
         foundRank = rank;
-        embed.addField(rank + ') ' + u.username, val, true);
         break;
+      } else {
+        continue;
       }
     } else {
       let user = await bot.fetchUser(key);
