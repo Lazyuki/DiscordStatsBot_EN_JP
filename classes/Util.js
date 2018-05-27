@@ -175,7 +175,7 @@ exports.userLeaderboard = async function(channel, embed, list, authorID, searchU
       embed.addField(rank + ') ' + user.username, format(val), true);
     }
   }
-  embed.setFooter(`${foundRank}) ${searchUser.username}: ${format(list[foundRank - 1][1])}`);
+  if (foundRank) embed.setFooter(`${foundRank}) ${searchUser.username}: ${format(list[foundRank - 1][1])}`);
 
   const msg = await channel.send({embed});
   let reloadingNum = 0;
