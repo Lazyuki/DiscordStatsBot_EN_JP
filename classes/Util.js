@@ -109,7 +109,7 @@ exports.postLogs = function(msg, server) {
 exports.paginate = async function(msg, embed, list, authorID, searchRank, bot) {
   await msg.react('◀');
   await msg.react('▶');
-  msg.react('🔻');
+  await msg.react('🔻');
   msg.react('⏮');
   let authorPage = Math.floor((searchRank - 1) / 25);
   let maxPageNum = Math.floor(list.length / 25);
@@ -133,7 +133,7 @@ exports.paginate = async function(msg, embed, list, authorID, searchRank, bot) {
     }
     msg.edit({embed});
   }
-  const filter = (reaction, user) => /[◀▶⏭]/.test(reaction.emoji.name) && user.id === authorID;
+  const filter = (reaction, user) => /[◀▶🔻⏮]/.test(reaction.emoji.name) && user.id === authorID;
   const collector = msg.createReactionCollector(filter, { time: 60 * 1000 });
   collector.client.on('messageReactionRemove', collector.listener);
   collector.on('collect', r => {
