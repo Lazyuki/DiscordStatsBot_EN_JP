@@ -5,9 +5,7 @@ const Util = require('../classes/Util.js');
 module.exports.name = 'japaneseLeaderboard';
 
 module.exports.alias = [
-  'japanese-leaderboard',
-  'jpl'
-];
+  'jpl-test'];
 
 module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161';
