@@ -117,7 +117,7 @@ const paginate = async function(msg, list, authorID, foundRank, reload) {
   let pageNum = 0;
   const filter = (reaction, user) => reaction.me && user.id === authorID;
   const collector = msg.createReactionCollector(filter, { time: 3 * 60 * 1000 });
-  collector.client.on('messageReactionRemove', collector.listener);
+  //collector.client.on('messageReactionRemove', collector.listener);
   collector.on('collect', r => {
     switch(r.emoji.name) {
     case '▶':
@@ -150,7 +150,7 @@ const paginate = async function(msg, list, authorID, foundRank, reload) {
   });
   collector.on('end', () => {
     msg.clearReactions();
-    collector.client.removeListener('messageReactionRemove', collector.listener);
+    //collector.client.removeListener('messageReactionRemove', collector.listener);
   });
 };
 
