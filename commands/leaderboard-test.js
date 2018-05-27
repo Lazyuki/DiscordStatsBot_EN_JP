@@ -8,8 +8,8 @@ module.exports.alias = [
 ];
 
 module.exports.isAllowed = (message, server, bot) => {
-  return message.author.id == bot.owner_ID;
-
+  // return message.author.id == bot.owner_ID;
+  return true;
 };
 
 module.exports.help = '`,l [username (default = invoker)]` Leaderboard for this server.';
@@ -32,7 +32,7 @@ module.exports.command = async (message, content, bot, server) => {
     return b[1] - a[1];
   });
   let embed = new Discord.RichEmbed();
-  embed.title = 'Leaderboard';
+  embed.title = 'Leaderboard-test';
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');
 

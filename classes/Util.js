@@ -106,28 +106,8 @@ exports.postLogs = function(msg, server) {
   chan.send({embed});
 };
 
-let locked = false; 
-let queue = (function () {
-  let internalQueue = {};
-  let obj = {};
-  obj.get = (msgID) => {
-    if (internalQueue[msgID]) return internalQueue[msgID];
-    else {
-      internalQueue[msgID] = [];
-      return internalQueue[msgID];
-    }
-  };
-  obj.dequeue = (msgID) => {
-    if (!internalQueue[msgID]) return;
-    let func = internalQueue[msgID].shift();
-    if (internalQueue.length == 0) delete internalQueue[msgID];
-    func();
-  };
-  return obj;
-}());
-
 const paginate = async function(msg, list, authorID, foundRank, reload) {
-  await msg.react('◀');
+  await msg.react(('◀'));
   await msg.react('▶');
   let foundPage = Math.floor((foundRank - 1) / 25);
   if (!foundRank) foundPage = 0;
@@ -144,23 +124,27 @@ const paginate = async function(msg, list, authorID, foundRank, reload) {
       if (pageNum < maxPageNum) {
         reload(++pageNum);
       }
+      r.remove(authorID);
       break;
     case '◀':
       if (pageNum > 0) {
         reload(--pageNum);
       }
+      r.remove(authorID);
       break;
     case '🔻':
       if (pageNum != foundPage) {
         pageNum = foundPage;
         reload(pageNum);
       }
+      r.remove(authorID);
       break;
     case '⏮':
       if (pageNum != 0) {
         pageNum = 0;
         reload(0);
       }
+      r.remove(authorID);
       break;
     }
   });
