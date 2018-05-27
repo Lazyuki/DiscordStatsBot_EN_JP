@@ -71,9 +71,13 @@ module.exports = class UserRecord {
   removeReacts(reaction, today) {
     if (!this.record[today] || !this.record[today]['rxn']) return;
     if (!this.record[today]['rxn'][reaction]) return;
-    this.record[today]['rxn'][reaction]--;
-    if (this.rxn && this.rxn[reaction]) {
-      this.rxn[reaction]--;
+    if (--this.record[today]['rxn'][reaction] <= 0) {
+      delete this.record[today]['rxn'][reaction];
+    }
+    if (this.rxn[reaction]) {
+      if (--this.rxn[reaction] <= 0) {
+        delete this.rxn[reaction];
+      }
     }
   }
 
@@ -124,6 +128,7 @@ module.exports = class UserRecord {
       if (chan == 'rxn') { // reactions
         let reactions = this.record[earliestDay]['rxn'];
         for (let r in reactions) {
+          if (!this.rxn[r]) continue;
           this.rxn[r] -= reactions[r];
           if (this.rxn[r] <= 0) delete this.rxn[r];
         }

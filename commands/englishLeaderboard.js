@@ -13,7 +13,7 @@ module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161';
 };
 
-module.exports.help = '`,enl [username (default = invoker)] [-n number (default = 500)]` English Usage Leaderboard for this server.\ne.g. `,enl Geralt -n 500`';
+module.exports.help = '`,enl [username (default = invoker)] [-n number (default = 200)]` English Usage Leaderboard for this server.\ne.g. `,enl Geralt -n 500`';
 
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
@@ -22,7 +22,7 @@ module.exports.command = async (message, content, bot, server) => {
     num = num[1];
     content = content.replace(/-n \d+/, '').trim();
   } else {
-    num = 500;
+    num = 200;
   }
   let u = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
   if (!u) {
