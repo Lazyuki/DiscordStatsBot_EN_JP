@@ -16,12 +16,11 @@ module.exports.help = '`,l [username (default = invoker)]` Leaderboard for this 
 
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
-  let u = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
-  if (!u) {
+  let searchUser = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
+  if (!searchUser) {
     message.react('❓');
     return;
   }
-  let memberID = u.id;
   let users = server.users;
   let result = [];
   for (let user in users) {
@@ -37,27 +36,6 @@ module.exports.command = async (message, content, bot, server) => {
   embed.title = 'Leaderboard';
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');
-  let foundRank = false;	
 
-  for (let i in result) {
-    let [key, val] = result[i];
-    let rank = parseInt(i) + 1;
-    if (rank > 25) { // the 25th person is either the 25th one or the user
-      if (foundRank) break;
-      if (key == memberID) {
-        foundRank = rank;
-        break;
-      } else {
-        continue;
-      }
-    } else {
-      let user = await bot.fetchUser(key);
-      if (!user) continue;
-      result[i][2] = user.username;
-      if (key == memberID) foundRank = rank;
-      embed.addField(rank + ') ' + user.username, val, true);
-    }
-  }
-  embed.setFooter(`${foundRank}) ${u.username}: ${result[foundRank - 1][1]}`);
-  Util.paginate(await channel.send({embed}), embed, result, message.author.id, foundRank, bot);
+  Util.userLeaderboard(channel, embed, result, message.author.id, searchUser, bot);
 };

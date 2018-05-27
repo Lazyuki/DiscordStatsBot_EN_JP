@@ -106,16 +106,76 @@ exports.postLogs = function(msg, server) {
   chan.send({embed});
 };
 
-exports.paginate = async function(msg, embed, list, authorID, searchRank, bot) {
+const paginate = async function(msg, list, authorID, foundRank, reload) {
   await msg.react('◀');
   await msg.react('▶');
-  await msg.react('🔻');
-  msg.react('⏮');
-  let authorPage = Math.floor((searchRank - 1) / 25);
-  if (!searchRank) authorPage = 0;
+  let foundPage = Math.floor((foundRank - 1) / 25);
+  if (!foundRank) foundPage = 0;
+  else await msg.react('🔻');
   let maxPageNum = Math.floor(list.length / 25);
+  if (maxPageNum > 1) await msg.react('⏮');
   let pageNum = 0;
-  async function reload() {
+
+  const filter = (reaction, user) => reaction.me && user.id === authorID;
+  const collector = msg.createReactionCollector(filter, { time: 3 * 60 * 1000 });
+  collector.client.on('messageReactionRemove', collector.listener);
+  collector.on('collect', r => {
+    switch(r.emoji.name) {
+    case '▶':
+      if (pageNum < maxPageNum) {
+        reload(++pageNum);
+      }
+      break;
+    case '◀':
+      if (pageNum > 0) {
+        reload(--pageNum);
+      }
+      break;
+    case '🔻':
+      if (pageNum != foundPage) {
+        pageNum = foundPage;
+        reload(pageNum);
+      }
+      break;
+    case '⏮':
+      if (pageNum != 0) {
+        pageNum = 0;
+        reload(0);
+      }
+      break;
+    }
+  });
+  collector.on('end', () => {
+    msg.clearReactions();
+    collector.client.removeListener('messageReactionRemove', collector.listener);
+  });
+};
+
+exports.userLeaderboard = async function(channel, embed, list, authorID, searchUser, bot) {
+  let foundRank = false;	
+  for (let i in list) {
+    let [key, val] = list[i];
+    let rank = parseInt(i) + 1;
+    if (rank > 25) {
+      if (foundRank) break;
+      if (key == searchUser.id) {
+        foundRank = rank;
+        break;
+      } else {
+        continue;
+      }
+    } else {
+      let user = await bot.fetchUser(key);
+      if (!user) continue;
+      list[i][2] = user.username;
+      if (key == searchUser.id) foundRank = rank;
+      embed.addField(rank + ') ' + user.username, val, true);
+    }
+  }
+  embed.setFooter(`${foundRank}) ${searchUser.username}: ${list[foundRank - 1][1]}`);
+
+  const msg = await channel.send({embed});
+  async function reload(pageNum) {
     for (let i = 0; i < 25; i++) {
       let rank = i + pageNum * 25;
       if (list[rank]) {
@@ -134,39 +194,5 @@ exports.paginate = async function(msg, embed, list, authorID, searchRank, bot) {
     }
     msg.edit({embed});
   }
-  const filter = (reaction, user) => /[◀▶🔻⏮]/.test(reaction.emoji.name) && user.id === authorID;
-  const collector = msg.createReactionCollector(filter, { time: 3 * 60 * 1000 });
-  collector.client.on('messageReactionRemove', collector.listener);
-  collector.on('collect', r => {
-    switch(r.emoji.name) {
-    case '▶':
-      if (pageNum < maxPageNum) {
-        pageNum++;
-        reload();
-      }
-      break;
-    case '◀':
-      if (pageNum > 0) {
-        pageNum--;
-        reload();
-      }
-      break;
-    case '🔻':
-      if (pageNum != authorPage) {
-        pageNum = authorPage;
-        reload();
-      }
-      break;
-    case '⏮':
-      if (pageNum != 0) {
-        pageNum = 0;
-        reload();
-      }
-      break;
-    }
-  });
-  collector.on('end', () => {
-    msg.clearReactions();
-    collector.client.removeListener('messageReactionRemove', collector.listener);
-  });
+  paginate(msg, list, authorID, foundRank, reload);
 };
