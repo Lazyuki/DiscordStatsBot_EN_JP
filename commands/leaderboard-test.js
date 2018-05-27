@@ -47,7 +47,7 @@ module.exports.command = async (message, content, bot, server) => {
         continue;
       } else {
         foundRank = rank;
-        embed.addField(rank + ') ' + (await bot.fetchUser(key)).username, val, true);
+        embed.addField(rank + ') ' + u.username, val, true);
         break;
       }
     } else {
@@ -58,6 +58,6 @@ module.exports.command = async (message, content, bot, server) => {
       embed.addField(rank + ') ' + user.username, val, true);
     }
   }
-  embed.setFooter('Current UTC time: ' + new Date().toUTCString());
+  embed.setFooter(`${foundRank}) ${u.username}: ${result[foundRank - 1][1]}`);
   Util.paginate(await channel.send({embed}), embed, result, message.author.id, foundRank, bot);
 };

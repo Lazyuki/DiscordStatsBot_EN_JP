@@ -135,7 +135,7 @@ exports.paginate = async function(msg, embed, list, authorID, searchRank, bot) {
     msg.edit({embed});
   }
   const filter = (reaction, user) => /[◀▶🔻⏮]/.test(reaction.emoji.name) && user.id === authorID;
-  const collector = msg.createReactionCollector(filter, { time: 60 * 1000 });
+  const collector = msg.createReactionCollector(filter, { time: 1 * 60 * 1000 });
   collector.client.on('messageReactionRemove', collector.listener);
   collector.on('collect', r => {
     switch(r.emoji.name) {
