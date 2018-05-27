@@ -36,5 +36,6 @@ module.exports.command = async (message, content, bot, server) => {
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');
 
-  Util.userLeaderboard(message.channel, embed, result, message.author.id, searchUser, bot);
+  let format = val => val;
+  Util.userLeaderboard(message.channel, embed, result, message.author.id, searchUser, format, bot);
 };

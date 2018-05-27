@@ -154,7 +154,7 @@ const paginate = async function(msg, list, authorID, foundRank, reload) {
   });
 };
 
-exports.userLeaderboard = async function(channel, embed, list, authorID, searchUser, bot) {
+exports.userLeaderboard = async function(channel, embed, list, authorID, searchUser, format, bot) {
   let foundRank = false;	
   for (let i in list) {
     let [key, val] = list[i];
@@ -172,10 +172,10 @@ exports.userLeaderboard = async function(channel, embed, list, authorID, searchU
       if (!user) continue;
       list[i][2] = user.username;
       if (key == searchUser.id) foundRank = rank;
-      embed.addField(rank + ') ' + user.username, val, true);
+      embed.addField(rank + ') ' + user.username, format(val), true);
     }
   }
-  embed.setFooter(`${foundRank}) ${searchUser.username}: ${list[foundRank - 1][1]}`);
+  embed.setFooter(`${foundRank}) ${searchUser.username}: ${format(list[foundRank - 1][1])}`);
 
   const msg = await channel.send({embed});
   let reloadingNum = 0;
@@ -191,7 +191,7 @@ exports.userLeaderboard = async function(channel, embed, list, authorID, searchU
           username = user.username;
           list[rank][2] = username;
         }
-        if (reloadingNum == myReloadingNum) embed.fields[i] = {name: `${rank + 1}) ${username}`, value: val, inline:true };
+        if (reloadingNum == myReloadingNum) embed.fields[i] = {name: `${rank + 1}) ${username}`, value: format(val), inline:true };
         else break;
       } else {
         embed.fields.length = i;
