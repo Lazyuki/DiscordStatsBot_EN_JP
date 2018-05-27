@@ -108,8 +108,9 @@ exports.postLogs = function(msg, server) {
 
 exports.paginate = async function(msg, embed, list, authorID, authorRank, bot) {
   await msg.react('◀');
-  msg.react('▶');
-  if (authorRank % 25 != 0) msg.react('⏭');
+  await msg.react('▶');
+  let authorPage = (authorRank -1) / 25;
+  if (authorPage != 0) msg.react('⏭');
   let maxPageNum = list.length / 25;
   let pageNum = 0;
   function reload() {
@@ -117,9 +118,10 @@ exports.paginate = async function(msg, embed, list, authorID, authorRank, bot) {
       let rank = i + pageNum * 25;
       if (list[rank]) {
         let [key, val] = list[rank];
-        // let user = await bot.fetchUser(key); // cant await
-        // if (!user) continue;
-        embed.fields[i] = {name: `${rank + 1}) <@${key}>`, value: val, inline:true };
+        bot.fetchUser(key).then(user => {
+          if (!user) return;
+          embed.fields[i] = {name: `${rank + 1}) ${user.username}`, value: val, inline:true };
+        });
       } else {
         embed.fields.length = i;
         break;
@@ -136,15 +138,18 @@ exports.paginate = async function(msg, embed, list, authorID, authorRank, bot) {
         pageNum++;
         reload();
       }
-      r.remove();
       break;
     case '◀':
       if (pageNum > 0) {
         pageNum--;
         reload();
       }
-      r.remove();
       break;
+    case '⏭':
+      if (pageNum != authorPage) {
+        pageNum = authorPage;
+        reload();
+      }
     }
   });
   collector.on('end', () => msg.clearReactions());
