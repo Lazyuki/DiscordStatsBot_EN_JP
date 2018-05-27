@@ -105,3 +105,47 @@ exports.postLogs = function(msg, server) {
   if (!chan) return;
   chan.send({embed});
 };
+
+exports.paginate = async function(msg, embed, list, authorID, authorRank, bot) {
+  await msg.react('◀');
+  msg.react('▶');
+  if (authorRank % 25 != 0) msg.react('⏭');
+  let maxPageNum = list.length / 25;
+  let pageNum = 0;
+  function reload() {
+    for (let i = 0; i < 25; i++) {
+      let rank = i + pageNum * 25;
+      if (list[rank]) {
+        let [key, val] = list[rank];
+        // let user = await bot.fetchUser(key); // cant await
+        // if (!user) continue;
+        embed.fields[i] = {name: `${rank + 1}) <@${key}>`, value: val, inline:true };
+      } else {
+        embed.fields.length = i;
+        break;
+      }
+    }
+    msg.edit({embed});
+  }
+  const filter = (reaction, user) => /[◀▶⏭]/.test(reaction.emoji.name) && user.id === authorID;
+  const collector = msg.createReactionCollector(filter, { time: 60 * 1000 });
+  collector.on('collect', r => {
+    switch(r.emoji.name) {
+    case '▶':
+      if (pageNum < maxPageNum) {
+        pageNum++;
+        reload();
+      }
+      r.remove();
+      break;
+    case '◀':
+      if (pageNum > 0) {
+        pageNum--;
+        reload();
+      }
+      r.remove();
+      break;
+    }
+  });
+  collector.on('end', () => msg.clearReactions());
+};
