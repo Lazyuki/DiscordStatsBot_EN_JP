@@ -46,6 +46,7 @@ module.exports.command = async (message, content, bot, server) => {
       if (!foundRank && key != memberID) {
         continue;
       } else {
+        foundRank = rank;
         embed.addField(rank + ') ' + (await bot.fetchUser(key)).username, val, true);
         break;
       }

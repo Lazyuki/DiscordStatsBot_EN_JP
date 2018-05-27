@@ -112,6 +112,7 @@ exports.paginate = async function(msg, embed, list, authorID, searchRank, bot) {
   await msg.react('🔻');
   msg.react('⏮');
   let authorPage = Math.floor((searchRank - 1) / 25);
+  if (!searchRank) authorPage = 0;
   let maxPageNum = Math.floor(list.length / 25);
   let pageNum = 0;
   async function reload() {
