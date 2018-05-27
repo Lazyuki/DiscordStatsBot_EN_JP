@@ -106,6 +106,26 @@ exports.postLogs = function(msg, server) {
   chan.send({embed});
 };
 
+let locked = false; 
+let queue = (function () {
+  let internalQueue = {};
+  let obj = {};
+  obj.get = (msgID) => {
+    if (internalQueue[msgID]) return internalQueue[msgID];
+    else {
+      internalQueue[msgID] = [];
+      return internalQueue[msgID];
+    }
+  };
+  obj.dequeue = (msgID) => {
+    if (!internalQueue[msgID]) return;
+    let func = internalQueue[msgID].shift();
+    if (internalQueue.length == 0) delete internalQueue[msgID];
+    func();
+  };
+  return obj;
+}());
+
 const paginate = async function(msg, list, authorID, foundRank, reload) {
   await msg.react('◀');
   await msg.react('▶');
@@ -115,7 +135,6 @@ const paginate = async function(msg, list, authorID, foundRank, reload) {
   let maxPageNum = Math.floor(list.length / 25);
   if (maxPageNum > 1) await msg.react('⏮');
   let pageNum = 0;
-
   const filter = (reaction, user) => reaction.me && user.id === authorID;
   const collector = msg.createReactionCollector(filter, { time: 3 * 60 * 1000 });
   collector.client.on('messageReactionRemove', collector.listener);
@@ -175,7 +194,9 @@ exports.userLeaderboard = async function(channel, embed, list, authorID, searchU
   embed.setFooter(`${foundRank}) ${searchUser.username}: ${list[foundRank - 1][1]}`);
 
   const msg = await channel.send({embed});
+  let reloadingNum = 0;
   async function reload(pageNum) {
+    let myReloadingNum = reloadingNum++;
     for (let i = 0; i < 25; i++) {
       let rank = i + pageNum * 25;
       if (list[rank]) {
@@ -186,7 +207,8 @@ exports.userLeaderboard = async function(channel, embed, list, authorID, searchU
           username = user.username;
           list[rank][2] = username;
         }
-        embed.fields[i] = {name: `${rank + 1}) ${username}`, value: val, inline:true };
+        if (reloadingNum == myReloadingNum) embed.fields[i] = {name: `${rank + 1}) ${username}`, value: val, inline:true };
+        else return;
       } else {
         embed.fields.length = i;
         break;
