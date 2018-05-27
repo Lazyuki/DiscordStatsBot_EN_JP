@@ -107,13 +107,13 @@ exports.postLogs = function(msg, server) {
 };
 
 const paginate = async function(msg, list, authorID, foundRank, reload) {
-  await msg.react(('◀'));
-  await msg.react('▶');
+  //await msg.react(('◀'));
+  //await msg.react('▶');
   let foundPage = Math.floor((foundRank - 1) / 25);
   if (!foundRank) foundPage = 0;
-  else await msg.react('🔻');
+  //else await msg.react('🔻');
   let maxPageNum = Math.floor(list.length / 25);
-  if (maxPageNum > 1) await msg.react('⏮');
+  // if (maxPageNum > 1) await msg.react('⏮');
   let pageNum = 0;
   const filter = (reaction, user) => reaction.me && user.id === authorID;
   const collector = msg.createReactionCollector(filter, { time: 3 * 60 * 1000 });
