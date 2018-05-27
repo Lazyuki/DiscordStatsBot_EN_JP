@@ -109,19 +109,18 @@ exports.postLogs = function(msg, server) {
 exports.paginate = async function(msg, embed, list, authorID, authorRank, bot) {
   await msg.react('◀');
   await msg.react('▶');
-  let authorPage = (authorRank -1) / 25;
+  let authorPage = Math.floor((authorRank - 1) / 25);
   if (authorPage != 0) msg.react('⏭');
-  let maxPageNum = list.length / 25;
+  let maxPageNum = Math.floor(list.length / 25);
   let pageNum = 0;
-  function reload() {
+  async function reload() {
     for (let i = 0; i < 25; i++) {
       let rank = i + pageNum * 25;
       if (list[rank]) {
         let [key, val] = list[rank];
-        bot.fetchUser(key).then(user => {
-          if (!user) return;
-          embed.fields[i] = {name: `${rank + 1}) ${user.username}`, value: val, inline:true };
-        });
+        let user = await bot.fetchUser(key);
+        if (!user) return;
+        embed.fields[i] = {name: `${rank + 1}) ${user.username}`, value: val, inline:true };
       } else {
         embed.fields.length = i;
         break;
@@ -150,6 +149,7 @@ exports.paginate = async function(msg, embed, list, authorID, authorRank, bot) {
         pageNum = authorPage;
         reload();
       }
+      break;
     }
   });
   collector.on('end', () => msg.clearReactions());
