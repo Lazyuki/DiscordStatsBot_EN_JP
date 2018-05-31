@@ -57,7 +57,7 @@ module.exports.process = async (member, server) => {
       }
     }
     server.invites = newInvites;
-    console.log(`${member.user.username} joined with ${inv[0]}`);
+    console.log(`${member.user.username} joined with ${inv == null ? 'no link' : inv[0]}`);
     if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
       let embed = joinNotif(member, inv);
       EWBF.send({embed});
@@ -72,7 +72,7 @@ module.exports.process = async (member, server) => {
         }
         let embed = joinNotif(member, inv);
         EWBF.send({embed});
-      }, 5000);
+      }, 7000);
     }
     let welcome = `Welcome ${member} to the English-Japanese Language Exchange. Please read the rules first If you have any questions feel free to message one of the Mods!  Tell us what your native language is and we'll get you properly tagged with a colored name.\n\n`;
     welcome += `${member}さん、ようこそEnglish-Japanese Language Exchangeへ!\nあなたの母語を教えてください!\n質問があれば、何でも遠慮なく聞いてくださいね。このチャンネルには日本語と英語で投稿できます。よろしくお願いします！ <@&357449148405907456>`;
@@ -87,7 +87,7 @@ module.exports.process = async (member, server) => {
           }
         }
         JHO.send(welcome);
-      }, 3000);
+      }, 7000);
     }
   } 
 };
