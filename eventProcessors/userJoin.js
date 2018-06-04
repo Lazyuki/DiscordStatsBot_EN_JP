@@ -39,55 +39,58 @@ function joinNotif(member, inv) {
   embed.setColor(0x84a332);
   return embed;
 }
-module.exports.process = async (member, server) => {
-  if (server.newUsers.unshift(member.id) > 3) server.newUsers.pop();
-  if (member.guild.id == '189571157446492161') {
-    let newInvites = await server.guild.fetchInvites();
-    let inv = null;
-    for (let [k, v] of newInvites) {
-      let old = server.invites.get(k);
-      if (old) {
-        if (old.uses < v.uses) {
-          inv = [k, v];
-          break;
-        }
-      } else if (v.uses > 0) {
+
+async function postLogs(member, server) {
+  let newInvites = await server.guild.fetchInvites();
+  let inv = null;
+  for (let [k, v] of newInvites) {
+    let old = server.invites.get(k);
+    if (old) {
+      if (old.uses < v.uses) {
         inv = [k, v];
         break;
       }
+    } else if (v.uses > 0) {
+      inv = [k, v];
+      break;
     }
-    server.invites = newInvites;
-    console.log(`${member.user.username} joined with ${inv == null ? 'no link' : inv[0]}`);
-    if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
+  }
+  server.invites = newInvites;
+  console.log(`${member.user.username} joined with ${inv == null ? 'no link' : inv[0]}`);
+  if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
+    let embed = joinNotif(member, inv);
+    EWBF.send({embed});
+  } else {
+    setTimeout(async () => {
+      let joinedSnowflake = generateSnowflake(member.joinedAt);
+      let msgs = await EWBF.fetchMessages({limit: 20, after: joinedSnowflake});
+      for (let [, msg] of msgs) {
+        if (msg.author.id == '270366726737231884' && msg.embeds.length && msg.embeds[0].description.includes(member.id)) {
+          return;
+        }
+      }
       let embed = joinNotif(member, inv);
       EWBF.send({embed});
-    } else {
-      setTimeout(async () => {
-        let joinedSnowflake = generateSnowflake(member.joinedAt);
-        let msgs = await EWBF.fetchMessages({limit: 20, after: joinedSnowflake});
-        for (let [, msg] of msgs) {
-          if (msg.author.id == '270366726737231884' && msg.embeds.length && msg.embeds[0].description.includes(member.id)) {
-            return;
-          }
+    }, 5000);
+  }
+  let welcome = `Welcome ${member} to the English-Japanese Language Exchange. Please read the rules first If you have any questions feel free to message one of the Mods!  Tell us what your native language is and we'll get you properly tagged with a colored name.\n\n`;
+  welcome += `${member}さん、ようこそEnglish-Japanese Language Exchangeへ!\nあなたの母語を教えてください!\n質問があれば、何でも遠慮なく聞いてくださいね。このチャンネルには日本語と英語で投稿できます。よろしくお願いします！ <@&357449148405907456>`;
+  if (member.guild.members.get('159985870458322944').presence.status == 'offline') { // mee6
+    JHO.send(welcome);
+  } else {
+    setTimeout(async () => {
+      let msgs = await JHO.fetchMessages({limit: 50});
+      for (let [, msg] of msgs) {
+        if (msg.author.id == '159985870458322944' && msg.mentions.members.has(member.id)) {
+          return;
         }
-        let embed = joinNotif(member, inv);
-        EWBF.send({embed});
-      }, 7000);
-    }
-    let welcome = `Welcome ${member} to the English-Japanese Language Exchange. Please read the rules first If you have any questions feel free to message one of the Mods!  Tell us what your native language is and we'll get you properly tagged with a colored name.\n\n`;
-    welcome += `${member}さん、ようこそEnglish-Japanese Language Exchangeへ!\nあなたの母語を教えてください!\n質問があれば、何でも遠慮なく聞いてくださいね。このチャンネルには日本語と英語で投稿できます。よろしくお願いします！ <@&357449148405907456>`;
-    if (member.guild.members.get('159985870458322944').presence.status == 'offline') { // mee6
+      }
       JHO.send(welcome);
-    } else {
-      setTimeout(async () => {
-        let msgs = await JHO.fetchMessages({limit: 50});
-        for (let [, msg] of msgs) {
-          if (msg.author.id == '159985870458322944' && msg.mentions.members.has(member.id)) {
-            return;
-          }
-        }
-        JHO.send(welcome);
-      }, 7000);
-    }
-  } 
+    }, 5000);
+  }
+}
+module.exports.process = async (member, server) => {
+  if (server.newUsers.unshift(member.id) > 3) server.newUsers.pop();
+  if (member.guild.id == '189571157446492161') 
+    setTimeout(() => postLogs(member, server), 500);
 };

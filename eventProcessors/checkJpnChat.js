@@ -21,12 +21,12 @@ module.exports.process = (message, server, bot, language) => {
       if (engCount <= 5) {
         message.react(bot.emojis.get(geralthinkbans[engCount - 2])); // allow 2 english
       }
-      if (engCount >= 4) {
-        message.channel.send(`${message.author.toString()} ここでは日本語を使用して下さい。Please **only** use Japanese here.`);
+      if (engCount == 4 || engCount == 5) {
+        message.channel.send(`${message.author.toString()} ここでは日本語を使用して下さい。Please use **only** Japanese here.`);
       } 
       if (engCount >= 6) {
         message.channel.overwritePermissions(message.author, {SEND_MESSAGES: false});
-        message.channel.send(`日本語を使わなかったため${message.author.toString()}をミュートしました。管理者のみミュート解除できます。\nYou have been muted in here for not using Japanese. Contact a mod.`);
+        message.channel.send(`日本語を使わなかったため${message.author.toString()}をミュートしました。管理者のみミュート解除できます。\nYou have been muted here for not using Japanese. Contact a mod.`);
       }
     }
   } else if (language & Util.LANG.JPN) {

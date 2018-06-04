@@ -206,9 +206,9 @@ bot.on('guildCreate', guild => {
 });
 
 bot.on('guildDelete', guild => {
-  let index = bot.servers.indexOf(guild.id);
-  if (index == -1) return;
-  bot.servers.splice(index, 1);
+  // let index = bot.servers.indexOf(guild.id);
+  // if (index == -1) return;
+  // bot.servers.splice(index, 1);
   console.log(`Server removed: ${guild.name}`);
 });
 
