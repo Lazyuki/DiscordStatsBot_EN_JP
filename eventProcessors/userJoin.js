@@ -2,6 +2,7 @@ module.exports.name = 'userJoin';
 module.exports.events = ['JOIN'];
 let EWBF = null;
 let JHO = null;
+let DDJLog = null;
 module.exports.initialize = async (json, server) => {
   server.newUsers = [];
   if (!json || !json['newUsers']) return;
@@ -10,7 +11,10 @@ module.exports.initialize = async (json, server) => {
     server.invites = await server.guild.fetchInvites(); // Cleanup when saving...?
     EWBF = server.guild.channels.get('277384105245802497');
     JHO = server.guild.channels.get('189571157446492161');
-  } 
+  } else if (server.guild.id == '453115403829248010') {
+    server.invites = await server.guild.fetchInvites(); // Cleanup when saving...?
+    DDJLog = server.guild.channels.get('453125855523241984');
+  }
 };
 module.exports.isAllowed = () => {
   return true;
@@ -89,8 +93,30 @@ async function postLogs(member, server) {
     }, 5000);
   }
 }
+
+async function postLogsDDJ(member, server) {
+  let newInvites = await server.guild.fetchInvites();
+  let inv = null;
+  for (let [k, v] of newInvites) {
+    let old = server.invites.get(k);
+    if (old) {
+      if (old.uses < v.uses) {
+        inv = [k, v];
+        break;
+      }
+    } else if (v.uses > 0) {
+      inv = [k, v];
+      break;
+    }
+  }
+  server.invites = newInvites;
+  let embed = joinNotif(member, inv);
+  DDJLog.send({embed});
+}
 module.exports.process = async (member, server) => {
   if (server.newUsers.unshift(member.id) > 3) server.newUsers.pop();
   if (member.guild.id == '189571157446492161') 
     setTimeout(() => postLogs(member, server), 500);
+  if (member.guild.id == '453115403829248010')
+    setTimeout(() => postLogsDDJ(member, server), 500);
 };

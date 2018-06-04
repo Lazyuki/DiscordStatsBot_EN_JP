@@ -1,9 +1,12 @@
 module.exports.name = 'userLeave';
 module.exports.events = ['LEAVE'];
 let EWBF = null;
+let DDJLog = null;
 module.exports.initialize = (json, server) => {
   if (server.guild.id == '189571157446492161') {
     EWBF = server.guild.channels.get('277384105245802497');
+  } else if (server.guild.id == '453115403829248010') {
+    DDJLog = server.guild.channels.get('453125855523241984');
   }
 };
 module.exports.isAllowed = () => {
@@ -35,5 +38,10 @@ module.exports.process = async (member, server) => {
         EWBF.send({embed});
       }, 5000);
     }
+  } else if (member.guild.id == '453115403829248010') {
+    setTimeout(() => {
+      let embed = leaveNotif(member);
+      DDJLog.send({embed});
+    }, 500);
   }
 };
