@@ -13,10 +13,14 @@ module.exports.command = async (message, content, bot, server) => {
     message.channel.send('Please specify a user with an ID or mention them');
     return;
   }
-  let mentions = message.mentions.members;
-  let userID = content;
+  let mentions = message.mentions.users;
+  let userID = content.trim();
   if (mentions.size != 0) {
     userID = mentions.firstKey();
+  }
+  if (!/^\d+$/.test(userID)) {
+    message.channel.send('Invalid user or user ID. ');
+    return;
   }
   let index = server.watchedUsers.indexOf(userID);
   if (~index) {

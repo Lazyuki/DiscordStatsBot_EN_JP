@@ -20,10 +20,10 @@ module.exports.command = async (message, content, bot, server) => {
     message.channel.send('Please specify a user with an ID or mention them');
     return;
   }
-  let mentions = message.mentions.members;
-  var user;
+  let mentions = message.mentions.users;
+  let user;
   if (mentions.size != 0) {
-    user = mentions.get(mentions.firstKey()).user;
+    user = mentions.first();
   } else {
     // TODO: fetchUser first to cache?
     let member;
@@ -37,9 +37,9 @@ module.exports.command = async (message, content, bot, server) => {
   }
 
   if (server.watchedUsers.includes(user.id)) {
-    message.channel.send(user.username + ' is already being watched');
+    message.channel.send(user + ' is already being watched');
   } else {
     server.watchedUsers.push(user.id);
-    message.channel.send(user.username + ' is now being watched for deleted messages');
+    message.channel.send(user + ' is now being watched for deleted messages');
   }
 };

@@ -90,6 +90,14 @@ module.exports = class Server {
     });
   }
 
+  async banAdd(user) {
+    this.processors['BAN_ADD'].forEach((p) => {
+      if (p.isAllowed(user.id, this)) {
+        p.process(user, this);
+      }
+    });
+  }
+
   save(backup = false) {
     // Store the actual date?
     if (backup) {

@@ -189,10 +189,7 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('guildBanAdd', (guild, user) => {
   if (guild.id == '293787390710120449') return;// Ignore my server
-  // Clean up watchedUsers
-  let index = bot.servers[guild.id].watchedUsers.indexOf(user.id);
-  if (index == -1) return;
-  bot.servers[guild.id].watchedUsers.splice(index, 1);
+  bot.servers[guild.id].banAdd(user);
 });
 
 bot.on('guildMemberRemove', (member) => {
