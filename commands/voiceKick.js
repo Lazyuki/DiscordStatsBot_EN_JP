@@ -9,7 +9,7 @@ module.exports.isAllowed = async () => {
   return true;
 };
 
-module.exports.help = 'Kick yourself (someone) from a voice channel in N minutes. `,vk [number of minutes] [@mention (only mods)]`';
+module.exports.help = 'Kick yourself from a voice channel in N minutes. `,vk [number of minutes]`\nOr for mods, kick someone instantly `,vk <@someone>`';
 
 
 async function removeFromVoice(guild, members) {

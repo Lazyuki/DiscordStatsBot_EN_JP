@@ -21,22 +21,24 @@ const bot = new Discord.Client({
 const token = init.token;
 bot.owner_ID = init.owner_ID;
 
-// Initialize the bot and servers.
+bot.setInterval(() => { // Set up hourly backup state task
+  savingTask(bot);
+},  60*60*1000);
+let time = new Date();
+let h = time.getUTCHours();
+let m = time.getUTCMinutes();
+let s = time.getUTCSeconds();
+let timeLeft = (24*60*60) - (h*60*60) - (m*60) - s;
+bot.setTimeout(() => { // Set up the day changing task
+  midnightTask(bot);
+},  timeLeft * 1000); // Time left until the next day
+
+
 bot.on('ready', () => {
-  setTimeout(() => { // Set up hourly backup state task
-    savingTask(bot);
-  },  60*60*1000);
-  let time = new Date();
-  let h = time.getUTCHours();
-  let m = time.getUTCMinutes();
-  let s = time.getUTCSeconds();
-  let timeLeft = (24*60*60) - (h*60*60) - (m*60) - s;
-  setTimeout(() => { // Set up the day changing task
-    midnightTask(bot);
-  },  timeLeft * 1000); // Time left until the next day
   console.log('Logged in as ' + bot.user.username);
   console.log(`${time.toLocaleDateString()} ${time.toLocaleTimeString()}`);
   console.log('--------------------------');
+  // Initialize the bot and servers.
   bot.servers = {};
   bot.usableEmotes = [];
   for (let guild of bot.guilds.values()) {

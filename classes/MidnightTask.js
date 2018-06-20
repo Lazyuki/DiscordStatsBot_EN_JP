@@ -40,7 +40,7 @@ module.exports = function task(bot) {
     updateImgur();
   }
 
-  setTimeout(() => {
+  bot.setTimeout(() => {
     task(bot);
   }, 24*60*60*1000); // 24*60*60*1000 = a day
 };
