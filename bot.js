@@ -130,42 +130,42 @@ bot.on('messageReactionAdd', async (reaction, user) => {
   bot.servers[m.guild.id].processReaction(reaction, user, true, bot);
 });
 
-// bot.on('messageReactionRemove', async (reaction, user) => {
-//   let m = reaction.message;
-//   if (user.bot) return;
-//   if (m.channel.type != 'text') return;
-//   if (m.guild.id == '293787390710120449') {
-//     if (reaction.emoji.toString() == '▶') {
-//       prcs.processors['REACT'][0].process(reaction, user, false, bot.servers['189571157446492161'], bot);
-//     }
-//     return; // Ignore my server
-//   }
-//   bot.servers[m.guild.id].processReaction(reaction, user, false, bot);
-// });
-
-bot.on('raw', async event => { // Discord.js bug, fixed in master?
-  if (event.t == 'MESSAGE_REACTION_REMOVE') {
-    /* Prepare our event data */
-    let { d: data } = event;
-    let user = bot.users.get(data.user_id);
-    if (user.bot) return;
-    let channel = bot.channels.get(data.channel_id);
-    if (channel.type != 'text') return;
-    if (!channel.messages.has(data.message_id)) return; // Message not in cache
-    let message = channel.messages.get(data.message_id);
-    let emojiKey = (data.emoji.id) ? `${data.emoji.name}:${data.emoji.id}` : data.emoji.name;
-    let reaction = message.reactions.get(emojiKey);
-
-    /* Pretend to emit the event */
-    if (message.guild.id == '293787390710120449') {
-      if (reaction.emoji.toString() == '▶') {
-        prcs.processors['REACT'][0].process(reaction, user, false, bot.servers['189571157446492161'], bot);
-      }
-      return; // Ignore my server
+bot.on('messageReactionRemove', async (reaction, user) => {
+  let m = reaction.message;
+  if (user.bot) return;
+  if (m.channel.type != 'text') return;
+  if (m.guild.id == '293787390710120449') {
+    if (reaction.emoji.toString() == '▶') {
+      prcs.processors['REACT'][0].process(reaction, user, false, bot.servers['189571157446492161'], bot);
     }
-    bot.servers[message.guild.id].processReaction(reaction, user, false, bot);
+    return; // Ignore my server
   }
+  bot.servers[m.guild.id].processReaction(reaction, user, false, bot);
 });
+
+// bot.on('raw', async event => { // Discord.js bug, fixed in master?
+//   if (event.t == 'MESSAGE_REACTION_REMOVE') {
+//     /* Prepare our event data */
+//     let { d: data } = event;
+//     let user = bot.users.get(data.user_id);
+//     if (user.bot) return;
+//     let channel = bot.channels.get(data.channel_id);
+//     if (channel.type != 'text') return;
+//     if (!channel.messages.has(data.message_id)) return; // Message not in cache
+//     let message = channel.messages.get(data.message_id);
+//     let emojiKey = (data.emoji.id) ? `${data.emoji.name}:${data.emoji.id}` : data.emoji.name;
+//     let reaction = message.reactions.get(emojiKey);
+
+//     /* Pretend to emit the event */
+//     if (message.guild.id == '293787390710120449') {
+//       if (reaction.emoji.toString() == '▶') {
+//         prcs.processors['REACT'][0].process(reaction, user, false, bot.servers['189571157446492161'], bot);
+//       }
+//       return; // Ignore my server
+//     }
+//     bot.servers[message.guild.id].processReaction(reaction, user, false, bot);
+//   }
+// });
 
 bot.on('voiceStateUpdate', async (oldMember, newMember) => {
   if (newMember.user.bot) return;
