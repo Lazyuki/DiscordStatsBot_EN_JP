@@ -8,7 +8,7 @@ const Discord = require('discord.js');
 
 module.exports.process = async (oldMember, newMember, server) => {
   if (oldMember.nickname != newMember.nickname) {
-    let embed = new Discord.RichEmbed();
+    let embed = new Discord.MessageEmbed();
     if (!oldMember.nickname) {
       embed.description = `**${oldMember.user.username}**'s nickname was set to **${newMember.nickname}**`;
     } else if (!newMember.nickname) {

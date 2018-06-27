@@ -35,7 +35,7 @@ function sameEntry(e, prev) {
 }
 
 function embedEntry(entries) {
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   let e = entries[0];
 
   embed.setAuthor(`${capsToNormal(e.action)} by ${e.executor.username}`, e.executor.avatarURL);
@@ -194,7 +194,7 @@ module.exports.command = async (message, content, bot, server) => {
       }
     }
     let prev = {'action': null, 'exeID': null, 'targetID': null, 'extraID': null, 'entries': []};
-    while (loopCount < 20) { // dont go too much loopCount < 20
+    while (true) { // dont go too much loopCount < 20
       let params = {limit:100};
       if (beforeID) params.before = beforeID;
       if (user) params.user = user.id;
@@ -212,7 +212,7 @@ module.exports.command = async (message, content, bot, server) => {
             if (e.target.id) {
               if (e.target.id != targID) {
                 continue;
-              }
+              } // target id == targID
             } else continue;
           } else continue;
         }

@@ -49,7 +49,7 @@ module.exports.command = async (message, content, bot, server) => {
       if (userID != msg.aid) continue;
     }
 
-    let embed = new Discord.RichEmbed();
+    let embed = new Discord.MessageEmbed();
     let date = new Date(msg.time);
     embed.setAuthor(`${msg.atag} ID: ${msg.aid}` ,msg.apfp);
     if (msg.del) { // message was deleted

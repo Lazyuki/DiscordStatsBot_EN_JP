@@ -15,7 +15,7 @@ const Discord = require('discord.js');
 
 module.exports.command = (message) => {
   let mentioned = message.mentions.members.first();
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   embed.title = `WELCOME${mentioned ? ' ' + mentioned.user.username: ''}!! 🎉 READ ME!`;
   embed.description = '__**[Japanese Starting Guide](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md)**__<:externallink:438354612379189268>';
   embed.setImage('https://i.imgur.com/7cjLRRM.png');

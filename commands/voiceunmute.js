@@ -27,7 +27,7 @@ module.exports.command = async (message, content, bot, server) => {
       server.unmuteQ.push(member.id);
     }
     await member.removeRole('357687893566947329');
-    let embed = new Discord.RichEmbed();
+    let embed = new Discord.MessageEmbed();
     embed.setAuthor(`${member.user.tag} has been unmuted in voice chat` , member.user.avatarURL);
     embed.color = Number('0x5EE07A');
     embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);

@@ -95,7 +95,7 @@ exports.lang = function(content) {
 };
 
 exports.postLogs = function(msg, server) {
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   let date = new Date(msg.time);
   embed.setAuthor(`${msg.atag} ID: ${msg.aid}` ,msg.apfp);
   if (msg.del) { // message was deleted

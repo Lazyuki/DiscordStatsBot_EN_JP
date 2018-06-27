@@ -33,7 +33,7 @@ function generateSnowflake(date) {
 }
 
 function joinNotif(member, inv) {
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   embed.description = `📥 **${member.user.tag}** has \`joined\` the server. (${member.id})`;
   if (inv) 
     embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL);

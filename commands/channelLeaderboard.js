@@ -50,7 +50,7 @@ module.exports.command = async (message, content, bot, server) => {
   for (let chan of channels) {
     chanNames += `#${chan.name} `;
   }
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   embed.title = `Channel-Leaderboard for ${chanNames}`.substr(0, 256);
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');

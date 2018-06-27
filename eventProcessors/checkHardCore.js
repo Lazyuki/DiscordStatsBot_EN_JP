@@ -34,7 +34,7 @@ module.exports.process = (message) => {
   if (lang & Util.LANG.ESC) return;
   if (isJapanese && (lang & Util.LANG.JPN)) { // Japanese
     if (content.length > 80) {
-      let embed = new Discord.RichEmbed();
+      let embed = new Discord.MessageEmbed();
       embed.description = content;
       embed.setFooter(`#${message.channel.name}`);
       embed.color = Number('0xDB3C3C');
@@ -45,7 +45,7 @@ module.exports.process = (message) => {
   }
   if (!isJapanese && (lang & Util.LANG.ENG)) { // English
     if (content.length > 120) {
-      let embed = new Discord.RichEmbed();
+      let embed = new Discord.MessageEmbed();
       embed.description = content;
       embed.setFooter(`#${message.channel.name}`);
       embed.color = Number('0xDB3C3C');
