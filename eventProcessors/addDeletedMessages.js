@@ -61,7 +61,7 @@ module.exports.process = async function(message, server) {
     let chan = server.guild.channels.get('366692441442615306'); // #mod_log
     if (chan == undefined) return;
     if (server.watchedUsers.includes(message.author.id)) {
-      message.member.addRole('259181555803619329'); // muted role
+      message.member.roles.add('259181555803619329'); // muted role
       chan.send(`**USER MUTED** ${message.author} has been muted. <@&240647591770062848> if server was a mistake, unmute them by removing the mute tag. If not, BAN THEM!`);
     } else {
       server.watchedUsers.push(message.author.id);

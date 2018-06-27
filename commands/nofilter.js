@@ -17,7 +17,7 @@ const nofilterVoiceText = '390796551796293633';
 
 function remove(members) {
   for (var mem of members) {
-    mem.removeRole(nofilterOnlyRole);
+    mem.roles.remove(nofilterOnlyRole);
   }
 }
 
@@ -43,8 +43,8 @@ module.exports.command = async (message, content, bot, server) => {
   var names = '';
   let forlater = [];
   for (var mem of members) {
-    mem.addRole(nofilterOnlyRole);
-    mem.addRole(nofilterRole);
+    mem.roles.add(nofilterOnlyRole);
+    mem.roles.add(nofilterRole);
     if (mem.voiceChannel) {
       nofilter = server.guild.channels.get(nofilterVoiceText);
       mem.setVoiceChannel(nofilterVoice);
