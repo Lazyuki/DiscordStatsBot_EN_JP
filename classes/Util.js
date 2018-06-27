@@ -17,7 +17,7 @@ exports.REGEX_ID = /<(@!?|#|@&|a?:[\S]+:)\d+>/g;
 exports.searchUser = function(message, content, server, bot) {
   let mentions = message.mentions.users;
   content = content.trim();
-  if (mentions.size != 0) {
+  if (mentions.size != 0) { // Get mention
     return mentions.first();
   } else if (content != '') { // search name
     let regex = content[0] == '*';
@@ -30,6 +30,11 @@ exports.searchUser = function(message, content, server, bot) {
           return u.user;
         }
       }
+      for (let [, mem] of server.guild.members.forEach()) {
+        if (r.test(mem.user.tag) || r.test(mem.nickname)) {
+          return mem.user;
+        }
+      }
     } else {
       content = content.toLowerCase();
       for (let id in server.users) {
@@ -40,6 +45,14 @@ exports.searchUser = function(message, content, server, bot) {
         if (u == undefined) continue; // user left
         if (u.user.tag.toLowerCase().startsWith(content) || (u.nickname && u.nickname.toLowerCase().startsWith(content))) {
           return u.user;
+        }
+      }
+      for (let [id, mem] of server.guild.members) {
+        if (id == content) {
+          return mem.user;
+        }
+        if (mem.user.tag.toLowerCase().startsWith(content) || (mem.nickname && mem.nickname.toLowerCase().startsWith(content))) {
+          return mem.user;
         }
       }
     }
