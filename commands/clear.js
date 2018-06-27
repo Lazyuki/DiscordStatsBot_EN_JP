@@ -13,7 +13,7 @@ module.exports.help = '`,clr [number of messages to delete]` Clear messages by C
 
 module.exports.command = async (message, content, bot) => {
   let chan = message.channel;
-  let messages = await chan.fetchMessages({limit:30});
+  let messages = await chan.messages.fetch({limit:30});
   let deleteCount = parseInt(content);
   let messagesToDelete = [];
   if (!deleteCount) deleteCount = 1;

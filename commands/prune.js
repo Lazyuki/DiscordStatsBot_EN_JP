@@ -22,7 +22,7 @@ module.exports.command = async (message, content) => {
   var count = 0;
   var delCount = 0;
   while (!done) {
-    let messages = await message.channel.fetchMessages({limit:100,before:lastMessageID});
+    let messages = await message.channel.messages.fetch({limit:100,before:lastMessageID});
     let delMsgs = [];
     let num = 0;
     for (var m of messages.values()) {
