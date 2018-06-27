@@ -73,7 +73,7 @@ bot.on('message', async message => {
 
   // Cache member => prevents weird errors 
   if (!message.member) { 
-    message.member = await server.guild.fetchMember(message.author); 
+    message.member = await server.guild.member(message.author); 
   }
   // Is it not a command?
   if (!message.content.startsWith(server.prefix)) {

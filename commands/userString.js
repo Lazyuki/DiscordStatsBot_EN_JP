@@ -19,7 +19,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
 
   var record = server.users[user.id];
-  let member = await server.guild.fetchMember(user);
+  let member = await server.guild.member(user);
 
   // the user hasn't sent anything in the past 30 days
   if (record == undefined) {

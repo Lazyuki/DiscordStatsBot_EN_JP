@@ -40,7 +40,7 @@ exports.searchUser = function(message, content, server, bot) {
       for (let id in server.users) {
         let u = server.guild.members.get(id);
         if (id == content) {
-          return bot.fetchUser(id); // This returns a Promise
+          return bot.users.fetch(id); // This returns a Promise
         }
         if (u == undefined) continue; // user left
         if (u.user.tag.toLowerCase().startsWith(content) || (u.nickname && u.nickname.toLowerCase().startsWith(content))) {
@@ -181,7 +181,7 @@ exports.userLeaderboard = async function(channel, embed, list, authorID, searchU
         continue;
       }
     } else {
-      let user = await bot.fetchUser(key);
+      let user = await bot.users.fetch(key);
       if (!user) continue;
       list[i][2] = user.username;
       if (key == searchUser.id) foundRank = rank;
@@ -199,7 +199,7 @@ exports.userLeaderboard = async function(channel, embed, list, authorID, searchU
       if (list[rank]) {
         let [key, val, username] = list[rank];
         if (!username) {
-          let user = await bot.fetchUser(key);
+          let user = await bot.users.fetch(key);
           if (!user) continue;
           username = user.username;
           list[rank][2] = username;

@@ -49,10 +49,10 @@ module.exports.command = async (message, content, bot, server) => {
         continue;
       }
       
-      embed.addField(count + ') ' + (await bot.fetchUser(user)).username, vcTime, true);
+      embed.addField(count + ') ' + (await bot.users.fetch(user)).username, vcTime, true);
       break;
     }
-    let us = await bot.fetchUser(user);
+    let us = await bot.users.fetch(user);
     if (!us) continue;
     if (user == memberID) found = true;
     embed.addField(count++ + ') ' + us.username, vcTime, true);

@@ -25,7 +25,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
   } else {
     record = server.users[user.id];
-    member = await server.guild.fetchMember(user.id);
+    member = await server.guild.member(user.id);
     
     if (record == undefined) { // the user hasn't sent anything in the past 30 days
       let embed = new Discord.MessageEmbed();

@@ -40,7 +40,7 @@ module.exports.command = async (message, content, bot, server) => {
       let mem = server.guild.members.get(user);
       if (!mem) {
         try {
-          mem = await server.guild.fetchMember(user);
+          mem = await server.guild.member(user);
         } catch (e) {
           continue;
         }
@@ -58,7 +58,7 @@ module.exports.command = async (message, content, bot, server) => {
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');
   let count = 1;
-  let member = await server.guild.fetchMember(memberID);
+  let member = await server.guild.member(memberID);
   let found = member.roles.has('196765998706196480');
 
   for (let user in result) {
@@ -67,10 +67,10 @@ module.exports.command = async (message, content, bot, server) => {
         count++;
         continue;
       }
-      embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user].toFixed(2) + '%', true);
+      embed.addField(count + ') ' + (await bot.users.fetch(user)).username, result[user].toFixed(2) + '%', true);
       break;
     }
-    let us = await bot.fetchUser(user);
+    let us = await bot.users.fetch(user);
     if (!us) continue;
     if (user == memberID) found = true;
     embed.addField(count++ + ') ' + us.username, result[user].toFixed(2) + '%', true);

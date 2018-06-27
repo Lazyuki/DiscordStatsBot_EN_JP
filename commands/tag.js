@@ -47,7 +47,7 @@ module.exports.command = async (message, content, bot, server) => {
       memberID = server.newUsers[0];
     }
     if (memberID == undefined) return; // error
-    member = await server.guild.fetchMember(memberID);
+    member = await server.guild.member(memberID);
   }
   let oldRoles = member.roles;
   let oldRole = '';

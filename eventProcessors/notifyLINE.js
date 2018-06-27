@@ -27,8 +27,8 @@ function notify(message, token) {
 
 module.exports.process = async (message, server, bot) => {
   if (message.content.startsWith('t!') || message.content.startsWith('.')) return; // ignore bot commands
-  let me = await server.guild.fetchMember(bot.owner_ID);
-  let ry = await server.guild.fetchMember(ryryID); // Ry
+  let me = await server.guild.member(bot.owner_ID);
+  let ry = await server.guild.member(ryryID); // Ry
   if (me.presence.status == 'offline'
       &&  (message.mentions.users.has(bot.owner_ID) 
            || message.mentions.roles.has('240647591770062848'))) { // If I'm offline
