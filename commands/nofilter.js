@@ -50,7 +50,7 @@ module.exports.command = async (message, content, bot, server) => {
       mem.setVoiceChannel(nofilterVoice);
     }
     forlater.push(mem);
-    names += mem + ' ';
+    names += mem.toString() + ' ';
   }
   nofilter.send(`${names}you have been muted in all channels but here for ${min} minutes.`);
   message.channel.send(`Sent to ${nofilter}`);

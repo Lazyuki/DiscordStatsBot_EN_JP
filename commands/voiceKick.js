@@ -13,7 +13,10 @@ module.exports.help = 'Kick yourself from a voice channel in N minutes. `,vk [nu
 
 
 async function removeFromVoice(guild, members) {
-  let newChan = await guild.createChannel('/dev/null', 'voice');
+  let afk = guild.afkChannel;
+  let newChan;
+  if (afk && afk.parent) newChan = await guild.channels.create('/dev/null', {type:'voice', parent: afk.parent});
+  else newChan = await guild.channels.create('/dev/null', {type:'voice'});
   for (let member of members) {
     member = await guild.member(member.user);
     if (!member || !member.voiceChannel) continue;
