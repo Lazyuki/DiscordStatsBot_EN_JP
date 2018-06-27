@@ -30,8 +30,12 @@ module.exports.command = async (message, content) => {
     return;
   }
   let mentions = message.mentions.members;
-  if (mentions.size && message.member.hasPermission('MUTE_MEMBERS')) {
-    await removeFromVoice(message.guild, mentions.array());
+  if (mentions.size) {
+    if (message.member.hasPermission('MUTE_MEMBERS')) {
+      await removeFromVoice(message.guild, mentions.array());
+    } else {
+      message.channel.send('You cannot kick others');
+    }
     return;
   }
   if (!message.member.voiceChannel) {
