@@ -17,6 +17,6 @@ module.exports.process = (message, server, bot, language) => {
     }
   }
   for (let r of message.reactions.values()) {
-    if (r.me) r.remove();
+    if (r.me) r.users.remove();
   }
 };

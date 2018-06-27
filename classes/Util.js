@@ -137,27 +137,27 @@ const paginate = async function(msg, list, authorID, foundRank, reload) {
       if (pageNum < maxPageNum) {
         reload(++pageNum);
       }
-      r.remove(authorID);
+      r.users.remove(authorID);
       break;
     case '◀':
       if (pageNum > 0) {
         reload(--pageNum);
       }
-      r.remove(authorID);
+      r.users.remove(authorID);
       break;
     case '🔻':
       if (pageNum != foundPage) {
         pageNum = foundPage;
         reload(pageNum);
       }
-      r.remove(authorID);
+      r.users.remove(authorID);
       break;
     case '⏮':
       if (pageNum != 0) {
         pageNum = 0;
         reload(0);
       }
-      r.remove(authorID);
+      r.users.remove(authorID);
       break;
     }
   });
