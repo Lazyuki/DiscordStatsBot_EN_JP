@@ -37,6 +37,7 @@ module.exports.command = async (message, content, bot, server) => {
       if (!mem) {
         try {
           mem = await server.guild.member(user);
+          if (!mem) continue;
         } catch (e) {
           continue;
         }
