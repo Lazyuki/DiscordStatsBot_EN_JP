@@ -40,7 +40,7 @@ module.exports.process = (message) => {
       embed.color = Number('0xDB3C3C');
       message.author.send('どうやら長いメッセージを消してしまったみたいです。重要だといけないので一応送っておきます。', {embed});      
     }
-    message.delete(500);
+    message.delete({timeout:500});
     return;
   }
   if (!isJapanese && (lang & Util.LANG.ENG)) { // English
@@ -51,7 +51,7 @@ module.exports.process = (message) => {
       embed.color = Number('0xDB3C3C');
       message.author.send('It seems like I deleted your long message that might be important.', {embed});      
     }
-    message.delete(500);
+    message.delete({timeout:500});
     return;
   }
 };

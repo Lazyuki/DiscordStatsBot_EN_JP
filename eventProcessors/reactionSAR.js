@@ -5,7 +5,7 @@ module.exports.initialize = (json, server) => {
   server.sars = {};
   if (server.sticky) {
     let stickied = server.guild.channels.get(server.sticky);
-    stickied.messages.fetch(); // #server_rules
+    if (stickied) stickied.messages.fetch(); // #server_rules
   }
   if (!json || !json['sars']) return;
   server.sars = json['sars'];
