@@ -162,7 +162,7 @@ const paginate = async function(msg, list, authorID, foundRank, reload) {
     }
   });
   collector.on('end', () => {
-    msg.clearReactions();
+    // msg.clearReactions();
     //collector.client.removeListener('messageReactionRemove', collector.listener);
   });
 };
