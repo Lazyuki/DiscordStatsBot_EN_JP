@@ -100,17 +100,22 @@ module.exports = class Server {
 
   save(backup = false) {
     // Store the actual date?
+
     if (backup) {
       var date = new Date().toLocaleDateString().replace(/\//g, '-');
       try {
-        fs.writeFileSync(`./backups/${this.guild.id}_log-${date}.json`, JSON.stringify(this), 'utf8');
+        let serverNoGuild = this;
+        //delete serverNoGuild.guild;
+        fs.writeFileSync(`./backups/${this.guild.id}_log-${date}.json`, JSON.stringify(serverNoGuild), 'utf8');
       } catch (e) {
         console.log(e);
       }
       console.log(`Backup has been created for ${this.guild.id}: ${date}`);
     } else {
       try {
-        fs.writeFileSync(`./.${this.guild.id}_restore.json`, JSON.stringify(this), 'utf8');
+        let serverNoGuild = this;
+        //delete serverNoGuild.guild;
+        fs.writeFileSync(`./.${this.guild.id}_restore.json`, JSON.stringify(serverNoGuild), 'utf8');
       } catch (e) {
         console.log(e);
       }
