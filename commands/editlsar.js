@@ -14,6 +14,6 @@ module.exports.help = '__Mods Only__ Edit the list of self-assignable roles in #
 
 module.exports.command = async (message, content, bot, server) => {
   let server_rules = server.guild.channels.get('189585230972190720');
-  let msg = await server_rules.messages.fetch('439925866617634816');
+  let msg = await server_rules.messages.fetch('477007517084418050');
   msg.edit(content); // USE str for auto change
 };
