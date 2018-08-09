@@ -6,8 +6,7 @@ module.exports.isAllowed = (message, server) => {
 };
 
 module.exports.process = (message) => {
-  let content = message.content;
-  if (content.includes('Blake Rodriquez')) {
+  if (/(blake rodriquez)|(blake rodriguez)|(clear springs)|(cshs)/i.test(message.content)) {
     message.member.ban({ days: 1, reason: 'spam' });
   }
 };
