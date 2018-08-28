@@ -30,7 +30,7 @@ exports.searchUser = function(message, content, server, bot) {
           return u.user;
         }
       }
-      for (let [, mem] of server.guild.members.forEach()) {
+      for (let [, mem] of server.guild.members) {
         if (r.test(mem.user.tag) || r.test(mem.nickname)) {
           return mem.user;
         }
