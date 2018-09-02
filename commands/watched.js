@@ -10,9 +10,7 @@ module.exports.isAllowed = (message, server) => {
 module.exports.help = 'Shows users on the watchlist.';
 
 module.exports.command = async (message, content, bot, server) => {
-  let res = 'Watched users:\n';
-  for (var i in server.watchedUsers) {
-    res += '<@' + server.watchedUsers[i] + '>\n';
-  }
-  message.channel.send(res);
+  let res = `Watched users (${server.watchedUsers.length}):\n`;
+  res += server.watchedUsers.map(u => `<@${u}>`).join(', ');
+  message.channel.send(res, {split: true});
 };
