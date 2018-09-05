@@ -20,7 +20,7 @@ module.exports.initialize = (json, server) => {
   }
 };
 module.exports.isAllowed = (message) => {
-  if (!['189571157446492161', '206599473282023424'].includes(message.guild.id)) return false;
+  if (!['189571157446492161', '206599473282023424', '294931740122939392'].includes(message.guild.id)) return false;
   return true;
 };
 
@@ -56,7 +56,7 @@ module.exports.process = async function(message, server) {
     arr.push(simple);
     if (arr.length > 30) arr.shift();
   }
-  if (message.guild.id == '206599473282023424') return; // ignore eikyuu's server
+  if (message.guild.id == '206599473282023424' || message.guild.id == '294931740122939392') return; // ignore eikyuu's server
   if (message.mentions.members.size > 20) { // SPAM alert!
     let chan = server.guild.channels.get('366692441442615306'); // #mod_log
     if (chan == undefined) return;

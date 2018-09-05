@@ -9,7 +9,6 @@ module.exports.initialize = (json, server) => {
 };
 
 module.exports.isAllowed = (message, server) => {
-  if (server.guild.id == '292389599982911488') return false; // no creamy
   return server.hiddenChannels.includes(message.channel.id);
 };
 
