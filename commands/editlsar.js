@@ -15,16 +15,16 @@ module.exports.help = '__Mods Only__ Edits the list of self-assignable roles in 
 module.exports.command = async (message, content, bot, server) => {
   let stickiedChannel = server.guild.channels.get(server.sticky);
   if (!stickiedChannel) {
-    message.channl.send('Cannot find the sticked channel. Try `,h sticky` first. ');
+    message.channel.send('Cannot find the sticked channel. Try `,h sticky` first. ');
     return;
   }
 
   let msgs = await stickiedChannel.messages.fetch();
   let lsar = msgs.filter(msg => msg.author.id === bot.id).first();
   if (!lsar) {
-    message.channl.send('Cannot find Ciri\'s message');
+    message.channel.send('Cannot find Ciri\'s message');
     return;
   }
   lsar.edit(content); // USE str for auto change
-  message.channl.send('Message edited!');
+  message.channel.send('Message edited!');
 };
