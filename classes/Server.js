@@ -98,6 +98,12 @@ module.exports = class Server {
     });
   }
 
+  async hourly() {
+    this.processors['HOURLY'].forEach((p) => {
+      p.process(this);
+    });
+  }
+
   save(backup = false) {
     // Store the actual date?
 

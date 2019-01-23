@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const init = require('./init.json');
 const Server = require('./classes/Server.js');
 const midnightTask = require('./classes/MidnightTask.js');
-const savingTask = require('./classes/SavingTask.js');
+const hourlyTask = require('./classes/HourlyTask.js');
 let cmds = require('./cmds.js');
 const commands = cmds.commands;
 const inits = cmds.inits;
@@ -21,9 +21,6 @@ const bot = new Discord.Client({
 const token = init.token;
 bot.owner_ID = init.owner_ID;
 
-bot.setInterval(() => { // Set up hourly backup state task
-  savingTask(bot);
-},  60*60*1000);
 let time = new Date();
 let h = time.getUTCHours();
 let m = time.getUTCMinutes();
@@ -33,6 +30,11 @@ bot.setTimeout(() => { // Set up the day changing task
   midnightTask(bot);
 },  timeLeft * 1000); // Time left until the next day
 
+bot.setTimeout(() => { // Set up hourly task
+  bot.setInterval(() => {
+    hourlyTask(bot);
+  }, 60*60*1000);
+},  ((60 - m) * 60 - s) * 1000);
 
 bot.on('ready', () => {
   console.log('Logged in as ' + bot.user.username);
@@ -73,7 +75,7 @@ bot.on('message', async message => {
 
   // Cache member => prevents weird errors 
   if (!message.member) { 
-    message.member = await server.guild.member(message.author); 
+    message.member = await server.guild.member(message.author);
   }
   // Is it not a command?
   if (!message.content.startsWith(server.prefix)) {
