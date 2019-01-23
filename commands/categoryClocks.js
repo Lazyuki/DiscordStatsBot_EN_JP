@@ -9,7 +9,7 @@ module.exports.isAllowed = (message) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = '__Mods Only__ Set up and configure hourly category clocks. `,cc < set | delete | list > [CATEGORY_ID] ["Time format string"]`\nUse "TZ Database Name" from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones inside `${TZ_name}` for specifying the timezone.\ne.g. `,cc set 537289285129469954 "Time: 🇯🇵${Asia/Tokyo}時 🇺🇸${America/New_York}時"` or to disable, `,cc delete 537289285129469954`';
+module.exports.help = '__Mods Only__ Set up and configure hourly category clocks. `,cc < set | delete | list > [CATEGORY_ID] [ t | f for padding 0s] ["Time format string"]`\nUse "TZ Database Name" from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones inside `${TZ_name}` for specifying the timezone.\ne.g. `,cc set 537289285129469954 "Time: 🇯🇵${Asia/Tokyo}時 🇺🇸${America/New_York}時"` or to disable, `,cc delete 537289285129469954`';
 
 const timeStringRegex = /"(.*)"/;
 
@@ -18,6 +18,7 @@ module.exports.command = async (message, content, bot, server) => {
   switch (arr[0]) {
   case 'set': {
     const ch = server.guild.channels.get(arr[1]);
+    const pad = arr[2] === 't' ? true : false;
     const timeStringMatch = timeStringRegex.exec(content);
     let timeString;
     if (timeStringMatch) {
@@ -32,6 +33,7 @@ module.exports.command = async (message, content, bot, server) => {
         if (c.id === ch.id) {
           server.categoryClocks[i] = {
             id: ch.id,
+            pad,
             timeString,
           };
           message.channel.send('Category clock set!');
@@ -41,6 +43,7 @@ module.exports.command = async (message, content, bot, server) => {
       }
       server.categoryClocks.push({
         id: ch.id,
+        pad,
         timeString,
       });
       message.channel.send('Category clock set!');
@@ -67,7 +70,7 @@ module.exports.command = async (message, content, bot, server) => {
   case 'list': {
     let s = '';
     for (let c of server.categoryClocks) {
-      s += `${c.id} (<#${c.id}>): \`${c.timeString}\`\n`;
+      s += `${c.id} (<#${c.id}>) pad? ${c.pad} : "\`${c.timeString}\`"\n`;
     }
     if (!s) {
       message.channel.send('No category clocks set.');

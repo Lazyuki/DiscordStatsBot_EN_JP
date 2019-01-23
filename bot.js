@@ -31,6 +31,7 @@ bot.setTimeout(() => { // Set up the day changing task
 },  timeLeft * 1000); // Time left until the next day
 
 bot.setTimeout(() => { // Set up hourly task
+  hourlyTask(bot);
   bot.setInterval(() => {
     hourlyTask(bot);
   }, 60*60*1000);

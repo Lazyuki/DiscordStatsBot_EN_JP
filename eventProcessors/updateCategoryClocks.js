@@ -9,7 +9,7 @@ module.exports.initialize = (json, server) => {
 
 // format: "any text ${}"
 const timeRegex = /\$\{([^}]*)\}/g;
-function parseTime(timeString) {
+function parseTime(timeString, pad) {
   const date = new Date();
   function replaceTime(str, timezone) {
     try {
@@ -18,7 +18,7 @@ function parseTime(timeString) {
         hour12: false,
         timeZone: timezone
       });
-      if (ret[0] === '0') {
+      if (!pad && ret[0] === '0') {
         return ret[1];
       }
       return ret;
@@ -34,7 +34,7 @@ module.exports.process = async (server) => {
       const categoryID = c.id;
       const category = server.guild.channels.get(categoryID);
       if (category) {
-        category.setName(parseTime(c.timeString));
+        category.setName(parseTime(c.timeString, c.pad));
       }
     }
   }
