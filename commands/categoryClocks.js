@@ -67,7 +67,7 @@ module.exports.command = async (message, content, bot, server) => {
   case 'list': {
     let s = '';
     for (let c of server.categoryClocks) {
-      s += `${c.id} (<#${c.id}>): "${c.timeString}"\n`;
+      s += `${c.id} (<#${c.id}>): \`${c.timeString}\`\n`;
     }
     if (!s) {
       message.channel.send('No category clocks set.');
