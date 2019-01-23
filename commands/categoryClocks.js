@@ -27,6 +27,18 @@ module.exports.command = async (message, content, bot, server) => {
       return;
     }
     if (ch && ch.type === 'category') {
+      for (let i in server.categoryClocks) {
+        let c = server.categoryClocks[i];
+        if (c.id === ch.id) {
+          server.categoryClocks[i] = {
+            id: ch.id,
+            timeString,
+          };
+          message.channel.send('Category clock set!');
+          server.hourly();
+          return;
+        }
+      }
       server.categoryClocks.push({
         id: ch.id,
         timeString,
