@@ -26,7 +26,7 @@ module.exports.command = async (message, content, bot, server) => {
       message.channel.send('Category name string must be surrounded by double quotes.');
       return;
     }
-    if (ch && ch.type === 'category') {
+    if (ch) {
       for (let i in server.categoryClocks) {
         let c = server.categoryClocks[i];
         if (c.id === ch.id) {
