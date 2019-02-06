@@ -15,7 +15,7 @@ module.exports.initialize = (json, server) => {
   }
 };
 module.exports.isAllowed = (message, server) => {
-  return !server.ignoredChannels.includes(message.channel.id);
+  return !server.ignoredChannels.includes(message.channel.id) && !/^(?:[tk]?!|[.&+>%;=])/.test(message.content);
 };
 
 module.exports.process = async function(message, server, bot, language) {
