@@ -36,26 +36,26 @@ module.exports.command = async (message, content, bot, server) => {
   }
   badPeople.push(...message.mentions.members.array());
   if (badPeople.length == 0) {
+    if (message.member.hasPermission('ADMINISTRATOR')) {
+      let reg = /window\s?(\d+)?/.exec(content);
+      if (reg) {
+        if (reg[1]) {
+          let min = parseInt(reg[1]);
+          server.banWindow = min * 60 * 1000;
+          message.channel.send(`Ban window set to ${min} minutes`);
+          return;
+        } else {
+          let min = server.banWindow / 60 / 1000;
+          message.channel.send(`Ban window is ${min} minutes`);
+          return;
+        }
+      }
+    }
     message.channel.send('Could not resolve users.');
     return;
   }
 
-  if (message.member.hasPermission('ADMINISTRATOR')) {
-    let reg = /window\s?(\d+)?/.exec(content);
-    if (reg) {
-      if (reg[1]) {
-        let min = parseInt(reg[1]);
-        server.banWindow = min * 60 * 1000;
-        message.channel.send(`Ban window set to ${min} minutes`);
-        return;
-      } else {
-        let min = server.banWindow / 60 / 1000;
-        message.channel.send(`Ban window is ${min} minutes`);
-        return;
-      }
-    }
-
-  } else { // check for ban window
+  if (!message.member.hasPermission('ADMINISTRATOR')) { // check for ban window
     const now = new Date();
     if (badPeople.some(mem =>  now - mem.joinedAt > server.banWindow)) {
       message.channel.send(`Some people are older than ${server.banWindow} minutes`);
