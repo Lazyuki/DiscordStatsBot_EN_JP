@@ -76,7 +76,7 @@ module.exports.command = async (message, content, bot, server) => {
       reason = options[2];
     }
   }
-  let banMessage = `<:hypergeralthinkban:443803651325034507> You are banning <:hypergeralthinkban:443803651325034507>\n${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}\nType \`confirm\` or \`cancel\``;
+  let banMessage = `<:hypergeralthinkban:443803651325034507> **You are banning** <:hypergeralthinkban:443803651325034507>\n${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}**Reason**: ${reason}\nType \`confirm\` or \`cancel\``;
   await message.channel.send(banMessage);
   const filter = m => m.member.id == executor.id;
   const collector = message.channel.createMessageCollector(filter, { time: 15000 });
@@ -84,7 +84,7 @@ module.exports.command = async (message, content, bot, server) => {
     if (m.content.toLowerCase() == 'confirm') {
       badPeople.forEach(mem => {
         mem.send(`You have been banned from ${server.guild} bacause: ${reason}`);
-        mem.ban({ days: deleteDays, reason })
+        mem.ban({ days: deleteDays, reason: `Issued by: ${executor.tag}. Reason: ${reason}` })
           .catch(() => {
             collector.stop('Failed');
             return;
@@ -118,7 +118,7 @@ module.exports.command = async (message, content, bot, server) => {
       message.channel.send('❌ Cancelled');
       return;
     } else if (endReason == 'Failed') {
-      message.channel.send('❌ Unable to ban them');
+      message.channel.send('❌ Unable to ban them. Make sure the number of days is set appropriately and the ban message isn\'t too long');
       return;
     } else {
       message.channel.send('❌ Failed to confirm');
