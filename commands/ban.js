@@ -23,6 +23,7 @@ module.exports.command = async (message, content, bot, server) => {
   const executor = message.member;
   let deleteDays = 1;
   let reason = 'Unspecified';
+  content = content.replace(Util.REGEX_USER, '');
   let ids = content.match(Util.REGEX_RAW_ID);
   if (ids) {
     for (let id of ids) {
@@ -38,7 +39,6 @@ module.exports.command = async (message, content, bot, server) => {
     message.channel.send('Could not resolve users.');
     return;
   }
-  content = content.replace(Util.REGEX_USER, '');
 
   if (message.member.hasPermission('ADMINISTRATOR')) {
     let reg = /window\s?(\d+)?/.exec(content);
@@ -82,7 +82,6 @@ module.exports.command = async (message, content, bot, server) => {
   const collector = message.channel.createMessageCollector(filter, { time: 15000 });
   collector.on('collect', m => {
     if (m.content.toLowerCase() == 'confirm') {
-
       badPeople.forEach(mem => {
         mem.send(`You have been banned from ${server.guild} bacause: ${reason}`);
         mem.ban({ days: deleteDays, reason })
