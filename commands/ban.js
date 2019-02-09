@@ -37,7 +37,7 @@ module.exports.command = async (message, content, bot, server) => {
   badPeople.push(...message.mentions.members.array());
   if (badPeople.length == 0) {
     if (message.member.hasPermission('ADMINISTRATOR')) {
-      let reg = /window\s?(\d+)?/.exec(content);
+      let reg = /window\s*(\d+)?/.exec(content);
       if (reg) {
         if (reg[1]) {
           let min = parseInt(reg[1]);
