@@ -35,7 +35,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
   badPeople.push(...message.mentions.members.array());
   if (badPeople.length == 0) {
-    message.channel.send('You have to mention them.');
+    message.channel.send('Could not resolve users.');
     return;
   }
   content = content.replace(Util.REGEX_USER, '');
@@ -76,7 +76,7 @@ module.exports.command = async (message, content, bot, server) => {
       reason = options[2];
     }
   }
-  let banMessage = `<:hypergeralthinkban:443803651325034507> You are banning <:hypergeralthinkban:443803651325034507>\n${badPeople.reduce((s, mem) => s + mem + '\n', '')}\nType \`confirm\` or \`cancel\``;
+  let banMessage = `<:hypergeralthinkban:443803651325034507> You are banning <:hypergeralthinkban:443803651325034507>\n${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}\nType \`confirm\` or \`cancel\``;
   await message.channel.send(banMessage);
   const filter = m => m.member.id == executor.id;
   const collector = message.channel.createMessageCollector(filter, { time: 15000 });

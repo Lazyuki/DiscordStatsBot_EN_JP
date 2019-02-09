@@ -13,7 +13,7 @@ exports.REGEX_USER = /<@!?\d+>/g;
 exports.REGEX_CHAN = /<#\d+>/g;
 exports.REGEX_ROLE = /<@&\d+>/g;
 exports.REGEX_ID = /<(@!?|#|@&|a?:[\S]+:)\d+>/g;
-exports.REGEX_RAW_ID = /(\d{17, 21})/g;
+exports.REGEX_RAW_ID = /(\d{17,21})/g;
 
 
 exports.searchUser = function(message, content, server, bot) {
