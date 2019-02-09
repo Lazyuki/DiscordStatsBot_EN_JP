@@ -107,8 +107,7 @@ module.exports.command = async (message, content, bot, server) => {
       let date = new Date();
       embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
       embed.title = 'Ban';
-      embed.addField('Banned users:', `${badPeople.reduce((s, mem) => s + mem + '\n', '')}`, false);
-      embed.addField('Banned by:', `${executor}`, false);
+      embed.addField('Banned users:', `${badPeople.reduce((s, mem) => `${s}${mem}: ${mem.id}\n`, '')}`, false);
       embed.addField('Ban reason:', `${reason}`, false);
       embed.color = Number('0xff283a');
       embed.setFooter(`In #${message.channel.name}`);
