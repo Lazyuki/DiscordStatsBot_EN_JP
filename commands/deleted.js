@@ -1,6 +1,6 @@
 module.exports.name = 'deleted';
 module.exports.alias = [
-  'del'
+  'deleted'
 ];
 
 const Discord = require('discord.js');

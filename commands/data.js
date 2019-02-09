@@ -40,5 +40,5 @@ module.exports.command = (message, content, bot) => {
     res += `Date number: ${server.today}\n\n`;
   }
   res += `UTC Time: ${new Date().toUTCString()}`;
-  message.channel.send(res);
+  message.channel.send(res, {split: true});
 };
