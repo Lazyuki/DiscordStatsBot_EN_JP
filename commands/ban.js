@@ -58,7 +58,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (!message.member.hasPermission('ADMINISTRATOR')) { // check for ban window
     const now = new Date();
     if (badPeople.some(mem =>  now - mem.joinedAt > server.banWindow)) {
-      message.channel.send(`Some people are older than ${server.banWindow} minutes`);
+      message.channel.send(`They are older than ${server.banWindow / 60 / 1000} minutes`);
       return;
     }
   }
