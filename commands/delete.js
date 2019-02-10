@@ -43,7 +43,7 @@ module.exports.command = async (message, content, bot, server) => {
       let msgs = await channel.messages.fetch({limit:100, before});
       for (let msg of msgs.values()) {
         before = msg.id;
-        if (users && !users.includes(msg.author.id)) continue;
+        if (users.length && !users.includes(msg.author.id)) continue;
         if (link && !Util.REGEX_URL.test(msg.content)) continue;
         if (file && msg.attachments.size == 0) continue;
         if (word && !msg.content.includes(word)) continue;
