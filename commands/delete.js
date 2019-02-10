@@ -57,27 +57,28 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   } 
   
-  const ewbf = server.guild.channels.get('277384105245802497');
-  if (!content.includes('-n') && message.member.hasPermission('ADMINISTRATOR')) ewbf.send = () => {};
-  let embed = new Discord.MessageEmbed();
-  let date = new Date();
-  embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
-  embed.title = 'Message Delete';
-  embed.color = Number('0xff283a');
-  embed.setFooter(`In #${message.channel.name}`);
-  embed.timestamp = date;
-
-  let imgCount = 1;
-  for (let msg of delmsgs) {
-    if (msg.attachments.size) {
-      await ewbf.send(`File ${imgCount}: ${msg.attachments.first().url}`);
-      ++imgCount;
+  if (!(content.includes('-n') && message.member.hasPermission('ADMINISTRATOR'))) {
+    const ewbf = server.guild.channels.get('277384105245802497');
+    let embed = new Discord.MessageEmbed();
+    let date = new Date();
+    embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
+    embed.title = 'Message Delete';
+    embed.color = Number('0xff283a');
+    embed.setFooter(`In #${message.channel.name}`);
+    embed.timestamp = date;
+  
+    let imgCount = 1;
+    for (let msg of delmsgs) {
+      if (msg.attachments.size) {
+        await ewbf.send(`File ${imgCount}: ${msg.attachments.first().url}`);
+        ++imgCount;
+      }
+      embed.addField(`Message by ${msg.author.tag}:`, `${msg.attachments.size ? `File ${imgCount - 1} ${msg.content}` : msg.content}`, false);
     }
-    embed.addField(`Message by ${msg.author.tag}:`, `${msg.attachments.size ? `File ${imgCount - 1} ${msg.content}` : msg.content}`, false);
+    
+    ewbf.send({embed});
   }
   
-  ewbf.send({embed});
-
   message.delete();
   if (delmsgs.length == 1) {
     delmsgs[0].delete();
