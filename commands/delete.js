@@ -69,7 +69,7 @@ module.exports.command = async (message, content, bot, server) => {
   let imgCount = 1;
   for (let msg of delmsgs) {
     if (msg.attachments.size) {
-      await msg.send(`File ${imgCount}: ${msg.attachments.first().url}`);
+      await channel.send(`File ${imgCount}: ${msg.attachments.first().url}`);
       ++imgCount;
     }
     embed.addField(`Message by ${msg.author.tag}:`, `${msg.attachments.size ? `File ${imgCount - 1} ${msg.content}` : msg.content}`, false);
