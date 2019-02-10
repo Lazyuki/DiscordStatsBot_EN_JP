@@ -11,12 +11,12 @@ module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161' && (message.member.hasPermission('ADMINISTRATOR') || message.member.roles.has('543721608506900480'));
 };
 
-module.exports.help = '__Mods Only__ `,del [message_ids] [num_of_messages_to_delete=1(max=25)] [@mentions] [ has:link | file | "word" ]`\nDeletes messages by either specifying the IDs, or by searching.\n e.g. `,del 543252928496926722 542576315115634688` `,del 3 @geralt has:link` `,del 5 has:"mods suck"`';
+module.exports.help = '__Mods Only__ `,del [message_ids] [num_of_messages_to_delete=1(max=25)] [@mentions] [ has:link|file|"word" ]`\nDeletes messages by either specifying the IDs, or by searching.\n e.g. `,del 543252928496926722 542576315115634688` `,del 3 @geralt has:link` `,del 5 has:"mods suck"`';
 
 module.exports.command = async (message, content, bot, server) => {
   const delmsgs = [];
   const channel = message.channel;
-  const users = message.mentions.members.keys();
+  const users = message.mentions.users.keyArray();
   content = content.replace(Util.REGEX_USER, '');
   const message_ids = content.match(Util.REGEX_RAW_ID);
   let num_of_messages = (() => { const n = parseInt(content.split(' ')[0]); if (n && n > 0 && n <= 25) return n; else return 1;})();
@@ -69,7 +69,7 @@ module.exports.command = async (message, content, bot, server) => {
   let imgCount = 1;
   for (let msg of delmsgs) {
     if (msg.attachments.size) {
-      await channel.send(`File ${imgCount}: ${msg.attachments.first().url}`);
+      await ewbf.send(`File ${imgCount}: ${msg.attachments.first().url}`);
       ++imgCount;
     }
     embed.addField(`Message by ${msg.author.tag}:`, `${msg.attachments.size ? `File ${imgCount - 1} ${msg.content}` : msg.content}`, false);
