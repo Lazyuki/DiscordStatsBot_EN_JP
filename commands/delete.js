@@ -11,7 +11,7 @@ module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161' && (message.member.hasPermission('ADMINISTRATOR') || message.member.roles.has('543721608506900480'));
 };
 
-module.exports.help = '__Mods Only__ `,del [message_ids] [num_of_messages_to_delete=1(max=25)] [@mentions] [ has:link|file|"word" ]`\nDeletes messages by either specifying the IDs, or by searching.\n e.g. `,del 543252928496926722 542576315115634688` `,del 3 @geralt has:link` `,del 5 has:"mods suck"`';
+module.exports.help = '__Mods Only__ `,del [message_ids] [num_of_messages_to_delete=1(max=25)] [@mentions] [ has:link|file|"word" ]`\nDeletes messages by either specifying the IDs, or by searching.\n e.g. `,del 543252928496926722 542576315115634688` `,del 3 @geralt has:link` `,del 5 has:"mods suck"`\nAdmins can use `-n` to skip logging';
 
 module.exports.command = async (message, content, bot, server) => {
   const delmsgs = [];
@@ -58,6 +58,7 @@ module.exports.command = async (message, content, bot, server) => {
   } 
   
   const ewbf = server.guild.channels.get('277384105245802497');
+  if (!content.includes('-n') && message.member.hasPermission('ADMINISTRATOR')) ewbf.send = () => {};
   let embed = new Discord.MessageEmbed();
   let date = new Date();
   embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
@@ -74,6 +75,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
     embed.addField(`Message by ${msg.author.tag}:`, `${msg.attachments.size ? `File ${imgCount - 1} ${msg.content}` : msg.content}`, false);
   }
+  
   ewbf.send({embed});
 
   message.delete();
