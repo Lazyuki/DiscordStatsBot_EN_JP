@@ -15,6 +15,7 @@ module.exports.help = '__Mods Only__ `,del [message_ids] [num_of_messages_to_del
 
 module.exports.command = async (message, content, bot, server) => {
   const delmsgs = [];
+  const originalContent = content;
   const channel = message.channel;
   const users = message.mentions.users.keyArray();
   content = content.replace(Util.REGEX_USER, '');
@@ -62,7 +63,7 @@ module.exports.command = async (message, content, bot, server) => {
     let embed = new Discord.MessageEmbed();
     let date = new Date();
     embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
-    embed.title = 'Message Delete';
+    embed.title = `Message Delete: ${originalContent}`;
     embed.color = Number('0xff283a');
     embed.setFooter(`In #${message.channel.name}`);
     embed.timestamp = date;
