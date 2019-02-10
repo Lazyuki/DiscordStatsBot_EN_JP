@@ -16,7 +16,7 @@ module.exports.help = '__Mods Only__ `,del [message_ids] [num_of_messages_to_del
 module.exports.command = async (message, content, bot, server) => {
   const delmsgs = [];
   const channel = message.channel;
-  const users = message.mentions.members.map(m => m.id);
+  const users = message.mentions.members.keys();
   content = content.replace(Util.REGEX_USER, '');
   const message_ids = content.match(Util.REGEX_RAW_ID);
   let num_of_messages = (() => { const n = parseInt(content.split(' ')[0]); if (n && n > 0 && n <= 25) return n; else return 1;})();
@@ -28,7 +28,7 @@ module.exports.command = async (message, content, bot, server) => {
 
   if (message_ids) {
     for (let id of message_ids) {
-      const msg = await channel.fetchMessage(id);
+      const msg = await channel.messages.fetch(id);
       if (msg) {
         delmsgs.push(msg);
       } else {
@@ -40,8 +40,9 @@ module.exports.command = async (message, content, bot, server) => {
     let remaining = num_of_messages;
     let before = message.id;
     while (MAX_LOOP-- > 0 && remaining > 0) {
-      let msgs = await channel.fetchMessages({limit:100, before});
+      let msgs = await channel.messages.fetch({limit:100, before});
       for (let msg of msgs.values()) {
+        before = msg.id;
         if (users && !users.includes(msg.author.id)) continue;
         if (link && !Util.REGEX_URL.test(msg.content)) continue;
         if (file && msg.attachments.size == 0) continue;
