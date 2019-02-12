@@ -37,6 +37,6 @@ module.exports.command = async (message, content, bot, server) => {
     embed.color = Number('0xEC891D');
     embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);
     embed.timestamp = new Date();
-    ewbf.channel.send({embed});
+    ewbf.send({embed});
   }
 };

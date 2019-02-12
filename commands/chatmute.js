@@ -37,6 +37,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
   for (let m of badPeople) {
     m.roles.add('259181555803619329', `Issued by: ${message.author.tag}`);
+    m.send(`You have been muted from ${server.guild}\nReason: ${reason}`);
     if (minutes) {
       setTimeout(() => {
         m.roles.remove('259181555803619329');
@@ -49,7 +50,7 @@ module.exports.command = async (message, content, bot, server) => {
   embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
   embed.title = 'Chat Mute:';
   embed.addField('Muted users:', badPeople.reduce((s, mem) => `${s}${mem}: ${mem.id}\n}`), false);
-  embed.addField('Muted for (minuts):', minutes || 'Indefinite', false);
+  embed.addField('Muted for (minutes):', minutes || 'Indefinite', false);
   embed.addField('Muted reason:', reason, false);
   embed.color = Number('0xff283a');
   embed.setFooter(`In #${message.channel.name}`);
