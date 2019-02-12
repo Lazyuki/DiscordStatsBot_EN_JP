@@ -39,4 +39,5 @@ module.exports.command = async (message, content, bot, server) => {
     embed.timestamp = new Date();
     ewbf.send({embed});
   }
+  message.channel.send('✅ Voice Muted');
 };
