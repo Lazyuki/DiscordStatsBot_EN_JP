@@ -9,7 +9,7 @@ module.exports.alias = [
 ];
 
 module.exports.isAllowed = () => {
-  return true;
+  return false;
 };
 
 module.exports.help = '`,v [username (default = invoker)]` Voice leaderboard for this server.';

@@ -9,7 +9,7 @@ module.exports.alias = [
 ];
 
 module.exports.isAllowed = (message, server) => {
-  return server.guild.id == '189571157446492161';
+  return false;
 };
 
 module.exports.help = '`,enl [username (default = invoker)] [-n number (default = 200)]` English Usage Leaderboard for this server.\ne.g. `,enl Geralt -n 500`';

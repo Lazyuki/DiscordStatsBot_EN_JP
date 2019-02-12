@@ -9,7 +9,7 @@ module.exports.alias = [
 
 module.exports.isAllowed = (message, server, bot) => {
   // return message.author.id == bot.owner_ID;
-  return true;
+  return false;
 };
 
 module.exports.help = '`,l [username (default = invoker)]` Leaderboard for this server.';

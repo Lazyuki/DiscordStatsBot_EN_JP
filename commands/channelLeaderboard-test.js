@@ -10,7 +10,7 @@ module.exports.alias = [
 ];
 
 module.exports.isAllowed = () => {
-  return true;
+  return false;
 };
 
 module.exports.help = '`,chlb [#channel] [#2nd_channel] [#3rd... [username | @mention]` Leaderboard for channels. Defaults to the current channel if nothing is specified.';

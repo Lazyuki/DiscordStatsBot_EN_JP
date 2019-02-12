@@ -8,7 +8,7 @@ module.exports.alias = [
   'jpl-test'];
 
 module.exports.isAllowed = (message, server) => {
-  return server.guild.id == '189571157446492161';
+  return false;
 };
 
 module.exports.help = '`,jpl [username (default = invoker)] [-n number (default = 1000)]` Japanese Usage Leaderboard for this server.\ne.g. `,jpl Geralt -n 500`';
