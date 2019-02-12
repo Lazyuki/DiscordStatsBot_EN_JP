@@ -12,14 +12,15 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('MUTE_MEMBERS');
 };
 
-module.exports.help = '__VW Only__ Voice mutes people. `,vm <@someone> [@sometwo ...] [reason]`';
+module.exports.help = '__VW Only__ Voice mutes people. `,vm <@mentions> [reason]`';
 
-module.exports.command = async (message, content) => {
+module.exports.command = async (message, content, bot, server) => {
   let targets = message.mentions.members;
   let reason = content.replace(Util.REGEX_USER, '').trim();
   if (reason == ''){
     reason = 'unspecified';
   }
+  const ewbf = server.guild.channels.get('277384105245802497');
   for (let [ , member] of targets) {
     await member.setMute(true, `by ${message.author.tag} Reason: ${reason}` );
     await member.roles.add('357687893566947329'); // Voice mute role
@@ -36,6 +37,6 @@ module.exports.command = async (message, content) => {
     embed.color = Number('0xEC891D');
     embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);
     embed.timestamp = new Date();
-    message.channel.send({embed});
+    ewbf.channel.send({embed});
   }
 };

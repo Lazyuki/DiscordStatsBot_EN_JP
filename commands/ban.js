@@ -82,8 +82,8 @@ module.exports.command = async (message, content, bot, server) => {
   const collector = message.channel.createMessageCollector(filter, { time: 15000 });
   collector.on('collect', m => {
     if (m.content.toLowerCase() == 'confirm') {
-      badPeople.forEach(mem => {
-        mem.send(`You have been banned from ${server.guild} bacause: ${reason}`);
+      badPeople.forEach(async mem =>  {
+        await mem.send(`You have been banned from ${server.guild}.\nReason: ${reason}`);
         mem.ban({ days: deleteDays, reason: `Issued by: ${executor.tag}. Reason: ${reason}` })
           .catch(() => {
             collector.stop('Failed');

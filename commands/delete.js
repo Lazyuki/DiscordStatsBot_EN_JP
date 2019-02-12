@@ -57,9 +57,9 @@ module.exports.command = async (message, content, bot, server) => {
     channel.send('No messages to delete.');
     return;
   } 
-  
+
+  const ewbf = server.guild.channels.get('277384105245802497');
   if (!(content.includes('-n') && message.member.hasPermission('ADMINISTRATOR'))) {
-    const ewbf = server.guild.channels.get('277384105245802497');
     let embed = new Discord.MessageEmbed();
     let date = new Date();
     embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
