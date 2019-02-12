@@ -21,7 +21,7 @@ module.exports.command = async (message, content, bot, server) => {
     message.channel.send('You have to mention them.');
     return;
   }
-  content = content.replace(Util.REGEX_USER, '');
+  content = content.replace(Util.REGEX_USER, '').trim();
 
   if (content) {
     let min = parseInt(content.split(' ')[0]);
