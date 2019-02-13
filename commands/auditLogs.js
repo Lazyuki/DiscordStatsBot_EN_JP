@@ -75,7 +75,7 @@ function embedEntry(entries) {
         break;
       case 'ROLE_UPDATE':
         vars.flip = true;
-      case 'CHANNEL_OVERWRITE_UPDATE':
+      case 'CHANNEL_OVERWRITE_UPDATE': {
         let perm = ent.changes[0].new ^ ent.changes[0].old;
         let perms = new Discord.Permissions(null, perm).serialize(false);
         let permKey = [];
@@ -96,6 +96,7 @@ function embedEntry(entries) {
           }
         }
         break;
+      }
       case 'CHANNEL_CREATE':
       case 'EMOJI_CREATE':
         str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new}\`\n`;
@@ -176,7 +177,7 @@ module.exports.command = async (message, content, bot, server) => {
     let beforeID = null;
     let contents = content.split(' ');
     let user = null;
-    if (message.mentions.users) user = message.mentions.users.first();
+    if (message.mentions.users.size) user = message.mentions.users.first();
     let max = parseInt(contents[0]);
     if (!max || max > 20) max = 3;
     let type = null;
@@ -252,6 +253,6 @@ module.exports.command = async (message, content, bot, server) => {
     }
   } catch (e) {
     console.log(e);
-    message.channel.send(`${e.message}\nYou better fix this shit <@${bot.owner_ID}>`);
+    message.channel.send('Sorry, this command is broken and Geralt is too lazy to fix it at the moment');
   }
 };
