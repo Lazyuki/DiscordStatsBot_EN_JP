@@ -25,6 +25,16 @@ function leaveNotif (member) {
 module.exports.process = async (member, server) => {
   if (server.tempvc[member.id]) delete server.tempvc[member.id];
   if (member.guild.id == '189571157446492161') {
+    // react gone for new users
+    const JHO = server.guild.channels.get('189571157446492161');
+    if (server.newUsers.includes(member.id)) {
+      let msgs = JHO.messages.fetch();
+      for (let [, msg] of msgs) {
+        if (msg.author.id == '159985870458322944' && msg.mentions.users.keyArray().includes(member.id)) { // mee6
+          msg.react('📤');
+        }
+      }
+    }
     if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
       let embed = leaveNotif(member);
       EWBF.send({embed});
