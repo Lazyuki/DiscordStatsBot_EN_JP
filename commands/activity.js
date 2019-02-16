@@ -23,8 +23,8 @@ function dateToString(d) {
 
 module.exports.command = async (message, content, bot, server) => {
   const thirtyDays = new Array(30).fill(0);
-  let showNum = /-n?s/.test(content);
-  let forServer = /-s?n/.test(content);
+  let showNum = /-s?n/.test(content);
+  let forServer = /-n?s/.test(content);
   let u;
   content = content.replace(/-[ns]{1,2}/g, '');
 
