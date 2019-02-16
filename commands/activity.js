@@ -49,11 +49,11 @@ module.exports.command = async (message, content, bot, server) => {
       }
     }
   }
-  let today = new Date();
+  let date = new Date();
   let s = '';
   for (let c of thirtyDays) {
-    s = `${s}\n${dateToString(today)}: ${c}`;
-    today = today.setDate(today.getUTCDate() - 1);
+    s = `${s}\n${dateToString(date)}: ${c}`;
+    date.setDate(date.getUTCDate() - 1);
   }
   message.channel.send(s, {split: true});
 };
