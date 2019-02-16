@@ -69,6 +69,6 @@ module.exports.command = async (message, content, bot, server) => {
       date.setDate(date.getUTCDate() - 1);
     }
   }
-  (u ? `Server activity${u.tag}`)
-  message.channel.send(`Server activity${u ? ' for ' + u.tag : ''}\n\`\`\`` + s, {split: true});
+  s = '```' + s;
+  message.channel.send(`Server activity${u ? ' for ' + u.tag : ''}\n` + s, {split: true});
 };
