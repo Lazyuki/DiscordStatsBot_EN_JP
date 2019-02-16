@@ -9,7 +9,7 @@ module.exports.isAllowed = () => {
   return true;
 };
 
-module.exports.help = '`,activity [ user ] [ -m ]` Displays server or user activity for the past 30 days (UTC). Use `-m` to show numbers';
+module.exports.help = '`,activity [ user ] [ -n ] [ -s ]` Displays server or user activity for the past 30 days (UTC). `-n` to show numbers, `-s` for the entire server';
 
 const MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -23,24 +23,12 @@ function dateToString(d) {
 
 module.exports.command = async (message, content, bot, server) => {
   const thirtyDays = new Array(30).fill(0);
-  let bar = true;
-  if (content.includes('-n')) {
-    content = content.replace('-n', '');
-    bar = false;
-  }
-  let u =  await Util.searchUser(message, content, server, bot);
-  if (u) {
-    let record = server.users[u.id];
-    let count = 0;
-    for (let i = server.today; i > server.today - 30; i--) {
-      let chans = record.record[(i + 31) % 31]; // for under flows
-      for (let ch in chans) {
-        if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn') continue;
-        thirtyDays[count] += chans[ch];
-      }
-      count++;
-    }
-  } else {
+  let showNum = /-n?s/.test(content);
+  let forServer = /-s?n/.test(content);
+  let u;
+  content = content.replace(/-[ns]{1,2}/g, '');
+
+  if (forServer) {
     for (let id in server.users) {
       let record = server.users[id];
       let count = 0;
@@ -53,10 +41,23 @@ module.exports.command = async (message, content, bot, server) => {
         count++;
       }
     }
+  } else {
+    u =  await Util.searchUser(message, content, server, bot);
+    u = u || message.author;
+    let record = server.users[u.id];
+    let count = 0;
+    for (let i = server.today; i > server.today - 30; i--) {
+      let chans = record.record[(i + 31) % 31]; // for under flows
+      for (let ch in chans) {
+        if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn') continue;
+        thirtyDays[count] += chans[ch];
+      }
+      count++;
+    }
   }
   let date = new Date();
   let s = '```';
-  if (bar) {
+  if (!showNum) {
     const max = Math.max(...thirtyDays);
     const maxBar = '････････････････････';
     for (let c of thirtyDays) {
@@ -70,5 +71,5 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   s = '```' + s;
-  message.channel.send(`Server activity${u ? ' for ' + u.tag : ''}\n` + s, {split: true});
+  message.channel.send(`Server activity${forServer ?  '' : ' for ' + u.tag}\n` + s, {split: true});
 };
