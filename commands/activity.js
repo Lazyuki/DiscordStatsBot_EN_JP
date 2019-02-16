@@ -22,7 +22,7 @@ function dateToString(d) {
 }
 
 module.exports.command = async (message, content, bot, server) => {
-  const thirtyDays = new Array(30);
+  const thirtyDays = new Array(30).fill(0);
   let u =  await Util.searchUser(message, content, server, bot);
   if (u) {
     let record = server.users[u.id];
@@ -35,8 +35,20 @@ module.exports.command = async (message, content, bot, server) => {
       }
       count++;
     }
+  } else {
+    for (let id in server.users) {
+      let record = server.users[id];
+      let count = 0;
+      for (let i = server.today; i >= server.today - 30; i--) {
+        let chans = record.record[(i + 31) % 31]; // for under flows
+        for (let ch in chans) {
+          if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn') continue;
+          thirtyDays[count] += chans[ch];
+        }
+        count++;
+      }
+    }
   }
-
   let today = new Date();
   let s = '';
   for (let c of thirtyDays) {

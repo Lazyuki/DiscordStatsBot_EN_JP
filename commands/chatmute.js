@@ -49,7 +49,7 @@ module.exports.command = async (message, content, bot, server) => {
   let date = new Date();
   embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
   embed.title = 'Chat Mute:';
-  embed.addField('Muted users:', badPeople.reduce((s, mem) => `${s}${mem}: ${mem.id}\n}`), false);
+  embed.addField('Muted users:', badPeople.reduce((s, mem) => `${s}${mem}\n}`), false);
   embed.addField('Muted for (minutes):', minutes || 'Indefinite', false);
   embed.addField('Muted reason:', reason, false);
   embed.color = Number('0xff283a');
