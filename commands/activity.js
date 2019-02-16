@@ -9,7 +9,7 @@ module.exports.isAllowed = () => {
   return true;
 };
 
-module.exports.help = '`,activity [ @mention ]` Displays server or user activity for the past 30 days (UTC).';
+module.exports.help = '`,activity [ user ] [ -m ]` Displays server or user activity for the past 30 days (UTC). Use `-m` to show numbers';
 
 const MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -23,6 +23,11 @@ function dateToString(d) {
 
 module.exports.command = async (message, content, bot, server) => {
   const thirtyDays = new Array(30).fill(0);
+  let bar = true;
+  if (content.includes('-n')) {
+    content = content.replace('-n', '');
+    bar = false;
+  }
   let u =  await Util.searchUser(message, content, server, bot);
   if (u) {
     let record = server.users[u.id];
@@ -51,9 +56,19 @@ module.exports.command = async (message, content, bot, server) => {
   }
   let date = new Date();
   let s = '```';
-  for (let c of thirtyDays) {
-    s = `${s}\n${dateToString(date)}: ${c}`;
-    date.setDate(date.getUTCDate() - 1);
+  if (bar) {
+    const max = Math.max(...thirtyDays);
+    const maxBar = '････････････････････';
+    for (let c of thirtyDays) {
+      s = `${s}\n${dateToString(date)}: ${maxBar.substr(0, 20 * c / max)}`;
+      date.setDate(date.getUTCDate() - 1);
+    }
+  } else {
+    for (let c of thirtyDays) {
+      s = `${s}\n${dateToString(date)}: ${c}`;
+      date.setDate(date.getUTCDate() - 1);
+    }
   }
+  
   message.channel.send(s + '```', {split: true});
 };
