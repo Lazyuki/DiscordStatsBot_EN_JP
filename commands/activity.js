@@ -27,7 +27,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (u) {
     let record = server.users[u.id];
     let count = 0;
-    for (let i = server.today; i >= server.today - 30; i--) {
+    for (let i = server.today; i > server.today - 30; i--) {
       let chans = record.record[(i + 31) % 31]; // for under flows
       for (let ch in chans) {
         if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn') continue;
@@ -39,7 +39,7 @@ module.exports.command = async (message, content, bot, server) => {
     for (let id in server.users) {
       let record = server.users[id];
       let count = 0;
-      for (let i = server.today; i >= server.today - 30; i--) {
+      for (let i = server.today; i > server.today - 30; i--) {
         let chans = record.record[(i + 31) % 31]; // for under flows
         for (let ch in chans) {
           if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn') continue;
@@ -50,10 +50,10 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   let date = new Date();
-  let s = '';
+  let s = '```';
   for (let c of thirtyDays) {
     s = `${s}\n${dateToString(date)}: ${c}`;
     date.setDate(date.getUTCDate() - 1);
   }
-  message.channel.send(s, {split: true});
+  message.channel.send(s + '```', {split: true});
 };
