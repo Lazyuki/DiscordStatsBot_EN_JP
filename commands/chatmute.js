@@ -44,7 +44,7 @@ module.exports.command = async (message, content, bot, server) => {
       }, minutes * 60 * 1000);
     }
   }
-  const ewbf = server.guild.channels.get('366692441442615306');
+  const ewbf = server.guild.channels.get('277384105245802497');
   let embed = new Discord.MessageEmbed();
   let date = new Date();
   embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());

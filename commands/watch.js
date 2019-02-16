@@ -36,9 +36,9 @@ module.exports.command = async (message, content, bot, server) => {
   }
 
   if (server.watchedUsers.includes(user.id)) {
-    message.channel.send(user + ' is already being watched');
+    message.channel.send(`${user}  is already being watched`);
   } else {
     server.watchedUsers.push(user.id);
-    message.channel.send(user + ' is now being watched for deleted messages');
+    message.channel.send(`${user} is now being watched for deleted messages`);
   }
 };

@@ -22,12 +22,12 @@ module.exports.command = async (message, content, bot, server) => {
         message.channel.send(`${m} wasn't muted.`);
       });
   }
-  const ewbf = server.guild.channels.get('366692441442615306');
+  const ewbf = server.guild.channels.get('277384105245802497');
   let embed = new Discord.MessageEmbed();
   let date = new Date();
   embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
   embed.title = 'Chat Unmute:';
-  embed.addField('Unmuted users:', goodPeople.reduce((s, mem) => `${s}${mem}: ${mem.id}\n}`), false);
+  embed.addField('Unmuted users:', goodPeople.reduce((s, mem) => `${s}${mem}\n}`), false);
   embed.color = Number('0x53f442');
   embed.setFooter(`In #${message.channel.name}`);
   embed.timestamp = date;

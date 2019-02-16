@@ -58,7 +58,7 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   } 
 
-  const ewbf = server.guild.channels.get('366692441442615306');
+  const ewbf = server.guild.channels.get('277384105245802497');
   if (!(content.includes('-n') && message.member.hasPermission('ADMINISTRATOR'))) {
     let embed = new Discord.MessageEmbed();
     let date = new Date();
@@ -69,15 +69,18 @@ module.exports.command = async (message, content, bot, server) => {
     embed.timestamp = date;
   
     let imgCount = 1;
+    let imgStr = '';
     for (let msg of delmsgs) {
       if (msg.attachments.size) {
-        await ewbf.send(`File ${imgCount}: ${msg.attachments.first().url}`);
+        imgStr += `File ${imgCount}: ${msg.attachments.first().url}\n`;
         ++imgCount;
       }
-      embed.addField(`Message by ${msg.author.tag}:`, `**Content**: ${msg.attachments.size ? `File ${imgCount - 1} ${msg.content}` : msg.content}`, false);
+      embed.addField(`Message by ${msg.author}:`, `${msg.attachments.size ? `File ${imgCount - 1} ${msg.content}` : (msg.content || '**empty**')}`, false);
     }
-    
-    ewbf.send({embed});
+    if (imgStr) {
+      await ewbf.send(imgStr);
+    }
+    await ewbf.send({embed});
   }
   
   message.delete();
