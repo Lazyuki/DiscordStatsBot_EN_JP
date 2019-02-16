@@ -70,5 +70,5 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   
-  message.channel.send(s + '```', {split: true});
+  message.channel.send('```' + s, {split: true});
 };
