@@ -60,12 +60,12 @@ module.exports.command = async (message, content, bot, server) => {
     const max = Math.max(...thirtyDays);
     const maxBar = '････････････････････';
     for (let c of thirtyDays) {
-      s = `${s}\n${dateToString(date)}: ${maxBar.substr(0, 20 * c / max)}`;
+      s = `${dateToString(date)}: ${maxBar.substr(0, 20 * c / max)}\n${s}`;
       date.setDate(date.getUTCDate() - 1);
     }
   } else {
     for (let c of thirtyDays) {
-      s = `${s}\n${dateToString(date)}: ${c}`;
+      s = `${s}\n${dateToString(date)}: ${c}\n\n${s}`;
       date.setDate(date.getUTCDate() - 1);
     }
   }
