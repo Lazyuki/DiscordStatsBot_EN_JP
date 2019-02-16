@@ -65,7 +65,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
   } else {
     for (let c of thirtyDays) {
-      s = `${s}\n${dateToString(date)}: ${c}\n\n${s}`;
+      s = `${dateToString(date)}: ${c}\n${s}`;
       date.setDate(date.getUTCDate() - 1);
     }
   }
