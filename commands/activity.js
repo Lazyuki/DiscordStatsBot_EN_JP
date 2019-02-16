@@ -59,7 +59,7 @@ module.exports.command = async (message, content, bot, server) => {
   let s = '```';
   if (!showNum) {
     const max = Math.max(...thirtyDays);
-    const maxBar = '････････････････････';
+    const maxBar = '--------------------';
     for (let c of thirtyDays) {
       s = `${dateToString(date)}: ${maxBar.substr(0, 20 * c / max)}\n${s}`;
       date.setDate(date.getUTCDate() - 1);
