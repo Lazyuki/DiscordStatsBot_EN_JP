@@ -110,11 +110,15 @@ module.exports.command = async (message, content, bot, server) => {
 
   let embed = new Discord.MessageEmbed();
   if (user) {
-    let fire = member.roles.has('384286851260743680');
+    let fire = member && member.roles.has('384286851260743680');
     embed.setAuthor(`${fire ? '🔥' : ''}Stats for ${user.tag}${member.nickname ? ' aka ' + member.nickname : ''}` , user.avatarURL);
     embed.color = fire ? Number('0xFF5500') : Number('0x3A8EDB');
-    embed.setFooter('Joined this server');
-    embed.timestamp = member.joinedAt;
+    if (member) {
+      embed.setFooter('Joined this server');
+      embed.timestamp = member.joinedAt;
+    } else {
+      embed.setFooter('Already left this server');
+    }
   } else { // user left
     embed.setAuthor(`Stats for <@${content}>`);
     embed.color = Number('0x3A8EDB');

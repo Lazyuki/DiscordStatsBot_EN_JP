@@ -66,7 +66,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (!showNum) {
     const max = Math.max(...thirtyDays);
     const maxBar = '---------------';
-    unit = `\n**Unit:** ${~~(max / maxBar.length)} messages`;
+    unit = `\nUnit: ${~~(max / maxBar.length)} messages`;
     for (let c of thirtyDays) {
       s = `${dateToString(date)}: ${maxBar.substr(0, c / max * maxBar.length)}\n${s}`;
       date.setDate(date.getUTCDate() - 1);
