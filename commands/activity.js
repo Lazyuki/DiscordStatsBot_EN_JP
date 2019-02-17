@@ -46,6 +46,10 @@ module.exports.command = async (message, content, bot, server) => {
     u =  await Util.searchUser(message, content, server, bot);
     u = u || message.author;
     let record = server.users[u.id];
+    if (!record) {
+      message.channel.send('User not found or active');
+      return;
+    }
     let count = 0;
     for (let i = server.today; i > server.today - 30; i--) {
       let chans = record.record[(i + 31) % 31]; // for under flows
@@ -58,11 +62,13 @@ module.exports.command = async (message, content, bot, server) => {
   }
   let date = new Date();
   let s = '```';
+  let min = '';
   if (!showNum) {
     const max = Math.max(...thirtyDays);
-    const maxBar = '--------------------';
+    const maxBar = '---------------';
+    min = `Unit: ${~~(max / maxBar.length)} messages`;
     for (let c of thirtyDays) {
-      s = `${dateToString(date)}: ${maxBar.substr(0, 20 * c / max)}\n${s}`;
+      s = `${dateToString(date)}: ${maxBar.substr(0, c / max * maxBar.length)}\n${s}`;
       date.setDate(date.getUTCDate() - 1);
     }
   } else {
@@ -72,5 +78,5 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   s = '```' + s;
-  message.channel.send(`Server activity${forServer ?  '' : ' for ' + u.tag}\n` + s, {split: true});
+  message.channel.send(`Server activity${forServer ?  '' : ' for ' + u.tag} ${min}\n` + s, {split: true});
 };
