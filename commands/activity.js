@@ -62,11 +62,11 @@ module.exports.command = async (message, content, bot, server) => {
   }
   let date = new Date();
   let s = '```';
-  let min = '';
+  let unit = '';
   if (!showNum) {
     const max = Math.max(...thirtyDays);
     const maxBar = '---------------';
-    min = `Unit: ${~~(max / maxBar.length)} messages`;
+    unit = `\n**Unit:** ${~~(max / maxBar.length)} messages`;
     for (let c of thirtyDays) {
       s = `${dateToString(date)}: ${maxBar.substr(0, c / max * maxBar.length)}\n${s}`;
       date.setDate(date.getUTCDate() - 1);
@@ -78,5 +78,5 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   s = '```' + s;
-  message.channel.send(`Server activity${forServer ?  '' : ' for ' + u.tag} ${min}\n` + s, {split: true});
+  message.channel.send(`Server activity${forServer ?  '' : ' for **' + u.tag + '**'}${unit}\n` + s, {split: true});
 };
