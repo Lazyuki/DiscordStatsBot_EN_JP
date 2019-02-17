@@ -3,7 +3,7 @@ const Util = require('../classes/Util.js');
 
 module.exports.alias = [
   'activity',
-  'act'
+  'ac'
 ];
 
 module.exports.isAllowed = () => {
