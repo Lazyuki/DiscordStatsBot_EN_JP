@@ -122,6 +122,7 @@ module.exports.command = async (message, content, bot, server) => {
   } else { // user left
     embed.setAuthor(`Stats for <@${content}>`);
     embed.color = Number('0x3A8EDB');
+    embed.setFooter('Already left this server');
   }
   embed.description = 'For the last 30 days (UTC time)';
   let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
