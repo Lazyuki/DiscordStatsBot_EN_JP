@@ -109,8 +109,10 @@ module.exports.command = async (message, content, bot, server) => {
   let vcTime = `${hours ? hours + 'hr '  : ''}${record.vc % 60}min`;
 
   let embed = new Discord.MessageEmbed();
+  let jp = false;
   if (user) {
     let fire = member && member.roles.has('384286851260743680');
+    jp = member && (member.roles.has('196765998706196480') || member.roles.has('292401145752846337')) ;
     embed.setAuthor(`${fire ? '🔥' : ''}Stats for ${user.tag}${member && member.nickname ? ' aka ' + member.nickname : ''}` , user.avatarURL);
     embed.color = fire ? Number('0xFF5500') : Number('0x3A8EDB');
     if (member) {
@@ -126,9 +128,9 @@ module.exports.command = async (message, content, bot, server) => {
   }
   embed.description = 'For the last 30 days (UTC time)';
   let chanPercent = (maxDayNum / daySum * 100).toFixed(1);
-  let jpnPercent = (record.jp / (record.jp + record.en) * 100).toFixed(2);
+  let jpnPercent = jp ? (record.en / (record.jp + record.en) * 100).toFixed(2) : (record.jp / (record.jp + record.en) * 100).toFixed(2);
   embed.addField('Messages sent M | W', `${record.thirty} | ${week}`, true);
-  if (server.guild.id != '206599473282023424' && !isNaN(jpnPercent)) embed.addField('Japanese usage', jpnPercent + '%', true); // ignore Eikyuu server
+  if (server.guild.id != '206599473282023424' && !isNaN(jpnPercent)) embed.addField(jp ? 'English usage' : 'Japanese usage', jpnPercent + '%', true); // ignore Eikyuu server
   embed.addField('Time spent in VC', vcTime , true);
   if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
   if (topChans) embed.addField('Most active channels', topChans, true);
