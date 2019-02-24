@@ -11,9 +11,15 @@ module.exports.isAllowed = (message, server) => {
 
 module.exports.help = 'Readme message for new users in English. Use `,yonde` for Japanese.';
 
+let lastCalled = 0;
+
 const Discord = require('discord.js');
 
+
 module.exports.command = (message) => {
+  const now = new Date();
+  if (now - lastCalled < 5000) return; // 5 sec cooldown
+  lastCalled = now;
   let mentioned = message.mentions.members.first();
   let embed = new Discord.MessageEmbed();
   embed.title = `WELCOME${mentioned ? ' ' + mentioned.user.username: ''}!! 🎉 READ ME!`;
