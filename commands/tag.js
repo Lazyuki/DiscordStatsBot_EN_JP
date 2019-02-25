@@ -53,7 +53,7 @@ module.exports.command = async (message, content, bot, server) => {
   let oldRole = '';
   for (let r of oldRoles.keys()) {
     if (r == newRole) { // adding the same role.
-      message.delete();
+      message.delete({timeout: 200});
       (await message.channel.send(`Already tagged as "${crossGet(abbrev, roleNames, role)}"`)).delete({timeout: 5000});
       return;
     }
@@ -63,7 +63,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   await member.roles.add(newRole, `by ${message.author.username}`);
-  message.delete();
+  message.delete({timeout: 200});
   if (oldRole != '' && oldRole != crossGet(abbrev, roleIDs, 'nu')){
     message.channel.send(`${member.user.username}, you've been tagged as "${crossGet(abbrev, roleNames, role)}" by ${message.author.username} instead of "${crossGet(roleIDs, roleNames, oldRole)}"!`);
   } else {

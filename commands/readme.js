@@ -18,7 +18,10 @@ const Discord = require('discord.js');
 
 module.exports.command = (message) => {
   const now = new Date();
-  if (now - lastCalled < 5000) return; // 5 sec cooldown
+  if (now - lastCalled < 10000) {
+    message.delete({timeout: 200});
+    return;
+  } // 10 sec cooldown
   lastCalled = now;
   let mentioned = message.mentions.members.first();
   let embed = new Discord.MessageEmbed();
@@ -27,5 +30,6 @@ module.exports.command = (message) => {
   embed.setImage('https://i.imgur.com/7cjLRRM.png');
   embed.addField('**↓Rules↓ ↑Link to Resources↑**', '<#189585230972190720>', false);
   embed.color = 16711935;
+  message.delete({timeout: 200});
   message.channel.send({embed});
 };
