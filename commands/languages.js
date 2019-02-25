@@ -18,7 +18,7 @@ const OL = '248982130246418433';
 
 module.exports.command = async (message, content, bot, server) => {
   let min = parseInt(content);
-  if (!min) {
+  if (min !== 0 && !min) {
     min = 100;
   }
   const users = server.users;
