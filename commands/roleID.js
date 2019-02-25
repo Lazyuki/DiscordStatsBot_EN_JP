@@ -3,8 +3,8 @@ module.exports.alias = [
   'roleid'
 ];
 
-module.exports.isAllowed = (message, server, bot) => {
-  return message.author.id == bot.owner_ID;
+module.exports.isAllowed = () => {
+  return true;
 };
 
 module.exports.help = '**Bot owner only** get role ID';
