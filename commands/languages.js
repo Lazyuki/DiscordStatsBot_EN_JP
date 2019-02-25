@@ -37,5 +37,5 @@ module.exports.command = async (message, content, bot, server) => {
       }
     }
   }
-  message.channel.send(`Out of people who have sent more than ${min} messages,\n${langs[0]} are Native English\n${langs[1]} are Native Japanese\n${langs[2]} are Fluent English\n${langs[3]} are Fluent Japanese\n${langs[4]} are Other Language`);
+  message.channel.send(`Out of people who have sent more than ${min} messages in the past 30 days,\n${langs[0]} are Native English\n${langs[1]} are Native Japanese\n${langs[2]} are Fluent English\n${langs[3]} are Fluent Japanese\n${langs[4]} are Other Language`);
 };
