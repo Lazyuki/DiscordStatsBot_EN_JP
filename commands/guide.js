@@ -25,13 +25,13 @@ module.exports.command = (message, content) => {
     embed.description = 'All beginners should read one of the below guides';
     embed.addField('r/LearnJapanese\'s guide', 'https://www.reddit.com/r/LearnJapanese/wiki/index/startersguide', false);
     embed.addField('A well written DJT guide', 'https://djtguide.neocities.org/guide.html', false);
-  } else if (content == 'kana') {
+  } else if (content.includes('kana') || content === 'hiragana' || content === 'first') {
     embed.title = `__**Kana ${externalLink}**__`;
     embed.url = 'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#hiragana-and-katakana';
     embed.description = 'The first step is learning Hiragana and Katakana. ';
     embed.addField('Tofugu Hiragana guide', 'https://www.tofugu.com/japanese/learn-hiragana/', false);
     embed.addField('Tofugu Katakana guide', 'https://www.tofugu.com/japanese/learn-katakana/', false);
-  } else if (content == 'kanji') {
+  } else if (content === 'kanji') {
     embed.title = `__**Kanji ${externalLink}**__`;
     embed.url = 'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#kanji';
     embed.description = 'After you\'ve got your kana down, you need Kanji.';
@@ -56,13 +56,13 @@ module.exports.command = (message, content) => {
   } else if (content == 'ime' || content == 'type') {
     embed.title = `__**Keyboard ${externalLink}**__`;
     embed.url = 'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#software';
-    embed.description = 'You need to have a software to type in Japanese';
+    embed.description = 'You need to have a special program (IME) to type in Japanese';
     embed.addField('Installing a Japanese Keyboard', 'https://www.tofugu.com/japanese/how-to-install-japanese-keyboard/', false);
     embed.addField('Typing Guide', 'https://www.tofugu.com/japanese/how-to-type-in-japanese/', false);
-  } else if (content == 'dictionary' || content == 'dictionaries') {
+  } else if (content.includes('dict')) {
     embed.title = `__**Dictionaries ${externalLink}**__`;
     embed.url = 'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#dictionary';
-    embed.description = 'For translating, avoid using Google Translate. Instead, one of these websites:';
+    embed.description = 'For translating, avoid using Google Translate. Instead use one of these:';
     embed.addField('Jisho.org', 'http://jisho.org/', true);
     embed.addField('Tangorin', 'http://tangorin.com/', true);
     embed.addField('Weblio', 'http://www.weblio.jp/', true);

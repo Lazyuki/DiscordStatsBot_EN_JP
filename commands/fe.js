@@ -11,6 +11,6 @@ module.exports.help = '__WP only__ `,fe`';
 
 
 module.exports.command = async (message) => {
-  message.channel.send('For the people that are fluent English: you will receive the role soon.');
+  message.channel.send('If you are fluent in English, expect to receive the role soon <:prettythumbsup:420455919596601356>');
   message.delete();
 };
