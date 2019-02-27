@@ -75,7 +75,7 @@ module.exports.command = async (message, content, bot, server) => {
         imgStr += `File ${imgCount}: ${msg.attachments.first().url}\n`;
         ++imgCount;
       }
-      embed.addField(`Message by ${msg.author}:`, `${msg.attachments.size ? `File ${imgCount - 1} ${msg.content}` : (msg.content || '**empty**')}`, false);
+      embed.addField(`Message by ${msg.author.tag} (${msg.author.id}):`, `${msg.attachments.size ? `File ${imgCount - 1} ${msg.content}` : (msg.content || '**empty**')}`, false);
     }
     if (imgStr) {
       await ewbf.send(imgStr);
