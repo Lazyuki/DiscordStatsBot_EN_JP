@@ -42,7 +42,7 @@ function joinEnglish(list) {
 }
 
 const numRegex = /\b([123])\b/;
-const searchRegex = /\b-n\b/;
+const searchRegex = /(^|\s)-n\b/;
 
 module.exports.command = async (message, content, bot, server) => {
   const roles = content.match(roleRegex);
