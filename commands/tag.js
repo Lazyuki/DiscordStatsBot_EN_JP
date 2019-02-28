@@ -57,7 +57,7 @@ module.exports.command = async (message, content, bot, server) => {
     const log = await message.channel.messages.fetch();
     const nuID = getRole('abbrev', 'nu').id;
 
-    for (let msg of log) {
+    for (let msg of log.values()) {
       const mem = msg.member;
       if (mem && mem.roles.has(nuID)) {
         targetMember = mem;
@@ -123,8 +123,8 @@ module.exports.command = async (message, content, bot, server) => {
   }
 
   if (oldNames.size === 1 && oldNames.has('New User')) {
-    message.channel.send(`${targetMember.user.username}, you've been tagged as ${joinEnglish([...newNames].map(n => `\`${n}\``))} by **${message.author.username}**!`);
+    message.channel.send(`**${targetMember.user.username}**, you've been tagged as ${joinEnglish([...newNames].map(n => `\`${n}\``))} by ${message.author.username}!`);
   } else {
-    message.channel.send(`${targetMember.user.username}, you've been tagged as ${joinEnglish([...newNames].map(n => `\`${n}\``))} instead of ${joinEnglish([...oldNames].map(n => `\`${n}\``))} by **${message.author.username}**!`);
+    message.channel.send(`**${targetMember.user.username}**, you've been tagged as ${joinEnglish([...newNames].map(n => `\`${n}\``))} instead of ${joinEnglish([...oldNames].map(n => `\`${n}\``))} by ${message.author.username}!`);
   }
 };
