@@ -122,6 +122,16 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
 
+  // Testing...
+  if (server.rolemention) {
+    if (oldNames.size === 1 && oldNames.has('New User')) {
+      message.channel.send(`**${targetMember.user.username}**, you've been tagged as ${joinEnglish([...newNames].map(n => `<@&${getRole('name', n).id}>`))} by ${message.author.username}!`);
+    } else {
+      message.channel.send(`**${targetMember.user.username}**, you've been tagged as ${joinEnglish([...newNames].map(n => `<@&${getRole('name', n).id}>`))} instead of ${joinEnglish([...oldNames].map(n => `\`${n}\``))} by ${message.author.username}!`);
+    }
+    return;
+  }
+
   if (oldNames.size === 1 && oldNames.has('New User')) {
     message.channel.send(`**${targetMember.user.username}**, you've been tagged as ${joinEnglish([...newNames].map(n => `\`${n}\``))} by ${message.author.username}!`);
   } else {
