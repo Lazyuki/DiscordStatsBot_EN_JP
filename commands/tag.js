@@ -1,3 +1,4 @@
+const Util = require('../classes/Util.js');
 module.exports.name = 'tag';
 module.exports.alias = [
   'tag',
@@ -11,62 +12,119 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('MANAGE_ROLES');
 };
 
-module.exports.help = '__WP Only__ See the pin in <#277384105245802497> `,t < nj | fj | ne | fe | ol > [ @mention, 1, 2, or 3 ]`';
+module.exports.help = '__WP Only__ See the pin in <#277384105245802497>\n`,t < nj | fj | ne | fe | ol >... [ @mention, 1, 2, 3, id, -n ] `\n`,t en -n` Matches the most recent new user in this channel';
 
-const abbrev = ['nj', 'jp', 'fj', 'ne', 'en', 'fe', 'ol', 'nu'];
-const roleNames = ['Native Japanese', 'Native Japanese', 'Fluent Japanese', 
-  'Native English', 'Native English', 'Fluent English',
-  'Other Language', 'New User'];
-const roleIDs = ['196765998706196480', '196765998706196480', '270391106955509770',
-  '197100137665921024', '197100137665921024', '241997079168155649',
-  '248982130246418433', '249695630606336000'];
+const LANG_ROLES = [
+  { abbrev: 'nj', name: 'Native Japanese', id: '196765998706196480' },
+  { abbrev: 'jp', name: 'Native Japanese', id: '196765998706196480' },
+  { abbrev: 'fj', name: 'Fluent Japanese', id: '270391106955509770' },
+  { abbrev: 'ne', name: 'Native English', id: '197100137665921024' },
+  { abbrev: 'en', name: 'Native English', id: '197100137665921024' },
+  { abbrev: 'fe', name: 'Fluent English', id: '241997079168155649' },
+  { abbrev: 'ol', name: 'Other Language', id: '248982130246418433' },
+  { abbrev: 'nu', name: 'New User', id: '249695630606336000'},
+];
 
-function exists(array, value) {
-  return array.indexOf(value) >= 0;
+const roleRegex = new RegExp(`\\b(${LANG_ROLES.map(r => r.abbrev).join('|')})\\b`, 'gi');
+const roleIDs = LANG_ROLES.map(r => r.id);
+
+function getRole(key, value) {
+  return LANG_ROLES.find(r => r[key] === value);
 }
 
-function crossGet(src, dest, value) {
-  return dest[src.indexOf(value)];
+function joinEnglish(list) {
+  if (list.length <= 2) {
+    return list.join(' and ');
+  } else {
+    list[list.length - 1] = 'and ' + list[list.length - 1];
+    return list.join(', ');
+  }
 }
+
+const numRegex = /\b([123])\b/;
+const searchRegex = /\b-n\b/;
 
 module.exports.command = async (message, content, bot, server) => {
-  var role = content.substr(0, 2);
-  if (!exists(abbrev, role)) return; // no such role
-  var newRole = crossGet(abbrev, roleIDs, role);
-  var member;
-  var mentions = message.mentions.members;
-  if (mentions.size != 0) {
-    member = mentions.first();
-  } else {
-    let memberID;
-    if (content.substr(3) == '2') {
-      memberID = server.newUsers[1];
-    } else if (content.substr(3) == '3') {
-      memberID = server.newUsers[2];
-    } else {
-      memberID = server.newUsers[0];
+  const roles = content.match(roleRegex);
+  if (!roles) return; // no such role
+  content = content.replace(roleRegex, '').trim();
+
+  let targetID;
+  let targetMember;
+
+  const isSearch = content.match(searchRegex);
+  if (isSearch) {
+    const log = await message.channel.messages.fetch();
+    const nuID = getRole('abbrev', 'nu').id;
+
+    for (let msg of log) {
+      const mem = msg.member;
+      if (mem && mem.roles.has(nuID)) {
+        targetMember = mem;
+      }
     }
-    if (memberID == undefined) return; // error
-    member = await server.guild.member(memberID);
-  }
-  let oldRoles = member.roles;
-  let oldRole = '';
-  for (let r of oldRoles.keys()) {
-    if (r == newRole) { // adding the same role.
-      message.delete({timeout: 200});
-      (await message.channel.send(`Already tagged as "${crossGet(abbrev, roleNames, role)}"`)).delete({timeout: 5000});
+    if (!targetMember) {
+      message.channel.send('Failed to find a new user in this channel');
       return;
     }
-    if (exists(roleIDs, r)) {
-      oldRole = r;
-      await member.roles.remove(r);
+  } else if (content) {
+    const numMatch = content.match(numRegex);
+    const idMatch = content.match(Util.REGEX_RAW_ID);
+    if (message.mentions.members.size) {
+      targetMember = message.mentions.members.first();
+    } else if (idMatch) {
+      targetID = idMatch[0];
+    } else if (numMatch) {
+      const num = numMatch[0];
+      targetID = server.newUsers[parseInt(num) - 1];
+    } else {
+      message.react('❓');
+      return;
+    }
+  } else {
+    targetID = server.newUsers[0];
+  }
+
+  if (!targetMember) {
+    targetMember = await server.guild.member(targetID);
+    if (!targetMember) {
+      message.channel.send('Member not found');
+      return;
     }
   }
-  await member.roles.add(newRole, `by ${message.author.username}`);
+
   message.delete({timeout: 200});
-  if (oldRole != '' && oldRole != crossGet(abbrev, roleIDs, 'nu')){
-    message.channel.send(`${member.user.username}, you've been tagged as "${crossGet(abbrev, roleNames, role)}" by ${message.author.username} instead of "${crossGet(roleIDs, roleNames, oldRole)}"!`);
+
+  const oldRoles = targetMember.roles.filter(r => roleIDs.includes(r.id)).map(r => getRole('id', r.id));
+  const newRoles = roles.map(r => getRole('abbrev', r));
+  const oldNames = new Set(oldRoles.map(r => r.name));
+  const newNames = new Set(newRoles.map(r => r.name));
+
+  let alreadyTagged = false;
+  if (oldNames.size === newNames.size) {
+    alreadyTagged = true;
+    for (let o of oldNames) if (!newNames.has(o)) alreadyTagged = false;
+  }
+
+  if (alreadyTagged) {
+    (await message.channel.send(`Already tagged as ${joinEnglish([...oldNames].map(n => `\`${n}\``))}`)).delete({timeout: 5000});
+    return;
+  }
+
+  for (let r of oldRoles) {
+    if (!newNames.has(r.name)) {
+      await targetMember.roles.remove(r.id);
+    }
+  }
+  for (let r of newRoles) {
+    if (!oldNames.has(r.name)) {
+      await targetMember.roles.add(r.id, `by ${message.author.tag}`);
+    }
+  }
+
+  if (oldNames.size === 1 && oldNames.has('New User')) {
+    message.channel.send(`${targetMember.user.username}, you've been tagged as ${joinEnglish([...newNames].map(n => `\`${n}\``))} by **${message.author.username}**!`);
   } else {
-    message.channel.send(`${member.user.username}, you've been tagged as "${crossGet(abbrev, roleNames, role)}" by ${message.author.username}!`);
+    message.channel.send(`${targetMember.user.username}, you've been tagged as ${joinEnglish([...newNames].map(n => `\`${n}\``))} instead of ${joinEnglish([...oldNames].map(n => `\`${n}\``))} by **${message.author.username}**!`);
   }
 };

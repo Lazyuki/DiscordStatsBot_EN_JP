@@ -60,7 +60,7 @@ module.exports.command = async (message, content, bot, server) => {
   embed.setAuthor(`No filtered by ${message.author.tag}` , message.author.avatarURL);
   embed.description = `${names}`;
   embed.color = Number('0xEC891D');
-  embed.setFooter(`In: ${message.channel}`);
+  embed.setFooter(`In: #${message.channel.name}`);
   embed.timestamp = new Date();
   ewbf.send({embed});
 
