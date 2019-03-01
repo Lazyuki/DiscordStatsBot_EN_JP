@@ -23,9 +23,9 @@ module.exports.command = async (message, content, bot, server) => {
   }
   if (min < 0) {
     const members = server.guild.members;
+    await members.fetch();
     const langs = [0, 0, 0, 0, 0, 0];
     for (let mem of members.values()) {
-      mem = server.guild.member(mem);
       if (mem) {
         const roles = mem.roles;
         if (roles.has(NE)) ++langs[0];
