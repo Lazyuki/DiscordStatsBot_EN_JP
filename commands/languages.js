@@ -23,7 +23,6 @@ module.exports.command = async (message, content, bot, server) => {
   }
   if (min < 0) {
     const members = server.guild.members;
-    await members.fetch();
     const langs = [0, 0, 0, 0, 0, 0];
     for (let mem of members.values()) {
       if (mem) {

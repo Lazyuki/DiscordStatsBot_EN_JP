@@ -1,10 +1,9 @@
 module.exports.name = 'checkHardCore';
 module.exports.events = ['NEW', 'EDIT'];
 
-module.exports.isAllowed = (message, server) => {
+module.exports.isAllowed = async (message, server) => {
   // DONT MESS WITH THE CODE HERE!!!!!!!!
-  if (!message.member) {
-    console.log(`chkHrdCr: ${message.content} in #${message.channel.name}`);
+  if (!message.member) { // NO role people => no hard core so ignore
     return false;
   }
   if (!message.member.roles.has('384286851260743680') && !message.member.roles.has('436573300810973185')) return false; // Hardcore role
