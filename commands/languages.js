@@ -25,6 +25,7 @@ module.exports.command = async (message, content, bot, server) => {
     const members = server.guild.members;
     const langs = [0, 0, 0, 0, 0, 0];
     for (let mem of members.values()) {
+      mem = server.guild.member(mem);
       if (mem) {
         const roles = mem.roles;
         if (roles.has(NE)) ++langs[0];
