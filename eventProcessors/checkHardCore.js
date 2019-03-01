@@ -1,9 +1,9 @@
 module.exports.name = 'checkHardCore';
 module.exports.events = ['NEW', 'EDIT'];
 
-module.exports.isAllowed = async (message, server) => {
-  // DONT MESS WITH THE CODE HERE!!!!!!!!
-  if (!message.member) { // NO role people => no hard core so ignore
+module.exports.isAllowed = (message, server) => {
+  // DONT MESS WITH THE CODE HERE!!! NO ASYNC!!!!!
+  if (!message.member) {
     return false;
   }
   if (!message.member.roles.has('384286851260743680') && !message.member.roles.has('436573300810973185')) return false; // Hardcore role
@@ -48,7 +48,7 @@ module.exports.process = (message) => {
       embed.description = content;
       embed.setFooter(`#${message.channel.name}`);
       embed.color = Number('0xDB3C3C');
-      message.author.send('It seems like I deleted your long message that might be important.', {embed});      
+      message.author.send('It seems like I deleted your long message that might\'ve been important.', {embed});      
     }
     message.delete({timeout:500});
     return;

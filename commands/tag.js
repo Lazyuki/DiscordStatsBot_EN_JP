@@ -127,5 +127,4 @@ module.exports.command = async (message, content, bot, server) => {
   } else {
     message.channel.send(`**${targetMember.user.username}**, you've been tagged as ${joinEnglish([...newNames].map(n => `<@&${getRole('name', n).id}>`))} instead of ${joinEnglish([...oldNames].map(n => `\`${n}\``))} by ${message.author.username}!`);
   }
-  return;
 };
