@@ -25,15 +25,9 @@ module.exports.process = (message, server, bot, language) => {
         message.channel.send(`${message.author.toString()} ここでは日本語を使用して下さい。Please use **only** Japanese here.`);
       } 
       if (engCount >= 6) {
-        message.channel.overwritePermissions({
-          permissionOverwrites: [
-            {
-              id: message.author.id,
-              deny: ['SEND_MESSAGES'],
-            },
-          ],
-          reason: 'Using English in JP chat'
-        });
+        message.channel.createOverwrite(message.author, {
+          SEND_MESSAGES: false,
+        },'Using English in JP chat');
         message.channel.send(`日本語を使わなかったため${message.author.toString()}をミュートしました。管理者のみミュート解除できます。\nYou have been muted here for not using Japanese. Contact a mod.`);
       }
     }
