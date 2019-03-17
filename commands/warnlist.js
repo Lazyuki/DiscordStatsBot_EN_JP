@@ -15,7 +15,12 @@ module.exports.help = 'Warnings for the user `,warnlist [User]`';
 module.exports.command = async (message, content, bot, server) => {
   if (content == '') {
     const warnings = server.warnlist;
-    Util.paginate(message.channel, 'All warnings', warnings, 10, message.author.id)
+    const list = [];
+    for (let u of Object.keys(warnings)) {
+      let warns = warnings[u].length;
+      list.push(`<@${u}>: ${warns} warnings`)
+    }
+    Util.paginate(message.channel, 'All warnings', list, 10, message.author.id)
     return;
   }
 
