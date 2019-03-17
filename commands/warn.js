@@ -15,12 +15,18 @@ module.exports.isAllowed = (message, server) => {
   return server.hiddenChannels.includes(message.channel.id);
 };
 
-module.exports.help = 'Warn a user `,warn <User> <Warning message>`';
+module.exports.help = 'Warn a user `,warn <User> <Warning message> [ -n ]`\nUse `-n` to not send the warning DM.';
 
 module.exports.command = async (message, content, bot, server) => {
   if (content == '') {
     message.channel.send('Please specify a user with an ID or mention them');
     return;
+  }
+
+  const dontSendDM = /\s-n\b/.test(content)
+
+  if (dontSendDM) {
+    content = content.replace(/\s-n\b/, '');
   }
 
   let member;
@@ -52,7 +58,8 @@ module.exports.command = async (message, content, bot, server) => {
   embed.color = Number('0xDB3C3C');
   embed.timestamp = new Date();
 
-  member.send({ embed })
+  if (!dontSendDM) {
+    member.send({ embed })
     .then(m => {
       message.channel.send({
         embed: new Discord.MessageEmbed()
@@ -67,6 +74,14 @@ module.exports.command = async (message, content, bot, server) => {
             .setColor('0xDB3C3C')
         });
     });
+  } else {
+    message.channel.send({
+      embed: new Discord.MessageEmbed()
+        .setDescription(`Logged the warning for ${member} by ${message.author}. (They did not receive the warning from Ciri) `)
+        .setColor('0x42f46b')
+    });
+  }
+  
 
   if (server.warnlist[member.id]) {
     server.warnlist[member.id].push(
