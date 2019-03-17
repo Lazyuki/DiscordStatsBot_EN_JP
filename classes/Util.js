@@ -154,37 +154,16 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
           ++currPage;
           message.edit({ embed: getEmbed()});
         }
-        // r.users.remove(authorID);
-        // collector.empty();
+        r.users.remove(authorID);
+        collector.empty();
         break;
       case '◀':
         if (currPage > 0) {
           --currPage;
           message.edit({ embed: getEmbed()});
         }
-        // r.users.remove(authorID);
-        // collector.empty();
-        break;
-      }
-    });
-    collector.on('remove', r => {
-      console.log('remove react', r.emoji.name)
-      switch(r.emoji.name) {
-      case '▶':
-        if (currPage < maxPageNum) {
-          ++currPage;
-          message.edit({ embed: getEmbed()});
-        }
-        // r.users.remove(authorID);
-        // collector.empty();
-        break;
-      case '◀':
-        if (currPage > 0) {
-          --currPage;
-          message.edit({ embed: getEmbed()});
-        }
-        // r.users.remove(authorID);
-        // collector.empty();
+        r.users.remove(authorID);
+        collector.empty();
         break;
       }
     });
