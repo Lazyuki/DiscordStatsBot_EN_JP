@@ -140,14 +140,13 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
     return embed;
   }
   const message = await channel.send({ embed: getEmbed() });
-  
+
   if (maxPageNum > 0) {
     await message.react(('◀'));
     await message.react('▶');
 
     const filter = (reaction, user) => reaction.me && user.id === authorID;
     const collector = message.createReactionCollector(filter, { time: 3 * 60 * 1000 }); // 3 mintues
-    collector.client.on('messageReactionRemove', collector.listener);
     collector.on('collect', r => {
       switch(r.emoji.name) {
       case '▶':
@@ -168,7 +167,6 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
     });
     collector.on('end', () => {
       message.clearReactions();
-      collector.client.removeListener('messageReactionRemove', collector.listener);
     });
   }
 };

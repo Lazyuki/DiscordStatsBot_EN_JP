@@ -19,7 +19,7 @@ module.exports.command = async (message, content, bot, server) => {
     const list = [];
     for (let u of Object.keys(warnings)) {
       let warns = warnings[u].length;
-      list.push(`<@${u}>: ${warns} warnings`)
+      list.push(`<@${u}>: ${warns} warning${warns === 1 ? '' : 's'}`)
     }
     Util.paginate(message.channel, 'All warnings', list, 10, message.author.id)
     return;
