@@ -122,8 +122,8 @@ exports.postLogs = function(msg, server) {
 };
 
 exports.paginate = async function(channel, title, list, perPage, authorID) {
-  const maxPageNum = Math.floor(list.length / (perPage === -1 ? 25 : perPage));
-  let currPage = 1;
+  const maxPageNum = Math.floor(list.length / (perPage));
+  let currPage = 0;
 
   function getEmbed() {
     let description = '';
@@ -134,9 +134,9 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
     }
     const embed = new Discord.MessageEmbed()
       .setTitle(title)
-      .setFooter(`${currPage}/${maxPageNum}`)
+      .setFooter(`${currPage + 1}/${maxPageNum + 1}`)
       .setColor('0x3A8EDB')
-      .setDescription(description);
+      .setDescription(description || 'No warnings on this server');
     return embed;
   }
 
@@ -145,7 +145,7 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
   await message.react('▶');
 
   const filter = (reaction, user) => reaction.me && user.id === authorID;
-  const collector = msg.createReactionCollector(filter, { time: 3 * 60 * 1000 }); // 3 mintues
+  const collector = message.createReactionCollector(filter, { time: 3 * 60 * 1000 }); // 3 mintues
   collector.client.on('messageReactionRemove', collector.listener);
   collector.on('collect', r => {
     switch(r.emoji.name) {
@@ -166,7 +166,7 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
     }
   });
   collector.on('end', () => {
-    msg.clearReactions();
+    message.clearReactions();
     collector.client.removeListener('messageReactionRemove', collector.listener);
   });
 };

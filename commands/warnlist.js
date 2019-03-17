@@ -49,7 +49,7 @@ module.exports.command = async (message, content, bot, server) => {
     embed.color = Number('0xDB3C3C');
     for (let { issued, issuer, warnMessage } of warnings) {
       const issuerMember = await server.guild.member(issuer);
-      embed.addField(`${issuerMember ? issuerMember.user.tag : issuer } warned at ${new Date(issued).toGMTString()}`, warnMessage, false);
+      embed.addField(`${new Date(issued).toGMTString()} by ${issuerMember ? issuerMember.user.tag : issuer }`, warnMessage, false);
     } 
     message.channel.send({ embed })
   } else {
