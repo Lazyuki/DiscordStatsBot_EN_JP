@@ -147,6 +147,8 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
 
     const filter = (reaction, user) => reaction.me && user.id === authorID;
     const collector = message.createReactionCollector(filter, { time: 60 * 1000 }); // 1 mintue
+    collector.client.on('messageReactionRemove', collector.listener);
+    collector.client.removeListener('messageReactionRemove', collector.listener)
     collector.on('collect', r => {
       switch(r.emoji.name) {
       case '▶':
@@ -154,16 +156,36 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
           ++currPage;
           message.edit({ embed: getEmbed()});
         }
-        r.users.remove(authorID);
-        collector.empty();
+        // r.users.remove(authorID);
+        // collector.empty();
         break;
       case '◀':
         if (currPage > 0) {
           --currPage;
           message.edit({ embed: getEmbed()});
         }
-        r.users.remove(authorID);
-        collector.empty();
+        // r.users.remove(authorID);
+        // collector.empty();
+        break;
+      }
+    });
+    collector.on('remove', r => {
+      switch(r.emoji.name) {
+      case '▶':
+        if (currPage < maxPageNum) {
+          ++currPage;
+          message.edit({ embed: getEmbed()});
+        }
+        // r.users.remove(authorID);
+        // collector.empty();
+        break;
+      case '◀':
+        if (currPage > 0) {
+          --currPage;
+          message.edit({ embed: getEmbed()});
+        }
+        // r.users.remove(authorID);
+        // collector.empty();
         break;
       }
     });
