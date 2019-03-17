@@ -146,7 +146,7 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
     await message.react('▶');
 
     const filter = (reaction, user) => reaction.me && user.id === authorID;
-    const collector = message.createReactionCollector(filter, { time: 3 * 60 * 1000 }); // 3 mintues
+    const collector = message.createReactionCollector(filter, { time: 60 * 1000 }); // 1 mintue
     collector.on('collect', r => {
       switch(r.emoji.name) {
       case '▶':
@@ -155,6 +155,7 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
           message.edit({ embed: getEmbed()});
         }
         r.users.remove(authorID);
+        collector.empty();
         break;
       case '◀':
         if (currPage > 0) {
@@ -162,6 +163,7 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
           message.edit({ embed: getEmbed()});
         }
         r.users.remove(authorID);
+        collector.empty();
         break;
       }
     });
