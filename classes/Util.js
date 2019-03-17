@@ -147,8 +147,6 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
 
     const filter = (reaction, user) => reaction.me && user.id === authorID;
     const collector = message.createReactionCollector(filter, { time: 60 * 1000 }); // 1 mintue
-    collector.client.on('messageReactionRemove', collector.listener);
-    collector.client.removeListener('messageReactionRemove', collector.listener)
     collector.on('collect', r => {
       switch(r.emoji.name) {
       case '▶':
