@@ -53,7 +53,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
 
   const embed = new Discord.MessageEmbed();
-  embed.title = `You have been warned officially on ${server.guild.name}`;
+  embed.title = `You have been officially warned on ${server.guild.name}`;
   embed.description = warning.warnMessage;
   embed.color = Number('0xDB3C3C');
   embed.timestamp = new Date();
