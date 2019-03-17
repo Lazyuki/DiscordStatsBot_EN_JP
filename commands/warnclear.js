@@ -3,6 +3,7 @@ const Util = require('../classes/Util.js');
 module.exports.name = 'warnclear';
 module.exports.alias = [
   'warnclear',
+  'unwarn'
 ];
 
 module.exports.isAllowed = async (message, server) => {
