@@ -168,6 +168,7 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
       }
     });
     collector.on('remove', r => {
+      console.log('remove react', r.emoji.name)
       switch(r.emoji.name) {
       case '▶':
         if (currPage < maxPageNum) {
