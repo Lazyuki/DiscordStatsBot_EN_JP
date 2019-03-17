@@ -10,11 +10,12 @@ module.exports.isAllowed = async (message, server) => {
   return server.hiddenChannels.includes(message.channel.id);
 };
 
-module.exports.help = 'Warnings for the user `,warnlist <User>`';
+module.exports.help = 'Warnings for the user `,warnlist [User]`';
 
 module.exports.command = async (message, content, bot, server) => {
   if (content == '') {
-    message.channel.send('Please specify a user with an ID or mention them');
+    const warnings = server.warnlist;
+    Util.paginate(message.channel, 'All warnings', warnings, 10, message.author.id)
     return;
   }
 
@@ -43,7 +44,7 @@ module.exports.command = async (message, content, bot, server) => {
     embed.color = Number('0xDB3C3C');
     for (let { issued, issuer, warnMessage } of warnings) {
       const issuerMember = await server.guild.member(issuer);
-      embed.addField(`${issuerMember ? issuerMember.user.tag : issuer } warned at ${new Date(issued)}`, warnMessage, false);
+      embed.addField(`${issuerMember ? issuerMember.user.tag : issuer } warned at ${new Date(issued).toGMTString()}`, warnMessage, false);
     } 
     message.channel.send({ embed })
   } else {

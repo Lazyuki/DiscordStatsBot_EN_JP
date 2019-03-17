@@ -121,51 +121,53 @@ exports.postLogs = function(msg, server) {
   chan.send({embed});
 };
 
-const paginate = async function(msg, list, authorID, foundRank, reload) {
-  //await msg.react(('◀'));
-  //await msg.react('▶');
-  let foundPage = Math.floor((foundRank - 1) / 25);
-  if (!foundRank) foundPage = 0;
-  //else await msg.react('🔻');
-  let maxPageNum = Math.floor(list.length / 25);
-  // if (maxPageNum > 1) await msg.react('⏮');
-  let pageNum = 0;
+const paginate = async function(channel, title, list, perPage, authorID) {
+  const maxPageNum = Math.floor(list.length / (perPage === -1 ? 25 : perPage));
+  let currPage = 1;
+
+  function getEmbed() {
+    let description = '';
+    for (let i = 0; i < perPage; i++) {
+      const actualIndex = i + currPage * perPage;
+      if (actualIndex >= list.length) break;
+      description += list[actualIndex] + '\n';
+    }
+    const embed = new Discord.MessageEmbed()
+      .setTitle(title)
+      .setFooter(`${currPage}/${maxPageNum}`)
+      .setColor('0x3A8EDB')
+      .setDescription(description);
+    return embed;
+  }
+
+  const message = await channel.send({ embed: getEmbed() });  
+  await message.react(('◀'));
+  await message.react('▶');
+
   const filter = (reaction, user) => reaction.me && user.id === authorID;
-  const collector = msg.createReactionCollector(filter, { time: 3 * 60 * 1000 });
-  //collector.client.on('messageReactionRemove', collector.listener);
+  const collector = msg.createReactionCollector(filter, { time: 3 * 60 * 1000 }); // 3 mintues
+  collector.client.on('messageReactionRemove', collector.listener);
   collector.on('collect', r => {
     switch(r.emoji.name) {
     case '▶':
       if (pageNum < maxPageNum) {
-        reload(++pageNum);
+        ++currPage;
+        await message.edit({ embed: getEmbed()});
       }
       r.users.remove(authorID);
       break;
     case '◀':
       if (pageNum > 0) {
-        reload(--pageNum);
-      }
-      r.users.remove(authorID);
-      break;
-    case '🔻':
-      if (pageNum != foundPage) {
-        pageNum = foundPage;
-        reload(pageNum);
-      }
-      r.users.remove(authorID);
-      break;
-    case '⏮':
-      if (pageNum != 0) {
-        pageNum = 0;
-        reload(0);
+        --currPage;
+        await message.edit({ embed: getEmbed()});
       }
       r.users.remove(authorID);
       break;
     }
   });
   collector.on('end', () => {
-    // msg.clearReactions();
-    //collector.client.removeListener('messageReactionRemove', collector.listener);
+    msg.clearReactions();
+    collector.client.removeListener('messageReactionRemove', collector.listener);
   });
 };
 
