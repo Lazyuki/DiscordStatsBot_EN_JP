@@ -152,14 +152,14 @@ const paginate = async function(channel, title, list, perPage, authorID) {
     case '▶':
       if (pageNum < maxPageNum) {
         ++currPage;
-        await message.edit({ embed: getEmbed()});
+        message.edit({ embed: getEmbed()});
       }
       r.users.remove(authorID);
       break;
     case '◀':
       if (pageNum > 0) {
         --currPage;
-        await message.edit({ embed: getEmbed()});
+        message.edit({ embed: getEmbed()});
       }
       r.users.remove(authorID);
       break;
