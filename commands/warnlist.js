@@ -6,7 +6,7 @@ module.exports.alias = [
   'warnlist'
 ];
 
-module.exports.isAllowed = (message, server) => {
+module.exports.isAllowed = async (message, server) => {
   return server.hiddenChannels.includes(message.channel.id);
 };
 

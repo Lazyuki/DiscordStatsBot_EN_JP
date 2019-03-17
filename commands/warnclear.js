@@ -5,7 +5,7 @@ module.exports.alias = [
   'warnclear',
 ];
 
-module.exports.isAllowed = (message, server) => {
+module.exports.isAllowed = async (message, server) => {
   return server.hiddenChannels.includes(message.channel.id);
 };
 
@@ -31,7 +31,7 @@ module.exports.command = async (message, content, bot, server) => {
     message.channel.send('Failed to get a user');
     return;
   };
-  
+
   if (server.warnlist[userID]) {
     delete server.warnlist[userID];
     message.channel.send(`Warnings cleared for <@${userID}>`);
