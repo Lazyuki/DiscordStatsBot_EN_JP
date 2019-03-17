@@ -25,9 +25,6 @@ module.exports.command = async (message, cont, bot) => {
     delete server.invites;
     server.save();
   }
-  bot.destroy().then(() => {
-    process.exit(2);
-  }, (err) => {
-    console.log(err);
-  });
+  bot.destroy();
+  process.exit(2);
 };
