@@ -170,10 +170,10 @@ bot.on('messageReactionRemove', async (reaction, user) => {
 //   }
 // });
 
-bot.on('voiceStateUpdate', async (oldMember, newMember) => {
-  if (newMember.user.bot) return;
-  if (newMember.guild.id == '293787390710120449') return; // Ignore my server
-  bot.servers[oldMember.guild.id].processVoice(oldMember, newMember);
+bot.on('voiceStateUpdate', async (oldVoiceState, newVoiceState) => {
+  if (newVoiceState.member.user.bot) return;
+  if (newVoiceState.guild.id == '293787390710120449') return; // Ignore my server
+  bot.servers[newVoiceState.guild.id].processVoice(oldVoiceState ? oldVoiceState.member : newVoiceState.member , newVoiceState.member);
 });
 
 bot.on('userUpdate', (oldUser, newUser) => {

@@ -6,7 +6,7 @@ module.exports.alias = [
   'unwarn'
 ];
 
-module.exports.isAllowed = async (message, server) => {
+module.exports.isAllowed = (message, server) => {
   return server.hiddenChannels.includes(message.channel.id);
 };
 
