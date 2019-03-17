@@ -41,7 +41,7 @@ module.exports.command = async (message, content, bot, server) => {
     embed.title = `Warning list for ${member ? member.user.tag : userID}`;
     embed.description = `${warnings.length} warnings so far`;
     embed.color = Number('0xDB3C3C');
-    warnings.forEach(({ issued, issuer, warnMessage }) => {
+    warnings.forEach(async ({ issued, issuer, warnMessage }) => {
       const issuerMember = await server.guild.member(issuer);
       embed.addField(`${issuerMember ? issuerMember.user.tag : issuer } warned at ${new Date(issued)}`, warnMessage, false);
     });
