@@ -122,7 +122,7 @@ exports.postLogs = function(msg, server) {
 };
 
 exports.paginate = async function(channel, title, list, perPage, authorID) {
-  const maxPageNum = Math.floor(list.length / (perPage));
+  const maxPageNum = Math.ceil(list.length / perPage) - 1;
   let currPage = 0;
 
   function getEmbed() {
@@ -136,7 +136,7 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
       .setTitle(title)
       .setFooter(`${currPage + 1}/${maxPageNum + 1}`)
       .setColor('0x3A8EDB')
-      .setDescription(description || 'No warnings on this server');
+      .setDescription(description || 'Empty');
     return embed;
   }
   const message = await channel.send({ embed: getEmbed() });
@@ -168,7 +168,7 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
       }
     });
     collector.on('end', () => {
-      message.clearReactions();
+      message.reactions.removeAll()();
     });
   }
 };
