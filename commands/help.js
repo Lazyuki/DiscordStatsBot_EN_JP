@@ -23,7 +23,7 @@ module.exports.command = (message, content, bot, server, cmds) => {
   if (cmd && cmd.isAllowed(message, server, bot)) {
     embed.title = cmd.name;
     embed.description = cmd.help;
-    embed.setFooter(`Aliases: ${cmd.alias.join('`, `')}`);
+    embed.setFooter(`Aliases: ${cmd.alias.join(', ')}`);
     msg = { embed };
   } else {
     msg = '`,help [command]` for more info. Available commands are:\n';
