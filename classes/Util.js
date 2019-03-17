@@ -121,7 +121,7 @@ exports.postLogs = function(msg, server) {
   chan.send({embed});
 };
 
-const paginate = async function(channel, title, list, perPage, authorID) {
+exports.paginate = async function(channel, title, list, perPage, authorID) {
   const maxPageNum = Math.floor(list.length / (perPage === -1 ? 25 : perPage));
   let currPage = 1;
 
