@@ -48,27 +48,26 @@ module.exports.command = async (message, content, bot, server) => {
 
   const embed = new Discord.MessageEmbed();
   embed.title = `You have been warned on ${server.guild.name}`;
-  embed.description = warning.message;
+  embed.description = warning.warnMessage;
   embed.color = Number('0xDB3C3C');
   embed.timestamp = new Date();
 
-  try {
-    const sentMessage = member.send({ embed });
-    if (sentMessage) {
+  member.send({ embed })
+    .then(m => {
       message.channel.send({
-       embed: new Discord.MessageEmbed()
+        embed: new Discord.MessageEmbed()
           .setDescription(`${member} has been warned by ${message.author}`)
           .setColor('0x42f46b')
       });
-    }
-  } catch (e) {
-    message.channel.send({
-      embed: new Discord.MessageEmbed()
-         .setDescription(`Failed to DM ${member.user.tag}`)
-         .setColor('0xDB3C3C')
-     });
-  }
-  
+    })
+    .catch(e => {
+      message.channel.send({
+        embed: new Discord.MessageEmbed()
+            .setDescription(`Failed to DM ${member.user.tag}`)
+            .setColor('0xDB3C3C')
+        });
+    });
+
   if (server.warnlist[member.id]) {
     server.warnlist[member.id].push(
       warning
