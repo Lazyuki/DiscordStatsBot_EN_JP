@@ -63,7 +63,7 @@ module.exports.command = async (message, content, bot, server) => {
     .catch(e => {
       message.channel.send({
         embed: new Discord.MessageEmbed()
-            .setDescription(`Failed to DM ${member.user.tag}`)
+            .setDescription(`Failed to DM ${member.user.tag}. The user couldn't receive the warning.`)
             .setColor('0xDB3C3C')
         });
     });
