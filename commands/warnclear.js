@@ -24,7 +24,7 @@ module.exports.command = async (message, content, bot, server) => {
   } else {
     const idMatch = content.match(Util.REGEX_RAW_ID);
     if (idMatch) {
-      userID = idMatch[1];
+      userID = idMatch[0];
     }
   }
   if (!userID) {

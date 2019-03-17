@@ -31,8 +31,8 @@ module.exports.command = async (message, content, bot, server) => {
   } else {
     const idMatch = content.match(Util.REGEX_RAW_ID);
     if (idMatch) {
-      member = await server.guild.member(idMatch[1]);
-      content = content.replace(idMatch[1], '');
+      member = await server.guild.member(idMatch[0]);
+      content = content.replace(idMatch[0], '');
     }
   }
   if (!member) {
