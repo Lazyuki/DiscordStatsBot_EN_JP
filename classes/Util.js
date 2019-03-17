@@ -168,7 +168,7 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
       }
     });
     collector.on('end', () => {
-      message.reactions.removeAll()();
+      message.reactions.removeAll();
     });
   }
 };
