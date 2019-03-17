@@ -150,14 +150,14 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
     collector.on('collect', r => {
       switch(r.emoji.name) {
       case '▶':
-        if (pageNum < maxPageNum) {
+        if (currPage < maxPageNum) {
           ++currPage;
           message.edit({ embed: getEmbed()});
         }
         r.users.remove(authorID);
         break;
       case '◀':
-        if (pageNum > 0) {
+        if (currPage > 0) {
           --currPage;
           message.edit({ embed: getEmbed()});
         }
