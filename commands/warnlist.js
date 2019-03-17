@@ -45,7 +45,6 @@ module.exports.command = async (message, content, bot, server) => {
     const embed = new Discord.MessageEmbed();
     let member = await server.guild.member(userID);
     embed.title = `Warning list for ${member ? member.user.tag : userID}`;
-    embed.description = `${warnings.length} warnings so far`;
     embed.color = Number('0xDB3C3C');
     for (let { issued, issuer, warnMessage } of warnings) {
       const issuerMember = await server.guild.member(issuer);

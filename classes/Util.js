@@ -139,36 +139,38 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
       .setDescription(description || 'No warnings on this server');
     return embed;
   }
+  const message = await channel.send({ embed: getEmbed() });
+  
+  if (maxPageNum > 0) {
+    await message.react(('◀'));
+    await message.react('▶');
 
-  const message = await channel.send({ embed: getEmbed() });  
-  await message.react(('◀'));
-  await message.react('▶');
-
-  const filter = (reaction, user) => reaction.me && user.id === authorID;
-  const collector = message.createReactionCollector(filter, { time: 3 * 60 * 1000 }); // 3 mintues
-  collector.client.on('messageReactionRemove', collector.listener);
-  collector.on('collect', r => {
-    switch(r.emoji.name) {
-    case '▶':
-      if (pageNum < maxPageNum) {
-        ++currPage;
-        message.edit({ embed: getEmbed()});
+    const filter = (reaction, user) => reaction.me && user.id === authorID;
+    const collector = message.createReactionCollector(filter, { time: 3 * 60 * 1000 }); // 3 mintues
+    collector.client.on('messageReactionRemove', collector.listener);
+    collector.on('collect', r => {
+      switch(r.emoji.name) {
+      case '▶':
+        if (pageNum < maxPageNum) {
+          ++currPage;
+          message.edit({ embed: getEmbed()});
+        }
+        r.users.remove(authorID);
+        break;
+      case '◀':
+        if (pageNum > 0) {
+          --currPage;
+          message.edit({ embed: getEmbed()});
+        }
+        r.users.remove(authorID);
+        break;
       }
-      r.users.remove(authorID);
-      break;
-    case '◀':
-      if (pageNum > 0) {
-        --currPage;
-        message.edit({ embed: getEmbed()});
-      }
-      r.users.remove(authorID);
-      break;
-    }
-  });
-  collector.on('end', () => {
-    message.clearReactions();
-    collector.client.removeListener('messageReactionRemove', collector.listener);
-  });
+    });
+    collector.on('end', () => {
+      message.clearReactions();
+      collector.client.removeListener('messageReactionRemove', collector.listener);
+    });
+  }
 };
 
 exports.userLeaderboard = async function(channel, embed, list, authorID, searchUser, format, bot) {
