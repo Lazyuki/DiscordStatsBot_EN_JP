@@ -142,7 +142,7 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
   const message = await channel.send({ embed: getEmbed() });
 
   if (maxPageNum > 0) {
-    await message.react(('◀'));
+    await message.react('◀');
     await message.react('▶');
 
     const filter = (reaction, user) => reaction.me && user.id === authorID;
