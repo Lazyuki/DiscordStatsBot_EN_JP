@@ -16,6 +16,10 @@ module.exports.help = '__VW Only__ Voice mutes people. `,vm <@mentions> [reason]
 
 module.exports.command = async (message, content, bot, server) => {
   let targets = message.mentions.members;
+  if (targets.size === 0) {
+    message.channel.send('You must mention them');
+    return;
+  }
   let reason = content.replace(Util.REGEX_USER, '').trim();
   if (reason == ''){
     reason = 'unspecified';
