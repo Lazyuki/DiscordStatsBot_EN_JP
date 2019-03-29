@@ -2,11 +2,11 @@ module.exports.name = 'voiceStateChange';
 module.exports.events = ['VOICE'];
 
 function isVC(voiceState) {
-  return voiceState && (voiceState.channelID != voiceState.guild.afkChannelID) && !voiceState.deaf;
+  return voiceState && voiceState.channelID && (voiceState.channelID != voiceState.guild.afkChannelID) && !voiceState.deaf;
 }
 module.exports.initialize = (json, server) => {
   server.tempvc = {};
-  for (let [, vc] of server.guild.channels.filter(c => {return c.type == 'voice';})) {    
+  for (let [, vc] of server.guild.channels.filter(c => c.type === 'voice')) {    
     for (let [, mem] of vc.members) {
       if (mem.user.bot) continue; // ignore bots
       if (isVC(mem.voice))
@@ -20,7 +20,7 @@ module.exports.isAllowed = () => {
 
 let UserRecord = require('../classes/UserRecord.js');
 module.exports.process = async (oldState, newState, server) => {
-  let id = newState.id;
+  let id = newState.id || oldState.id;
   if (!isVC(oldState) && isVC(newState)) {
     server.tempvc[id] = new Date().getTime();
   } else if (isVC(oldState) && !isVC(newState)) {
