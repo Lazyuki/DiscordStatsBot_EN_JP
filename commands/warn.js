@@ -23,7 +23,7 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
 
-  const dontSendDM = /\s-n\b/.test(content)
+  const dontSendDM = /\s?-n\b/.test(content)
 
   if (dontSendDM) {
     content = content.replace(/\s-n\b/, '');
