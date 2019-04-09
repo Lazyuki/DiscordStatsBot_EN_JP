@@ -46,10 +46,16 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   };
 
+  content = content.trim();
+
+  if (!content) {
+    message.channel.send('There must be a warning message');
+    return;
+  }
   const warning = {
     issued: message.createdTimestamp,
     issuer: message.author.id,
-    warnMessage: content.trim()
+    warnMessage: content
   }
 
   const embed = new Discord.MessageEmbed();
