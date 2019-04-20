@@ -20,11 +20,12 @@ module.exports.help = 'Check & ban magmikan. `,mag check <ID>` or `,mag ban <ID>
 const Util = require('../classes/Util.js');
 
 module.exports.command = async (message, content, bot, server) => {
-  const id = content.match(Util.REGEX_RAW_ID);
+  let id = content.match(Util.REGEX_RAW_ID);
   if (!id) {
     message.channel.send('ID or mention them')
     return;
   }
+  id = id[0];
   const date = Discord.SnowflakeUtil.deconstruct(id).date;
   const command = content.split(' ')[0];
   switch (command) {
