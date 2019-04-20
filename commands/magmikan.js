@@ -42,14 +42,16 @@ module.exports.command = async (message, content, bot, server) => {
       return;
     case 'ban':
       if (message.member.id === bot.owner_ID) {
-        const mem = await server.guild.members.fetch(id);
-        if (!mem) {
+        server.guild.members.ban(id, { days: 0, reason: `(Issued by ${message.author.tag}) Magmikan` })
+        .then(() => {
+          message.channel.send('✅ Banned');
+          server.lastmag = new Date().getTime();
+        })
+        .catch(e => {
           message.channel.send(`Failed to get the member with the ID "${id}"`)
+          console.error(e)
           return;
-        }
-        mem.ban({ days: 0, reason: `(Issued by ${message.author.tag}) Magmikan` });
-        message.channel.send('✅ Banned');
-        server.lastmag = new Date().getTime();
+        });
         return;
       } else {
         message.channel.send('Only Geralt can ban them with this command')
