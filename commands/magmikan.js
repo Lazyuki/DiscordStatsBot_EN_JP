@@ -42,7 +42,7 @@ module.exports.command = async (message, content, bot, server) => {
       return;
     case 'ban':
       if (message.member.id === bot.owner_ID) {
-        const mem = await server.guild.member(id);
+        const mem = server.guild.member(id);
         mem.ban({ days: 0, reason: `(Issued by ${message.author.tag}) Magmikan` });
         message.channel.send('✅ Banned');
         server.lastmag = new Date().getTime();
