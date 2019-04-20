@@ -36,9 +36,9 @@ function joinNotif(member, inv) {
   let embed = new Discord.MessageEmbed();
   embed.description = `📥 **${member.user.tag}** has \`joined\` the server. (${member.id})`;
   if (inv) 
-    embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL);
+    embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL());
   else
-    embed.setFooter(`User Join (${member.guild.memberCount})`, member.user.avatarURL);
+    embed.setFooter(`User Join (${member.guild.memberCount})`, member.user.avatarURL());
   embed.setTimestamp();
   embed.setColor(0x84a332);
   return embed;
@@ -61,6 +61,24 @@ async function postLogs(member, server) {
   }
   server.invites = newInvites;
   console.log(`${member.user.username} joined with ${inv == null ? 'no link' : inv[0]}`);
+  if (inv === 'NJJCYVD') {
+    const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
+    const diff = date - new Date(server.lastmag);
+    if (diff > 0) {
+      const m = Math.floor(diff / (60 * 1000));
+      const hr = Math.floor(m / 60);
+      const min = m % 60;
+      const avatarURL = member.user.avatarURL();
+      if (avatarURL.includes('cdn.discordapp.com/avatars')) {
+          const embed = new Discord.MessageEmbed();
+          embed.setTitle(`${member.user.tag} (${member.id}) might be magmikan aka リア充先輩 aka じぇい`)
+          embed.setDescription(`Account created: ${hr} hrs ${min} mins after the last time magmikan was banned, and he has an avatar already`);
+          embed.setFooter(`Account created: `, avatarURL);
+          embed.setTimestamp(date);
+          message.channel.send({ embed });
+      }
+    }
+  }
   if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
     let embed = joinNotif(member, inv);
     EWBF.send({embed});
