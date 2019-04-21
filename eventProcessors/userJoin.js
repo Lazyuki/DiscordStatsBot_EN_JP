@@ -75,7 +75,7 @@ async function postLogs(member, server) {
           embed.setDescription(`Account created: ${hr} hrs ${min} mins after the last time magmikan was banned, and he has an avatar already`);
           embed.setFooter(`Account created: `, avatarURL);
           embed.setTimestamp(date);
-          message.channel.send({ embed });
+          EWBF.send({ embed });
       }
     }
   }
