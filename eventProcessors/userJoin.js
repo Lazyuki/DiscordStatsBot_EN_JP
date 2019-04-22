@@ -61,7 +61,7 @@ async function postLogs(member, server) {
   }
   server.invites = newInvites;
   console.log(`${member.user.username} joined with ${inv == null ? 'no link' : inv[0]}`);
-  if (inv === 'NJJCYVD') {
+  if (inv[0] === 'NJJCYVD') {
     const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
     const diff = date - new Date(server.lastmag);
     if (diff > 0) {
