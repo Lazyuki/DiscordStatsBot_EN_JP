@@ -35,7 +35,7 @@ module.exports.command = async (message, content, bot, server) => {
       let embed = new Discord.MessageEmbed();
       let dateStr = dateFormat(date, 'UTC:ddd mmm dS, yyyy \'at\' h:MM TT');
       embed.title = 'Creation time in UTC and your local time';
-      embed.description = 'Snowflake ID: ' + c + ` (<#${c}>)`;
+      embed.description = `Snowflake ID: ${c} (<#${c}>)\nUnix Time in milliseconds: ${date.getTime()}`;
       embed.setFooter(`UTC | ${dateStr } --- Local`);
       embed.color = Number('0x3A8EDB');
       embed.timestamp = date;
@@ -49,7 +49,7 @@ module.exports.command = async (message, content, bot, server) => {
       let dateStr = dateFormat(date, 'UTC:ddd mmm dS, yyyy \'at\' h:MM TT');
       embed.title = 'Creation time in UTC and your local time';
       embed.setAuthor(users.get(u).tag, users.get(u).avatarURL);
-      embed.description = 'Snowflake ID: ' + u + ` (<@${u}>)`;
+      embed.description = 'Snowflake ID: ' + u + ` (<@${u}>)\nUnix Time in milliseconds: ${date.getTime()}`;
       embed.setFooter(`UTC | ${dateStr } --- Local`);
       embed.color = Number('0x3A8EDB');
       embed.timestamp = date;
@@ -74,7 +74,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
     let dateStr = dateFormat(date, 'UTC:ddd mmm dS, yyyy \'at\' h:MM TT');
     embed.title = 'Creation time in UTC and your local time';
-    embed.description = 'Snowflake ID: ' + id;
+    embed.description = `Snowflake ID: ${id}\nUnix Time in milliseconds: ${date.getTime()}`;
     embed.setFooter(`UTC | ${dateStr } --- Local`);
     embed.color = Number('0x3A8EDB');
     embed.timestamp = date;
