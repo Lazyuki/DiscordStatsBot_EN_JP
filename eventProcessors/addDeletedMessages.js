@@ -57,15 +57,15 @@ module.exports.process = async function(message, server) {
     if (arr.length > 30) arr.shift();
   }
   if (message.guild.id == '206599473282023424' || message.guild.id == '294931740122939392') return; // ignore eikyuu's server
-  if (message.mentions.members.size > 20) { // SPAM alert!
+  if (message.mentions.members.size > 10) { // SPAM alert!
     let chan = server.guild.channels.get('366692441442615306'); // #mod_log
     if (chan == undefined) return;
     if (server.watchedUsers.includes(message.author.id)) {
       message.member.roles.add('259181555803619329'); // muted role
-      chan.send(`**USER MUTED** ${message.author} has been muted. <@&240647591770062848> if server was a mistake, unmute them by removing the mute tag. If not, BAN THEM!`);
+      chan.send(`**USER MUTED** ${message.author} has been muted. <@&240647591770062848> if this was a mistake, unmute them by removing the mute tag. If not, BAN THEM!`);
     } else {
       server.watchedUsers.push(message.author.id);
-      chan.send(`**POSSIBLE SPAM ALERT** (deleting a message with 20+ mentions) by ${message.author} in ${message.channel} ! Automatically added to the watchlist`);
+      chan.send(`**POSSIBLE SPAM ALERT** (deleting a message with 10+ mentions) by ${message.author} in ${message.channel} ! Automatically added to the watchlist`);
     }
   }
 };
