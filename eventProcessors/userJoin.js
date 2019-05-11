@@ -69,7 +69,7 @@ async function postLogs(member, server) {
       const hr = Math.floor(m / 60);
       const min = m % 60;
       const avatarURL = member.user.avatarURL();
-      if (avatarURL.includes('cdn.discordapp.com/avatars')) {
+      if (avatarURL && avatarURL.includes('cdn.discordapp.com/avatars')) {
           const embed = new Discord.MessageEmbed();
           embed.setTitle(`${member.user.tag} (${member.id}) might be magmikan aka リア充先輩 aka じぇい`)
           embed.setDescription(`Account created: ${hr} hrs ${min} mins after the last time magmikan was banned, and he has an avatar already`);
