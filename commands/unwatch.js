@@ -3,7 +3,7 @@ module.exports.alias = [
   'unwatch'
 ];
 module.exports.isAllowed = (message, server) => {
-  return server.hiddenChannels.includes(message.channel.id) && message.member.hasPermission('ADMINISTRATOR');
+  return server.hiddenChannels.includes(message.channel.id);
 };
 
 module.exports.help = 'Take someone off the watchlist.';
