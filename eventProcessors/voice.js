@@ -29,7 +29,7 @@ module.exports.process = async (oldState, newState, server) => {
     }
     if (!server.tempvc[id]) return;
     server.users[id].addVoiceTime(server.today, new Date().getTime() - server.tempvc[id]); // millisecond
-    delete server.tempvc[id];    
+    delete server.tempvc[id];
   }
   if (server.unmuteQ.includes(id)) { // Unmutes people who are in the unmute queue
     await newState.setMute(false);
