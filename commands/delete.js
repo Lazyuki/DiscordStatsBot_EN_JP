@@ -29,12 +29,12 @@ module.exports.command = async (message, content, bot, server) => {
 
   if (message_ids) {
     for (let id of message_ids) {
-      const londId = id.match(/(\d{17,21})-(\d{17,21})/);
+      const longId = id.match(/(\d{17,21})-(\d{17,21})/);
       let msg;
       if (longId) {
         const c = server.guild.channels.get(longId[1])
         if (c) {
-          msg = await c.messages.get(londId[2]);
+          msg = await c.messages.get(longId[2]);
         }
       } else {
         msg = await channel.messages.fetch(id);
