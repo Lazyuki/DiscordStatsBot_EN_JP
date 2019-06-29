@@ -11,7 +11,7 @@ module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161' && (message.member.hasPermission('ADMINISTRATOR') || message.member.roles.has('543721608506900480'));
 };
 
-module.exports.help = '__Mods Only__ `,del [message_ids] [num_of_messages_to_delete=1(max=25)] [@mentions] [ has:link|file|"word" ]`\nDeletes messages by either specifying the IDs, or by searching.\n e.g. `,del 543252928496926722 542576315115634688` `,del 3 @geralt has:link` `,del 5 has:"mods suck"`\nAdmins can use `-n` to skip logging';
+module.exports.help = '__Mods Only__ `,del [message_ids] [num_of_messages_to_delete=1(max=25)] [@mentions] [ has:link|image|"word" ]`\nDeletes messages by either specifying the IDs, or by searching.\n e.g. `,del 543252928496926722 542576315115634688` `,del 3 @geralt has:link` `,del 5 has:"mods suck"`\nAdmins can use `-n` to skip logging';
 
 module.exports.command = async (message, content, bot, server) => {
   const delmsgs = [];
@@ -19,21 +19,30 @@ module.exports.command = async (message, content, bot, server) => {
   const channel = message.channel;
   const users = message.mentions.users.keyArray();
   content = content.replace(Util.REGEX_USER, '');
-  const message_ids = content.match(Util.REGEX_RAW_ID);
+  const message_ids = content.match(Util.REGEX_MESSAGE_ID);
   let num_of_messages = (() => { const n = parseInt(content.split(' ')[0]); if (n && n > 0 && n <= 25) return n; else return 1;})();
 
   const link = /has:link/.test(content);
-  const file = /has:file/.test(content);
+  const file = /has:image/.test(content);
   const word = (() => {const m = /has:"(.*)"/.exec(content); if (m) return m[1]; else return null;})();
-  content = content.replace(/has:(link|file|".+")/g, '');
+  content = content.replace(/has:(link|image|".+")/g, '');
 
   if (message_ids) {
     for (let id of message_ids) {
-      const msg = await channel.messages.fetch(id);
+      const londId = id.match(/(\d{17,21})-(\d{17,21})/);
+      let msg;
+      if (longId) {
+        const c = server.guild.channels.get(longId[1])
+        if (c) {
+          msg = await c.messages.get(londId[2]);
+        }
+      } else {
+        msg = await channel.messages.fetch(id);
+      }
       if (msg) {
         delmsgs.push(msg);
       } else {
-        channel.send(`Failed to find a message with the ID ${id} in this channel.`);
+        channel.send(`Failed to find a message with the ID ${id}.`);
       }
     }
   } else {

@@ -14,6 +14,7 @@ exports.REGEX_CHAN = /<#\d+>/g;
 exports.REGEX_ROLE = /<@&\d+>/g;
 exports.REGEX_ID = /<(@!?|#|@&|a?:[\S]+:)\d+>/g;
 exports.REGEX_RAW_ID = /(\d{17,21})/g;
+exports.REGEX_MESSAGE_ID = /(\d{17,21}(?:-\d{17,21}))/g;
 
 
 exports.searchUser = function(message, content, server, bot) {
@@ -92,6 +93,7 @@ exports.lang = function(content) {
   if (jpCount == enCount) {
     return result | exports.LANG.OTH;
   }
+
   if (jpCount < 3 && enCount < 3 && other > 0) return result | exports.LANG.OTH; // it's probably a face
   return  jpCount * 1.7 > enCount ? result | exports.LANG.JPN : result | exports.LANG.ENG;
 };
