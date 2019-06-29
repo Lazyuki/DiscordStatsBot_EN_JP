@@ -34,7 +34,7 @@ module.exports.command = async (message, content, bot, server) => {
       if (longId) {
         const c = server.guild.channels.get(longId[1])
         if (c) {
-          msg = await c.messages.get(longId[2]);
+          msg = await c.messages.fetch(longId[2]);
         }
       } else {
         msg = await channel.messages.fetch(id);
