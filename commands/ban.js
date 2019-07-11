@@ -76,10 +76,11 @@ module.exports.command = async (message, content, bot, server) => {
       reason = options[2];
     }
   }
-  let banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning**  <:hypergeralthinkban:443803651325034507>\n\n${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}\n**Reason**: ${reason}\nType \`confirm\` or \`cancel\``;
+  const deleting = deleteDays ? `Messages from the past **${deleteDays} day${deleteDays > 1 ? 's' : ''}` : `**NO** messages`
+  let banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning**  <:hypergeralthinkban:443803651325034507>\n\n${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}\n**Deleting**: ${deleting}\n\n**Reason**: ${reason}\nType \`confirm\` or \`cancel\``;
   await message.channel.send(banMessage);
   const filter = m => m.member.id == executor.id;
-  const collector = message.channel.createMessageCollector(filter, { time: 15000 });
+  const collector = message.channel.createMessageCollector(filter, { time: 30000 });
   collector.on('collect', m => {
     if (m.content.toLowerCase() == 'confirm') {
       badPeople.forEach(async mem =>  {
