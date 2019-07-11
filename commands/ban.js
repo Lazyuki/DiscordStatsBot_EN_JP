@@ -76,13 +76,16 @@ module.exports.command = async (message, content, bot, server) => {
       reason = options[2];
     }
   }
-  const deleting = deleteDays ? `Messages from the past **${deleteDays} day${deleteDays > 1 ? 's' : ''}` : `**NO** messages`
-  let banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning**  <:hypergeralthinkban:443803651325034507>\n\n${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}\n**Deleting**: ${deleting}\n\n**Reason**: ${reason}\nType \`confirm\` or \`cancel\``;
+  const deleting = deleteDays ? `__**Deleting**__: Messages from the past ${deleteDays} day${deleteDays > 1 ? 's' : ''}\n(type \`confirm no delete\` to not delete messages)` : `**NOT DELETING** any messages`
+  let banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning**  <:hypergeralthinkban:443803651325034507>\n\n${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}\n${deleting}\n\n__Reason__: ${reason}\nType \`confirm\` or \`cancel\``;
   await message.channel.send(banMessage);
   const filter = m => m.member.id == executor.id;
-  const collector = message.channel.createMessageCollector(filter, { time: 30000 });
+  const collector = message.channel.createMessageCollector(filter, { time: 45000 });
   collector.on('collect', m => {
-    if (m.content.toLowerCase() == 'confirm') {
+    if (m.content.toLowerCase() === 'confirm' || m.content.toLowerCase() === 'confirm no delete') {
+      if (m.content.toLowerCase() === 'confirm no delete') {
+        deleteDays = 0;
+      }
       badPeople.forEach(async mem =>  {
         await mem.send(`You have been banned from ${server.guild}.\nReason: ${reason}`);
         mem.ban({ days: deleteDays, reason: `Issued by: ${executor.tag}. Reason: ${reason}` })
