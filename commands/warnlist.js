@@ -48,6 +48,7 @@ module.exports.command = async (message, content, bot, server) => {
     let member = await server.guild.member(userID);
     embed.title = `Warning list for ${member ? member.user.tag : userID}`;
     embed.color = Number('0xDB3C3C');
+    let count = 0;
     for (let { issued, issuer, warnMessage, link, silent } of warnings) {
       const issuerMember = await server.guild.member(issuer);
       if (link) {
@@ -55,6 +56,11 @@ module.exports.command = async (message, content, bot, server) => {
       }
       if (silent) {
         warnMessage += `\n(Silently logged)`;
+      }
+      if (++count > 25) {
+        await message.channel.send({ embed });
+        embed.fields = [];
+        count = 1;
       }
       embed.addField(`${new Date(issued).toGMTString()} by ${issuerMember ? issuerMember.user.tag : issuer }`, warnMessage, false);
     } 
