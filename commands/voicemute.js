@@ -26,7 +26,10 @@ module.exports.command = async (message, content, bot, server) => {
   }
   const ewbf = server.guild.channels.get('277384105245802497');
   for (let [ , member] of targets) {
-    await member.setMute(true, `by ${message.author.tag} Reason: ${reason}` );
+    if (member.voice) {
+      await member.voice.setMute(true, `by ${message.author.tag} Reason: ${reason}` );
+    }
+    
     await member.roles.add('357687893566947329'); // Voice mute role
     let embed = new Discord.MessageEmbed();
     embed.title = `You have been voice muted in the English-Japanese Language Exchange server by ${message.author.tag}`;

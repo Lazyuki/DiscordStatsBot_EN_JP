@@ -22,9 +22,11 @@ module.exports.help = '__VW Only__ Unmutes people. `,vum <@someone> [@sometwo ..
 module.exports.command = async (message, content, bot, server) => {
   let targets = message.mentions.members;
   for (let [ , member] of targets) {
-    await member.setMute(false, `by ${message.author.tag}`);
-    if (member.serverMute && !server.unmuteQ.includes(member.id)) {
-      server.unmuteQ.push(member.id);
+    if (member.voice) {
+      await member.voice.setMute(false, `by ${message.author.tag}`);
+      if (member.voice.serverMute && !server.unmuteQ.includes(member.id)) {
+        server.unmuteQ.push(member.id);
+      }
     }
     await member.roles.remove('357687893566947329');
     const ewbf = server.guild.channels.get('277384105245802497');
