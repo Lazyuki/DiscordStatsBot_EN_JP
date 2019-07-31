@@ -52,6 +52,21 @@ module.exports.command = async (message, content, bot, server) => {
     }
     forlater.push(mem);
     names += mem.toString() + ' ';
+    const warning = {
+      issued: message.createdTimestamp,
+      issuer: message.author.id,
+      link: message.url,
+      warnMessage: `Sent to no filter`
+    }
+    if (server.warnlist[mem.id]) {
+      server.warnlist[mem.id].push(
+        warning
+      )
+    } else {
+      server.warnlist[mem.id] = [
+        warning
+      ];
+    }
   }
   nofilter.send(`${names}you have been muted in all channels but here for ${min} minutes.`);
   message.channel.send(`Sent to ${nofilter}`);

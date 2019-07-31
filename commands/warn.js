@@ -23,10 +23,10 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
 
-  const dontSendDM = /\s?-n\b/.test(content)
+  const dontSendDM = /\s?-[ns]\b/.test(content)
 
   if (dontSendDM) {
-    content = content.replace(/\s-n\b/, '');
+    content = content.replace(/\s-[ns]\b/, '');
   }
 
   let member;
@@ -55,6 +55,8 @@ module.exports.command = async (message, content, bot, server) => {
   const warning = {
     issued: message.createdTimestamp,
     issuer: message.author.id,
+    link: message.url,
+    silent: dontSendDM,
     warnMessage: content
   }
 

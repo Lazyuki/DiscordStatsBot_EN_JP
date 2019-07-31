@@ -43,6 +43,21 @@ module.exports.command = async (message, content, bot, server) => {
         m.roles.remove('259181555803619329');
       }, minutes * 60 * 1000);
     }
+    const warning = {
+      issued: message.createdTimestamp,
+      issuer: message.author.id,
+      link: message.url,
+      warnMessage: `Chat muted`
+    }
+    if (server.warnlist[m.id]) {
+      server.warnlist[m.id].push(
+        warning
+      )
+    } else {
+      server.warnlist[m.id] = [
+        warning
+      ];
+    }
   }
   const ewbf = server.guild.channels.get('277384105245802497');
   let embed = new Discord.MessageEmbed();

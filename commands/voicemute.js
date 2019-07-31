@@ -42,6 +42,21 @@ module.exports.command = async (message, content, bot, server) => {
     embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);
     embed.timestamp = new Date();
     ewbf.send({embed});
+    const warning = {
+      issued: message.createdTimestamp,
+      issuer: message.author.id,
+      link: message.url,
+      warnMessage: `Voice muted`
+    }
+    if (server.warnlist[member.id]) {
+      server.warnlist[member.id].push(
+        warning
+      )
+    } else {
+      server.warnlist[member.id] = [
+        warning
+      ];
+    }
   }
   message.channel.send('✅ Voice Muted');
 };

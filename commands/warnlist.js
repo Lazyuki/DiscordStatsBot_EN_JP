@@ -18,8 +18,9 @@ module.exports.command = async (message, content, bot, server) => {
     const warnings = server.warnlist;
     const list = [];
     for (let u of Object.keys(warnings)) {
-      let warns = warnings[u].length;
-      list.push(`<@${u}>: ${warns} warning${warns === 1 ? '' : 's'}`)
+      const warns = warnings[u].length;
+      const user = await bot.users.fetch(u);
+      list.push(`<@${u}> ${user.tag}: ${warns} warning${warns === 1 ? '' : 's'}`)
     }
     Util.paginate(message.channel, 'All warnings', list, 10, message.author.id)
     return;
@@ -47,8 +48,14 @@ module.exports.command = async (message, content, bot, server) => {
     let member = await server.guild.member(userID);
     embed.title = `Warning list for ${member ? member.user.tag : userID}`;
     embed.color = Number('0xDB3C3C');
-    for (let { issued, issuer, warnMessage } of warnings) {
+    for (let { issued, issuer, warnMessage, link, silent } of warnings) {
       const issuerMember = await server.guild.member(issuer);
+      if (link) {
+        warnMessage += `\n[jump](${link})`;
+      }
+      if (silent) {
+        warnMessage += `\n(Silently logged)`;
+      }
       embed.addField(`${new Date(issued).toGMTString()} by ${issuerMember ? issuerMember.user.tag : issuer }`, warnMessage, false);
     } 
     message.channel.send({ embed })
