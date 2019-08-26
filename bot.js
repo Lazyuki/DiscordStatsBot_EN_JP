@@ -35,7 +35,7 @@ bot.setTimeout(() => { // Set up hourly task
   bot.setInterval(() => {
     hourlyTask(bot);
   }, 60*60*1000);
-},  ((60 - m) * 60 - s) * 1000);
+},  ((60 - m) * 60 - s + 1) * 1000); // one second more
 
 bot.on('ready', () => {
   console.log('Logged in as ' + bot.user.username);

@@ -18,7 +18,7 @@ module.exports.command = async (message, content, bot, server) => {
   switch (arr[0]) {
   case 'set': {
     const ch = server.guild.channels.get(arr[1]);
-    const pad = arr[2] === 't' ? true : false;
+    const pad = arr[2] === 't';
     const timeStringMatch = timeStringRegex.exec(content);
     let timeString;
     if (timeStringMatch) {
