@@ -86,13 +86,18 @@ module.exports.command = async (message, content, bot, server) => {
       if (m.content.toLowerCase() === 'confirm no delete') {
         deleteDays = 0;
       }
-      badPeople.forEach(async mem =>  {
-        await mem.send(`You have been banned from ${server.guild}.\nReason: ${reason}`);
-        mem.ban({ days: deleteDays, reason: `Issued by: ${executor.tag}. Reason: ${reason}` })
-          .catch(() => {
-            collector.stop('Failed');
-            return;
-          });
+      badPeople.forEach(async mem => {
+        try {
+          await mem.send(`You have been banned from ${server.guild}.\nReason: ${reason}`);
+        } catch {
+          await message.channel.send('Failed to DM the ban reason');
+        }
+        try {
+          await mem.ban({ days: deleteDays, reason: `Issued by: ${executor.tag}. Reason: ${reason}` });
+        } catch {
+          collector.stop('Failed');
+          return;
+        }
       });
       collector.stop('Banned');
       return;
