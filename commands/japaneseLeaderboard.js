@@ -13,7 +13,7 @@ module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161';
 };
 
-module.exports.help = '`,jpl [username (default = invoker)] [-n number (default = 1000)]` Japanese Usage Leaderboard for this server.\ne.g. `,jpl Geralt -n 500`';
+module.exports.help = '`,jpl [username (default = invoker)] [-n number (default = 500)]` Japanese Usage Leaderboard for this server.\ne.g. `,jpl Geralt -n 200`';
 
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
@@ -22,7 +22,7 @@ module.exports.command = async (message, content, bot, server) => {
     num = num[1];
     content = content.replace(/-n \d+/, '').trim();
   } else {
-    num = 1000;
+    num = 500;
   }
   let u = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
   if (!u) {
