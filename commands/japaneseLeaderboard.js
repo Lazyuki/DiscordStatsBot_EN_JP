@@ -56,7 +56,7 @@ module.exports.command = async (message, content, bot, server) => {
   result = result.toMap();
   let embed = new Discord.MessageEmbed();
   embed.title = 'Japanese Usage Leaderboard';
-  embed.description = 'For the last 30 days (UTC time)';
+  embed.description = `For the last 30 days [Total Message Threshold: ${num}]`;
   embed.color = Number('0x3A8EDB');
   let count = 1;
   let member = await server.guild.member(memberID);
