@@ -60,8 +60,9 @@ async function postLogs(member, server) {
     }
   }
   server.invites = newInvites;
-  console.log(`${member.user.username} joined with ${inv == null ? 'no link' : inv[0]}`);
-  if (inv[0] === 'NJJCYVD') {
+  const invite = inv === null ? '/japanese' : inv[0];
+  console.log(`${member.user.username} joined with ${invite}`);
+  if (invite === 'NJJCYVD') {
     const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
     const diff = date - new Date(server.lastmag);
     if (diff > 0) {

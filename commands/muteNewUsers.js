@@ -16,7 +16,7 @@ const normalPerms = ['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'READ_MES
 
 module.exports.command = async (message, content, bot, server) => {
   let nu = server.guild.roles.get('249695630606336000'); // New User
-  if (nu.hasPermission('SEND_MESSAGES')) { // Get rid of all permissions.
+  if (nu.permissions.has('SEND_MESSAGES')) { // Get rid of all permissions.
     nu.setPermissions(mutedPerms);
     server.guild.defaultRole.setPermissions(mutedPerms);
     message.channel.send('New Users are now *muted*. YOU MUST type the same command again once the raid is over.');
