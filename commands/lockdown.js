@@ -33,14 +33,14 @@ module.exports.command = async (message, content, bot, server) => {
     link = null;
   }
   let regex = /-r (\S+)/.exec(content);
-  let ignoreCase = /\s-i/.exec(content);
+  let ignoreCase = /\s-i/.exec(content) ? true : undefined;
   if (regex) {
-    regex = new RegExp(regex[1], ignoreCase ? 'i' : undefined);
+    regex = regex[1];
   } else {
     regex = null;
   }
   
-  let lockdown = !timestamp_id && !link && !regex ? null : { link, regex };
+  let lockdown = !timestamp_id && !link && !regex ? null : { link, regex, ignoreCase };
   if (timestamp_id) {
     lockdown.after = Discord.SnowflakeUtil.deconstruct(timestamp_id).date.getTime();
   }
@@ -57,5 +57,5 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
   
-  message.channel.send(`✅ Server is now under lockdown. Mee6 and Rai have been muted in JHO. (Time ID: ${lockdown.after}, Link: ${lockdown.link}, RegEx: ${lockdown.regex})`);
+  message.channel.send(`✅ Server is now under lockdown. Mee6 and Rai have been muted in JHO. (Time ID: ${lockdown.after}, Link: ${lockdown.link}, RegEx: /${lockdown.regex}/${ignoreCase ? 'i' : ''})`);
 };

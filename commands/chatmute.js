@@ -36,7 +36,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   for (let m of badPeople) {
-    m.roles.add('259181555803619329', `Issued by: ${message.author.tag}`);
+    m.addRole('259181555803619329', `Issued by: ${message.author.tag}`);
     m.send(`You have been muted from ${server.guild}\nReason: ${reason}`);
     if (minutes) {
       setTimeout(() => {

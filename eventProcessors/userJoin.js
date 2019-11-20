@@ -56,6 +56,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   const diffNow = new Date() - date;
   const diffThen = lockdown.after ? new Date(lockdown.after) - date : null;
   const diffNowStr = generateDiffStr(diffNow);
+  const regexp = lockdown.regex && new RegExp(lockdown.regex, lockdown.ignoreCase && 'i');
   if (diffNow < 600000) { // less than 10 minutes old
     likelihood += 4;
   } else if (diffNow < 86400000) { // less than a day old
@@ -65,14 +66,14 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   }
   if (diffThen && diffThen < 0) likelihood += 2; // after the specified time
   if (lockdown.link && inv[0] === lockdown.link) likelihood++; // same link
-  if (lockdown.regex && lockdown.regex.test && lockdown.regex.test(member.user.username)) likelihood += 3; // regex name
+  if (regexp && regexp.test(member.user.username)) likelihood += 3; // regex name
   const max = 4 + (lockdown.after ? 2 : 0) + (lockdown.link ? 1 : 0) + (lockdown.regex ? 3 : 0);
 
   const createdStr = `Account created **${diffNowStr} ago**${diffThen ? ` and **${generateDiffStr(diffThen)}** ${diffThen > 0 ? 'before' : 'after'} the specified time\n` : '\n'}`
   const linkStr = lockdown.link && inv[0] === lockdown.link ? `Used the same link \`${inv[0]}\` from ${inv[1].inviter.username}\n` : ''
-  const regexStr = lockdown.regex &&  lockdown.regex.test && lockdown.regex.test(member.user.username) ? `Username matched the regex ${lockdown.regex}\n` : ''
+  const regexStr = regexp && regexp.extestec(member.user.username) ? `Username matched the regex ${lockdown.regex}\n` : ''
   embed.title = 'Lockdown New User Alert'
-  embed.description = `**${member.user.tag}** has \`joined\` the server. (${member.id}) ${member}\n\n${createdStr}${linkStr}${regexStr}Suspicious Level: ${likelihood}/${max}\n${likelihood !== 0 && `Mods and **WP** can react with ✅ if you think this user is not suspicious, or <:ban:${EJLX_BAN_EMOJI_ID}> **twice** (triple click) to ban.`}`;
+  embed.description = `**${member.user.tag}** has \`joined\` the server. (${member.id}) ${member}\n\n${createdStr}${linkStr}${regexStr}Suspicious Level: ${likelihood}/${max}\n${likelihood !== 0 ? `Mods and **WP** can react with ✅ if you think this user is not suspicious, or <:ban:${EJLX_BAN_EMOJI_ID}> **twice** (triple click) to ban.` : ''}`;
   embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL);
   embed.setTimestamp();
   embed.setColor(0x84a332);

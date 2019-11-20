@@ -44,8 +44,8 @@ module.exports.command = async (message, content, bot, server) => {
   var names = '';
   let forlater = [];
   for (var mem of members) {
-    mem.roles.add(nofilterOnlyRole);
-    mem.roles.add(nofilterRole);
+    mem.addRole(nofilterOnlyRole);
+    mem.addRole(nofilterRole);
     if (mem.voice.channel) {
       nofilter = server.guild.channels.get(nofilterVoiceText);
       mem.setVoiceChannel(nofilterVoice)
