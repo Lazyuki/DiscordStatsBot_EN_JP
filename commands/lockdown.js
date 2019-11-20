@@ -49,8 +49,8 @@ module.exports.command = async (message, content, bot, server) => {
   // Mute Mee6 and Rai
   const JHO = server.guild.channels.get('189571157446492161');
   try {
-    await JHO.overwritePermissions(server.guild.roles.get('234603505644470272'), { SEND_MESSAGES: false }); // Mee6 role
-    await JHO.overwritePermissions(server.guild.roles.get('412136733401153538'), { SEND_MESSAGES: false }); // Rai role
+    await JHO.overwritePermissions('159985870458322944', { SEND_MESSAGES: false }); // Mee6
+    await JHO.overwritePermissions('270366726737231884', { SEND_MESSAGES: false }); // Rai
   } catch (e) {
     console.error(e);
     message.channel.send('Failed to overwrite permissions for MEE6 and Rai');

@@ -158,7 +158,11 @@ async function postLogs(member, server) {
   welcome += `${member}さん、ようこそEnglish-Japanese Language Exchangeへ!\nあなたの母語を教えてください!\n質問があれば、何でも遠慮なく聞いてくださいね。このチャンネルには日本語と英語で投稿できます。よろしくお願いします！ <@&357449148405907456>`;
 
   if (server.lockdown) {
-    await member.addRole(LOCKDOWN_ROLE_ID);
+    try {
+      await member.addRole(LOCKDOWN_ROLE_ID);
+    } catch (e) {
+      console.error(e);
+    }
     await sendLockdownNotif(member, inv, server.lockdown, welcome);
     return;
   } else if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
