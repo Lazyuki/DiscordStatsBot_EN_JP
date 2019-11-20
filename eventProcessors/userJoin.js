@@ -76,7 +76,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL);
   embed.setTimestamp();
   embed.setColor(0x84a332);
-  const banEmoji = msg.guild.emojis.get(EJLX_BAN_EMOJI_ID);
+  const banEmoji = member.guild.emojis.get(EJLX_BAN_EMOJI_ID);
   if (likelihood === 0) { // not suspicious
     await member.removeRole(LOCKDOWN_ROLE_ID);
     await JHO.send(welcome);
