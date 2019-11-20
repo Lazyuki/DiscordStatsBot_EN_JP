@@ -4,34 +4,18 @@ module.exports.alias = [
 ];
 
 module.exports.isAllowed = (message, server, bot) => {
-  if (message.guild.id != '293787390710120449') return false;  // My server    
+  if (message.guild.id != '293787390710120449') return false; // My server    
   return message.author.id == bot.owner_ID;
 };
 
 module.exports.help = '*Bot owner only* hot fix';
-
+const fs = require('fs');
 module.exports.command = (message, content, bot) => {
-  for (let sid in bot.servers) {
-    let server = bot.servers[sid];
-    for (let id in server.users) {
-      if (id == '397334576650911744') {
-        delete server.users[id];
-        continue;
-      }
-      /*
-      let user = server.users[id];
-      let rec = user.record;
-      for (let day in rec) {
-        if (day <= 4) {
-          if (rec[day] && rec[day]['vc']) {
-            let  v = server.users[id].record[day]['vc'];
-            server.users[id].vc -= v;
-            delete server.users[id].record[day]['vc'];
-          }
-        } else {
-          break;
-        }
-      }*/
+  for (let s of bot.servers) {
+    if (fs.existsSync(`./backups/${s.guild.id}_log-11-18-2019.json`)) {
+      let json = JSON.parse(fs.readFileSync(`./backups/${s.guild.id}_log-11-18-2019.json`, 'utf8'));
+      s.sars = json['sars'] || {};
+      s.categoryClocks = json['categoryClocks'] || [];
     }
   }
 
