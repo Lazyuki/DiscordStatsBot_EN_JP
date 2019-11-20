@@ -103,8 +103,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
       collector.stop();
     } else {
       if (banReacted.has(r.users.lastKey())) {
-       // await member.ban({ days: 1, reason: `Banned by ${u.username} during lockdown`});
-       await EWBF.send(`Mock banned ${member}`);
+       await member.ban({ days: 1, reason: `Banned by ${u.username} during lockdown`});
         collector.stop();
       } else {
         r.users.forEach((user, userID) => banReacted.add(userID));
