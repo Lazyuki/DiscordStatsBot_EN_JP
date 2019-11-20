@@ -34,10 +34,10 @@ module.exports.command = async (message, content, bot, server) => {
       if (longId) {
         const c = server.guild.channels.get(longId[1])
         if (c) {
-          msg = await c.messages.fetch(longId[2]);
+          msg = await c.fetchMessages(longId[2]);
         }
       } else {
-        msg = await channel.messages.fetch(id);
+        msg = await channel.fetchMessages(id);
       }
       if (msg) {
         delmsgs.push(msg);
@@ -50,7 +50,7 @@ module.exports.command = async (message, content, bot, server) => {
     let remaining = num_of_messages;
     let before = message.id;
     while (MAX_LOOP-- > 0 && remaining > 0) {
-      let msgs = await channel.messages.fetch({limit:100, before});
+      let msgs = await channel.fetchMessages({limit:100, before});
       for (let msg of msgs.values()) {
         before = msg.id;
         if (users.length && !users.includes(msg.author.id)) continue;

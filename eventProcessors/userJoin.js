@@ -171,7 +171,7 @@ async function postLogs(member, server) {
   } else {
     setTimeout(async () => {
       let joinedSnowflake = generateSnowflake(member.joinedAt);
-      let msgs = await EWBF.messages.fetch({limit: 20, after: joinedSnowflake});
+      let msgs = await EWBF.fetchMessages({limit: 20, after: joinedSnowflake});
       for (let [, msg] of msgs) {
         if (msg.author.id == '270366726737231884' && msg.embeds.length && msg.embeds[0].description.includes(member.id)) {
           return;
@@ -186,7 +186,7 @@ async function postLogs(member, server) {
     JHO.send(welcome);
   } else {
     setTimeout(async () => {
-      let msgs = await JHO.messages.fetch({limit: 50});
+      let msgs = await JHO.fetchMessages({limit: 50});
       for (let [, msg] of msgs) {
         if (msg.author.id == '159985870458322944' && msg.mentions.members.has(member.id)) {
           return;

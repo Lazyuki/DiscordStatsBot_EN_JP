@@ -19,7 +19,7 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
 
-  let msgs = await stickiedChannel.messages.fetch();
+  let msgs = await stickiedChannel.fetchMessages();
   let lsar = msgs.filter(msg => msg.author.id === bot.user.id).first();
   if (!lsar) {
     message.channel.send('Cannot find Ciri\'s message');

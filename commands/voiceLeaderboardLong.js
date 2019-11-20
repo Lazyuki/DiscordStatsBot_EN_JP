@@ -34,7 +34,7 @@ module.exports.command = async (message, content, bot, server) => {
   for (let user in result) {
     let hours = Math.floor(result[user] / 60); 
     let vcTime = `${hours ? hours + 'hr '  : ''}${result[user] % 60}min`;
-    li += (await bot.users.fetch(user)).username + ' : ' + vcTime + '\n';
+    li += (await bot.fetchUser(user)).username + ' : ' + vcTime + '\n';
     if (li.length > 2000) {
       break;
     }

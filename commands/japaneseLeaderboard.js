@@ -68,10 +68,10 @@ module.exports.command = async (message, content, bot, server) => {
         count++;
         continue;
       }
-      embed.addField(count + ') ' + (await bot.users.fetch(user)).username, result[user].toFixed(2) + '%', true);
+      embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user].toFixed(2) + '%', true);
       break;
     }
-    let us = await bot.users.fetch(user);
+    let us = await bot.fetchUser(user);
     if (!us) continue;
     if (user == memberID) found = true;
     embed.addField(count++ + ') ' + us.username, result[user].toFixed(2) + '%', true);

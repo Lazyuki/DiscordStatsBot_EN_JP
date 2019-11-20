@@ -54,7 +54,7 @@ module.exports.command = async (message, content, bot, server) => {
 
   const isSearch = content.match(searchRegex);
   if (isSearch) {
-    const log = await message.channel.messages.fetch();
+    const log = await message.channel.fetchMessages();
     const nuID = getRole('abbrev', 'nu').id;
 
     for (let msg of log.values()) {

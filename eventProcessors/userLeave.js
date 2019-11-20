@@ -28,7 +28,7 @@ module.exports.process = async (member, server) => {
     // react gone for new users
     const JHO = server.guild.channels.get('189571157446492161');
     if (server.newUsers.includes(member.id)) {
-      let msgs = await JHO.messages.fetch();
+      let msgs = await JHO.fetchMessages();
       for (let [, msg] of msgs) {
         if (msg.author.id == '159985870458322944' && msg.mentions.users.keyArray().includes(member.id)) { // mee6
           msg.react('📤');
@@ -40,7 +40,7 @@ module.exports.process = async (member, server) => {
       EWBF.send({embed});
     } else {
       setTimeout(async () => {
-        let msgs = await EWBF.messages.fetch({limit: 20});
+        let msgs = await EWBF.fetchMessages({limit: 20});
         for (let [, msg] of msgs) {
           if (msg.author.id == '270366726737231884' && msg.embeds.length && msg.embeds[0].description.includes(member.id)) return;
         }
