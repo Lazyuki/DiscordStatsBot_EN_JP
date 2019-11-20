@@ -136,7 +136,7 @@ async function postLogs(member, server) {
   server.invites = newInvites;
   if (inv === null) inv = ['japanese', { inviter: { username: 'vanityURL' } }];
   console.log(`${member.user.username} joined with ${inv[0]}`);
-  if (invite === 'NJJCYVD') {
+  if (inv[0] === 'NJJCYVD') {
     const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
     const diff = date - new Date(server.lastmag);
     if (diff > 0) {
@@ -159,7 +159,7 @@ async function postLogs(member, server) {
 
   if (server.lockdown) {
     await member.addRole(LOCKDOWN_ROLE_ID);
-    await sendLockdownNotif(member, invite, server.lockdown, welcome);
+    await sendLockdownNotif(member, inv, server.lockdown, welcome);
     return;
   } else if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
     let embed = joinNotif(member, inv);
