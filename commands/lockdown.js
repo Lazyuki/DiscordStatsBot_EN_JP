@@ -57,5 +57,5 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
   
-  message.channel.send('✅ Server is now under lockdown. Mee6 and Rai have been muted in JHO.');
+  message.channel.send(`✅ Server is now under lockdown. Mee6 and Rai have been muted in JHO. (Time ID: ${lockdown.after}, Link: ${lockdown.link}, RegEx: ${lockdown.regex})`);
 };

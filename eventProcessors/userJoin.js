@@ -65,7 +65,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   }
   if (diffThen && diffThen < 0) likelihood += 2; // after the specified time
   if (lockdown.link && inv[0] === lockdown.link) likelihood++; // same link
-  if (lockdown.regex && lockdown.regex.exec(member.user.username)) likelihood += 3; // regex name
+  if (lockdown.regex && lockdown.regex.test && lockdown.regex.test(member.user.username)) likelihood += 3; // regex name
   const max = 4 + (lockdown.after ? 2 : 0) + (lockdown.link ? 1 : 0) (lockdown.regex ? 3 : 0);
 
 
