@@ -24,7 +24,7 @@ module.exports.command = (message) => {
   } // 10 sec cooldown
   lastCalled = now;
   let mentioned = message.mentions.members.first();
-  let embed = new Discord.MessageEmbed();
+  let embed = new Discord.RichEmbed();
   embed.title = `WELCOME${mentioned ? ' ' + mentioned.user.username: ''}!! 🎉 READ ME!`;
   embed.description = '__**[Japanese Starting Guide](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md)**__<:externallink:438354612379189268>';
   embed.setImage('https://i.imgur.com/7cjLRRM.png');

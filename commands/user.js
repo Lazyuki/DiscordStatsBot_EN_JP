@@ -28,7 +28,7 @@ module.exports.command = async (message, content, bot, server) => {
     member = await server.guild.member(user.id);
     
     if (record == undefined) { // the user hasn't sent anything in the past 30 days
-      let embed = new Discord.MessageEmbed();
+      let embed = new Discord.RichEmbed();
       embed.title = `Stats for ${user.tag}`;
       embed.description = 'Hasn\'t said anything in the past 30 days';
       embed.color = Number('0x3A8EDB');
@@ -108,7 +108,7 @@ module.exports.command = async (message, content, bot, server) => {
   let hours = Math.floor(record.vc / 60); 
   let vcTime = `${hours ? hours + 'hr '  : ''}${record.vc % 60}min`;
 
-  let embed = new Discord.MessageEmbed();
+  let embed = new Discord.RichEmbed();
   let jp = false;
   if (user) {
     let fire = member && member.roles.has('384286851260743680');

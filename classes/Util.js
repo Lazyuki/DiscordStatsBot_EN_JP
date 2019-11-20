@@ -99,7 +99,7 @@ exports.lang = function(content) {
 };
 
 exports.postLogs = function(msg, server) {
-  let embed = new Discord.MessageEmbed();
+  let embed = new Discord.RichEmbed();
   let date = new Date(msg.time);
   embed.setAuthor(`${msg.atag} ID: ${msg.aid}` ,msg.apfp);
   if (msg.del) { // message was deleted
@@ -134,7 +134,7 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
       if (actualIndex >= list.length) break;
       description += list[actualIndex] + '\n';
     }
-    const embed = new Discord.MessageEmbed()
+    const embed = new Discord.RichEmbed()
       .setTitle(title)
       .setFooter(`${currPage + 1}/${maxPageNum + 1}`)
       .setColor('0x3A8EDB')

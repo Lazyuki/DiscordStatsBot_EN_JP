@@ -32,7 +32,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (chanMention) {
     for (var c of chans.keys()) {
       let date = Discord.SnowflakeUtil.deconstruct(c).date;
-      let embed = new Discord.MessageEmbed();
+      let embed = new Discord.RichEmbed();
       let dateStr = dateFormat(date, 'UTC:ddd mmm dS, yyyy \'at\' h:MM TT');
       embed.title = 'Creation time in UTC and your local time';
       embed.description = `Snowflake ID: ${c} (<#${c}>)\nUnix Time in milliseconds: ${date.getTime()}`;
@@ -45,7 +45,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (userMention) {
     for (var u of users.keys()) {
       let date = Discord.SnowflakeUtil.deconstruct(u).date;
-      let embed = new Discord.MessageEmbed();
+      let embed = new Discord.RichEmbed();
       let dateStr = dateFormat(date, 'UTC:ddd mmm dS, yyyy \'at\' h:MM TT');
       embed.title = 'Creation time in UTC and your local time';
       embed.setAuthor(users.get(u).tag, users.get(u).avatarURL);
@@ -57,7 +57,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   if (!chanMention && !userMention) {
-    let embed = new Discord.MessageEmbed();
+    let embed = new Discord.RichEmbed();
     let def = '1420070400000';
     let id = content;
     let date = Discord.SnowflakeUtil.deconstruct(content).date;

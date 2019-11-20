@@ -70,7 +70,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
     channel.send(list);
   } else {
-    let embed = new Discord.MessageEmbed();
+    let embed = new Discord.RichEmbed();
     embed.title = `Emote Leaderboard${onlyServer ? ' for server emotes' : ''}`;
     embed.description = 'For the last 30 days (UTC time)';
     embed.color = Number('0x3A8EDB');

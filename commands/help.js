@@ -18,7 +18,7 @@ module.exports.command = (message, content, bot, server, cmds) => {
   let chan = message.channel;
   let cmd = cmds.commands[content];
   let msg;  
-  const embed = new Discord.MessageEmbed();
+  const embed = new Discord.RichEmbed();
 
   if (cmd && cmd.isAllowed(message, server, bot)) {
     embed.title = cmd.name;

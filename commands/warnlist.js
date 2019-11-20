@@ -44,7 +44,7 @@ module.exports.command = async (message, content, bot, server) => {
 
   if (server.warnlist[userID]) {
     const warnings = server.warnlist[userID];
-    const embed = new Discord.MessageEmbed();
+    const embed = new Discord.RichEmbed();
     let member = await server.guild.member(userID);
     embed.title = `Warning list for ${member ? member.user.tag : userID}`;
     embed.color = Number('0xDB3C3C');

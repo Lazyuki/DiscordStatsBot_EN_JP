@@ -25,7 +25,7 @@ module.exports.command = async (message, content, bot, server) => {
 
   // the user hasn't sent anything in the past 30 days
   if (record == undefined) {
-    let embed = new Discord.MessageEmbed();
+    let embed = new Discord.RichEmbed();
     embed.title = `Stats for ${user.username}`;
     embed.description = 'Hasn\'t said anything in the past 30 days';
     embed.color = Number('0x3A8EDB');

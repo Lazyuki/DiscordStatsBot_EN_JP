@@ -41,7 +41,7 @@ function generateDiffStr(diffMillis) {
 }
 
 function joinNotif(member, inv) {
-  let embed = new Discord.MessageEmbed();
+  let embed = new Discord.RichEmbed();
   embed.description = `📥 **${member.user.tag}** has \`joined\` the server. (${member.id})`;
   embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL());
   embed.setTimestamp();
@@ -50,7 +50,7 @@ function joinNotif(member, inv) {
 }
 
 async function sendLockdownNotif(member, inv, lockdown, welcome) {
-  const embed = new Discord.MessageEmbed();
+  const embed = new Discord.RichEmbed();
   const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
   let likelihood = 0;
   const diffNow = new Date() - date;
@@ -145,7 +145,7 @@ async function postLogs(member, server) {
       const min = m % 60;
       const avatarURL = member.user.avatarURL();
       if (avatarURL && avatarURL.includes('cdn.discordapp.com/avatars')) {
-          const embed = new Discord.MessageEmbed();
+          const embed = new Discord.RichEmbed();
           embed.setTitle(`${member.user.tag} (${member.id}) might be magmikan aka リア充先輩 aka じぇい`)
           embed.setDescription(`Account created: ${hr} hrs ${min} mins after the last time magmikan was banned, and he has an avatar already`);
           embed.setFooter(`Account created: `, avatarURL);

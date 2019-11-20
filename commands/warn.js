@@ -60,7 +60,7 @@ module.exports.command = async (message, content, bot, server) => {
     warnMessage: content
   }
 
-  const embed = new Discord.MessageEmbed();
+  const embed = new Discord.RichEmbed();
   embed.title = `You have been officially warned on ${server.guild.name}`;
   embed.description = warning.warnMessage;
   embed.color = Number('0xDB3C3C');
@@ -70,21 +70,21 @@ module.exports.command = async (message, content, bot, server) => {
     member.send({ embed })
     .then(m => {
       message.channel.send({
-        embed: new Discord.MessageEmbed()
+        embed: new Discord.RichEmbed()
           .setDescription(`${member} has been warned by ${message.author}`)
           .setColor('0x42f46b')
       });
     })
     .catch(e => {
       message.channel.send({
-        embed: new Discord.MessageEmbed()
+        embed: new Discord.RichEmbed()
             .setDescription(`Failed to DM ${member.user.tag}. The user couldn't receive the warning.`)
             .setColor('0xDB3C3C')
         });
     });
   } else {
     message.channel.send({
-      embed: new Discord.MessageEmbed()
+      embed: new Discord.RichEmbed()
         .setDescription(`Logged the warning for ${member} by ${message.author}. (They did not receive the warning from Ciri) `)
         .setColor('0x42f46b')
     });

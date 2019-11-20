@@ -61,7 +61,7 @@ module.exports.command = async (message, content, bot, server) => {
     ];
   }
   message.channel.send({
-    embed: new Discord.MessageEmbed()
+    embed: new Discord.RichEmbed()
       .setDescription(`Logged the warning for ${member} by ${message.author}. (They did not receive the warning from Ciri) `)
       .setColor('0x42f46b')
   });

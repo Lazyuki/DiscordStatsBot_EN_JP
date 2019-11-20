@@ -51,7 +51,7 @@ module.exports.command = async (message, content, bot, server) => {
   result = result.sort((a,b) => {
     return b[1] - a[1];
   });
-  let embed = new Discord.MessageEmbed();
+  let embed = new Discord.RichEmbed();
   embed.title = 'Japanese Usage Leaderboard-test';
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');

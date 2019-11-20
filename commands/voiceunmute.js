@@ -30,7 +30,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
     await member.roles.remove('357687893566947329');
     const ewbf = server.guild.channels.get('277384105245802497');
-    let embed = new Discord.MessageEmbed();
+    let embed = new Discord.RichEmbed();
     embed.setAuthor(`${member.user.tag} has been unmuted in voice chat` , member.user.avatarURL);
     embed.color = Number('0x5EE07A');
     embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);

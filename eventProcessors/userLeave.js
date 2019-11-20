@@ -15,7 +15,7 @@ module.exports.isAllowed = () => {
 
 const Discord = require('discord.js');
 function leaveNotif (member) {
-  let embed = new Discord.MessageEmbed();
+  let embed = new Discord.RichEmbed();
   embed.description = `📤 **${member.user.tag}** has \`left\` the server. (${member.id})`;
   embed.setFooter(`User Leave (${member.guild.memberCount})`, member.user.avatarURL);
   embed.setTimestamp();

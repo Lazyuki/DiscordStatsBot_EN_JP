@@ -54,7 +54,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   result = result.toMap();
-  let embed = new Discord.MessageEmbed();
+  let embed = new Discord.RichEmbed();
   embed.title = 'English Usage Leaderboard';
   embed.description = `For the last 30 days [Total Message Threshold: ${num}]`
   embed.color = Number('0x3A8EDB');
