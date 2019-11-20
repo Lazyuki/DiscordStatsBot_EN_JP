@@ -114,7 +114,7 @@ module.exports.command = async (message, content, bot, server) => {
       const ewbf = server.guild.channels.get('277384105245802497');
       let embed = new Discord.RichEmbed();
       let date = new Date();
-      embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
+      embed.setAuthor(`${message.author.tag}`,message.author.avatarURL);
       embed.title = 'Ban';
       embed.addField('Banned users:', `${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}`, false);
       embed.addField('Ban reason:', `${reason}`, false);

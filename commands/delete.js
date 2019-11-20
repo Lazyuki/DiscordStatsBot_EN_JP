@@ -71,7 +71,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (!(content.includes('-n') && message.member.hasPermission('ADMINISTRATOR'))) {
     let embed = new Discord.RichEmbed();
     let date = new Date();
-    embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
+    embed.setAuthor(`${message.author.tag}`,message.author.avatarURL);
     embed.title = `Message Delete: ${originalContent}`;
     embed.color = Number('0xff283a');
     embed.setFooter(`In #${message.channel.name}`);

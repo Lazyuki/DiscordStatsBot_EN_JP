@@ -25,7 +25,7 @@ module.exports.command = async (message, content, bot, server) => {
   const ewbf = server.guild.channels.get('277384105245802497');
   let embed = new Discord.RichEmbed();
   let date = new Date();
-  embed.setAuthor(`${message.author.tag}`,message.author.avatarURL());
+  embed.setAuthor(`${message.author.tag}`,message.author.avatarURL);
   embed.title = 'Chat Unmute:';
   embed.addField('Unmuted users:', goodPeople.reduce((s, mem) => `${s}${mem}\n}`), false);
   embed.color = Number('0x53f442');

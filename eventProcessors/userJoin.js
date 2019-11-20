@@ -43,7 +43,7 @@ function generateDiffStr(diffMillis) {
 function joinNotif(member, inv) {
   let embed = new Discord.RichEmbed();
   embed.description = `📥 **${member.user.tag}** has \`joined\` the server. (${member.id})`;
-  embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL());
+  embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL);
   embed.setTimestamp();
   embed.setColor(0x84a332);
   return embed;
@@ -73,7 +73,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   const regexStr = lockdown.regex &&  lockdown.regex.test && lockdown.regex.test(member.user.username) ? `Username matched the regex ${lockdown.regex}\n` : ''
   embed.title = 'Lockdown New User Alert'
   embed.description = `**${member.user.tag}** has \`joined\` the server. (${member.id}) ${member}\n\n${createdStr}${linkStr}${regexStr}Suspicious Level: ${likelihood}/${max}\n${likelihood !== 0 && `Mods and **WP** can react with ✅ if you think this user is not suspicious, or <:ban:${EJLX_BAN_EMOJI_ID}> **twice** (triple click) to ban.`}`;
-  embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL());
+  embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL);
   embed.setTimestamp();
   embed.setColor(0x84a332);
   const banEmoji = msg.guild.emojis.get(EJLX_BAN_EMOJI_ID);
@@ -142,7 +142,7 @@ async function postLogs(member, server) {
       const m = Math.floor(diff / (60 * 1000));
       const hr = Math.floor(m / 60);
       const min = m % 60;
-      const avatarURL = member.user.avatarURL();
+      const avatarURL = member.user.avatarURL;
       if (avatarURL && avatarURL.includes('cdn.discordapp.com/avatars')) {
           const embed = new Discord.RichEmbed();
           embed.setTitle(`${member.user.tag} (${member.id}) might be magmikan aka リア充先輩 aka じぇい`)
