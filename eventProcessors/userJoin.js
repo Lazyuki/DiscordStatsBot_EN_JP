@@ -70,9 +70,9 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
 
   const createdStr = `Account created **${diffNowStr} ago**${diffThen ? ` and **${generateDiffStr(diffThen)}** ${diffThen > 0 ? 'before' : 'after'} the specified time\n` : '\n'}`
   const linkStr = lockdown.link && inv[0] === lockdown.link ? `Used the same link \`${inv[0]}\` from ${inv[1].inviter.username}\n` : ''
-  const regexStr = lockdown.regex && lockdown.regex.exec(member.user.username) ? `Username matched the regex ${lockdown.regex}\n` : ''
+  const regexStr = lockdown.regex &&  lockdown.regex.test && lockdown.regex.test(member.user.username) ? `Username matched the regex ${lockdown.regex}\n` : ''
   embed.title = 'Lockdown New User Alert'
-  embed.description = `**${member.user.tag}** has \`joined\` the server. (${member.id})\n\n${createdStr}${linkStr}${regexStr}Suspicious Level: ${likelihood}/${max}\n${likelihood !== 0 && `Mods and **WP** can react with ✅ if you think this user is not suspicious, or <:ban:${EJLX_BAN_EMOJI_ID}> **twice** (triple click) to ban.`}`;
+  embed.description = `**${member.user.tag}** has \`joined\` the server. (${member.id}) ${member}\n\n${createdStr}${linkStr}${regexStr}Suspicious Level: ${likelihood}/${max}\n${likelihood !== 0 && `Mods and **WP** can react with ✅ if you think this user is not suspicious, or <:ban:${EJLX_BAN_EMOJI_ID}> **twice** (triple click) to ban.`}`;
   embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL());
   embed.setTimestamp();
   embed.setColor(0x84a332);
