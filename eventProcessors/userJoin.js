@@ -3,6 +3,8 @@ module.exports.events = ['JOIN'];
 let EWBF = null;
 let JHO = null;
 let DDJLog = null;
+const EJLX_BAN_EMOJI_ID = '423687199385452545';
+const LOCKDOWN_ROLE_ID = '259181555803619329';
 module.exports.initialize = async (json, server) => {
   server.newUsers = [];
   if (!json || !json['newUsers']) return;
@@ -32,20 +34,90 @@ function generateSnowflake(date) {
   return Long.fromString(BINARY, 2).toString();
 }
 
+function generateDiffStr(diffMillis) {
+  const absDiff = Math.abs(diffMillis);
+  const [hr, min] = [Math.floor(absDiff / 3600000), Math.floor(absDiff / 60000) % 60];
+  return `${hr ? `${hr} hr ` : ''}${min} mins`;
+}
+
 function joinNotif(member, inv) {
   let embed = new Discord.MessageEmbed();
   embed.description = `📥 **${member.user.tag}** has \`joined\` the server. (${member.id})`;
-  if (inv) 
-    embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL());
-  else
-    embed.setFooter(`User Join (${member.guild.memberCount})`, member.user.avatarURL());
+  embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL());
   embed.setTimestamp();
   embed.setColor(0x84a332);
   return embed;
 }
 
+async function sendLockdownNotif(member, inv, lockdown, welcome) {
+  const embed = new Discord.MessageEmbed();
+  const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
+  let likelihood = 0;
+  const diffNow = new Date() - date;
+  const diffThen = lockdown.after ? new Date(lockdown.after) - date : null;
+  const diffNowStr = generateDiffStr(diffNow);
+  if (diffNow < 600000) { // less than 10 minutes old
+    likelihood += 4;
+  } else if (diffNow < 86400000) { // less than a day old
+    likelihood += 2;
+  } else if (diffNow < 604800000) { // less than a week old
+    likelihood++;
+  }
+  if (diffThen && diffThen < 0) likelihood += 2; // after the specified time
+  if (lockdown.link && inv[0] === lockdown.link) likelihood++; // same link
+  if (lockdown.regex && lockdown.regex.exec(member.user.username)) likelihood += 3; // regex name
+  const max = 4 + (lockdown.after ? 2 : 0) + (lockdown.link ? 1 : 0) (lockdown.regex ? 3 : 0);
+
+
+  const createdStr = `Account created **${diffNowStr} ago**${diffThen ? ` and **${generateDiffStr(diffThen)}** ${diffThen > 0 ? 'before' : 'after'} the specified time\n` : '\n'}`
+  const linkStr = lockdown.link && inv[0] === lockdown.link ? `Used the same link \`${inv[0]}\` from ${inv[1].inviter.username}\n` : ''
+  const regexStr = lockdown.regex && lockdown.regex.exec(member.user.username) ? `Username matched the regex ${lockdown.regex}\n` : ''
+  embed.title = 'Lockdown New User Alert'
+  embed.description = `**${member.user.tag}** has \`joined\` the server. (${member.id})\n\n${createdStr}${linkStr}${regexStr}Suspicious Level: ${likelihood}/${max}\n${likelihood !== 0 && `Mods and **WP** can react with ✅ if you think this user is not suspicious, or <:ban:${EJLX_BAN_EMOJI_ID}> **twice** (triple click) to ban.`}`;
+  embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL());
+  embed.setTimestamp();
+  embed.setColor(0x84a332);
+  const banEmoji = msg.guild.emojis.get(EJLX_BAN_EMOJI_ID);
+  if (likelihood === 0) { // not suspicious
+    await member.removeRole(LOCKDOWN_ROLE_ID);
+    await JHO.send(welcome);
+    await EWBF.send({ embed });
+    return;
+  } else if (likelihood === 10) {
+    await member.ban({ days: 1, reason: 'Lockdown Auto BAN. Matched all criteria.'});
+    await EWBF.send({ embed });
+    return;
+  }
+  const msg = await EWBF.send({ embed });
+
+  await msg.react('✅');
+  await msg.react(banEmoji);
+
+  const filter = (reaction) => reaction.emoji.name === '✅' || (reaction.emoji.name === 'ban' && reaction.emoji.id === EJLX_BAN_EMOJI_ID);
+  const banReacted = [];
+  const collector = msg.createReactionCollector(filter, { time: 10 * 60 * 1000 }); // 10 minutes
+  collector.on('collect', (r, u) => {
+    if (r.emoji.name === '✅') {
+      await member.removeRole(LOCKDOWN_ROLE_ID);
+      await JHO.send(welcome);
+      collector.stop();
+    } else {
+      if (banReacted.includes(u.id)) {
+        await member.ban({ days: 1, reason: `Banned by ${u.username} during lockdown`});
+        collector.stop();
+      } else {
+        banReacted.push(u.id);
+      }
+    } 
+  });
+  
+  collector.on('end', () => {
+    msg.reactions.removeAll();
+  });  
+}
+
 async function postLogs(member, server) {
-  let newInvites = await server.guild.fetchInvites();
+  const newInvites = await server.guild.fetchInvites();
   let inv = null;
   for (let [k, v] of newInvites) {
     let old = server.invites.get(k);
@@ -60,8 +132,8 @@ async function postLogs(member, server) {
     }
   }
   server.invites = newInvites;
-  const invite = inv === null ? '/japanese' : inv[0];
-  console.log(`${member.user.username} joined with ${invite}`);
+  if (inv === null) inv = ['japanese', { inviter: { username: 'vanityURL' } }];
+  console.log(`${member.user.username} joined with ${inv[0]}`);
   if (invite === 'NJJCYVD') {
     const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
     const diff = date - new Date(server.lastmag);
@@ -80,9 +152,16 @@ async function postLogs(member, server) {
       }
     }
   }
-  if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
+  let welcome = `Welcome ${member} to the English-Japanese Language Exchange. Please read the rules first If you have any questions feel free to message one of the Mods!  Tell us what your native language is and we'll get you properly tagged with a colored name.\n\n`;
+  welcome += `${member}さん、ようこそEnglish-Japanese Language Exchangeへ!\nあなたの母語を教えてください!\n質問があれば、何でも遠慮なく聞いてくださいね。このチャンネルには日本語と英語で投稿できます。よろしくお願いします！ <@&357449148405907456>`;
+
+  if (server.lockdown) {
+    await member.addRole(LOCKDOWN_ROLE_ID);
+    await sendLockdownNotif(member, invite, server.lockdown, welcome);
+    return;
+  } else if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
     let embed = joinNotif(member, inv);
-    EWBF.send({embed});
+    EWBF.send({ embed });
   } else {
     setTimeout(async () => {
       let joinedSnowflake = generateSnowflake(member.joinedAt);
@@ -96,8 +175,7 @@ async function postLogs(member, server) {
       EWBF.send({embed});
     }, 5000);
   }
-  let welcome = `Welcome ${member} to the English-Japanese Language Exchange. Please read the rules first If you have any questions feel free to message one of the Mods!  Tell us what your native language is and we'll get you properly tagged with a colored name.\n\n`;
-  welcome += `${member}さん、ようこそEnglish-Japanese Language Exchangeへ!\nあなたの母語を教えてください!\n質問があれば、何でも遠慮なく聞いてくださいね。このチャンネルには日本語と英語で投稿できます。よろしくお願いします！ <@&357449148405907456>`;
+  
   if (member.guild.members.get('159985870458322944').presence.status == 'offline') { // mee6
     JHO.send(welcome);
   } else {
