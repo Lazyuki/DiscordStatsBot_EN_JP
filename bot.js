@@ -121,6 +121,7 @@ bot.on('messageDeleteBulk', messages => {
 });
 
 bot.on('messageReactionAdd', async (reaction, user) => {
+  console.log(reaction.emoji.name);
   let m = reaction.message;
   if (user.bot) return;
   if (m.channel.type != 'text') return;

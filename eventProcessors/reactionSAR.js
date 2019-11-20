@@ -11,13 +11,13 @@ module.exports.initialize = (json, server) => {
   server.sars = json['sars'];
 };
 module.exports.isAllowed = (message) => {
-  return message.author.id == '299335689558949888' && message.content.startsWith('React with'); // Myself
+  return message.author.id === '299335689558949888' && message.content.startsWith('React with'); // Myself
 };
 
 //let rateLimit = new Array(3);
 module.exports.process = async (reaction, user, added, server) => {
-  if (server.sars[reaction.emoji.name]) {
-    let roleID = server.sars[reaction.emoji.name];
+  if (server.sars[reaction.emoji.toString()]) {
+    let roleID = server.sars[reaction.emoji.toString()];
     let member = await server.guild.member(user);
     if (!member) {
       console.log('SAR failed: ' + user.id);
