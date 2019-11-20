@@ -71,9 +71,9 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
 
   const createdStr = `Account created **${diffNowStr} ago**${diffThen ? ` and **${generateDiffStr(diffThen)}** ${diffThen > 0 ? 'before' : 'after'} the specified time\n` : '\n'}`
   const linkStr = lockdown.link && inv[0] === lockdown.link ? `Used the same link \`${inv[0]}\` from ${inv[1].inviter.username}\n` : ''
-  const regexStr = regexp && regexp.test(member.user.username) ? `Username matched the regex ${lockdown.regex}\n` : ''
+  const regexStr = regexp && regexp.test(member.user.username) ? `Username matched the regex ${lockdown.regex}\n` : '';
   embed.title = 'Lockdown New User Alert'
-  embed.description = `**${member.user.tag}** has \`joined\` the server. (${member.id}) ${member}\n\n${createdStr}${linkStr}${regexStr}Suspicious Level: ${likelihood}/${max}\n${likelihood !== 0 ? `Mods and **WP** can react with ✅ if you think this user is not suspicious, or <:ban:${EJLX_BAN_EMOJI_ID}> **twice** (triple click) to ban.` : ''}`;
+  embed.description = `**${member.user.tag}** has \`joined\` the server. (${member.id}) ${member}\n\n${createdStr}${linkStr}${regexStr}Suspicious Level: **${likelihood}**/${max}\n${likelihood !== 0 ? `\nMods and **WP** can react with ✅ if you think this user is not suspicious, or <:ban:${EJLX_BAN_EMOJI_ID}> **twice** (triple click) to ban.` : ''}`;
   embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL);
   embed.setTimestamp();
   embed.setColor(0x84a332);
@@ -84,7 +84,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
     await EWBF.send({ embed });
     return;
   } else if (likelihood === 10) {
-    //await member.ban({ days: 1, reason: 'Lockdown Auto BAN. Matched all criteria.'});
+    await member.ban({ days: 1, reason: 'Lockdown Auto BAN. Matched all criteria.'});
     await EWBF.send(`Mock banned ${member}`);
     await EWBF.send({ embed });
     return;
@@ -104,8 +104,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
       collector.stop();
     } else {
       if (banReacted.includes(u.id)) {
-        // await member.ban({ days: 1, reason: `Banned by ${u.username} during lockdown`});
-        await EWBF.send(`Mock banned ${member}`);
+        await member.ban({ days: 1, reason: `Banned by ${u.username} during lockdown`});
         collector.stop();
       } else {
         banReacted.push(u.id);
@@ -114,7 +113,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   });
   
   collector.on('end', () => {
-    msg.reactions.removeAll();
+    msg.reactions.deleteAll();
   });  
 }
 
