@@ -42,7 +42,7 @@ module.exports.command = async (message, content, bot, server) => {
   
   let lockdown = !timestamp_id && !link && !regex ? null : { link, regex };
   if (timestamp_id) {
-    lockdown.after = Discord.SnowflakeUtil.deconstruct(member.id).date.getTime();
+    lockdown.after = Discord.SnowflakeUtil.deconstruct(timestamp_id).date.getTime();
   }
   server.lockdown = lockdown;
 
