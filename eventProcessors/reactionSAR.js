@@ -16,6 +16,7 @@ module.exports.isAllowed = (message) => {
 
 //let rateLimit = new Array(3);
 module.exports.process = async (reaction, user, added, server) => {
+  console.log(reaction.emoji.toString());
   if (server.sars[reaction.emoji.toString()]) {
     let roleID = server.sars[reaction.emoji.toString()];
     let member = await server.guild.member(user);
