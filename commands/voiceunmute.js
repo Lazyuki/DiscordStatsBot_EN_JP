@@ -28,7 +28,7 @@ module.exports.command = async (message, content, bot, server) => {
         server.unmuteQ.push(member.id);
       }
     }
-    await member.roles.remove('357687893566947329');
+    await member.removeRole('357687893566947329');
     const ewbf = server.guild.channels.get('277384105245802497');
     let embed = new Discord.RichEmbed();
     embed.setAuthor(`${member.user.tag} has been unmuted in voice chat` , member.user.avatarURL);

@@ -17,7 +17,7 @@ module.exports.command = async (message, content, bot, server) => {
   const goodPeople = message.mentions.members.array();
 
   for (let m of goodPeople) {
-    m.roles.remove('259181555803619329', `Issued by: ${message.author.tag}`)
+    m.removeRole('259181555803619329', `Issued by: ${message.author.tag}`)
       .catch(e => {
         message.channel.send(`${m} wasn't muted.`);
       });

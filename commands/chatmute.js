@@ -40,7 +40,7 @@ module.exports.command = async (message, content, bot, server) => {
     m.send(`You have been muted from ${server.guild}\nReason: ${reason}`);
     if (minutes) {
       setTimeout(() => {
-        m.roles.remove('259181555803619329');
+        m.removeRole('259181555803619329');
       }, minutes * 60 * 1000);
     }
     const warning = {

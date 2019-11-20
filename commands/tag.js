@@ -113,7 +113,7 @@ module.exports.command = async (message, content, bot, server) => {
 
   for (let r of oldRoles) {
     if (!newNames.has(r.name)) {
-      await targetMember.roles.remove(r.id);
+      await targetMember.removeRole(r.id);
     }
   }
   for (let r of newRoles) {

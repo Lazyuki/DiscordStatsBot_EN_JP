@@ -18,7 +18,7 @@ const nofilterVoiceText = '390796551796293633';
 
 function remove(members) {
   for (var mem of members) {
-    mem.roles.remove(nofilterOnlyRole);
+    mem.removeRole(nofilterOnlyRole);
   }
 }
 
