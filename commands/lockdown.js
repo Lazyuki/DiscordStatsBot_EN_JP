@@ -52,6 +52,7 @@ module.exports.command = async (message, content, bot, server) => {
     await JHO.overwritePermissions('159985870458322944', { SEND_MESSAGES: false }); // Mee6
     await JHO.overwritePermissions('270366726737231884', { SEND_MESSAGES: false }); // Rai
   } catch (e) {
+    console.error(e);
     message.channel.send('Failed to overwrite permissions for MEE6 and Rai');
     return;
   }

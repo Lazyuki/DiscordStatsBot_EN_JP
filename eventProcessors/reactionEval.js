@@ -9,7 +9,7 @@ module.exports.isAllowed = (message, server, bot) => {
 const Discord = require('discord.js');
 
 module.exports.process = async (reaction, user, added, server, bot) => {
-  if (user.id != bot.owner_ID || reaction.emoji.toString() != '▶') return;
+  if (user.id != bot.owner_ID || reaction.emoji.name != '▶') return;
   let message = reaction.message;
   message.react(reaction.emoji);
   let codeBlockRegex = /```\S*\n([\s\S]*?)```/g;
