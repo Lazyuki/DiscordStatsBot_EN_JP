@@ -48,9 +48,13 @@ module.exports.command = async (message, content, bot, server) => {
 
   // Mute Mee6 and Rai
   const JHO = server.guild.channels.get('189571157446492161');
-  JHO.overwritePermissions('159985870458322944', { SEND_MESSAGES: false }); // Mee6
-  JHO.overwritePermissions('270366726737231884', { SEND_MESSAGES: false }); // Rai
-
+  try {
+    await JHO.overwritePermissions('159985870458322944', { SEND_MESSAGES: false }); // Mee6
+    await JHO.overwritePermissions('270366726737231884', { SEND_MESSAGES: false }); // Rai
+  } catch (e) {
+    message.channel.send('Failed to overwrite permissions for MEE6 and Rai');
+    return;
+  }
   
   message.channel.send('✅ Server is now under lockdown. Mee6 and Rai have been muted in JHO.');
 };
