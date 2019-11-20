@@ -11,7 +11,7 @@ module.exports.isAllowed = (message, server, bot) => {
 module.exports.help = '*Bot owner only* hot fix';
 const fs = require('fs');
 module.exports.command = (message, content, bot) => {
-  for (let s of bot.servers) {
+  for (let s of Object.values(bot.servers)) {
     if (fs.existsSync(`./backups/${s.guild.id}_log-11-18-2019.json`)) {
       let json = JSON.parse(fs.readFileSync(`./backups/${s.guild.id}_log-11-18-2019.json`, 'utf8'));
       s.sars = json['sars'] || {};
