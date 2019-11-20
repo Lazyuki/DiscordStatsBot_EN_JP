@@ -107,7 +107,6 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
        await EWBF.send(`Mock banned ${member}`);
         collector.stop();
       } else {
-        banReacted.push();
         r.users.forEach((user, userID) => banReacted.add(userID));
       }
     } 
