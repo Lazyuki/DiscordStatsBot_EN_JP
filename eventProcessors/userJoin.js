@@ -97,7 +97,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   const filter = (reaction) => reaction.emoji.name === '✅' || (reaction.emoji.name === 'ban' && reaction.emoji.id === EJLX_BAN_EMOJI_ID);
   const banReacted = [];
   const collector = msg.createReactionCollector(filter, { time: 10 * 60 * 1000 }); // 10 minutes
-  collector.on('collect', (r, u) => {
+  collector.on('collect', async (r, u) => {
     if (r.emoji.name === '✅') {
       await member.removeRole(LOCKDOWN_ROLE_ID);
       await JHO.send(welcome);
