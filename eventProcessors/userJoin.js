@@ -66,8 +66,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   if (diffThen && diffThen < 0) likelihood += 2; // after the specified time
   if (lockdown.link && inv[0] === lockdown.link) likelihood++; // same link
   if (lockdown.regex && lockdown.regex.test && lockdown.regex.test(member.user.username)) likelihood += 3; // regex name
-  const max = 4 + (lockdown.after ? 2 : 0) + (lockdown.link ? 1 : 0) (lockdown.regex ? 3 : 0);
-
+  const max = 4 + (lockdown.after ? 2 : 0) + (lockdown.link ? 1 : 0) + (lockdown.regex ? 3 : 0);
 
   const createdStr = `Account created **${diffNowStr} ago**${diffThen ? ` and **${generateDiffStr(diffThen)}** ${diffThen > 0 ? 'before' : 'after'} the specified time\n` : '\n'}`
   const linkStr = lockdown.link && inv[0] === lockdown.link ? `Used the same link \`${inv[0]}\` from ${inv[1].inviter.username}\n` : ''
@@ -158,11 +157,7 @@ async function postLogs(member, server) {
   welcome += `${member}さん、ようこそEnglish-Japanese Language Exchangeへ!\nあなたの母語を教えてください!\n質問があれば、何でも遠慮なく聞いてくださいね。このチャンネルには日本語と英語で投稿できます。よろしくお願いします！ <@&357449148405907456>`;
 
   if (server.lockdown) {
-    try {
-      await member.addRole(LOCKDOWN_ROLE_ID);
-    } catch (e) {
-      console.error(e);
-    }
+    await member.addRole(LOCKDOWN_ROLE_ID);
     await sendLockdownNotif(member, inv, server.lockdown, welcome);
     return;
   } else if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
