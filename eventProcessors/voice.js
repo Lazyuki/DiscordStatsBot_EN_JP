@@ -1,8 +1,8 @@
 module.exports.name = 'voiceStateChange';
 module.exports.events = ['VOICE'];
 
-function isVC(voiceState) {
-  return voiceState && voiceState.channelID && (voiceState.channelID != voiceState.guild.afkChannelID) && !voiceState.deaf;
+function isVC(voiceMember) {
+  return voiceMember && voiceMember.voiceChannelID && (voiceMember.voiceChannelID !== voiceMember.guild.afkChannelID) && !voiceMember.deaf;
 }
 module.exports.initialize = (json, server) => {
   server.tempvc = {};
@@ -19,11 +19,11 @@ module.exports.isAllowed = () => {
 };
 
 let UserRecord = require('../classes/UserRecord.js');
-module.exports.process = async (oldState, newState, server) => {
-  let id = newState.id || oldState.id;
-  if (!isVC(oldState) && isVC(newState)) {
+module.exports.process = async (oldMember, newMember, server) => {
+  let id = newMember.id || oldMember.id;
+  if (!isVC(oldMember) && isVC(newMember)) {
     server.tempvc[id] = new Date().getTime();
-  } else if (isVC(oldState) && !isVC(newState)) {
+  } else if (isVC(oldMember) && !isVC(newMember)) {
     if (!server.users[id]) {
       server.users[id] = new UserRecord();
     }
@@ -32,7 +32,7 @@ module.exports.process = async (oldState, newState, server) => {
     delete server.tempvc[id];
   }
   if (server.unmuteQ.includes(id)) { // Unmutes people who are in the unmute queue
-    await newState.setMute(false);
+    await newMember.setMute(false);
     let index = server.unmuteQ.indexOf(id);
     server.unmuteQ.splice(index, 1);
   }
