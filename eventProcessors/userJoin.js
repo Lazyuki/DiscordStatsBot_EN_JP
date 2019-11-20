@@ -84,7 +84,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
     await EWBF.send({ embed });
     return;
   } else if (likelihood === 10) {
-    await member.ban({ days: 1, reason: 'Lockdown Auto BAN. Matched all criteria.'});
+    //await member.ban({ days: 1, reason: 'Lockdown Auto BAN. Matched all criteria.'});
     await EWBF.send(`Mock banned ${member}`);
     await EWBF.send({ embed });
     return;
@@ -104,7 +104,9 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
       collector.stop();
     } else {
       if (banReacted.includes(u.id)) {
-        await member.ban({ days: 1, reason: `Banned by ${u.username} during lockdown`});
+       // await member.ban({ days: 1, reason: `Banned by ${u.username} during lockdown`});
+       await EWBF.send(`Mock banned ${member}`);
+
         collector.stop();
       } else {
         banReacted.push(u.id);
