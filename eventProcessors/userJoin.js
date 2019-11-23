@@ -49,6 +49,34 @@ function joinNotif(member, inv) {
   return embed;
 }
 
+async function bparker(member, inv) {
+  const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
+  const username = member.user.username;
+  let likelihood = 0;
+  const diffNow = new Date() - date;
+  if (diffNow < 600000) { // less than 10 minutes old
+    likelihood += 4;
+  }
+  if (inv[0] === 'japanese') likelihood++; // jp link
+  if ((username.includes('Lexy') && username.includes('Maria')) || username === 'OaklandRaiders') likelihood += 5;
+  if (likelihood === 10) {
+    await member.ban({ days: 1, reason: 'Auto BAN bparker'});
+    setTimeout(async () => {
+      let msgs = await JHO.fetchMessages({limit: 30});
+      for (let [, msg] of msgs) {
+        if (msg.author.id == '159985870458322944' && msg.mentions.users.has(member.id)) { // delete mee6 welcome
+          msg.delete();
+        }
+        if (msg.author.id === '270366726737231884' && msg.content.includes('Welcome')) { // delete Rai welcome
+          msg.delete();
+        }
+      }
+    }, 3000);
+    return true;
+  }
+  return false;
+}
+
 async function sendLockdownNotif(member, inv, lockdown, welcome) {
   const embed = new Discord.RichEmbed();
   const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
@@ -152,6 +180,9 @@ async function postLogs(member, server) {
       }
     }
   }
+
+  if (await bparker(member, inv)) return;
+
   let welcome = `Welcome ${member} to the English-Japanese Language Exchange. Please read the rules first If you have any questions feel free to message one of the Mods!  Tell us what your native language is and we'll get you properly tagged with a colored name.\n\n`;
   welcome += `${member}さん、ようこそEnglish-Japanese Language Exchangeへ!\nあなたの母語を教えてください!\n質問があれば、何でも遠慮なく聞いてくださいね。このチャンネルには日本語と英語で投稿できます。よろしくお願いします！ <@&357449148405907456>`;
 
