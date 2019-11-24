@@ -67,7 +67,7 @@ async function bparker(member, inv) {
         if (msg.author.id == '159985870458322944' && msg.mentions.users.has(member.id)) { // delete mee6 welcome
           msg.delete();
         }
-        if (msg.author.id === '270366726737231884' && msg.content.includes('Welcome')) { // delete Rai welcome
+        if (msg.author.id === '270366726737231884' && msg.content.includes(`Welcome ${username}`)) { // delete Rai welcome
           msg.delete();
         }
       }
