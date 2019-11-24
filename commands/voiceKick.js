@@ -19,8 +19,8 @@ async function removeFromVoice(members) {
   }
 }
 module.exports.command = async (message, content) => {
-  if (!message.guild.me.hasPermission(['MANAGE_CHANNELS', 'MOVE_MEMBERS'])) {
-    message.channel.send('I need the Mangae Channels and Move Members permissions.');
+  if (!message.guild.me.hasPermission('MOVE_MEMBERS')) {
+    message.channel.send('I need the "Move Members" permission.');
     return;
   }
   let mentions = message.mentions.members;
