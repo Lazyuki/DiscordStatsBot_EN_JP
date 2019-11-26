@@ -41,7 +41,9 @@ module.exports.command = async (message, content, bot, server) => {
   let matches = SECRET_REGEX.exec(content);
   if (matches && message.member.hasPermission('ADMINISTRATOR')) {
     const user_id = matches[1];
-    unmute(matches)
+    unmute(user_id, server);
+    message.channel.send(`✅  Unselfmuted`);
+    return;
   }
   matches = TIME_REGEX.exec(content);
   if (!matches) {
@@ -49,10 +51,10 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
   const member = message.member;
-  let days = parseInt(matches[1] || 0, 2);
-  let hours = parseInt(matches[2] || 0, 2);
-  let minutes = parseInt(matches[3] || 0, 2);
-  let seconds = parseInt(matches[4] || 0, 2);
+  let days = parseInt(matches[1] || 0);
+  let hours = parseInt(matches[2] || 0);
+  let minutes = parseInt(matches[3] || 0);
+  let seconds = parseInt(matches[4] || 0);
   if (seconds >= 60) {
     minutes += Math.floor(seconds / 60);
     seconds %= 60;
