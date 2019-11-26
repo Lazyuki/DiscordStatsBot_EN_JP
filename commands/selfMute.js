@@ -72,7 +72,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
   const totalMillis = totalSeconds * 1000;
   const unmuteDateMillis = new Date().getTime() + totalMillis;
-  sever.selfmutes[member.id] = unmuteDateMillis;
+  server.selfmutes[member.id] = unmuteDateMillis;
   setTimeout(() => unmute(member.id, server), totalMillis);
 
   await message.member.addRoles([CHAT_MUTED, VOICE_BANNED], 'Selfmuted');
