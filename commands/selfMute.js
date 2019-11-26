@@ -9,7 +9,7 @@ function unmute(user_id, server) {
     .then(member => {
       member.removeRoles([CHAT_MUTED, VOICE_BANNED]);
     }).catch(console.error);
-  if (user_id in server.selfmutes) delete sever.selfmutes[user_id];
+  if (user_id in server.selfmutes) delete server.selfmutes[user_id];
 }
 
 module.exports.initialize = (json, server) => {
