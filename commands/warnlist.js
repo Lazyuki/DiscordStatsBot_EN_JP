@@ -45,12 +45,23 @@ module.exports.command = async (message, content, bot, server) => {
   if (server.warnlist[userID]) {
     const warnings = server.warnlist[userID];
     const embed = new Discord.RichEmbed();
-    let member = await server.guild.member(userID);
+    let member;
+    try {
+      member = await server.guild.member(userID);
+    } catch {
+      member = null
+    }
     embed.title = `Warning list for ${member ? member.user.tag : userID}`;
     embed.color = Number('0xDB3C3C');
     let count = 0;
     for (let { issued, issuer, warnMessage, link, silent } of warnings) {
-      const issuerMember = await server.guild.member(issuer);
+      let issuerMember;
+      try {
+        issuerMember = await server.guild.member(issuer);
+      } catch {
+        issuerMember = null;
+      }
+      
       if (link) {
         warnMessage += `\n[jump](${link})`;
       }
