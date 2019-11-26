@@ -71,13 +71,16 @@ module.exports.command = async (message, content, bot, server) => {
   if (totalSeconds > 2592000) {
     message.channel.send("You can't mute yourself for more than 30 days");
     return;
+  } else if (totalSeconds < 60) {
+    message.channel.send("You can't mute yourself for under a minute");
+    return;
   }
   const totalMillis = totalSeconds * 1000;
   const unmuteDateMillis = new Date().getTime() + totalMillis;
   server.selfmutes[member.id] = unmuteDateMillis;
-  setTimeout(() => unmute(member.id, server), totalMillis);
 
   await message.member.addRoles([CHAT_MUTED, VOICE_BANNED], 'Selfmuted');
+  setTimeout(() => unmute(member.id, server), totalMillis);
 
   message.channel.send(`✅ Muted you for ${days ? `${days} days ` : ''}${hours ? `${hours} hours ` : ''}${minutes ? `${minutes} minutes ` : ''}${seconds ? `${seconds} seconds` : ''} `);
 };
