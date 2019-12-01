@@ -70,7 +70,7 @@ module.exports.command = async (message, content, bot, server) => {
   for (let i = server.today; i >= server.today - 28; i--) { // 4 weeks
     let chans = record.record[(i + 31) % 31]; // for under flows
     for (let ch in chans) {
-      if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn') continue;
+      if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn' || ch == 'del') continue;
       if (count < 7) week += chans[ch];
       dayArr[d] += chans[ch];
       daySum += chans[ch];
