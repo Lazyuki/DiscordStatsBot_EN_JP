@@ -4,6 +4,8 @@ module.exports.events = ['DELETE'];
 
 const SimpleMsg = require('../classes/SimpleMessage.js');
 const Util = require('../classes/Util.js');
+const UserRecord = require('../classes/UserRecord.js');
+
 
 module.exports.initialize = (json, server) => {
   server.deletedMessages = [];
@@ -24,7 +26,27 @@ module.exports.isAllowed = (message) => {
   return true;
 };
 
+const BOT_PREFIXES = /^(?:[trkhHm]?q?!|[.&+>$%;=\]])/;
+
+function addDeleteRecord(message, server) {
+  // ignored channel and bot prefix
+  if (server.ignoredChannels.includes(message.channel.id) || BOT_PREFIXES.test(message.content)) return;
+
+  const diffMillis = new Date().getTime() - message.createdTimestamp;
+  // message created more than 30 days ago
+  if (diffMillis > 2592000000) return;
+
+  const author_id = message.author.id;
+  if (!server.users[author_id]) {
+    server.users[author_id] = new UserRecord();
+  }
+  const userRec = server.users[author_id];
+  const serverDay = (server.today + 31 - (Math.floor(diffMillis / 86400000))) % 31
+  userRec.addDelete(serverDay);
+}
+
 module.exports.process = async function(message, server) {
+  addDeleteRecord(message, server);
   let con = message.content;
   var imageURL = '';
   if (message.attachments.size > 0) {

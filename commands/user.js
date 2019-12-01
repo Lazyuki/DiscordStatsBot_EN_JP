@@ -79,31 +79,8 @@ module.exports.command = async (message, content, bot, server) => {
     topEmotes += `${name} ${topEmotesArr[i][1]} times\n`;
   }
 
-  // Most active day in the last 4 weeks, excluding today.
-  let d = new Date().getUTCDay(); // Sunday = 0, do not count today.
-  let dayArr = [0, 0, 0, 0, 0, 0, 0]; // Su Mo Tu We Th Fr Sa
-  let daySum = 0;
-  let count = 0;
-  let week = 0;
-  for (let i = server.today; i >= server.today - 28; i--) { // 4 weeks
-    let chans = record.record[(i + 31) % 31]; // for under flows
-    for (let ch in chans) {
-      if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn') continue;
-      if (count < 7) week += chans[ch];
-      dayArr[d] += chans[ch];
-      daySum += chans[ch];
-    }
-    count++;
-    d = ((d - 1) % 7 + 7) % 7;
-  }
-  let maxDayNum = 0;
-  let maxDay = 0;
-  for (let j = 0; j < 7; j++) {
-    if (dayArr[j] > maxDayNum) {
-      maxDayNum = dayArr[j];
-      maxDay = j;
-    }
-  }
+  // Deleted percentage
+  const delPercentage = record.del / record.thirty * 100;
 
   let hours = Math.floor(record.vc / 60); 
   let vcTime = `${hours ? hours + 'hr '  : ''}${record.vc % 60}min`;
@@ -132,7 +109,7 @@ module.exports.command = async (message, content, bot, server) => {
   embed.addField('Messages sent M | W', `${record.thirty} | ${week}`, true);
   if (server.guild.id != '206599473282023424' && !isNaN(jpnPercent)) embed.addField(jp ? 'English usage' : 'Japanese usage', jpnPercent + '%', true); // ignore Eikyuu server
   embed.addField('Time spent in VC', vcTime , true);
-  if (maxDayNum != 0) embed.addField('Most active day', days[maxDay] + `\n(${chanPercent}%)`, true);
+  embed.addField('Deleted', `${Math.max(delPercentage).toFixed(2)}%`, true);
   if (topChans) embed.addField('Most active channels', topChans, true);
   if (topEmotes) embed.addField('Most used emotes', topEmotes, true);
   
