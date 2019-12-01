@@ -22,7 +22,7 @@ module.exports.initialize = (json, server) => {
   }
 };
 module.exports.isAllowed = (message) => {
-  if (!['189571157446492161', '206599473282023424', '294931740122939392'].includes(message.guild.id)) return false;
+  if (!['189571157446492161', '206599473282023424', '294931740122939392', '292389599982911488'].includes(message.guild.id)) return false;
   return true;
 };
 
@@ -47,6 +47,7 @@ function addDeleteRecord(message, server) {
 
 module.exports.process = async function(message, server) {
   addDeleteRecord(message, server);
+  if (server.guild.id === '292389599982911488') return; // mainichi
   let con = message.content;
   var imageURL = '';
   if (message.attachments.size > 0) {
