@@ -61,6 +61,32 @@ module.exports.command = async (message, content, bot, server) => {
     topChans += '**#' + channel.name + '** : ' + perc + '%\n';
   }
 
+  // Most active day
+  let d = new Date().getUTCDay(); // Sunday = 0, do not count today.
+  let dayArr = [0, 0, 0, 0, 0, 0, 0]; // Su Mo Tu We Th Fr Sa
+  let daySum = 0;
+  let count = 0;
+  let week = 0;
+  for (let i = server.today; i >= server.today - 28; i--) { // 4 weeks
+    let chans = record.record[(i + 31) % 31]; // for under flows
+    for (let ch in chans) {
+      if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn') continue;
+      if (count < 7) week += chans[ch];
+      dayArr[d] += chans[ch];
+      daySum += chans[ch];
+    }
+    count++;
+    d = ((d - 1) % 7 + 7) % 7;
+  }
+  let maxDayNum = 0;
+  let maxDay = 0;
+  for (let j = 0; j < 7; j++) {
+    if (dayArr[j] > maxDayNum) {
+      maxDayNum = dayArr[j];
+      maxDay = j;
+    }
+  }
+
   // Most used emotes
   let topEmotesArr = [];
   let emotes = record.totalReactions();
