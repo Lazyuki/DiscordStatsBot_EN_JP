@@ -26,6 +26,7 @@ module.exports.command = async (message, content, bot, server) => {
   content = content.replace(Util.REGEX_USER, '');
   const message_ids = content.match(Util.REGEX_MESSAGE_ID);
   let num_of_messages = (() => { const n = parseInt(content.split(' ')[0]); if (n && n > 0 && n <= 25) return n; else return 1;})();
+  let msgChannel = message.channel;
 
   const link = /has:link/.test(content);
   const file = /has:image/.test(content);
@@ -41,11 +42,13 @@ module.exports.command = async (message, content, bot, server) => {
         const c = server.guild.channels.get(longId[1]);
         if (c) {
           msg = await c.fetchMessage(longId[2]);
+          msgChannel = c;
         }
       } else if (linkId) {
         const c = server.guild.channels.get(linkId[1]);
         if (c) {
           msg = await c.fetchMessage(linkId[2]);
+          msgChannel = c;
         }
       } else {
         msg = await channel.fetchMessage(id);
@@ -88,7 +91,7 @@ module.exports.command = async (message, content, bot, server) => {
     embed.setAuthor(`${message.author.tag}`,message.author.avatarURL);
     embed.title = `Message Delete: ${originalContent}`;
     embed.color = Number('0xff283a');
-    embed.setFooter(`In #${message.channel.name}`);
+    embed.setFooter(`In #${msgChannel.name}`);
     embed.timestamp = date;
   
     let imgCount = 1;
