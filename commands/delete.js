@@ -8,10 +8,15 @@ module.exports.alias = [
 ];
 
 module.exports.isAllowed = (message, server) => {
-  return server.guild.id == '189571157446492161' && (message.member.hasPermission('ADMINISTRATOR') || message.member.roles.has('543721608506900480'));
+  if (server.guild.id === '189571157446492161') {
+    return (message.member.hasPermission('ADMINISTRATOR') || message.member.roles.has('543721608506900480'));
+  } else if (server.guild.id === '292389599982911488') {
+    return server.hiddenChannels.includes(message.channel.id);
+  }
+  return false;
 };
 
-module.exports.help = '__Mods Only__ `,del [message_ids] [num_of_messages_to_delete=1(max=25)] [@mentions] [ has:link|image|"word" ]`\nDeletes messages by either specifying the IDs, or by searching.\n e.g. `,del 543252928496926722 542576315115634688` `,del 3 @geralt has:link` `,del 5 has:"mods suck"`\nAdmins can use `-n` to skip logging';
+module.exports.help = '__Mods Only__ `,del [message_ids] [num_of_messages_to_delete=1(max=25)] [@mentions] [ has:link|image|"word" ]`\nDeletes messages by either specifying the IDs or by searching.\n e.g. `,del 543252928496926722 542576315115634688` `,del 3 @geralt has:link` `,del 5 has:"mods suck"`\nAdmins can use `-n` to skip logging';
 
 module.exports.command = async (message, content, bot, server) => {
   const delmsgs = [];
@@ -30,11 +35,17 @@ module.exports.command = async (message, content, bot, server) => {
   if (message_ids) {
     for (let id of message_ids) {
       const longId = id.match(/(\d{17,21})-(\d{17,21})/);
+      const linkId = id.match(/(?:\d{17,21})\/(\d{17,21})\/(\d{17,21})/);
       let msg;
       if (longId) {
-        const c = server.guild.channels.get(longId[1])
+        const c = server.guild.channels.get(longId[1]);
         if (c) {
           msg = await c.fetchMessage(longId[2]);
+        }
+      } else if (linkId) {
+        const c = server.guild.channels.get(linkId[1]);
+        if (c) {
+          msg = await c.fetchMessage(linkId[2]);
         }
       } else {
         msg = await channel.fetchMessage(id);
@@ -68,6 +79,9 @@ module.exports.command = async (message, content, bot, server) => {
   } 
 
   const ewbf = server.guild.channels.get('277384105245802497');
+  if (server.guild.id === '292389599982911488') {
+    return message.channel;
+  }
   if (!(content.includes('-n') && message.member.hasPermission('ADMINISTRATOR'))) {
     let embed = new Discord.RichEmbed();
     let date = new Date();

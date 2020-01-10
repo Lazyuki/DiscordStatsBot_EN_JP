@@ -5,8 +5,9 @@ module.exports.name = 'logwarning';
 module.exports.alias = [
   'log',
   'silentwarn',
-
+  'silent'
 ];
+
 
 module.exports.isAllowed = (message, server) => {
   return server.hiddenChannels.includes(message.channel.id);
