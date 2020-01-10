@@ -78,9 +78,9 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   } 
 
-  const ewbf = server.guild.channels.get('277384105245802497');
+  let ewbf = server.guild.channels.get('277384105245802497');
   if (server.guild.id === '292389599982911488') {
-    return message.channel;
+    ewbf = message.channel;
   }
   if (!(content.includes('-n') && message.member.hasPermission('ADMINISTRATOR'))) {
     let embed = new Discord.RichEmbed();
@@ -106,7 +106,11 @@ module.exports.command = async (message, content, bot, server) => {
     await ewbf.send({embed});
   }
   
-  message.delete();
+  try {
+    message.delete();
+  } catch(e) {
+    console.log('');
+  }
   if (delmsgs.length == 1) {
     delmsgs[0].delete();
     let msg = await channel.send('✅ Deleted 1 message.');
