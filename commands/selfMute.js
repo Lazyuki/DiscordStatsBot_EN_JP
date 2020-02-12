@@ -68,8 +68,8 @@ module.exports.command = async (message, content, bot, server) => {
     hours %= 24;
   }
   const totalSeconds = seconds + (minutes * 60) + (hours * 3600) + (days * 86400);
-  if (totalSeconds > 2592000) {
-    message.channel.send("You can't mute yourself for more than 30 days");
+  if (totalSeconds > 259200) {
+    message.channel.send("You can't mute yourself for more than 3 days");
     return;
   } else if (totalSeconds < 60) {
     message.channel.send("You can't mute yourself for under a minute");
