@@ -97,10 +97,10 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   if (regexp && regexp.test(member.user.username)) likelihood += 3; // regex name
   const max = 4 + (lockdown.after ? 2 : 0) + (lockdown.link ? 1 : 0) + (lockdown.regex ? 3 : 0);
 
-  const createdStr = `Account created **${diffNowStr}** ago${diffThen ? ` and **${generateDiffStr(diffThen)}** ${diffThen > 0 ? 'before' : 'after'} the specified time\n` : '\n'}`
-  const linkStr = lockdown.link && inv[0] === lockdown.link ? `Used the same link \`${inv[0]}\` from ${inv[1].inviter.username}\n` : ''
+  const createdStr = `Account created **${diffNowStr}** ago${diffThen ? ` and **${generateDiffStr(diffThen)}** ${diffThen > 0 ? 'before' : 'after'} the specified time\n` : '\n'}`;
+  const linkStr = lockdown.link && inv[0] === lockdown.link ? `Used the same link \`${inv[0]}\` from ${inv[1].inviter.username}\n` : '';
   const regexStr = regexp && regexp.test(member.user.username) ? `Username matched the regex: \`${lockdown.regex}\`\n` : '';
-  embed.title = 'Lockdown New User Alert'
+  embed.title = 'New User Alert';
   embed.description = `**${member.user.tag}** has \`joined\` the server. (${member.id}) ${member}\n\n${createdStr}${linkStr}${regexStr}Suspicious Level: **${likelihood}**/${max}\n${likelihood !== 0 && likelihood !== 10 ? `\nMods and **WP** can react with ✅ if you think this user is not suspicious, or <:ban:${EJLX_BAN_EMOJI_ID}> **twice** (triple click) to ban.` : ''}`;
   embed.setFooter(`User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`, member.user.avatarURL);
   embed.setTimestamp();
@@ -108,11 +108,10 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   const banEmoji = member.guild.emojis.get(EJLX_BAN_EMOJI_ID);
   if (likelihood === 0) { // not suspicious
     await member.removeRole(LOCKDOWN_ROLE_ID);
-    await JHO.send(welcome);
-    await EWBF.send({ embed });
+    welcome && await JHO.send(welcome);
     return;
-  } else if (likelihood === 10) {
-    await member.ban({ days: 1, reason: 'Lockdown Auto BAN. Matched all criteria.'});
+  } else if (likelihood === 10 && welcome) {
+    await member.ban({ days: 1, reason: 'Auto BAN. Matched all criteria.'});
     await EWBF.send({ embed });
     return;
   }
@@ -131,7 +130,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
       collector.stop();
     } else {
       if (banReacted.has(r.users.lastKey())) {
-       await member.ban({ days: 1, reason: `Banned by ${u.username} during lockdown`});
+        await member.ban({ days: 1, reason: `Banned by ${r.users.last()} during lockdown`});
         collector.stop();
       } else {
         r.users.forEach((user, userID) => banReacted.add(userID));
@@ -189,6 +188,9 @@ async function postLogs(member, server) {
   if (server.lockdown) {
     await member.addRole(LOCKDOWN_ROLE_ID);
     await sendLockdownNotif(member, inv, server.lockdown, welcome);
+    return;
+  } else if (server.quickban) {
+    await sendLockdownNotif(member, inv, server.quickban, null);
     return;
   } else if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
     let embed = joinNotif(member, inv);
