@@ -106,8 +106,8 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   embed.setTimestamp();
   embed.setColor(0x84a332);
   const banEmoji = member.guild.emojis.get(EJLX_BAN_EMOJI_ID);
-  if (likelihood === 0) { // not suspicious
-    await member.removeRole(LOCKDOWN_ROLE_ID);
+  if (likelihood <= 3) { // not suspicious
+    welcome && await member.removeRole(LOCKDOWN_ROLE_ID);
     welcome && await JHO.send(welcome);
     return;
   } else if (likelihood === 10 && welcome) {
@@ -125,8 +125,8 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   const collector = msg.createReactionCollector(filter, { time: 10 * 60 * 1000 }); // 10 minutes
   collector.on('collect', async (r) => {
     if (r.emoji.name === '✅') {
-      await member.removeRole(LOCKDOWN_ROLE_ID);
-      await JHO.send(welcome);
+      welcome && await member.removeRole(LOCKDOWN_ROLE_ID);
+      welcome && await JHO.send(welcome);
       collector.stop();
     } else {
       if (banReacted.has(r.users.lastKey())) {
