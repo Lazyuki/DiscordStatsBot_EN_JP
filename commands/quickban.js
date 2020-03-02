@@ -7,7 +7,7 @@ module.exports.alias = [
 module.exports.initialize = (json, server) => {
   server.quickban = null;
   if (!json || !json['quickban']) return;
-  server.lockdown = json['quickban'];
+  server.quickban = json['quickban'];
 };
 
 module.exports.isAllowed = (message, server) => {
