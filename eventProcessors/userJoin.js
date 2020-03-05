@@ -191,7 +191,6 @@ async function postLogs(member, server) {
     return;
   } else if (server.quickban) {
     await sendLockdownNotif(member, inv, server.quickban, null);
-    return;
   } else if (member.guild.members.get('270366726737231884').presence.status == 'offline') { // rybot
     let embed = joinNotif(member, inv);
     EWBF.send({ embed });
