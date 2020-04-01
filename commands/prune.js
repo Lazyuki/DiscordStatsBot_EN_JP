@@ -24,7 +24,7 @@ module.exports.command = async (message, content, bot, server) => {
   const channel= channelIdsMatches ? server.guild.channels.get(channelIdsMatches[1]) : message.channel;
   const hourMatches = /-h ([0-9]+)/g.exec(content);
   content = content.replace(/-h ([0-9]+)/, '');
-  const hour = hourMatches ? parseInt(hourMatches[0]) : 24;
+  const hour = hourMatches ? parseInt(hourMatches[1]) : 24;
   var ids = content.trim().split(' ');
   var lastMessageID = message.id;
   var done = false;
