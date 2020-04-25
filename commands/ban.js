@@ -16,7 +16,7 @@ module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161' && (message.member.hasPermission('ADMINISTRATOR') || message.member.roles.has('543721608506900480'));
 };
 
-module.exports.help = '__Mods Only__ `,ban [days=1] <@mentions> [reason]`\nBan!! Can specify multiple users. \n`,ban window N` to set the ban window to N minutes, or leave it blank to see the current window. ';
+module.exports.help = '__Mods Only__ `,ban [days=1] <@mentions> [reason]`\nBan!! Can specify multiple users.\nCheck out `,massban` for raids\n`,ban window N` to set the ban window to N minutes, or leave it blank to see the current window. ';
 
 module.exports.command = async (message, content, bot, server) => {
   let badPeople = [];
@@ -89,12 +89,12 @@ module.exports.command = async (message, content, bot, server) => {
       badPeople.forEach(async mem => {
         try {
           await mem.send(`You have been banned from ${server.guild}.\nReason: ${reason}`);
-        } catch {
+        } catch(e) {
           await message.channel.send('Failed to DM the ban reason');
         }
         try {
           await mem.ban({ days: deleteDays, reason: `Issued by: ${executor.tag}. Reason: ${reason}` });
-        } catch {
+        } catch(e) {
           collector.stop('Failed');
           return;
         }
