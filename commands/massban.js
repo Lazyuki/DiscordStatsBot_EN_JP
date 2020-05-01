@@ -1,6 +1,4 @@
-const Discord = require('discord.js');
-const Util = require('../classes/Util.js');
-module.exports.name = 'ban';
+module.exports.name = 'massban';
 
 module.exports.alias = [
   'massban'
