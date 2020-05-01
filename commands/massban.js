@@ -28,6 +28,10 @@ module.exports.command = async (message, content, bot, server) => {
   const firstMatch = first ? first.match(/[0-9]{17,21}/) : null;
   const firstID = firstMatch && firstMatch[0];
 
+  if (!firstID) {
+    message.channel.send('Failed to resolve the first user');
+    return;
+  }
   const firstMem = server.guild.member(firstID);
   const endMem = endID ? server.guild.member(endID) : null;
 
