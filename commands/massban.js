@@ -31,6 +31,10 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
   const firstMem = server.guild.member(firstID);
+  if (!firstMem) {
+    message.channel.send('Failed to resolve the first user');
+    return;
+  }
   const endMem = endID ? server.guild.member(endID) : null;
 
   const nowMillis = new Date().getTime();
@@ -63,8 +67,8 @@ module.exports.command = async (message, content, bot, server) => {
   const filter = m => m.member.id == executor.id;
   const collector = message.channel.createMessageCollector(filter, { time: 45000 });
   collector.on('collect', m => {
-    if (m.content.toLowerCase() === 'confirm' || m.content.toLowerCase() === 'confirm no delete') {
-      if (m.content.toLowerCase() === 'confirm no delete') {
+    if (m.content.toLowerCase() === 'confirm' || m.content.toLowerCase() === 'confirm keep') {
+      if (m.content.toLowerCase() === 'confirm keep') {
         deleteDays = 0;
       }
       badPeople.forEach(async mem => {
@@ -81,7 +85,7 @@ module.exports.command = async (message, content, bot, server) => {
       collector.stop('Cancelled');
       return;
     }
-    message.channel.send('Invalid response');
+    message.channel.send('Invalid response. Type `confirm` or `cancel`');
   });
   collector.on('end', (collected, endReason) => {
     if (endReason == 'Banned') {

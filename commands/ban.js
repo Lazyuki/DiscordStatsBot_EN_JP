@@ -76,14 +76,15 @@ module.exports.command = async (message, content, bot, server) => {
       reason = options[2];
     }
   }
-  const deleting = deleteDays ? `__**Deleting**__: Messages from the past ${deleteDays} day${deleteDays > 1 ? 's' : ''}\n(type \`confirm no delete\` to not delete messages)` : `**NOT DELETING** any messages`
-  let banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning**  <:hypergeralthinkban:443803651325034507>\n\n${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}\n${deleting}\n\n__Reason__: ${reason}\nType \`confirm\` or \`cancel\``;
+  const deleting = deleteDays ? `__**Deleting**__: Messages from the past ${deleteDays} day${deleteDays > 1 ? 's' : ''}\n(type \`confirm keep\` to not delete messages)` : `**NOT DELETING** any messages`
+  let banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning**  <:hypergeralthinkban:443803651325034507>\n\n${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}\n${deleting}\n\n__Reason__: ${reason}\nType \`confirm delete\`, \`confirm keep\` or \`cancel\``;
   await message.channel.send(banMessage);
   const filter = m => m.member.id == executor.id;
   const collector = message.channel.createMessageCollector(filter, { time: 45000 });
   collector.on('collect', m => {
-    if (m.content.toLowerCase() === 'confirm' || m.content.toLowerCase() === 'confirm no delete') {
-      if (m.content.toLowerCase() === 'confirm no delete') {
+    const resp = m.content.toLowerCase();
+    if (['confirm d', 'confirm del', 'confirm delete', 'confirm k', 'confirm keep'].includes(resp)) {
+      if (resp.startsWith('confirm k')) {
         deleteDays = 0;
       }
       badPeople.forEach(async mem => {
@@ -102,11 +103,11 @@ module.exports.command = async (message, content, bot, server) => {
       collector.stop('Banned');
       return;
     }
-    if (m.content.toLowerCase() == 'cancel') {
+    if (resp == 'cancel') {
       collector.stop('Cancelled');
       return;
     }
-    message.channel.send('Invalid response');
+    message.channel.send('Invalid response. Type `confirm delete`, `confirm keep` or `cancel`');
   });
   collector.on('end', (collected, endReason) => {
     if (endReason == 'Banned') {
