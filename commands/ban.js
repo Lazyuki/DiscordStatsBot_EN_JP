@@ -76,6 +76,13 @@ module.exports.command = async (message, content, bot, server) => {
       reason = options[2];
     }
   }
+
+  const auditLogReason = `Issued by: ${executor.tag}. Reason: ${reason}`;
+  if (auditLogReason.length > 512) {
+    await message.channel.send(`The ban reason exceeds the limit of 512 characters: ${auditLogReason.length} characters`);
+    return;
+  }
+
   const deleting = deleteDays ? `__**Deleting**__: Messages from the past ${deleteDays} day${deleteDays > 1 ? 's' : ''}\n(type \`confirm keep\` to not delete messages)` : `**NOT DELETING** any messages`
   let banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning**  <:hypergeralthinkban:443803651325034507>\n\n${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}\n${deleting}\n\n__Reason__: ${reason}\nType \`confirm delete\`, \`confirm keep\` or \`cancel\``;
   await message.channel.send(banMessage);
@@ -94,7 +101,7 @@ module.exports.command = async (message, content, bot, server) => {
           await message.channel.send('Failed to DM the ban reason');
         }
         try {
-          await mem.ban({ days: deleteDays, reason: `Issued by: ${executor.tag}. Reason: ${reason}` });
+          await mem.ban({ days: deleteDays, reason: auditLogReason });
         } catch(e) {
           collector.stop('Failed');
           return;
