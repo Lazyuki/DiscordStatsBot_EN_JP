@@ -39,7 +39,7 @@ module.exports.command = async (message, content, bot, server) => {
 
   const nowMillis = new Date().getTime();
   const firstMillis =  firstMem.joinedAt.getTime();
-  if (nowMillis - firstMillis > 86400) {
+  if (nowMillis - firstMillis > 86400000) {
     message.channel.send('The first user join date cannot be older than 1 day');
     return;
   }

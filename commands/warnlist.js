@@ -4,7 +4,8 @@ const Util = require('../classes/Util.js');
 module.exports.name = 'warnlist';
 module.exports.alias = [
   'warnlist',
-  'warnlog'
+  'warnlog',
+  'wl'
 ];
 
 module.exports.isAllowed = (message, server) => {
