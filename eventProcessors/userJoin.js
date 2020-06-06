@@ -185,7 +185,7 @@ async function postLogs(member, server) {
 
   if (await bparker(member, inv)) return;
 
-  let welcome = `Welcome ${member}. Please read <#267275565617250312> and tell us what your native language is!\n${member}さん、ようこそ! あなたの母語を教えてください! 注意事項は<#267275565617250312>に書いてあります。<@&357449148405907456>`;
+  let welcome = `Welcome ${member}. Please read <#189585230972190720> and tell us what your native language is!\n${member}さん、ようこそ! あなたの母語を教えてください! 注意事項は<#189585230972190720>に書いてあります。<@&357449148405907456>`;
 
   if (server.lockdown) {
     await member.addRole(LOCKDOWN_ROLE_ID);
