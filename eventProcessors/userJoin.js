@@ -185,8 +185,7 @@ async function postLogs(member, server) {
 
   if (await bparker(member, inv)) return;
 
-  let welcome = `Welcome ${member} to the English-Japanese Language Exchange. Please read the rules first If you have any questions feel free to message one of the Mods!  Tell us what your native language is and we'll get you properly tagged with a colored name.\n\n`;
-  welcome += `${member}さん、ようこそEnglish-Japanese Language Exchangeへ!\nあなたの母語を教えてください!\n質問があれば、何でも遠慮なく聞いてくださいね。このチャンネルには日本語と英語で投稿できます。よろしくお願いします！ <@&357449148405907456>`;
+  let welcome = `Welcome ${member}. Please read <#267275565617250312> and tell us what your native language is!\n${member}さん、ようこそ! あなたの母語を教えてください! 注意事項は<#267275565617250312>に書いてあります。<@&357449148405907456>`;
 
   if (server.lockdown) {
     await member.addRole(LOCKDOWN_ROLE_ID);
