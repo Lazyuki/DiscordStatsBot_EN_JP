@@ -8,7 +8,7 @@ module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161';
 };
 
-module.exports.help = '`,lang [ minMessage=100 ] `';
+module.exports.help = '`,lang [ minMessage=100 ]`\nUse `,lang all` to include everyone';
 
 const NE = '197100137665921024';
 const NJ = '196765998706196480';
@@ -18,6 +18,7 @@ const OL = '248982130246418433';
 
 module.exports.command = async (message, content, bot, server) => {
   let min = parseInt(content);
+  if (content === 'all') min = -1;
   if (min !== 0 && !min) {
     min = 100;
   }
