@@ -16,7 +16,7 @@ module.exports.command = (message, content, bot, server) => {
   const sortedWps = new Map([...wps.entries()].sort((a, b) => {
     const aNum = server.users[a[0]] ? server.users[a[0]].thirty : 0;
     const bNum =  server.users[b[0]] ? server.users[b[0]].thirty : 0;
-    return aNum - bNum;
+    return bNum - aNum;
   }));
   for (let [id, wp] of sortedWps) {
     if (server.users[id]) {
