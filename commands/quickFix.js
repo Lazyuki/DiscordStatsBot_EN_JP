@@ -10,14 +10,17 @@ module.exports.isAllowed = (message, server, bot) => {
 
 module.exports.help = '*Bot owner only* hot fix';
 
-module.exports.command = (message, content, bot) => {
-  // for (let s of Object.values(bot.servers)) {
-  //   if (fs.existsSync(`./backups/${s.guild.id}_log-11-18-2019.json`)) {
-  //     let json = JSON.parse(fs.readFileSync(`./backups/${s.guild.id}_log-11-18-2019.json`, 'utf8'));
-  //     s.sars = json['sars'] || {};
-  //     s.categoryClocks = json['categoryClocks'] || [];
-  //   }
-  // }
+module.exports.command = (message, content, bot, server) => {
+  let ignoreHidden = !server.hiddenChannels.includes(message.channel.id);
+  for (let id in server.users) {
+    let user = server.users[id];
+    for (let ch in user.chans) {
+      if (server.hiddenChannels.includes(ch) && ignoreHidden) continue;
+      if (ch ==='13' || ch === 13) {
+        delete server.users[id].chans[ch];
+      }
+    }
+  }
 
   message.channel.send('done');
 };
