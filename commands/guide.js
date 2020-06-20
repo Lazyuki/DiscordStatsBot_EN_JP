@@ -66,6 +66,10 @@ module.exports.command = (message, content) => {
     embed.addField('Jisho.org', 'http://jisho.org/', true);
     embed.addField('Tangorin', 'http://tangorin.com/', true);
     embed.addField('Weblio', 'http://www.weblio.jp/', true);
+  } else if (content === 'anki') {
+    embed.title = `__**Anki ${externalLink}**__`;
+    embed.url = 'https://itazuraneko.neocities.org/learn/anki.html'
+    embed.description = 'Anki is a free and open-source flashcard program that utilizes spaced repetition.';
   } else {
     // embed.title = `__**New to Japanese? Start here! ${externalLink}**__`;
     // embed.url = 'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#beginner-guide';

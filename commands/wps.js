@@ -11,9 +11,14 @@ module.exports.isAllowed = (message, server) => {
 module.exports.help = 'Welcoming party stats';
 
 module.exports.command = (message, content, bot, server) => {
-  let wps = server.guild.members.filter((m) => {return m.roles.has('250907197075226625');});
+  const wps = server.guild.members.filter((m) => {return m.roles.has('250907197075226625');});
   let str = '';
-  for (let [id, wp] of wps) {
+  const sortedWps = new Map(wps.entries().sort((a, b) => {
+    const aNum = server.users[a[0]] ? server.users[a[0]].thirty : 0;
+    const bNum =  server.users[b[0]] ? server.users[b[0]].thirty : 0;
+    return aNum - bNum;
+  }));
+  for (let [id, wp] of sortedWps) {
     if (server.users[id]) {
       str += `${wp.user.tag} : ${server.users[id].thirty}\n`;
     } else {
