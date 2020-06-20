@@ -13,7 +13,7 @@ module.exports.help = 'Welcoming party stats';
 module.exports.command = (message, content, bot, server) => {
   const wps = server.guild.members.filter((m) => {return m.roles.has('250907197075226625');});
   let str = '';
-  const sortedWps = new Map(wps.entries().sort((a, b) => {
+  const sortedWps = new Map([...wps.entries()].sort((a, b) => {
     const aNum = server.users[a[0]] ? server.users[a[0]].thirty : 0;
     const bNum =  server.users[b[0]] ? server.users[b[0]].thirty : 0;
     return aNum - bNum;
