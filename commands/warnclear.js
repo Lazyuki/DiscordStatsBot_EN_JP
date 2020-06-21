@@ -31,11 +31,19 @@ module.exports.command = async (message, content, bot, server) => {
   if (!userID) {
     message.channel.send('Failed to get a user');
     return;
-  };
+  }
 
   if (server.warnlist[userID]) {
     delete server.warnlist[userID];
-    message.channel.send(`Warnings cleared for <@${userID}>`);
+    await message.channel.send(`Warnings cleared for <@${userID}>`);
+    const member = server.guild.members.get(userID);
+    if (member) {
+      try {
+        member.send('Your warnings have been cleared');
+      } catch (e) {
+        message.channel.send(`<@${userID}> could not be notified`);
+      }
+    }
   } else {
     message.channel.send(`<@${userID}> has no warnings.`);
   }
