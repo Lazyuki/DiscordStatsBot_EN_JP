@@ -50,12 +50,12 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
 
-  for (const [memID, mem] of server.guild.members.entries()) {
+  server.guild.members.forEach((mem, memID) => {
     const memMillis = mem.joinedAt.getTime();
     if (memMillis >= firstMillis && memMillis <= endMillis && !exceptionIDs.includes(memID)) {
       badPeople.push(mem);
     }
-  }
+  });
 
   if (badPeople.length === 0) {
     message.channel.send('Failed to get members...');
