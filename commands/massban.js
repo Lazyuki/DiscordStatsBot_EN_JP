@@ -1,7 +1,9 @@
 module.exports.name = 'massban';
 
 module.exports.alias = [
-  'massban'
+  'massban',
+  'banraid',
+  'raidban',
 ];
 
 module.exports.isAllowed = (message, server) => {
@@ -9,6 +11,8 @@ module.exports.isAllowed = (message, server) => {
 };
 
 module.exports.help = '__Mods Only__ `,massban <user> [--end user] [--except user mentions]`\n Ban all the users joined after the mentioned guy. Can also specify the last guy with `--end`. ALL INCLUSIVE. \nExamples:\n`,massban @NewGuy`\n`,massban @FirstGuy --end @LastGuy --except @InnocentGuy` will ban @FirstGuy and anyone after that up to and including @LastGuy, except @InnocentGuy';
+
+const Discord = require('discord.js');
 
 module.exports.command = async (message, content, bot, server) => {
   const badPeople = [];
@@ -31,14 +35,16 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
   const firstMem = server.guild.member(firstID);
-  if (!firstMem) {
-    message.channel.send('Failed to resolve the first user');
-    return;
+  let firstMillis;
+  if (firstMem) {
+    firstMillis = firstMem.joinedAt.getTime();
+  } else {
+    const date = Discord.SnowflakeUtil.deconstruct(firstID).date;
+    firstMillis = date.getTime();
   }
   const endMem = endID ? server.guild.member(endID) : null;
 
   const nowMillis = new Date().getTime();
-  const firstMillis =  firstMem.joinedAt.getTime();
   if (nowMillis - firstMillis > 86400000) {
     message.channel.send('The first user join date cannot be older than 1 day');
     return;
