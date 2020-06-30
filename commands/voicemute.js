@@ -15,21 +15,32 @@ module.exports.isAllowed = (message, server) => {
 module.exports.help = '__VW Only__ Voice mutes people. `,vm <@mentions> [reason]`';
 
 module.exports.command = async (message, content, bot, server) => {
-  let targets = message.mentions.members;
+  content = content.replace(Util.REGEX_USER, '').trim();
+  const targets = [...message.mentions.members.values()];
+  const ids = content.match(Util.REGEX_RAW_ID);
+  if (ids) {
+    for (const id of ids) {
+      const mem = server.guild.member(id);
+      if (mem) {
+        targets.push(mem);
+      }
+    }
+    content = content.replace(Util.REGEX_RAW_ID, '').trim();
+  }
+  
   if (targets.size === 0) {
     message.channel.send('You must mention them');
     return;
   }
-  let reason = content.replace(Util.REGEX_USER, '').trim();
-  if (reason == ''){
+  let reason = content;
+  if (!reason){
     reason = 'unspecified';
   }
   const ewbf = server.guild.channels.get('277384105245802497');
-  for (let [ , member] of targets) {
-    if (member.voice) {
-      await member.voice.setMute(true, `by ${message.author.tag} Reason: ${reason}` );
+  for (const member of targets) {
+    if (member.voiceChannel) {
+      await member.setVoiceChannel(null);
     }
-    
     await member.addRole('357687893566947329'); // Voice mute role
     let embed = new Discord.RichEmbed();
     embed.title = `You have been voice muted in the English-Japanese Language Exchange server by ${message.author.tag}`;
@@ -49,12 +60,12 @@ module.exports.command = async (message, content, bot, server) => {
       issued: message.createdTimestamp,
       issuer: message.author.id,
       link: message.url,
-      warnMessage: `Voice muted`
-    }
+      warnMessage: 'Voice muted'
+    };
     if (server.warnlist[member.id]) {
       server.warnlist[member.id].push(
         warning
-      )
+      );
     } else {
       server.warnlist[member.id] = [
         warning
