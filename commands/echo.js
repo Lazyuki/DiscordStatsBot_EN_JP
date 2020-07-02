@@ -13,6 +13,10 @@ module.exports.isAllowed = (message, server, bot) => {
 module.exports.help = '`,echo <things to say>` Repeat what you\'ve said, as a plain text and inside a code block.';
 
 module.exports.command = (message, content) => {
+  if (message.member.roles.has('486851965121331200')) { // UHC
+    message.channel.send(`${message.member} no cheating!`);
+    return;
+  }
   message.channel.send(content);
   message.channel.send(`\`\`\`${content}\`\`\``);
 };
