@@ -36,7 +36,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
   const firstMem = server.guild.member(firstID);
   let firstMillis;
-  if (firstMem) {
+  if (firstMem && firstMem.joinedAt) {
     firstMillis = firstMem.joinedAt.getTime();
   } else {
     const date = Discord.SnowflakeUtil.deconstruct(firstID).date;
@@ -50,13 +50,14 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
   let endMillis = nowMillis;
-  if (endMem) endMillis = endMem.joinedAt.getTime();
+  if (endMem && endMem.joinedAt) endMillis = endMem.joinedAt.getTime();
   if (endMillis - firstMillis < 0) {
     message.channel.send('The last guy joined before the first guy');
     return;
   }
 
   server.guild.members.forEach((mem, memID) => {
+    if (!mem.joinedAt) return;
     const memMillis = mem.joinedAt.getTime();
     if (memMillis >= firstMillis && memMillis <= endMillis && !exceptionIDs.includes(memID)) {
       badPeople.push(mem);
