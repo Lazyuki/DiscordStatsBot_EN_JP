@@ -34,7 +34,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
   content = content.replace(Util.REGEX_USER, '');
   let min = parseInt(content);
-  if (!min || min <= 0) {
+  if (isNaN(min)) {
     min = 5;
   } else if (min > 1000) {
     min = 1000;
