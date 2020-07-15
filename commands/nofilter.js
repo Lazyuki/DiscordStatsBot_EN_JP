@@ -46,9 +46,9 @@ module.exports.command = async (message, content, bot, server) => {
   for (var mem of members) {
     mem.addRole(nofilterOnlyRole);
     mem.addRole(nofilterRole);
-    if (mem.voice.channel) {
+    if (mem.voiceChannel) {
       nofilter = server.guild.channels.get(nofilterVoiceText);
-      mem.setVoiceChannel(nofilterVoice)
+      mem.setVoiceChannel(nofilterVoice);
     }
     forlater.push(mem);
     names += mem.toString() + ' ';
@@ -57,11 +57,11 @@ module.exports.command = async (message, content, bot, server) => {
       issuer: message.author.id,
       link: message.url,
       warnMessage: `Sent to no filter`
-    }
+    };
     if (server.warnlist[mem.id]) {
       server.warnlist[mem.id].push(
         warning
-      )
+      );
     } else {
       server.warnlist[mem.id] = [
         warning
