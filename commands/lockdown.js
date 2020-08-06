@@ -44,16 +44,25 @@ module.exports.command = async (message, content, bot, server) => {
   if (timestamp_id) {
     lockdown.after = Discord.SnowflakeUtil.deconstruct(timestamp_id).date.getTime();
   }
+  const JHO = server.guild.channels.get('189571157446492161');
+
+  if (lockdown === null) {
+    if (server.lockdown) {
+      message.channel.send('Use `,unlockdown` to end the lockdown');
+    } else {
+      message.channel.send('You need to specify some parameters');
+    }
+    return;
+  }
   server.lockdown = lockdown;
 
   // Mute Mee6 and Rai
-  const JHO = server.guild.channels.get('189571157446492161');
   try {
     await JHO.overwritePermissions('159985870458322944', { SEND_MESSAGES: false }); // Mee6
     await JHO.overwritePermissions('270366726737231884', { SEND_MESSAGES: false }); // Rai
   } catch (e) {
     console.error(e);
-    message.channel.send('Failed to overwrite permissions for MEE6 and Rai');
+    message.channel.send('Failed to overwrite permissions for MEE6 and Rai in JHO');
     return;
   }
   

@@ -89,14 +89,14 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   const diffNowStr = generateDiffStr(diffNow);
   const regexp = lockdown.regex && new RegExp(lockdown.regex, lockdown.ignoreCase && 'i');
   if (diffNow < 600000) { // less than 10 minutes old
-    likelihood += 4;
+    likelihood += 3;
   } else if (diffNow < 86400000) { // less than a day old
     likelihood += 2;
   } else if (diffNow < 604800000) { // less than a week old
-    likelihood++;
+    likelihood += 1;
   }
   if (diffThen && diffThen < 0) likelihood += 2; // after the specified time
-  if (lockdown.link && inv[0] === lockdown.link) likelihood++; // same link
+  if (lockdown.link && inv[0] === lockdown.link) likelihood += 2; // same link
   if (regexp && regexp.test(member.user.username)) likelihood += 3; // regex name
   const max = 4 + (lockdown.after ? 2 : 0) + (lockdown.link ? 1 : 0) + (lockdown.regex ? 3 : 0);
 

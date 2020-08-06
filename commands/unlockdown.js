@@ -16,7 +16,7 @@ const normalPerms = ['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'READ_MES
 
 module.exports.command = async (message, content, bot, server) => {
   server.lockdown = null;
-  JHO = server.guild.channels.get('189571157446492161');
+  const JHO = server.guild.channels.get('189571157446492161');
   JHO.permissionOverwrites.get('159985870458322944').delete().catch(() => message.channel.send('Failed to delete MEE6 channel overwrites')); // Mee6
   JHO.permissionOverwrites.get('270366726737231884').delete().catch(() => message.channel.send('Failed to delete Rai channel overwrites')); // Rai
   
