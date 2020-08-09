@@ -54,7 +54,7 @@ bot.on('ready', () => {
 
 bot.on('message', async message => {
   if (message.author.bot || message.system) return; // Ignore messages by bots and system
-  if (message.channel.type != 'text') { // Direct message.
+  if (message.channel.type === 'dm') { // Direct message.
     respondDM(message);
     return;
   }
