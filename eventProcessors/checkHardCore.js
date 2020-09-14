@@ -8,7 +8,7 @@ module.exports.isAllowed = (message, server) => {
   }
   if (!message.member.roles.has('384286851260743680') && !message.member.roles.has('436573300810973185')) return false; // Hardcore role
   // disabled in #japanese_questions, #english_questions, #correct_me, #language_exchange, #nihongo-study, #eigo-no-beenkyo
-  if (['189601264424714241', '193959229030268938', '314193922761031680', '376574779316109313'].includes(message.channel.id)) return false;
+  if (['189601264424714241', '193959229030268938', '314193922761031680', '376574779316109313', '194656088577015809'].includes(message.channel.id)) return false;
   if (server.hiddenChannels.includes(message.channel.id)) return false; // Not in mod room
   return true;
 };
