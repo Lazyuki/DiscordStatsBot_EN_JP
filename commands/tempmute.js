@@ -44,14 +44,14 @@ const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/;
  * @param {Guild} guild 
  * @returns {[Member, String]}
  */
-async function getNextPossibleMember(content, guild) {
+ function getNextPossibleMember(content, guild) {
   const firstWord = content.split(/(\s|><)+/)[0];
   const idMatches = Util.REGEX_RAW_ID.exec(firstWord);
   if (idMatches) {
     const id = idMatches[0];
     try { 
-      const mem = await guild.fetchMember(id);
-      return [mem, content.substr(firstWord.length + 1).trim()];
+      const mem = guild.members.get(id);
+      return [mem || null, content.substr(firstWord.length + 1).trim()];
     } catch (e) {
       return [null, content.substr(firstWord.length + 1).trim()];
     }
@@ -66,11 +66,11 @@ async function getNextPossibleMember(content, guild) {
  * @param {Guild} guild 
  * @returns {[Member[], String]}
  */
-async function getAllMembers(content, guild) {
+ function getAllMembers(content, guild) {
   let currContent = content;
   const members = [];
   while (currContent) {
-    const [mem, nextContent] = await getNextPossibleMember(currContent, guild);
+    const [mem, nextContent] =  getNextPossibleMember(currContent, guild);
     if (mem) members.push(mem);
     if (nextContent === null) break;
     currContent = nextContent;
@@ -79,7 +79,7 @@ async function getAllMembers(content, guild) {
 }
 
 module.exports.command = async (message, content, bot, server) => {
-  const [members, restContent] = await getAllMembers(content, server.guild);
+  const [members, restContent] =  getAllMembers(content.trim(), server.guild);
   if (members.length === 0) {
     message.channel.send('You need to specify members');
     return;
