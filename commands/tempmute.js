@@ -122,7 +122,11 @@ module.exports.command = async (message, content, bot, server) => {
   for (const member of members) {
     server.tempmutes[member.id] = unmuteDateMillis;
 
-    await member.addRoles([CHAT_MUTED, VOICE_BANNED], 'TempMuted');
+    try {
+      await member.addRoles([CHAT_MUTED, VOICE_BANNED], 'TempMuted');
+    } catch(e) {
+      // already muted
+    }
     setTimeout(() => unmute(member.id, server), totalMillis);
     const warning = {
       issued: message.createdTimestamp,
