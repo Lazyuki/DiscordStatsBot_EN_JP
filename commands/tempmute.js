@@ -46,11 +46,9 @@ const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/;
  */
  function getNextPossibleMember(content, guild) {
   const firstWord = content.split(/(\s|><)+/)[0];
-  console.log('first: ', firstWord)
-  const idMatches = Util.REGEX_RAW_ID.exec(firstWord);
+  const idMatches = /[0-9]{17.22}/.exec(firstWord);
   if (idMatches) {
     const id = idMatches[0];
-    console.log('id match: ', id)
     try { 
       const mem = guild.members.get(id) || null;
       return [mem, content.substr(firstWord.length + 1).trim()];
@@ -73,7 +71,6 @@ const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/;
   const members = [];
   while (currContent) {
     const [mem, nextContent] =  getNextPossibleMember(currContent, guild);
-    console.log('next: ', nextContent);
     if (mem) {
       members.push(mem);
     }
@@ -86,9 +83,7 @@ const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/;
 }
 
 module.exports.command = async (message, content, bot, server) => {
-  console.log(content);
   const [members, restContent] = getAllMembers(content.trim(), server.guild);
-  console.log(restContent);
   if (members.length === 0) {
     message.channel.send('You need to specify members');
     return;
