@@ -79,7 +79,9 @@ const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/;
 }
 
 module.exports.command = async (message, content, bot, server) => {
+  console.log(content);
   const [members, restContent] =  getAllMembers(content.trim(), server.guild);
+  console.log(restContent);
   if (members.length === 0) {
     message.channel.send('You need to specify members');
     return;
