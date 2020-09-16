@@ -66,9 +66,7 @@ async function getAllMembers(content, guild) {
   while (currContent) {
     const [mem, nextContent] = await getNextPossibleMember(currContent, guild);
     if (mem) members.push(mem);
-    if (!nextContent) {
-      break;
-    }
+    if (nextContent === null) break;
     currContent = nextContent;
   }
   return [members, currContent];
@@ -132,5 +130,5 @@ module.exports.command = async (message, content, bot, server) => {
       ];
     }
   }
-  message.channel.send(`✅ Muted ${members.map(m => m.user.tag).join(', ')} for ${days ? `${days} days ` : ''}${hours ? `${hours} hours ` : ''}${minutes ? `${minutes} minutes ` : ''}${seconds ? `${seconds} seconds` : ''}${reason ? `Reason: ${reason}` : ''}`);
+  message.channel.send(`✅ Muted ${members.map(m => m.user.tag).join(', ')} for ${days ? `${days} days ` : ''}${hours ? `${hours} hours ` : ''}${minutes ? `${minutes} minutes ` : ''}${seconds ? `${seconds} seconds` : ''}${reason ? `\nReason: ${reason}` : ''}`);
 };
