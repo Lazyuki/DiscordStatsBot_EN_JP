@@ -38,6 +38,12 @@ const VOICE_BANNED = '327917620462354442';
 const VOICE_MUTED = '357687893566947329';
 const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/;
 
+/**
+ * 
+ * @param {String} content 
+ * @param {Guild} guild 
+ * @returns {[Member, String]}
+ */
 async function getNextPossibleMember(content, guild) {
   const firstWord = content.split(/(\s|><)+/)[0];
   const idMatches = Util.REGEX_RAW_ID.exec(firstWord);
@@ -64,7 +70,7 @@ async function getAllMembers(content, guild) {
   let currContent = content;
   const members = [];
   while (currContent) {
-    const [mem, nextContent] = await getNextPossibleMember(currContent, guild);
+    const [mem, nextContent] =  getNextPossibleMember(currContent, guild);
     if (mem) members.push(mem);
     if (nextContent === null) break;
     currContent = nextContent;
@@ -73,7 +79,7 @@ async function getAllMembers(content, guild) {
 }
 
 module.exports.command = async (message, content, bot, server) => {
-  const [members, restContent] = await getAllMembers(content, server.guild);
+  const [members, restContent] =  getAllMembers(content, server.guild);
   if (members.length === 0) {
     message.channel.send('You need to specify members');
     return;

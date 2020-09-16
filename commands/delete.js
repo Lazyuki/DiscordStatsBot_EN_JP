@@ -9,7 +9,7 @@ module.exports.alias = [
 
 module.exports.isAllowed = (message, server) => {
   if (server.guild.id === '189571157446492161') {
-    return (message.member.hasPermission('ADMINISTRATOR') || message.member.roles.has('543721608506900480') || message.memberg.roles.has('755269385094168576'));
+    return (message.member.hasPermission('ADMINISTRATOR') || message.member.roles.has('543721608506900480') || message.member.roles.has('755269385094168576'));
   } else if (server.guild.id === '292389599982911488') {
     return server.hiddenChannels.includes(message.channel.id);
   }
