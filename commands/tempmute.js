@@ -70,7 +70,7 @@ async function getAllMembers(content, guild) {
   let currContent = content;
   const members = [];
   while (currContent) {
-    const [mem, nextContent] =  getNextPossibleMember(currContent, guild);
+    const [mem, nextContent] = await getNextPossibleMember(currContent, guild);
     if (mem) members.push(mem);
     if (nextContent === null) break;
     currContent = nextContent;
@@ -79,7 +79,7 @@ async function getAllMembers(content, guild) {
 }
 
 module.exports.command = async (message, content, bot, server) => {
-  const [members, restContent] =  getAllMembers(content, server.guild);
+  const [members, restContent] = await getAllMembers(content, server.guild);
   if (members.length === 0) {
     message.channel.send('You need to specify members');
     return;
