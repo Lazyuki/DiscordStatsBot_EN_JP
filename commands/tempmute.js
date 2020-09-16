@@ -36,7 +36,7 @@ module.exports.help = "Mute users temporarily. `,tm <mentions or IDs> [time. Def
 const CHAT_MUTED = '259181555803619329';
 const VOICE_BANNED = '327917620462354442';
 const VOICE_MUTED = '357687893566947329';
-const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/
+const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/;
 
 async function getNextPossibleMember(content, guild) {
   const firstWord = content.split(/(\s|><)+/)[0];
@@ -45,9 +45,9 @@ async function getNextPossibleMember(content, guild) {
     const id = idMatches[0];
     try { 
       const mem = await guild.fetchMember(id);
-      return [mem, content.substr(firstWord.length + 1)];
+      return [mem, content.substr(firstWord.length + 1).trim()];
     } catch (e) {
-      return [null, content.substr(firstWord.length + 1)];
+      return [null, content.substr(firstWord.length + 1).trim()];
     }
   } else {
     return [null, null];
@@ -80,10 +80,9 @@ module.exports.command = async (message, content, bot, server) => {
     message.channel.send('You need to specify members');
     return;
   }
-  const timeMatches = TIME_REGEX.exec(restContent);
-  if (!timeMatches) {
-    message.channel.send('Invalid time syntax. Only `d`, `h`, `m`, and `s` are supported');
-    return;
+  let timeMatches = TIME_REGEX.exec(restContent);
+  if (!timeMatches[0]) {
+    timeMatches = [null, 0, 0, 5, 0];
   }
   let days = parseInt(timeMatches[1] || 0);
   let hours = parseInt(timeMatches[2] || 0);
