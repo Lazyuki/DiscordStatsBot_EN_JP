@@ -46,7 +46,7 @@ const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/;
  */
  function getNextPossibleMember(content, guild) {
   const firstWord = content.split(/(\s|><)+/)[0];
-  const idMatches = /[0-9]{17.22}/.exec(firstWord);
+  const idMatches = /[0-9]{17,22}/.exec(firstWord);
   if (idMatches) {
     const id = idMatches[0];
     try { 
