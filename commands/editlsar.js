@@ -10,7 +10,7 @@ module.exports.isAllowed = (message) => {
   // return message.author.id == bot.owner_ID; // Or Admins?
 };
 
-module.exports.help = '__Mods Only__ Edits the list of self-assignable roles in the lsar stickied channel. Checks for the last message sent by Ciri in the channel';
+module.exports.help = ' Edits the list of self-assignable roles in the lsar stickied channel. Checks for the last message sent by Ciri in the channel';
 
 module.exports.command = async (message, content, bot, server) => {
   let stickiedChannel = server.guild.channels.get(server.sticky);

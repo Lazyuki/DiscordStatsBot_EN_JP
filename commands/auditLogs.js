@@ -170,89 +170,91 @@ module.exports.command = async (message, content, bot, server) => {
     message.channel.send('I need the View Audit Log permission.');
     return;
   }
-  try {
-    let guild = server.guild;
-    let loopCount = 0;
-    let count = 0;
-    let beforeID = null;
-    let contents = content.split(' ');
-    let user = null;
-    if (message.mentions.users.size) user = message.mentions.users.first();
-    let max = parseInt(contents[0]);
-    if (!max || max > 20) max = 3;
-    let type = null;
-    let targID = null;
-    for (let c of contents) {
-      if (/\d{17,20}/.test(c)) {
-        targID = c;
-      }
-      if (/[a-z]/g.test(c)) {
-        c = normalToCaps(c);
-      }
-      if (Discord.GuildAuditLogs.Actions[c]) {
-        if (!IgnoredActions[c])
-          type = c;
-      }
-    }
-    let prev = {'action': null, 'exeID': null, 'targetID': null, 'extraID': null, 'entries': []};
-    while (true) { // dont go too much loopCount < 20
-      let params = {limit:100};
-      if (beforeID) params.before = beforeID;
-      if (user) params.user = user.id;
-      if (type) params.type = type;
-      let al = await guild.fetchAuditLogs(params);
-      for (let e of al.entries.values()) {
-        if (!isInteresting(e)) continue;
-        if (sameEntry(e, prev)) {
-          if (!e.changes) continue;
-          prev['entries'].push(e);
-          continue;
-        }
-        if (targID) {
-          if (e.target) {
-            if (e.target.id) {
-              if (e.target.id != targID) {
-                continue;
-              } // target id == targID
-            } else continue;
-          } else continue;
-        }
-        let	preves = prev['entries'];
-        prev['action'] = e.action;
-        prev['exeID'] = e.executor.id;
-        if (e.target == null) {
-          prev['targetID'] = null;
-        } else {
-          prev['targetID'] = e.target.id;
-        }
-        if (e.extra) {
-          if (e.extra.channel) {
-            prev['extraID'] == e.extra.channel.id;
-          } else {
-            prev['extraID'] = null;
-          }
-        } else {
-          prev['extraID'] = null;
-        }
-        prev['entries'] = [e];
-        if (preves.length) {
-          let embed = embedEntry(preves);
-          await message.channel.send({embed});
-          if (++count == max) {
-            break;
-          }
-        }
-      }
-      if (count < max) {
-        if (al.entries.size < 100) break;
-        loopCount++;
-        beforeID = al.entries.lastKey();
-      } else {
-        break;
-      }
-    }
-  } catch (e) {
-    console.log(e);
-    message.channel.send('Sorry, this command is broken and Geralt is too lazy to fix it at the moment');
-  }
+  message.channel.send('This command no longer works');
+  return;
+  // try {
+  //   let guild = server.guild;
+  //   let loopCount = 0;
+  //   let count = 0;
+  //   let beforeID = null;
+  //   let contents = content.split(' ');
+  //   let user = null;
+  //   if (message.mentions.users.size) user = message.mentions.users.first();
+  //   let max = parseInt(contents[0]);
+  //   if (!max || max > 20) max = 3;
+  //   let type = null;
+  //   let targID = null;
+  //   for (let c of contents) {
+  //     if (/\d{17,20}/.test(c)) {
+  //       targID = c;
+  //     }
+  //     if (/[a-z]/g.test(c)) {
+  //       c = normalToCaps(c);
+  //     }
+  //     if (Discord.GuildAuditLogs.Actions[c]) {
+  //       if (!IgnoredActions[c])
+  //         type = c;
+  //     }
+  //   }
+  //   let prev = {'action': null, 'exeID': null, 'targetID': null, 'extraID': null, 'entries': []};
+  //   while (true) { // dont go too much loopCount < 20
+  //     let params = {limit:100};
+  //     if (beforeID) params.before = beforeID;
+  //     if (user) params.user = user.id;
+  //     if (type) params.type = type;
+  //     let al = await guild.fetchAuditLogs(params);
+  //     for (let e of al.entries.values()) {
+  //       if (!isInteresting(e)) continue;
+  //       if (sameEntry(e, prev)) {
+  //         if (!e.changes) continue;
+  //         prev['entries'].push(e);
+  //         continue;
+  //       }
+  //       if (targID) {
+  //         if (e.target) {
+  //           if (e.target.id) {
+  //             if (e.target.id != targID) {
+  //               continue;
+  //             } // target id == targID
+  //           } else continue;
+  //         } else continue;
+  //       }
+  //       let	preves = prev['entries'];
+  //       prev['action'] = e.action;
+  //       prev['exeID'] = e.executor.id;
+  //       if (e.target == null) {
+  //         prev['targetID'] = null;
+  //       } else {
+  //         prev['targetID'] = e.target.id;
+  //       }
+  //       if (e.extra) {
+  //         if (e.extra.channel) {
+  //           prev['extraID'] == e.extra.channel.id;
+  //         } else {
+  //           prev['extraID'] = null;
+  //         }
+  //       } else {
+  //         prev['extraID'] = null;
+  //       }
+  //       prev['entries'] = [e];
+  //       if (preves.length) {
+  //         let embed = embedEntry(preves);
+  //         await message.channel.send({embed});
+  //         if (++count == max) {
+  //           break;
+  //         }
+  //       }
+  //     }
+  //     if (count < max) {
+  //       if (al.entries.size < 100) break;
+  //       loopCount++;
+  //       beforeID = al.entries.lastKey();
+  //     } else {
+  //       break;
+  //     }
+  //   }
+  // } catch (e) {
+  //   console.log(e);
+  //   message.channel.send('Sorry, this command is broken and Geralt is too lazy to fix it at the moment');
+  // }
 };

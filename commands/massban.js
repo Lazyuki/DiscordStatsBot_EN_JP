@@ -1,16 +1,14 @@
-module.exports.name = 'massban';
+module.exports.name = 'raidban';
 
 module.exports.alias = [
-  'massban',
   'banraid',
-  'raidban',
 ];
 
 module.exports.isAllowed = (message, server) => {
   return (message.member.hasPermission('BAN_MEMBERS') || message.member.roles.has('543721608506900480'));
 };
 
-module.exports.help = '__Mods Only__ `,massban <user> [--end user] [--except user mentions]`\n Ban all the users joined after the mentioned guy. Can also specify the last guy with `--end`. ALL INCLUSIVE. \nExamples:\n`,massban @NewGuy`\n`,massban @FirstGuy --end @LastGuy --except @InnocentGuy` will ban @FirstGuy and anyone after that up to and including @LastGuy, except @InnocentGuy';
+module.exports.help = ' `,raidban <user> [--end user] [--except user-mentions]`\n Ban all the users joined after the mentioned guy. Can also specify the last guy with `--end`. ALL INCLUSIVE. \nExamples:\n`,raidban @NewGuy`\n`,raidban @FirstGuy --end @LastGuy --except @InnocentGuy` will ban @FirstGuy and anyone after that up to and including @LastGuy, except @InnocentGuy';
 
 const Discord = require('discord.js');
 

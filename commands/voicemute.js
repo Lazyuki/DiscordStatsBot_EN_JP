@@ -12,7 +12,7 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('MUTE_MEMBERS');
 };
 
-module.exports.help = '__VW Only__ Voice mutes people. `,vm <@mentions> [reason]`';
+module.exports.help = 'Voice mutes people. `,vm <@mentions> [reason]`';
 
 module.exports.command = async (message, content, bot, server) => {
   content = content.replace(Util.REGEX_USER, '').trim();
@@ -43,14 +43,14 @@ module.exports.command = async (message, content, bot, server) => {
     }
     await member.addRole('357687893566947329'); // Voice mute role
     let embed = new Discord.RichEmbed();
-    embed.title = `You have been voice muted in the English-Japanese Language Exchange server by ${message.author.tag}`;
+    embed.title = `You have been voice muted in the English-Japanese Language Exchange server`;
     embed.description = `Reason: ${reason}`;
+    embed.setFooter('Contact the DM Bot if you need to discuss this issue.');
     embed.color = Number('0xEC891D');
-    embed.setFooter('Contact one of the mods if you need to discuss this issue.', message.author.avatarURL);
     embed.timestamp = new Date();
     await member.send({embed});
     embed = new Discord.RichEmbed();
-    embed.setAuthor(`${member.user.tag} has been muted in voice chat` , member.user.avatarURL);
+    embed.setAuthor(`${member.user.tag} has been muted in voice chat`, member.user.avatarURL);
     embed.description = `Reason: ${reason}`;
     embed.color = Number('0xEC891D');
     embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);

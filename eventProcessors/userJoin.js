@@ -1,6 +1,7 @@
 module.exports.name = 'userJoin';
 module.exports.events = ['JOIN'];
 let EWBF = null;
+let AGT = null;
 let JHO = null;
 let DDJLog = null;
 const EJLX_BAN_EMOJI_ID = '423687199385452545';
@@ -13,6 +14,7 @@ module.exports.initialize = async (json, server) => {
     server.invites = await server.guild.fetchInvites(); // Cleanup when saving...?
     EWBF = server.guild.channels.get('277384105245802497');
     JHO = server.guild.channels.get('189571157446492161');
+    AGT = server.guild.channels.get('755269708579733626');
   } else if (server.guild.id == '453115403829248010') {
     server.invites = await server.guild.fetchInvites(); // Cleanup when saving...?
     DDJLog = server.guild.channels.get('453125855523241984');
@@ -115,10 +117,10 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
     return;
   } else if (likelihood === 10 && welcome) {
     await member.ban({ days: 1, reason: 'Auto BAN. Matched all criteria.'});
-    await EWBF.send({ embed });
+    await AGT.send({ embed });
     return;
   }
-  const msg = await EWBF.send({ embed });
+  const msg = await AGT.send({ embed });
 
   await msg.react('✅');
   await msg.react(banEmoji);
@@ -164,25 +166,7 @@ async function postLogs(member, server) {
   server.invites = newInvites;
   if (inv === null) inv = ['japanese', { inviter: { username: 'vanityURL' } }];
   console.log(`${member.user.username} joined with ${inv[0]}`);
-  if (inv[0] === 'NJJCYVD') {
-    const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
-    const diff = date - new Date(server.lastmag);
-    if (diff > 0) {
-      const m = Math.floor(diff / (60 * 1000));
-      const hr = Math.floor(m / 60);
-      const min = m % 60;
-      const avatarURL = member.user.avatarURL;
-      if (avatarURL && avatarURL.includes('cdn.discordapp.com/avatars')) {
-        const embed = new Discord.RichEmbed();
-        embed.setTitle(`${member.user.tag} (${member.id}) might be magmikan aka リア充先輩 aka じぇい`)
-        embed.setDescription(`Account created: ${hr} hrs ${min} mins after the last time magmikan was banned, and he has an avatar already`);
-        embed.setFooter(`Account created: `, avatarURL);
-        embed.setTimestamp(date);
-        EWBF.send({ embed });
-      }
-    }
-  }
-
+ 
   if (await bparker(member, inv)) return;
 
   let welcome = `Welcome ${member}. Please read <#189585230972190720> and tell us what your native language is!\n${member}さん、ようこそ! あなたの母語を教えてください! 注意事項は<#189585230972190720>に書いてあります。<@&357449148405907456>`;

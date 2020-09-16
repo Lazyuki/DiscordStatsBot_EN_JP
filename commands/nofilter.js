@@ -4,11 +4,12 @@ module.exports.name = 'noFilterOnly';
 module.exports.alias = [
   'nofilter',
   'cooloffyaheads',
-  'nf'
+  'nf',
+  'st'
 ];
 module.exports.isAllowed = (message, server) => {
   if (server.guild.id != '189571157446492161') return false;
-  return message.member.hasPermission('MANAGE_ROLES');
+  return message.member.hasPermission('MANAGE_ROLES') && message.member.hasPermission('MUTE_MEMBERS');
 };
 const nofilterOnlyRole = '378668720417013760';
 const nofilterRole = '196106229813215234';
@@ -22,7 +23,7 @@ function remove(members) {
   }
 }
 
-module.exports.help = '__WP only__ `,nf @someone @sometwo... [minutes (default = 5)]` Sends people to ~~oblivion~~ <#193966083886153729> for some minutes. ***__YOU SHOULD WARN THEM FIRST.__***';
+module.exports.help = '`,st @someone @sometwo... [minutes (default = 5)]` Sends people to ~~oblivion~~ <#193966083886153729> for some minutes. ***__YOU SHOULD WARN THEM FIRST.__***';
 
 const Util = require('../classes/Util.js');
 
@@ -56,7 +57,7 @@ module.exports.command = async (message, content, bot, server) => {
       issued: message.createdTimestamp,
       issuer: message.author.id,
       link: message.url,
-      warnMessage: `Sent to no filter`
+      warnMessage: `Sent to sensitive topics`
     };
     if (server.warnlist[mem.id]) {
       server.warnlist[mem.id].push(

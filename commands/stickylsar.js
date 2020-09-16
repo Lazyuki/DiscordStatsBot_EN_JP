@@ -15,7 +15,7 @@ module.exports.isAllowed = (message) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = '__Mods Only__ Set the sticky list-self-assingable-roles channel.\n `,sticky <#channel>`';
+module.exports.help = ' Set the sticky list-self-assingable-roles channel.\n `,sticky <#channel>`';
 
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.mentions.channels.first();

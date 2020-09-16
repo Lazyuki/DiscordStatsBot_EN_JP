@@ -10,7 +10,7 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = '__Mods Only__ Deletes messages sent by specified users in the channel in the past 24 hours. Use their IDs. `,prune <#123454323454> 2345432345643 4543246543234 -h 10`\nUse `-h` for number of hours (24 by default)';
+module.exports.help = ' Deletes messages sent by specified users in the channel in the past 24 hours. Use their IDs. `,prune <#123454323454> 2345432345643 4543246543234 -h 10`\nUse `-h` for number of hours (24 by default)';
 
 const Util = require('../classes/Util');
 

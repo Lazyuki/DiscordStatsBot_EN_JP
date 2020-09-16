@@ -11,7 +11,7 @@ module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161' && (message.member.hasPermission('ADMINISTRATOR') || message.member.roles.has('543721608506900480'));
 };
 
-module.exports.help = '__Mods Only__ `,mute <@mentions> [minutes] [reason]`\n Mute them from text chat. `,mute @geralt 60 shut up`';
+module.exports.help = '`,mute <@mentions> [minutes] [reason]`\n Mute them from text chat. `,mute @geralt 60 shut up`';
 
 module.exports.command = async (message, content, bot, server) => {
   const badPeople = message.mentions.members.array();

@@ -9,7 +9,7 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = '__Mods Only__ Mute new users in text chat. Type the same command again to disable it. **Intended for raids**';
+module.exports.help = ' Mute new users in text chat. Type the same command again to disable it. **Intended for raids**';
 const mutedPerms = ['VIEW_CHANNEL', 'READ_MESSAGE_HISTORY'];
 const minPerms = ['VIEW_CHANNEL', 'SEND_MESSAGES', 'READ_MESSAGE_HISTORY'];
 const normalPerms = ['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'READ_MESSAGE_HISTORY', 'USE_EXTERNAL_EMOJIS', 'CHANGE_NICKNAME'];

@@ -9,7 +9,7 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = '__Mods Only__ End lockdown';
+module.exports.help = ' End lockdown';
 
 
 const normalPerms = ['ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES', 'READ_MESSAGE_HISTORY', 'USE_EXTERNAL_EMOJIS', 'CHANGE_NICKNAME'];

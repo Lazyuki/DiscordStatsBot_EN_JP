@@ -14,7 +14,7 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = '__Mods Only__ Enable lockdown with options. New users will automatically be muted. `,lockdown [-t discord_id ]  [ -l invite_link ] [-r username_regex ] [ -i (ignore case?) ]`\nDiscord ID is to check whether or not the account is created after that ID. Use raw invite link like "japanese" or "VMNnyEk". Regex is JS regex.\ne.g. `,lockdown -t 646129675202199582 -l japanese -r ^bannable_name -i`';
+module.exports.help = ' Enable lockdown with options. New users will automatically be muted. `,lockdown [-t discord_id ]  [ -l invite_link ] [-r username_regex ] [ -i (ignore case?) ]`\nDiscord ID is to check whether or not the account is created after that ID. Use raw invite link like "japanese" or "VMNnyEk". Regex is JS regex.\ne.g. `,lockdown -t 646129675202199582 -l japanese -r ^bannable_name -i`';
 
 const Discord = require('discord.js');
 

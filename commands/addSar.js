@@ -9,7 +9,7 @@ module.exports.isAllowed = (message) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = '__Mods Only__ `,asar <emoji> <role name>` Add a self assignable role to the list.';
+module.exports.help = ' `,asar <emoji> <role name>` Add a self assignable role to the list.';
 
 module.exports.command = (message, content, bot, server) => {
   let captured = /^(\S+)\s(.+)/i.exec(content);

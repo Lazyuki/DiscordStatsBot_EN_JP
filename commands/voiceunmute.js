@@ -17,7 +17,7 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('MUTE_MEMBERS');
 };
 
-module.exports.help = '__VW Only__ Unmutes people. `,vum <@someone> [@sometwo ...]`';
+module.exports.help = 'Unmutes people. `,vum <@someone> [@sometwo ...]`';
 
 module.exports.command = async (message, content, bot, server) => {
   let targets = message.mentions.members;

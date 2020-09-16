@@ -18,7 +18,7 @@ module.exports.initialize = (json, server) => {
   server.selfmutes = json['selfmutes'];
   for (const user_id in server.selfmutes) {
     const time = server.selfmutes[user_id];
-    setTimeout(() => unmute(user_id, server), new Date(time).getTime() - new Date().getTime())
+    setTimeout(() => unmute(user_id, server), new Date(time).getTime() - new Date().getTime());
   }
 };
 

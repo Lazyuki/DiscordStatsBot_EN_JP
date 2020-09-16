@@ -9,7 +9,7 @@ module.exports.isAllowed = (message) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = '__Mods Only__ Set up and configure hourly category clocks. `,cc < set | delete | list > [CATEGORY_ID] [ t | f for padding 0s] ["Time format string"]`\nUse "TZ Database Name" from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones inside `${TZ_name}` for specifying the timezone.\ne.g. `,cc set 537289285129469954 "Time: 🇯🇵${Asia/Tokyo}時 🇺🇸${America/New_York}時"` or to disable, `,cc delete 537289285129469954`';
+module.exports.help = ' Set up and configure hourly category clocks. `,cc < set | delete | list > [CATEGORY_ID] [ t | f for padding 0s] ["Time format string"]`\nUse "TZ Database Name" from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones inside `${TZ_name}` for specifying the timezone.\ne.g. `,cc set 537289285129469954 "Time: 🇯🇵${Asia/Tokyo}時 🇺🇸${America/New_York}時"` or to disable, `,cc delete 537289285129469954`';
 
 const timeStringRegex = /"(.*)"/;
 

@@ -1,0 +1,137 @@
+module.exports.name = 'tempMute';
+module.exports.alias = [
+  'tempmute',
+  'tm',
+  'shutup',
+];
+const Util = require('../classes/Util.js');
+
+function unmute(user_id, server) {
+  server.guild.fetchMember(user_id)
+    .then(member => {
+      member.removeRoles([CHAT_MUTED, VOICE_BANNED]);
+    }).catch(e => {
+      // member no longer exists
+    });
+  if (user_id in server.tempmutes) delete server.tempmutes[user_id];
+}
+
+module.exports.initialize = (json, server) => {
+  server.tempmutes = {};
+  if (!json || !json['tempmutes']) return;
+  server.tempmutes = json['tempmutes'];
+  for (const user_id in server.tempmutes) {
+    const time = server.tempmutes[user_id];
+    setTimeout(() => unmute(user_id, server), new Date(time).getTime() - new Date().getTime());
+  }
+};
+
+module.exports.isAllowed = (message, server) => {
+  return server.guild.id === '189571157446492161' && message.member.hasPermission('MUTE_MEMBERS');
+};
+
+
+module.exports.help = "Mute users temporarily. `,tm <mentions or IDs> [time. Defaults to 5m] [reason]`\nExample: `,tm @someone @sometwo 3d1h30m shhhhhhhh`";
+
+const CHAT_MUTED = '259181555803619329';
+const VOICE_BANNED = '327917620462354442';
+const VOICE_MUTED = '357687893566947329';
+const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/
+
+async function getNextPossibleMember(content, guild) {
+  const firstWord = content.split(/(\s|><)+/)[0];
+  const idMatches = Util.REGEX_RAW_ID.exec(firstWord);
+  if (idMatches) {
+    const id = idMatches[0];
+    try { 
+      const mem = await guild.fetchMember(id);
+      return [mem, content.substr(firstWord.length + 1)];
+    } catch (e) {
+      return [null, content.substr(firstWord.length + 1)];
+    }
+  } else {
+    return [null, null];
+  }
+}
+
+/**
+ * 
+ * @param {String} content 
+ * @param {Guild} guild 
+ * @returns {[Member[], String]}
+ */
+async function getAllMembers(content, guild) {
+  let currContent = content;
+  const members = [];
+  while (currContent) {
+    const [mem, nextContent] = await getNextPossibleMember(currContent, guild);
+    if (mem) members.push(mem);
+    if (!nextContent) {
+      break;
+    }
+    currContent = nextContent;
+  }
+  return [members, currContent];
+}
+
+module.exports.command = async (message, content, bot, server) => {
+  const [members, restContent] = await getAllMembers(content, server.guild);
+  if (members.length === 0) {
+    message.channel.send('You need to specify members');
+    return;
+  }
+  const timeMatches = TIME_REGEX.exec(restContent);
+  if (!timeMatches) {
+    message.channel.send('Invalid time syntax. Only `d`, `h`, `m`, and `s` are supported');
+    return;
+  }
+  let days = parseInt(timeMatches[1] || 0);
+  let hours = parseInt(timeMatches[2] || 0);
+  let minutes = parseInt(timeMatches[3] || 0);
+  let seconds = parseInt(timeMatches[4] || 0);
+  if (seconds >= 60) {
+    minutes += Math.floor(seconds / 60);
+    seconds %= 60;
+  }
+  if (minutes >= 60) {
+    hours += Math.floor(minutes / 60);
+    minutes %= 60;
+  }
+  if (hours >= 24) {
+    days += Math.floor(hours / 24);
+    hours %= 24;
+  }
+  const totalSeconds = seconds + (minutes * 60) + (hours * 3600) + (days * 86400);
+  if (totalSeconds > 2592000) {
+    message.channel.send("You can't mute them for more than a month");
+    return;
+  } else if (totalSeconds < 60) {
+    message.channel.send("You can't mute them for under a minute");
+    return;
+  }
+  const totalMillis = totalSeconds * 1000;
+  const unmuteDateMillis = new Date().getTime() + totalMillis;
+  const reason = restContent.replace(TIME_REGEX, '').trim();
+  for (const member of members) {
+    server.tempmutes[member.id] = unmuteDateMillis;
+
+    await member.addRoles([CHAT_MUTED, VOICE_BANNED], 'TempMuted');
+    setTimeout(() => unmute(member.id, server), totalMillis);
+    const warning = {
+      issued: message.createdTimestamp,
+      issuer: message.author.id,
+      link: message.url,
+      warnMessage: 'Temp muted' + (reason ? `: ${reason}`: '')
+    };
+    if (server.warnlist[member.id]) {
+      server.warnlist[member.id].push(
+        warning
+      );
+    } else {
+      server.warnlist[member.id] = [
+        warning
+      ];
+    }
+  }
+  message.channel.send(`✅ Muted ${members.map(m => m.user.tag).join(', ')} for ${days ? `${days} days ` : ''}${hours ? `${hours} hours ` : ''}${minutes ? `${minutes} minutes ` : ''}${seconds ? `${seconds} seconds` : ''}${reason ? `Reason: ${reason}` : ''}`);
+};
