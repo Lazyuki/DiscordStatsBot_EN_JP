@@ -80,10 +80,9 @@ module.exports.command = async (message, content, bot, server) => {
     channel.send('No messages to delete.');
     return;
   } 
-
-  let ewbf = server.guild.channels.get('277384105245802497');
+  let AGT = server.guild.channels.get('755269708579733626');
   if (server.guild.id === '292389599982911488') {
-    ewbf = message.channel;
+    AGT = message.channel;
   }
   if (!(content.includes('-n') && message.member.hasPermission('ADMINISTRATOR'))) {
     let embed = new Discord.RichEmbed();
@@ -104,9 +103,9 @@ module.exports.command = async (message, content, bot, server) => {
       embed.addField(`Message by ${msg.author.tag} (${msg.author.id}):`, `${msg.attachments.size ? `File ${imgCount - 1} ${msg.content}` : (msg.content || '**empty**')}`, false);
     }
     if (imgStr) {
-      await ewbf.send(imgStr);
+      await AGT.send(imgStr);
     }
-    await ewbf.send({embed});
+    await AGT.send({embed});
   }
   
   try {

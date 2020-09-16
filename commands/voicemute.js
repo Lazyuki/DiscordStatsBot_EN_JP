@@ -36,7 +36,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (!reason){
     reason = 'unspecified';
   }
-  const ewbf = server.guild.channels.get('277384105245802497');
+  const AGT = server.guild.channels.get('755269708579733626');
   for (const member of targets) {
     if (member.voiceChannel) {
       await member.setVoiceChannel(null);
@@ -55,7 +55,7 @@ module.exports.command = async (message, content, bot, server) => {
     embed.color = Number('0xEC891D');
     embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);
     embed.timestamp = new Date();
-    ewbf.send({embed});
+    AGT.send({embed});
     const warning = {
       issued: message.createdTimestamp,
       issuer: message.author.id,
