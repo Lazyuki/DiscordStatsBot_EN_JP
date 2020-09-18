@@ -5,8 +5,8 @@ module.exports.alias = [
   'tempmute',
   'tm',
   'shutup',
+  'timeout'
 ];
-const Util = require('../classes/Util.js');
 
 function unmute(user_id, server) {
   server.guild.fetchMember(user_id)
