@@ -5,8 +5,8 @@ module.exports.alias = [
   'clr'
 ];
 
-module.exports.isAllowed = () => {
-  return true;
+module.exports.isAllowed = (message) => {
+  return message.channel.id !== '277384105245802497'; // ewbf
 };
 
 module.exports.help = '`,clr [number of messages to delete]` Clear messages by Ciri. Defaults to 1 message.';

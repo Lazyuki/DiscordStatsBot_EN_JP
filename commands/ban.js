@@ -119,7 +119,7 @@ module.exports.command = async (message, content, bot, server) => {
   collector.on('end', (collected, endReason) => {
     if (endReason == 'Banned') {
       message.channel.send('✅ Banned');
-      const ewbf = server.guild.channels.get('277384105245802497');
+      const agt = server.guild.channels.get('755269708579733626');
       let embed = new Discord.RichEmbed();
       let date = new Date();
       embed.setAuthor(`${message.author.tag}`,message.author.avatarURL);
@@ -129,7 +129,7 @@ module.exports.command = async (message, content, bot, server) => {
       embed.color = Number('0xff283a');
       embed.setFooter(`In #${message.channel.name}`);
       embed.timestamp = date;
-      ewbf.send({embed});
+      agt.send({embed});
       return;
     } else if (endReason == 'Cancelled') {
       message.channel.send('❌ Cancelled');

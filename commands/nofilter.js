@@ -71,14 +71,14 @@ module.exports.command = async (message, content, bot, server) => {
   }
   nofilter.send(`${names}you have been muted in all channels but here for ${min} minutes.`);
   message.channel.send(`Sent to ${nofilter}`);
-  const ewbf = server.guild.channels.get('277384105245802497');
+  const agt = server.guild.channels.get('755269708579733626');
   let embed = new Discord.RichEmbed();
   embed.setAuthor(`No filtered by ${message.author.tag}` , message.author.avatarURL);
   embed.description = `${names}`;
   embed.color = Number('0xEC891D');
   embed.setFooter(`In: #${message.channel.name}`);
   embed.timestamp = new Date();
-  ewbf.send({embed});
+  agt.send({embed});
 
   setTimeout(() => {
     remove(forlater);

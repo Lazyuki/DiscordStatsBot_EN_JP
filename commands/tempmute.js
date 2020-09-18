@@ -1,3 +1,5 @@
+const Discord = require('discord.js');
+
 module.exports.name = 'tempMute';
 module.exports.alias = [
   'tempmute',
@@ -119,14 +121,23 @@ module.exports.command = async (message, content, bot, server) => {
   const totalMillis = totalSeconds * 1000;
   const unmuteDateMillis = new Date().getTime() + totalMillis;
   const reason = restContent.replace(TIME_REGEX, '').trim();
+  const durationString = `${days ? `${days} days ` : ''}${hours ? `${hours} hours ` : ''}${minutes ? `${minutes} minutes ` : ''}${seconds ? `${seconds} seconds` : ''}`;
+  const embed = new Discord.RichEmbed();
+  embed.setAuthor(`Temporarily Muted in ${message.guild.name}`);
+  embed.description = `You are muted for ${durationString}\nReason: ${reason || 'unspecified'}`;
+  embed.color = Number('0xEC891D');
+  embed.timestamp = new Date();
   for (const member of members) {
     server.tempmutes[member.id] = unmuteDateMillis;
 
     try {
-      await member.addRoles([CHAT_MUTED, VOICE_BANNED], 'TempMuted');
+      if (member.voiceChannel) await member.setVoiceChannel(null);
+      await member.addRoles([CHAT_MUTED, VOICE_BANNED], 'Temp Muted');
+      await member.send({ embed });
     } catch(e) {
       // already muted
     }
+
     setTimeout(() => unmute(member.id, server), totalMillis);
     const warning = {
       issued: message.createdTimestamp,
@@ -144,5 +155,10 @@ module.exports.command = async (message, content, bot, server) => {
       ];
     }
   }
-  message.channel.send(`✅ Muted ${members.map(m => m.user.tag).join(', ')} for ${days ? `${days} days ` : ''}${hours ? `${hours} hours ` : ''}${minutes ? `${minutes} minutes ` : ''}${seconds ? `${seconds} seconds` : ''}${reason ? `\nReason: ${reason}` : ''}`);
+  await message.channel.send(`✅ Muted ${members.map(m => m.user.tag).join(', ')} for ${durationString}${reason ? `\nReason: ${reason}` : ''}`);
+  const agt = server.guild.channels.get('755269708579733626');
+  embed.setAuthor('Temporarily Muted', message.author.avatarURL);
+  embed.description = `Duration: ${durationString}\nReason: ${reason || 'unspecified'}\nMembers: ${members.map(m => m).join('\n')}`;
+  embed.setFooter(`In: #${message.channel.name}`);
+  agt.send({ embed });
 };
