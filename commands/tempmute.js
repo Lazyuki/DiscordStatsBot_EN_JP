@@ -155,10 +155,10 @@ module.exports.command = async (message, content, bot, server) => {
       ];
     }
   }
-  await message.channel.send(`✅ Muted ${members.map(m => m.user.tag).join(', ')} for ${durationString}${reason ? `\nReason: ${reason}` : ''}`);
+  await message.channel.send(`✅ Muted ${members.map(m => m).join(', ')} for ${durationString}${reason ? `\nReason: ${reason}` : ''}`);
   const agt = server.guild.channels.get('755269708579733626');
   embed.setAuthor('Temporarily Muted', message.author.avatarURL);
-  embed.description = `Duration: ${durationString}\nReason: ${reason || 'unspecified'}\nMembers: ${members.map(m => m).join('\n')}`;
+  embed.description = `Duration: ${durationString}\nReason: ${reason || 'unspecified'}\nMembers: ${members.map(m => `${m}: (${m.user.tag})`).join('\n')}`;
   embed.setFooter(`In: #${message.channel.name}`);
   agt.send({ embed });
 };
