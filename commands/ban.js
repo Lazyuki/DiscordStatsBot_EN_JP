@@ -126,7 +126,7 @@ module.exports.command = async (message, content, bot, server) => {
       embed.title = 'Ban';
       embed.addField('Banned users:', `${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}`, false);
       embed.addField('Ban reason:', `${reason}`, false);
-      embed.color = Number('0xff283a');
+      embed.color = Number('0x000000');
       embed.setFooter(`In #${message.channel.name}`);
       embed.timestamp = date;
       agt.send({embed});

@@ -82,6 +82,7 @@ module.exports.command = async (message, content, bot, server) => {
             .setColor('0xDB3C3C')
         });
     });
+    warning.warnMessage += '\n(DM Failed)';
   } else {
     message.channel.send({
       embed: new Discord.RichEmbed()
