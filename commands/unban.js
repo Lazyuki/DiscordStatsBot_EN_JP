@@ -4,7 +4,7 @@ module.exports.name = 'unabn';
 module.exports.isAllowed = (message, server) => {
   return (message.member.hasPermission('ADMINISTRATOR') || message.member.roles.has('543721608506900480'));
 };
-
+module.exports.alias=['unban'];
 module.exports.help = '`,unban <user ID> [reason]';
 
 module.exports.command = async (message, content, bot, server) => {
