@@ -10,7 +10,7 @@ module.exports.isAllowed = (message, server) => {
   return server.hiddenChannels.includes(message.channel.id);
 };
 
-module.exports.help = 'Clear warnings on a user `,warnclear <User>`';
+module.exports.help = 'Clear warnings on a user `,warnclear <User> [warning number]` .\nSpecify a warning number (position in the list) to clear certain warnings, otherwise clear all';
 
 module.exports.command = async (message, content, bot, server) => {
   if (content == '') {
@@ -32,14 +32,38 @@ module.exports.command = async (message, content, bot, server) => {
     message.channel.send('Failed to get a user');
     return;
   }
+  let num = content.replace(/(<@!?)?[0-9]{17,21}>?/, '').trim();
+  if (num) {
+    num = parseInt(num, 10);
+  }
 
-  if (server.warnlist[userID]) {
+  const warnings = server.warnlist[userID];
+  if (warnings) {
+    const member = server.guild.members.get(userID);
+    if (num) {
+      const warning = warnings[num - 1];
+      if (warning) {
+        server.warnlist[userID] = warnings.filter(w => w.issued !== warning.issued);
+        message.channel.send(`Warning #${num} cleared for <@${userID}>`);
+        if (member && !warning.silent) {
+          try {
+            member.send(`Your warning "${warning.warnMessage}" on ${message.guild.name} has been cleared`);
+          } catch (e) {
+            message.channel.send(`<@${userID}> could not be notified`);
+          }
+        }
+
+
+      } else {
+        message.channel.send(`There's no warning number ${num}`);
+      }
+      return;
+    }
     delete server.warnlist[userID];
     await message.channel.send(`Warnings cleared for <@${userID}>`);
-    const member = server.guild.members.get(userID);
     if (member) {
       try {
-        member.send('Your warnings have been cleared');
+        member.send(`All of your warnings have been cleared on ${message.guild.name}`);
       } catch (e) {
         message.channel.send(`<@${userID}> could not be notified`);
       }

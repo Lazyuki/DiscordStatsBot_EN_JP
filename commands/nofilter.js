@@ -57,7 +57,7 @@ module.exports.command = async (message, content, bot, server) => {
       issued: message.createdTimestamp,
       issuer: message.author.id,
       link: message.url,
-      warnMessage: `Sent to sensitive topics`
+      warnMessage: `Sent to <#${nofilterChan}>`
     };
     if (server.warnlist[mem.id]) {
       server.warnlist[mem.id].push(

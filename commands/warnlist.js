@@ -9,7 +9,7 @@ module.exports.alias = [
 ];
 
 module.exports.isAllowed = (message, server) => {
-  return server.hiddenChannels.includes(message.channel.id);
+  return server.hiddenChannels.includes(message.channel.id) || ['755269708579733626', '697862475579785216'].includes(message.channel.id);
 };
 
 module.exports.help = 'Warnings for the user `,warnlist [User]`';
@@ -49,8 +49,8 @@ module.exports.command = async (message, content, bot, server) => {
     let member;
     try {
       member = await server.guild.member(userID);
-    } catch {
-      member = null
+    } catch (e) {
+      member = null;
     }
     embed.title = `Warning list for ${member ? member.user.tag : userID}`;
     embed.color = Number('0xDB3C3C');
@@ -59,7 +59,7 @@ module.exports.command = async (message, content, bot, server) => {
       let issuerMember;
       try {
         issuerMember = await server.guild.member(issuer);
-      } catch {
+      } catch (e) {
         issuerMember = null;
       }
       
@@ -76,7 +76,7 @@ module.exports.command = async (message, content, bot, server) => {
       }
       embed.addField(`${new Date(issued).toGMTString()} by ${issuerMember ? issuerMember.user.tag : issuer }`, warnMessage, false);
     } 
-    message.channel.send({ embed })
+    message.channel.send({ embed });
   } else {
     message.channel.send('No warnings found');
   }
