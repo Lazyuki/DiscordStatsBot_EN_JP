@@ -21,11 +21,16 @@ module.exports.command = (message, content, bot, server, cmds) => {
   const embed = new Discord.RichEmbed();
 
   if (cmd && cmd.isAllowed(message, server, bot)) {
+    if (cmd.isCirillaCommand) return;
     embed.title = cmd.name;
     embed.description = cmd.help;
     embed.setFooter(`Aliases: ${cmd.alias.join(', ')}`);
     msg = { embed };
   } else {
+    if (content) {
+      chan.send('The command does not exist. Type `,help` to list available commands');
+      return;
+    }
     msg = '`,help [command]` for more info. Available commands are:\n';
     for (let c in cmds.commandNames) {
       if (cmds.commandNames[c].isAllowed(message, server, bot)) {
