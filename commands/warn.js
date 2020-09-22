@@ -68,21 +68,21 @@ module.exports.command = async (message, content, bot, server) => {
 
   if (!dontSendDM) {
     member.send({ embed })
-    .then(m => {
-      message.channel.send({
-        embed: new Discord.RichEmbed()
-          .setDescription(`${member} has been warned by ${message.author}`)
-          .setColor('0x42f46b')
-      });
-    })
-    .catch(e => {
-      message.channel.send({
-        embed: new Discord.RichEmbed()
+      .then(m => {
+        message.channel.send({
+          embed: new Discord.RichEmbed()
+            .setDescription(`${member} has been warned by ${message.author}`)
+            .setColor('0x42f46b')
+        });
+      })
+      .catch(e => {
+        message.channel.send({
+          embed: new Discord.RichEmbed()
             .setDescription(`Failed to DM ${member.user.tag}. The user couldn't receive the warning.`)
             .setColor('0xDB3C3C')
         });
-    });
-    warning.warnMessage += '\n(DM Failed)';
+        warning.warnMessage += '\n(DM Failed)';
+      });
   } else {
     message.channel.send({
       embed: new Discord.RichEmbed()
