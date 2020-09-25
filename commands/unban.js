@@ -22,7 +22,7 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
   let reason = content.replace(/(<@!?)?[0-9]{17,21}>?/, '').trim() ;
-  reason = `Issued by: ${message.user.tag}. Reason: ${reason || 'unspecified'}`;
+  reason = `Issued by: ${message.author.tag}. Reason: ${reason || 'unspecified'}`;
   try { 
     await server.guild.unban(userID, reason);
     message.channel.send(`✅ User <@${userID}> unbanned.`);
