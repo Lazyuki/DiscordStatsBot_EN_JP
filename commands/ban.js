@@ -92,14 +92,14 @@ module.exports.command = async (message, content, bot, server) => {
   await message.channel.send(banMessage);
   const filter = m => m.member.id == executor.id;
   const collector = message.channel.createMessageCollector(filter, { time: 45000 });
-  collector.on('collect', m => {
+  collector.on('collect', async m => {
     const resp = m.content.toLowerCase();
     if (['confirm d', 'confirm del', 'confirm delete', 'confirm k', 'confirm keep'].includes(resp)) {
       if (resp.startsWith('confirm k')) {
         deleteDays = 0;
       }
-      let atLeastOneBan = false;
-      badMembers.forEach(async mem => {
+      let someBan = false;
+      await Promise.all(badMembers.map(async mem => {
         try {
           await mem.send(`You have been banned from ${server.guild}.\nReason: ${reason}`);
         } catch(e) {
@@ -107,26 +107,26 @@ module.exports.command = async (message, content, bot, server) => {
         }
         try {
           await mem.ban({ days: deleteDays, reason: auditLogReason });
-          atLeastOneBan = true;
+          someBan =true;
         } catch(e) {
           await message.channel.send(`Failed to ban ${mem}`);
           failedBans.push(mem.id);
         }
-      });
-      badIDs.forEach(async id => {
+      }));
+      await Promise.all(badIDs.map(async id => {
         try {
           await server.guild.ban(id, { days: deleteDays, reason: auditLogReason });
-          atLeastOneBan = true;
+          someBan = true;
         } catch (e) {
           await message.channel.send(`Failed to ban <@${id}>`);
           failedBans.push(id);
         }
-      });
-      if (!atLeastOneBan) {
+      }));
+      if (someBan) {
+        collector.stop('Banned');
+      } else {
         collector.stop('Failed');
-        return;
       }
-      collector.stop('Banned');
       return;
     }
     if (resp == 'cancel') {
