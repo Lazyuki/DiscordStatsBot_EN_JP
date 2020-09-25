@@ -19,22 +19,17 @@ module.exports.isAllowed = (message, server) => {
 module.exports.help = ' `,ban [days=1] <@mentions> [reason]`\nBan!! Can specify multiple users.\nCheck out `,massban` for raids\n`,ban window N` to set the ban window to N minutes, or leave it blank to see the current window. ';
 
 module.exports.command = async (message, content, bot, server) => {
-  let badPeople = [];
+  const badPeople = [];
   const executor = message.author;
   let deleteDays = 1;
   let reason = 'Unspecified';
   content = content.replace(Util.REGEX_USER, '');
-  let ids = content.match(Util.REGEX_RAW_ID);
+  const ids = content.match(Util.REGEX_RAW_ID);
   if (ids) {
-    for (let id of ids) {
-      let mem = server.guild.member(id);
-      if (mem) {
-        badPeople.push(mem);
-      }
-    }
+    badPeople.push(...ids);
     content = content.replace(Util.REGEX_RAW_ID, '');
   }
-  badPeople.push(...message.mentions.members.array());
+  badPeople.push(...message.mentions.users.keys());
   if (badPeople.length == 0) {
     if (message.member.hasPermission('ADMINISTRATOR')) {
       let reg = /window\s*(\d+)?/.exec(content);
@@ -55,15 +50,22 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
 
+  const badIDs = [];
+  const badMembers = badPeople.map(id => { 
+    const mem = server.guild.member(id);
+    if (!mem) badIDs.push(id);
+    return mem;
+  }).filter(Boolean);
+
   if (!message.member.hasPermission('ADMINISTRATOR')) { // check for ban window
     const now = new Date();
-    if (badPeople.some(mem =>  now - mem.joinedAt > server.banWindow)) {
-      message.channel.send(`They are older than ${server.banWindow / 60 / 1000} minutes`);
+    if (badMembers.some(mem =>  now - mem.joinedAt > server.banWindow)) {
+      message.channel.send(`Some are older than ${server.banWindow / 60 / 1000} minutes`);
       return;
     }
   }
   // actually ban
-  if (!badPeople.every(mem => mem.bannable)) {
+  if (!badMembers.every(mem => mem.bannable)) {
     message.channel.send('They cannot be banned');
     return;
   }
@@ -82,9 +84,11 @@ module.exports.command = async (message, content, bot, server) => {
     await message.channel.send(`The ban reason exceeds the limit of 512 characters: ${auditLogReason.length} characters`);
     return;
   }
+  const bannedPeople = badPeople.map(id => `<@${id}>`).join('\n');
+  const failedBans = [];
 
   const deleting = deleteDays ? `__**Deleting**__: Messages from the past ${deleteDays} day${deleteDays > 1 ? 's' : ''}\n(type \`confirm keep\` to not delete messages)` : `**NOT DELETING** any messages`
-  let banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning**  <:hypergeralthinkban:443803651325034507>\n\n${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}\n${deleting}\n\n__Reason__: ${reason}\nType \`confirm delete\`, \`confirm keep\` or \`cancel\``;
+  let banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning**  <:hypergeralthinkban:443803651325034507>\n\n${bannedPeople}\n\n${deleting}\n\n__Reason__: ${reason}\nType \`confirm delete\`, \`confirm keep\` or \`cancel\``;
   await message.channel.send(banMessage);
   const filter = m => m.member.id == executor.id;
   const collector = message.channel.createMessageCollector(filter, { time: 45000 });
@@ -94,19 +98,34 @@ module.exports.command = async (message, content, bot, server) => {
       if (resp.startsWith('confirm k')) {
         deleteDays = 0;
       }
-      badPeople.forEach(async mem => {
+      let atLeastOneBan = false;
+      badMembers.forEach(async mem => {
         try {
           await mem.send(`You have been banned from ${server.guild}.\nReason: ${reason}`);
         } catch(e) {
-          await message.channel.send('Failed to DM the ban reason');
+          await message.channel.send(`Failed to DM the ban reason to ${mem}`);
         }
         try {
           await mem.ban({ days: deleteDays, reason: auditLogReason });
+          atLeastOneBan = true;
         } catch(e) {
-          collector.stop('Failed');
-          return;
+          await message.channel.send(`Failed to ban ${mem}`);
+          failedBans.push(mem.id);
         }
       });
+      badIDs.forEach(async id => {
+        try {
+          await server.guild.ban(id, { days: deleteDays, reason: auditLogReason });
+          atLeastOneBan = true;
+        } catch (e) {
+          await message.channel.send(`Failed to ban <@${id}>`);
+          failedBans.push(id);
+        }
+      });
+      if (!atLeastOneBan) {
+        collector.stop('Failed');
+        return;
+      }
       collector.stop('Banned');
       return;
     }
@@ -118,14 +137,15 @@ module.exports.command = async (message, content, bot, server) => {
   });
   collector.on('end', (collected, endReason) => {
     if (endReason == 'Banned') {
+      const actualBanned = badPeople.filter(p => !failedBans.includes(p));
       message.channel.send('✅ Banned');
       const agt = server.guild.channels.get('755269708579733626');
       let embed = new Discord.RichEmbed();
       let date = new Date();
       embed.setAuthor(`${message.author.tag}`,message.author.avatarURL);
       embed.title = 'Ban';
-      embed.addField('Banned users:', `${badPeople.reduce((s, mem) => `${s}${mem}\n`, '')}`, false);
-      embed.addField('Ban reason:', `${reason}`, false);
+      embed.addField('Banned users:', actualBanned.map(b => `<@${b}>`).join('\n'), false);
+      embed.addField('Ban reason:', reason, false);
       embed.color = Number('0x000000');
       embed.setFooter(`In #${message.channel.name}`);
       embed.timestamp = date;
