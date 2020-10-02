@@ -14,7 +14,7 @@ module.exports.isAllowed = (message, server) => {
 module.exports.help =
   " `,autoban [num of users = 1]`\nCiri looks through recent messages and tries to figure out obvious trolls.\nCiri is not that smart, so she might suggest people who are not trolls.\n**DOUBLECHECK HER SUGGESTIONS**";
 
-const REGEX_ENG = /[a-zA-Z0-9 !@#$%^&*()_\-+=`{}[\];:"'<>,.?/\\]/;
+const REGEX_ENG = /[a-zA-Z0-9 !@#$%^&*()_\-+=`{}[\];:"'<>,|~.?/\\]/;
 const ACTIVE_STAFF = "240647591770062848";
 function getPenalty(message) {
   let penalty = 0;
