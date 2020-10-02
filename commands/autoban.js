@@ -2,7 +2,7 @@ const Discord = require("discord.js");
 const Util = require("../classes/Util.js");
 module.exports.name = "autoban";
 
-module.exports.alias = ["autoban", "smartban"];
+module.exports.alias = ["autoban", "smartban", "ab", "sb"];
 
 module.exports.isAllowed = (message, server) => {
   return (
@@ -127,7 +127,7 @@ module.exports.command = async (message, content, bot, server) => {
   const bannedPeople = topNMemberIDs.map((id) => `<@${id}>`).join("\n");
   const failedBans = [];
 
-  const banMessage = `<:hypergeralthinkban:443803651325034507>  **DOUBLE CHECK who you are banning**  <:hypergeralthinkban:443803651325034507>\n\n${bannedPeople}\n\nType \`confirm\`, \`confirm keep\` or \`cancel\``;
+  const banMessage = `<:hypergeralthinkban:443803651325034507> **Auto Ban**\nI am guessing you meant these people.\n\n${bannedPeople}\n\nIf they are correct, type \`confirm\`, otherwise type \`cancel\``;
   await message.channel.send(banMessage);
   const filter = (m) => m.member.id == executor.id;
   const collector = message.channel.createMessageCollector(filter, {
