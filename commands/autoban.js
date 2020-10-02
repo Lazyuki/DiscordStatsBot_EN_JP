@@ -53,9 +53,26 @@ function getInnatePenalty(member) {
     // 3 months
     penalty -= 3;
   }
-  if (member.roles.has("241997079168155649")) {
+  if (
+    [
+      "189594666365091850",
+      "543721608506900480",
+      "755269385094168576",
+      "250907197075226625",
+    ].some((r) => member.roles.has(r))
+  ) {
+    penalty -= 5;
+  } else if (member.roles.has("241997079168155649")) {
     // FE a bit trustworty
     penalty -= 2;
+  } else if (
+    ![
+      "196765998706196480",
+      "197100137665921024",
+      "248982130246418433",
+    ].some((r) => member.roles.has(r))
+  ) {
+    penalty += 5; // no lang role
   }
 
   return penalty;
@@ -72,6 +89,7 @@ module.exports.command = async (message, content, bot, server) => {
   const members = {};
   for (const m of recentMessages.array()) {
     const authorId = m.author.id;
+    if (m.author.bot) continue;
     const penalty = getPenalty(m.content);
     if (authorId in members) {
       members[authorId] += penalty;
@@ -98,6 +116,8 @@ module.exports.command = async (message, content, bot, server) => {
     if (cache.includes(m.content)) members[m.author.id] += 2;
     else cache.push(m.content);
   });
+
+  console.log(JSON.stringify(members));
 
   const topNMemberIDs = Object.entries(members)
     .sort(([, a], [, b]) => b - a)
