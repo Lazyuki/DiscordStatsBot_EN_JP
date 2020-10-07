@@ -96,7 +96,7 @@ module.exports.command = async (message, content, bot, server) => {
 
   message.delete({ timeout: 200 });
 
-  const oldRoles = targetMember.roles
+  const oldRoles = targetMember.roles.cache
     .filter((r) => roleIDs.includes(r.id))
     .map((r) => getRole('id', r.id));
   const newRoles = roles.map((r) => getRole('abbrev', r));
