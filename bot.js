@@ -174,12 +174,10 @@ bot.on('raw', async (event) => {
     if (user.bot) return;
     let channel = bot.channels.cache.get(data.channel_id);
     if (channel.type != 'text') return;
-    if (!channel.messages.cache.has(data.message_id)) return; // Message not in cache
-    let message = channel.messages.cache.get(data.message_id);
-    let emojiKey = data.emoji.id
-      ? `${data.emoji.name}:${data.emoji.id}`
-      : data.emoji.name;
-    let reaction = message.reactions.cache.get(emojiKey);
+    if (channel.messages.cache.has(data.message_id)) return; // Message not in cache
+    let message = await channel.messages.fetch(data.message_id);
+    let emojiKey = data.emoji.id || data.emoji.name;
+    let reaction = await message.reactions.resolve(emojiKey);
     if (!reaction) {
       console.error(`unknown reaction ${emojiKey}, ${JSON.stringify(event)}`);
       return;
