@@ -1,5 +1,10 @@
 module.exports.name = 'voiceMute';
 module.exports.alias = ['voicemute', 'vm'];
+module.exports.initialize = (json, server) => {
+  server.muteQ = [];
+  if (!json || !json['muteQ']) return;
+  server.muteQ = json['muteQ']; // server mute them once they join
+};
 
 const Discord = require('discord.js');
 const Util = require('../classes/Util.js');
@@ -36,7 +41,9 @@ module.exports.command = async (message, content, bot, server) => {
   const AGT = server.guild.channels.cache.get('755269708579733626');
   for (const member of targets) {
     if (member.voice.channel) {
-      await member.setVoiceChannel(null);
+      await member.voice.setMute(true, `Issued by ${message.author.tag}`);
+    } else {
+      server.muteQ.push(member.id);
     }
     await member.roles.add('357687893566947329'); // Voice mute role
     let embed = new Discord.MessageEmbed();
@@ -45,7 +52,11 @@ module.exports.command = async (message, content, bot, server) => {
     embed.setFooter('Contact the DM Bot if you need to discuss this issue.');
     embed.color = Number('0xEC891D');
     embed.timestamp = new Date();
-    await member.send({ embed });
+    try {
+      await member.send({ embed });
+    } catch (e) {
+      message.channel.send(`${member} could not be notified via DM`);
+    }
     embed = new Discord.MessageEmbed();
     embed.setAuthor(
       `${member.user.tag} has been muted in voice chat`,

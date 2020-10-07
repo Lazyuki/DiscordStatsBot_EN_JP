@@ -10,7 +10,7 @@ module.exports.help =
 async function removeFromVoice(members) {
   for (let member of members) {
     if (!member || !member.voice.channel) continue;
-    await member.setVoiceChannel(null);
+    await member.voice.kick();
   }
 }
 module.exports.command = async (message, content) => {

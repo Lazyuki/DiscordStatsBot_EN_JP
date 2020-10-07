@@ -48,7 +48,7 @@ module.exports.command = async (message, content, bot, server) => {
     mem.roles.add(nofilterRole);
     if (mem.voice.channel) {
       nofilter = server.guild.channels.cache.get(nofilterVoiceText);
-      mem.setVoiceChannel(nofilterVoice);
+      mem.voice.setChannel(nofilterVoice);
     }
     forlater.push(mem);
     names += mem.toString() + ' ';

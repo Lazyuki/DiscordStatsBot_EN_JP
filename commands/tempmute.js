@@ -140,7 +140,9 @@ module.exports.command = async (message, content, bot, server) => {
     server.tempmutes[member.id] = unmuteDateMillis;
 
     try {
-      if (member.voice.channel) await member.setVoiceChannel(null);
+      if (member.voice.channel) {
+        await member.voice.kick();
+      }
       await member.roles.add([CHAT_MUTED, VOICE_BANNED], 'Temp Muted');
       await member.send({ embed });
     } catch (e) {

@@ -27,8 +27,21 @@ module.exports.isAllowed = () => {
 let UserRecord = require('../classes/UserRecord.js');
 module.exports.process = async (oldState, newState, server) => {
   let id = oldState.id || newState.id;
+  // joined vc and not deaf
   if (!isVC(oldState) && isVC(newState)) {
     server.tempvc[id] = new Date().getTime();
+    if (server.unmuteQ.includes(id)) {
+      // Unmutes people who are in the unmute queue
+      await newState.setMute(false);
+      let index = server.unmuteQ.indexOf(id);
+      server.unmuteQ.splice(index, 1);
+    }
+    if (server.muteQ.includes(id)) {
+      await newState.setMute(true);
+      let index = server.muteQ.indexOf(id);
+      server.muteQ.splice(index, 1);
+    }
+    // left vc
   } else if (isVC(oldState) && !isVC(newState)) {
     if (!server.users[id]) {
       server.users[id] = new UserRecord();
@@ -39,12 +52,6 @@ module.exports.process = async (oldState, newState, server) => {
       new Date().getTime() - server.tempvc[id]
     ); // millisecond
     delete server.tempvc[id];
-  }
-  if (server.unmuteQ.includes(id)) {
-    // Unmutes people who are in the unmute queue
-    await newState.setMute(false);
-    let index = server.unmuteQ.indexOf(id);
-    server.unmuteQ.splice(index, 1);
   }
 };
 
