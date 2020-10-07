@@ -34,7 +34,7 @@ exports.searchUser = function (message, content, server, bot) {
           return u.user;
         }
       }
-      for (let [, mem] of server.guild.members) {
+      for (let [, mem] of server.guild.members.cache) {
         if (r.test(mem.user.tag) || r.test(mem.nickname)) {
           return mem.user;
         }
@@ -54,7 +54,7 @@ exports.searchUser = function (message, content, server, bot) {
           return u.user;
         }
       }
-      for (let [id, mem] of server.guild.members) {
+      for (let [id, mem] of server.guild.members.cache) {
         if (id == content) {
           return mem.user;
         }

@@ -180,6 +180,10 @@ bot.on('raw', async (event) => {
       ? `${data.emoji.name}:${data.emoji.id}`
       : data.emoji.name;
     let reaction = message.reactions.cache.get(emojiKey);
+    if (!reaction) {
+      console.error(`unknown reaction ${emojiKey}, ${JSON.stringify(event)}`);
+      return;
+    }
 
     /* Pretend to emit the event */
     if (message.guild.id == '293787390710120449') {
