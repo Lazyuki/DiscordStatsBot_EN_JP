@@ -3,25 +3,36 @@ const request = require('request');
 const fs = require('fs');
 
 function updateImgur() {
-  var options = { method: 'POST',
+  var options = {
+    method: 'POST',
     url: 'https://api.imgur.com/oauth2/token',
-    headers:
-     {
-       'cache-control': 'no-cache',
-       'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' },
-    formData: {refresh_token: config.imgurRefreshToken, client_id: config.imgurID, client_secret: config.imgurSecret, grant_type: 'refresh_token' } };
+    headers: {
+      'cache-control': 'no-cache',
+      'content-type':
+        'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW',
+    },
+    formData: {
+      refresh_token: config.imgurRefreshToken,
+      client_id: config.imgurID,
+      client_secret: config.imgurSecret,
+      grant_type: 'refresh_token',
+    },
+  };
   request(options, function (error, response, body) {
     if (error) throw new Error(error);
     var ret = JSON.parse(body);
     config.imgurAccessToken = ret.access_token;
     config.lastUpdate = new Date().getTime();
     console.log('imgurAccessToken updated: ' + ret.access_token);
-    fs.writeFileSync('./config.json', JSON.stringify(config, null, 2), function (err) {
-      if (err) return console.log(err);
-    });
+    fs.writeFileSync(
+      './config.json',
+      JSON.stringify(config, null, 2),
+      function (err) {
+        if (err) return console.log(err);
+      }
+    );
   });
 }
-
 
 module.exports = function task(bot) {
   for (var sid in bot.servers) {
@@ -36,11 +47,12 @@ module.exports = function task(bot) {
     }
   }
 
-  if (new Date().getTime() - config.lastUpdate > 2419200000) { // 28 days
+  if (new Date().getTime() - config.lastUpdate > 2419200000) {
+    // 28 days
     updateImgur();
   }
 
   bot.setTimeout(() => {
     task(bot);
-  }, 24*60*60*1000); // 24*60*60*1000 = a day
+  }, 24 * 60 * 60 * 1000); // 24*60*60*1000 = a day
 };

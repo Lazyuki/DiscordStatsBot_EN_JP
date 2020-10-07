@@ -4,15 +4,14 @@ const Util = require('../classes/Util.js');
 
 module.exports.name = 'englishLeaderboard-tets';
 
-module.exports.alias = [
-  'enl-test'
-];
+module.exports.alias = ['enl-test'];
 
 module.exports.isAllowed = (message, server) => {
   return false;
 };
 
-module.exports.help = '`,enl [username (default = invoker)] [-n number (default = 200)]` English Usage Leaderboard for this server.\ne.g. `,enl Geralt -n 500`';
+module.exports.help =
+  '`,enl [username (default = invoker)] [-n number (default = 200)]` English Usage Leaderboard for this server.\ne.g. `,enl Geralt -n 500`';
 
 module.exports.command = async (message, content, bot, server) => {
   let num = /-n (\d+)/.exec(content);
@@ -21,8 +20,11 @@ module.exports.command = async (message, content, bot, server) => {
     content = content.replace(/-n \d+/, '').trim();
   } else {
     num = 200;
-  }  
-  let searchUser = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
+  }
+  let searchUser =
+    content == ''
+      ? message.author
+      : await Util.searchUser(message, content, server, bot);
   if (!searchUser) {
     message.react('❓');
     return;
@@ -43,13 +45,13 @@ module.exports.command = async (message, content, bot, server) => {
         }
       }
       if (mem.roles.has('196765998706196480')) {
-        let enUsage = record.en / (record.jp + record.en) * 100;
+        let enUsage = (record.en / (record.jp + record.en)) * 100;
         if (!enUsage) continue;
         result.push([user, enUsage]);
       }
     }
   }
-  result = result.sort((a,b) => {
+  result = result.sort((a, b) => {
     return b[1] - a[1];
   });
   let embed = new Discord.RichEmbed();
@@ -57,6 +59,14 @@ module.exports.command = async (message, content, bot, server) => {
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');
 
-  let format = val => val.toFixed(2) + '%';
-  Util.userLeaderboard(message.channel, embed, result, message.author.id, searchUser, format, bot);
+  let format = (val) => val.toFixed(2) + '%';
+  Util.userLeaderboard(
+    message.channel,
+    embed,
+    result,
+    message.author.id,
+    searchUser,
+    format,
+    bot
+  );
 };

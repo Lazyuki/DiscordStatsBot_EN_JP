@@ -1,7 +1,5 @@
 module.exports.name = 'deleted';
-module.exports.alias = [
-  'deleted'
-];
+module.exports.alias = ['deleted'];
 
 const Discord = require('discord.js');
 const SimpleMsg = require('../classes/SimpleMessage');
@@ -13,12 +11,12 @@ module.exports.iniaialize = (json, server) => {
   }
   for (let msg in json['deletedMessages']) {
     let dm = json['deletedMessages'][msg];
-    server.deletedMessages.push(new SimpleMsg({simple:dm}));
+    server.deletedMessages.push(new SimpleMsg({ simple: dm }));
   }
 };
 
 module.exports.isAllowed = (message, server, bot) => {
-  if (message.guild.id != '293787390710120449') return false;  // My server
+  if (message.guild.id != '293787390710120449') return false; // My server
   return message.author.id == bot.owner_ID;
 };
 
@@ -51,12 +49,14 @@ module.exports.command = async (message, content, bot, server) => {
 
     let embed = new Discord.RichEmbed();
     let date = new Date(msg.time);
-    embed.setAuthor(`${msg.atag} ID: ${msg.aid}` ,msg.apfp);
-    if (msg.del) { // message was deleted
+    embed.setAuthor(`${msg.atag} ID: ${msg.aid}`, msg.apfp);
+    if (msg.del) {
+      // message was deleted
       embed.title = `Message Deleted after ${msg.dur} seconds`;
       embed.description = `${msg.con}`;
       embed.color = Number('0xDB3C3C');
-    } else { // message was edited
+    } else {
+      // message was edited
       embed.title = `Message Edited after ${msg.dur} seconds`;
       embed.addField('Before:', `${msg.con}`, false);
       embed.addField('After:', `${msg.acon}`, false);
@@ -64,10 +64,11 @@ module.exports.command = async (message, content, bot, server) => {
     }
     embed.setFooter(`#${msg.ch}`);
     embed.timestamp = date;
-    if (msg.img) { // if != null
+    if (msg.img) {
+      // if != null
       embed.setImage(msg.img);
     }
-    message.channel.send({embed});
+    message.channel.send({ embed });
     //sleep.msleep(400); // put await on the line above
   }
   message.channel.send('Done displaying deleted messages');

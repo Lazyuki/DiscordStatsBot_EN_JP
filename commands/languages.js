@@ -1,20 +1,19 @@
 module.exports.name = 'languages';
 
-module.exports.alias = [
-  'lang'
-];
+module.exports.alias = ['lang'];
 
 module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161';
 };
 
-module.exports.help = '`,lang [ minMessage=100 ]`\nUse `,lang all` to include everyone';
+module.exports.help =
+  '`,lang [ minMessage=100 ]`\nUse `,lang all` to include everyone';
 
 const NE = '197100137665921024';
 const NJ = '196765998706196480';
 const FE = '241997079168155649';
 const FJ = '270391106955509770';
-const OL = '248982130246418433'; 
+const OL = '248982130246418433';
 
 module.exports.command = async (message, content, bot, server) => {
   let min = parseInt(content);
@@ -41,7 +40,9 @@ module.exports.command = async (message, content, bot, server) => {
         ++langs[10];
       }
     }
-    message.channel.send(`Out of ${langs[10]} people,\n${langs[0]} are Native English\n${langs[1]} are Native Japanese\n${langs[2]} are Fluent English\n${langs[3]} are Fluent Japanese\n${langs[4]} are Other Language\n\n${langs[5]} are NJ and NE\n${langs[6]} are NJ and FE\n${langs[7]} are NJ and OL\n${langs[8]} are NE and OL\n${langs[9]} are FJ and FE`);
+    message.channel.send(
+      `Out of ${langs[10]} people,\n${langs[0]} are Native English\n${langs[1]} are Native Japanese\n${langs[2]} are Fluent English\n${langs[3]} are Fluent Japanese\n${langs[4]} are Other Language\n\n${langs[5]} are NJ and NE\n${langs[6]} are NJ and FE\n${langs[7]} are NJ and OL\n${langs[8]} are NE and OL\n${langs[9]} are FJ and FE`
+    );
     return;
   }
   const users = server.users;
@@ -66,5 +67,7 @@ module.exports.command = async (message, content, bot, server) => {
       }
     }
   }
-  message.channel.send(`Out of ${langs[10]} people who have sent more than ${min} messages in the past 30 days,\n${langs[0]} are Native English\n${langs[1]} are Native Japanese\n${langs[2]} are Fluent English\n${langs[3]} are Fluent Japanese\n${langs[4]} are Other Language\n\n${langs[5]} are NJ and NE\n${langs[6]} are NJ and FE\n${langs[7]} are NJ and OL\n${langs[8]} are NE and OL\n${langs[9]} are FJ and FE`);
+  message.channel.send(
+    `Out of ${langs[10]} people who have sent more than ${min} messages in the past 30 days,\n${langs[0]} are Native English\n${langs[1]} are Native Japanese\n${langs[2]} are Fluent English\n${langs[3]} are Fluent Japanese\n${langs[4]} are Other Language\n\n${langs[5]} are NJ and NE\n${langs[6]} are NJ and FE\n${langs[7]} are NJ and OL\n${langs[8]} are NE and OL\n${langs[9]} are FJ and FE`
+  );
 };

@@ -1,15 +1,13 @@
 module.exports.name = 'allChannels';
 
-module.exports.alias = [
-  'channels',
-  'ch'
-];
+module.exports.alias = ['channels', 'ch'];
 
 module.exports.isAllowed = () => {
   return true;
 };
 
-module.exports.help = '`,ch` Displays all the channels in the message count order';
+module.exports.help =
+  '`,ch` Displays all the channels in the message count order';
 
 module.exports.command = (message, content, bot, server) => {
   let ignoreHidden = !server.hiddenChannels.includes(message.channel.id);
@@ -31,7 +29,7 @@ module.exports.command = (message, content, bot, server) => {
   for (let c in allch) {
     sortable.push([c, allch[c]]);
   }
-  sortable.sort(function(a, b) {
+  sortable.sort(function (a, b) {
     return b[1] - a[1];
   });
 

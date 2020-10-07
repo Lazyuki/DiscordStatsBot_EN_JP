@@ -4,16 +4,14 @@ const Util = require('../classes/Util.js');
 
 module.exports.name = 'japaneseLeaderboard';
 
-module.exports.alias = [
-  'japanese-leaderboard',
-  'jpl'
-];
+module.exports.alias = ['japanese-leaderboard', 'jpl'];
 
 module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161';
 };
 
-module.exports.help = '`,jpl [username (default = invoker)] [-n number (default = 500)]` Japanese Usage Leaderboard for this server.\ne.g. `,jpl Geralt -n 200`';
+module.exports.help =
+  '`,jpl [username (default = invoker)] [-n number (default = 500)]` Japanese Usage Leaderboard for this server.\ne.g. `,jpl Geralt -n 200`';
 
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
@@ -24,7 +22,10 @@ module.exports.command = async (message, content, bot, server) => {
   } else {
     num = 500;
   }
-  let u = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
+  let u =
+    content == ''
+      ? message.author
+      : await Util.searchUser(message, content, server, bot);
   if (!u) {
     message.react('❓');
     return;
@@ -47,7 +48,7 @@ module.exports.command = async (message, content, bot, server) => {
         }
       }
       if (!mem.roles.has('196765998706196480')) {
-        let jpnUsage = record.jp / (record.jp + record.en) * 100;
+        let jpnUsage = (record.jp / (record.jp + record.en)) * 100;
         if (!jpnUsage) continue;
         result.add(user, jpnUsage);
       }
@@ -63,19 +64,28 @@ module.exports.command = async (message, content, bot, server) => {
   let found = member.roles.has('196765998706196480');
 
   for (let user in result) {
-    if (count >= 25) { // the 25th person is either the 25th one or the user
+    if (count >= 25) {
+      // the 25th person is either the 25th one or the user
       if (!found && user != memberID) {
         count++;
         continue;
       }
-      embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user].toFixed(2) + '%', true);
+      embed.addField(
+        count + ') ' + (await bot.fetchUser(user)).username,
+        result[user].toFixed(2) + '%',
+        true
+      );
       break;
     }
     let us = await bot.fetchUser(user);
     if (!us) continue;
     if (user == memberID) found = true;
-    embed.addField(count++ + ') ' + us.username, result[user].toFixed(2) + '%', true);
+    embed.addField(
+      count++ + ') ' + us.username,
+      result[user].toFixed(2) + '%',
+      true
+    );
   }
   embed.setFooter('Current UTC time: ' + new Date().toUTCString());
-  channel.send({embed});
+  channel.send({ embed });
 };

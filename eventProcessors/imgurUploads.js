@@ -18,32 +18,41 @@ const request = require('request');
 module.exports.process = (message, server) => {
   if (message.attachments.size > 0) {
     let imageURL = message.attachments.first().url;
-    var options = { method: 'POST',
+    var options = {
+      method: 'POST',
       url: 'https://api.imgur.com/3/image',
-      headers:
-        {
-          'cache-control': 'no-cache',
-          'authorization': `Bearer ${config.imgurAccessToken}`,
-          'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
-        },
-      formData: {image: imageURL, album: config.imgurAlbum, description: `In ${message.channel.name} by ${message.author.tag}`, type: 'URL'}
+      headers: {
+        'cache-control': 'no-cache',
+        authorization: `Bearer ${config.imgurAccessToken}`,
+        'content-type':
+          'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW',
+      },
+      formData: {
+        image: imageURL,
+        album: config.imgurAlbum,
+        description: `In ${message.channel.name} by ${message.author.tag}`,
+        type: 'URL',
+      },
     };
-    request(options, function (error, response, body) {
-      if (error) {
-        console.log(error);
-        return;
-      }
-      let ret = JSON.parse(body);
-      if (ret.data.link == undefined) {
-        console.log(JSON.stringify(ret));
-      } else {
-        this.watchedImagesID.push(message.id);
-        this.watchedImagesLink.push(ret.data.link);
-        if (this.watchedImagesID.length > 50) {
-          this.watchedImagesID.shift();
-          this.watchedImagesLink.shift();
+    request(
+      options,
+      function (error, response, body) {
+        if (error) {
+          console.log(error);
+          return;
         }
-      }
-    }.bind(server)); // Bind server as 'this' in the callback
+        let ret = JSON.parse(body);
+        if (ret.data.link == undefined) {
+          console.log(JSON.stringify(ret));
+        } else {
+          this.watchedImagesID.push(message.id);
+          this.watchedImagesLink.push(ret.data.link);
+          if (this.watchedImagesID.length > 50) {
+            this.watchedImagesID.shift();
+            this.watchedImagesLink.shift();
+          }
+        }
+      }.bind(server)
+    ); // Bind server as 'this' in the callback
   }
 };

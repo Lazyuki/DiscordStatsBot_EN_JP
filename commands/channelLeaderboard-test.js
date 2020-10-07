@@ -5,15 +5,14 @@ const Util = require('../classes/Util.js');
 
 module.exports.name = 'channelLeaderboard-test';
 
-module.exports.alias = [
-  'chlb-test'
-];
+module.exports.alias = ['chlb-test'];
 
 module.exports.isAllowed = () => {
   return false;
 };
 
-module.exports.help = '`,chlb [#channel] [#2nd_channel] [#3rd... [username | @mention]` Leaderboard for channels. Defaults to the current channel if nothing is specified.';
+module.exports.help =
+  '`,chlb [#channel] [#2nd_channel] [#3rd... [username | @mention]` Leaderboard for channels. Defaults to the current channel if nothing is specified.';
 
 module.exports.command = async (message, content, bot, server) => {
   let ch = message.channel;
@@ -24,7 +23,10 @@ module.exports.command = async (message, content, bot, server) => {
     channels = Array.from(message.mentions.channels.values());
   }
   content = content.replace(channelregex, '').trim();
-  let searchUser = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
+  let searchUser =
+    content == ''
+      ? message.author
+      : await Util.searchUser(message, content, server, bot);
   if (!searchUser) {
     message.react('❓');
     return;
@@ -40,7 +42,7 @@ module.exports.command = async (message, content, bot, server) => {
       result.push([user, count]);
     }
   }
-  result = result.sort((a,b) => {
+  result = result.sort((a, b) => {
     return b[1] - a[1];
   });
   let chanNames = '';
@@ -51,6 +53,14 @@ module.exports.command = async (message, content, bot, server) => {
   embed.title = `Channel-Leaderboard-test for ${chanNames}`.substr(0, 256);
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');
-  let format = val => val;
-  Util.userLeaderboard(message.channel, embed, result, message.author.id, searchUser, format, bot);	
+  let format = (val) => val;
+  Util.userLeaderboard(
+    message.channel,
+    embed,
+    result,
+    message.author.id,
+    searchUser,
+    format,
+    bot
+  );
 };

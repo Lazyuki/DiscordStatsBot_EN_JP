@@ -1,13 +1,9 @@
 module.exports.name = 'talk';
 
-module.exports.alias = [
-  'talk',
-  'say',
-  's'
-];
+module.exports.alias = ['talk', 'say', 's'];
 
 module.exports.isAllowed = (message, server, bot) => {
-  if (message.guild.id != '293787390710120449') return false;  // My server  
+  if (message.guild.id != '293787390710120449') return false; // My server
   return message.author.id == bot.owner_ID;
 };
 
@@ -24,11 +20,11 @@ module.exports.command = (message, content, bot, server) => {
   if (channel) {
     content = content.replace(channelIDRegex, '');
     if (content.replace(' ', '') == '') {
-      message.channel.send(`Channel set to #${channel.name}`);          
+      message.channel.send(`Channel set to #${channel.name}`);
       return;
     }
     channel.send(content);
   } else {
-    message.channel.send('Define channel');    
+    message.channel.send('Define channel');
   }
 };

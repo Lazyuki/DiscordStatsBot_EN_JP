@@ -1,7 +1,5 @@
 module.exports.name = 'unwatch';
-module.exports.alias = [
-  'unwatch'
-];
+module.exports.alias = ['unwatch'];
 module.exports.isAllowed = (message, server) => {
   return server.hiddenChannels.includes(message.channel.id);
 };

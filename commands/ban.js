@@ -1,40 +1,40 @@
-const Discord = require("discord.js");
-const Util = require("../classes/Util.js");
-module.exports.name = "ban";
+const Discord = require('discord.js');
+const Util = require('../classes/Util.js');
+module.exports.name = 'ban';
 
 module.exports.initialize = (json, server) => {
   server.banWindow = 60 * 60 * 1000; // an hour
-  if (!json || !json["banWindow"]) return;
-  server.banWindow = json["banWindow"];
+  if (!json || !json['banWindow']) return;
+  server.banWindow = json['banWindow'];
 };
 
-module.exports.alias = ["ban"];
+module.exports.alias = ['ban'];
 
 module.exports.isAllowed = (message, server) => {
   return (
-    server.guild.id == "189571157446492161" &&
-    (message.member.hasPermission("ADMINISTRATOR") ||
-      message.member.roles.has("543721608506900480"))
+    server.guild.id == '189571157446492161' &&
+    (message.member.hasPermission('ADMINISTRATOR') ||
+      message.member.roles.has('543721608506900480'))
   );
 };
 
 module.exports.help =
-  " `,ban [days=1] <@mentions> [reason]`\nBan!! Can specify multiple users.\nCheck out `,massban` for raids\n`,ban window N` to set the ban window to N minutes, or leave it blank to see the current window. ";
+  ' `,ban [days=1] <@mentions> [reason]`\nBan!! Can specify multiple users.\nCheck out `,massban` for raids\n`,ban window N` to set the ban window to N minutes, or leave it blank to see the current window. ';
 
 module.exports.command = async (message, content, bot, server) => {
   const badPeople = [];
   const executor = message.author;
   let deleteDays = 1;
-  let reason = "Unspecified";
-  content = content.replace(Util.REGEX_USER, "");
+  let reason = 'Unspecified';
+  content = content.replace(Util.REGEX_USER, '');
   const ids = content.match(Util.REGEX_RAW_ID);
   if (ids) {
     badPeople.push(...ids);
-    content = content.replace(Util.REGEX_RAW_ID, "");
+    content = content.replace(Util.REGEX_RAW_ID, '');
   }
   badPeople.push(...message.mentions.users.keys());
   if (badPeople.length == 0) {
-    if (message.member.hasPermission("ADMINISTRATOR")) {
+    if (message.member.hasPermission('ADMINISTRATOR')) {
       let reg = /window\s*(\d+)?/.exec(content);
       if (reg) {
         if (reg[1]) {
@@ -49,7 +49,7 @@ module.exports.command = async (message, content, bot, server) => {
         }
       }
     }
-    message.channel.send("Could not resolve users.");
+    message.channel.send('Could not resolve users.');
     return;
   }
 
@@ -62,7 +62,7 @@ module.exports.command = async (message, content, bot, server) => {
     })
     .filter(Boolean);
 
-  if (!message.member.hasPermission("ADMINISTRATOR")) {
+  if (!message.member.hasPermission('ADMINISTRATOR')) {
     // check for ban window
     const now = new Date();
     if (badMembers.some((mem) => now - mem.joinedAt > server.banWindow)) {
@@ -74,7 +74,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
   // actually ban
   if (!badMembers.every((mem) => mem.bannable)) {
-    message.channel.send("They cannot be banned");
+    message.channel.send('They cannot be banned');
     return;
   }
   let options = /(\d+)?\s?(.*)/.exec(content);
@@ -95,12 +95,12 @@ module.exports.command = async (message, content, bot, server) => {
     );
     return;
   }
-  const bannedPeople = badPeople.map((id) => `<@${id}>`).join("\n");
+  const bannedPeople = badPeople.map((id) => `<@${id}>`).join('\n');
   const failedBans = [];
 
   const deleting = deleteDays
     ? `__**Deleting**__: Messages from the past ${deleteDays} day${
-        deleteDays > 1 ? "s" : ""
+        deleteDays > 1 ? 's' : ''
       }\n(type \`confirm keep\` to not delete messages)`
     : `**NOT DELETING** any messages`;
   let banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning**  <:hypergeralthinkban:443803651325034507>\n\n${bannedPeople}\n\n${deleting}\n\n__Reason__: ${reason}\nType \`confirm delete\`, \`confirm keep\` or \`cancel\``;
@@ -109,18 +109,18 @@ module.exports.command = async (message, content, bot, server) => {
   const collector = message.channel.createMessageCollector(filter, {
     time: 45000,
   });
-  collector.on("collect", async (m) => {
+  collector.on('collect', async (m) => {
     const resp = m.content.toLowerCase();
     if (
       [
-        "confirm d",
-        "confirm del",
-        "confirm delete",
-        "confirm k",
-        "confirm keep",
+        'confirm d',
+        'confirm del',
+        'confirm delete',
+        'confirm k',
+        'confirm keep',
       ].includes(resp)
     ) {
-      if (resp.startsWith("confirm k")) {
+      if (resp.startsWith('confirm k')) {
         deleteDays = 0;
       }
       let someBan = false;
@@ -140,7 +140,7 @@ module.exports.command = async (message, content, bot, server) => {
               issued: message.createdTimestamp,
               issuer: message.author.id,
               link: message.url,
-              warnMessage: "Banned: " + reason,
+              warnMessage: 'Banned: ' + reason,
             };
             if (server.warnlist[mem.id]) {
               server.warnlist[mem.id].push(warning);
@@ -165,7 +165,7 @@ module.exports.command = async (message, content, bot, server) => {
               issued: message.createdTimestamp,
               issuer: message.author.id,
               link: message.url,
-              warnMessage: "Banned: " + reason,
+              warnMessage: 'Banned: ' + reason,
             };
             if (server.warnlist[id]) {
               server.warnlist[id].push(warning);
@@ -179,52 +179,52 @@ module.exports.command = async (message, content, bot, server) => {
         })
       );
       if (someBan) {
-        collector.stop("Banned");
+        collector.stop('Banned');
       } else {
-        collector.stop("Failed");
+        collector.stop('Failed');
       }
       return;
     }
-    if (resp == "cancel") {
-      collector.stop("Cancelled");
+    if (resp == 'cancel') {
+      collector.stop('Cancelled');
       return;
     }
     message.channel.send(
-      "Invalid response. Type `confirm delete`, `confirm keep` or `cancel`"
+      'Invalid response. Type `confirm delete`, `confirm keep` or `cancel`'
     );
   });
-  collector.on("end", (collected, endReason) => {
-    if (endReason == "Banned") {
+  collector.on('end', (collected, endReason) => {
+    if (endReason == 'Banned') {
       const actualBanned = badPeople.filter((p) => !failedBans.includes(p));
-      message.channel.send("✅ Banned");
-      const agt = server.guild.channels.get("755269708579733626");
+      message.channel.send('✅ Banned');
+      const agt = server.guild.channels.get('755269708579733626');
       let embed = new Discord.RichEmbed();
       let date = new Date();
       embed.setAuthor(`${message.author.tag}`, message.author.avatarURL);
-      embed.title = "Ban";
+      embed.title = 'Ban';
       embed.addField(
-        "Banned users:",
-        actualBanned.map((b) => `<@${b}>`).join("\n"),
+        'Banned users:',
+        actualBanned.map((b) => `<@${b}>`).join('\n'),
         false
       );
-      embed.addField("Ban reason:", reason, false);
-      embed.color = Number("0x000000");
+      embed.addField('Ban reason:', reason, false);
+      embed.color = Number('0x000000');
       embed.setFooter(`In #${message.channel.name}`);
       embed.timestamp = date;
       agt.send({ embed });
 
       server.save();
       return;
-    } else if (endReason == "Cancelled") {
-      message.channel.send("❌ Cancelled");
+    } else if (endReason == 'Cancelled') {
+      message.channel.send('❌ Cancelled');
       return;
-    } else if (endReason == "Failed") {
+    } else if (endReason == 'Failed') {
       message.channel.send(
         "❌ Unable to ban them. Make sure the number of days is set appropriately and the ban message isn't too long"
       );
       return;
     } else {
-      message.channel.send("❌ Failed to confirm");
+      message.channel.send('❌ Failed to confirm');
       return;
     }
   });

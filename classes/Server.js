@@ -6,8 +6,10 @@ module.exports = class Server {
     this.guild = guild;
     this.processors = prcs.processors;
     if (fs.existsSync(`./.${this.guild.id}_restore.json`)) {
-      let json = JSON.parse(fs.readFileSync(`./.${this.guild.id}_restore.json`, 'utf8'));
-      this.initialize(json, command_inits.concat(prcs.inits));      
+      let json = JSON.parse(
+        fs.readFileSync(`./.${this.guild.id}_restore.json`, 'utf8')
+      );
+      this.initialize(json, command_inits.concat(prcs.inits));
     } else {
       this.initialize(null, command_inits.concat(prcs.inits));
     }
@@ -36,7 +38,6 @@ module.exports = class Server {
     });
   }
 
-
   async processVoice(oldMember, newMember) {
     this.processors['VOICE'].forEach((p) => {
       if (p.isAllowed(oldMember)) {
@@ -62,19 +63,19 @@ module.exports = class Server {
     });
   }
 
-  async addNewUser(member) { 
+  async addNewUser(member) {
     this.processors['JOIN'].forEach((p) => {
       p.process(member, this);
     });
   }
 
-  async removeUser(member) { 
+  async removeUser(member) {
     this.processors['LEAVE'].forEach((p) => {
       p.process(member, this);
     });
   }
 
-  async userUpdate(oldUser, newUser) { 
+  async userUpdate(oldUser, newUser) {
     this.processors['USER_UPDATE'].forEach((p) => {
       if (p.isAllowed(newUser.id, this)) {
         p.process(oldUser, newUser, this);
@@ -82,7 +83,7 @@ module.exports = class Server {
     });
   }
 
-  async memberUpdate(oldMember, newMember) { 
+  async memberUpdate(oldMember, newMember) {
     this.processors['MEMBER_UPDATE'].forEach((p) => {
       if (p.isAllowed(newMember.id, this)) {
         p.process(oldMember, newMember, this);
@@ -112,7 +113,11 @@ module.exports = class Server {
       try {
         let serverNoGuild = this;
         //delete serverNoGuild.guild;
-        fs.writeFileSync(`./backups/${this.guild.id}_log-${date}.json`, JSON.stringify(serverNoGuild), 'utf8');
+        fs.writeFileSync(
+          `./backups/${this.guild.id}_log-${date}.json`,
+          JSON.stringify(serverNoGuild),
+          'utf8'
+        );
       } catch (e) {
         console.log(e);
       }
@@ -121,7 +126,11 @@ module.exports = class Server {
       try {
         let serverNoGuild = this;
         //delete serverNoGuild.guild;
-        fs.writeFileSync(`./.${this.guild.id}_restore.json`, JSON.stringify(serverNoGuild), 'utf8');
+        fs.writeFileSync(
+          `./.${this.guild.id}_restore.json`,
+          JSON.stringify(serverNoGuild),
+          'utf8'
+        );
       } catch (e) {
         console.log(e);
       }

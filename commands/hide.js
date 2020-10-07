@@ -1,7 +1,5 @@
 module.exports.name = 'hide';
-module.exports.alias = [
-  'hide'
-];
+module.exports.alias = ['hide'];
 module.exports.initialize = (json, server) => {
   server.hiddenChannels = [];
   if (!json || !json['hiddenChannels']) return;
@@ -9,10 +7,14 @@ module.exports.initialize = (json, server) => {
 };
 
 module.exports.isAllowed = (message, server) => {
-  return message.member.hasPermission('ADMINISTRATOR') && server.hiddenChannels.includes(message.channel.id); // Remove hiddenChannels check from the production
+  return (
+    message.member.hasPermission('ADMINISTRATOR') &&
+    server.hiddenChannels.includes(message.channel.id)
+  ); // Remove hiddenChannels check from the production
 };
 
-module.exports.help = '`,hide <#channel>` hides a channel from general commands, unless it was invoked in one of the hidden channels.';
+module.exports.help =
+  '`,hide <#channel>` hides a channel from general commands, unless it was invoked in one of the hidden channels.';
 
 module.exports.command = (message, content, bot, server) => {
   let chan = server.guild.channels.get(content);

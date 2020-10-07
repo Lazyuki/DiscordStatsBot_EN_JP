@@ -41,7 +41,7 @@ module.exports = class BST {
   toMap() {
     var map = {};
     if (!this.root) return map;
-    var rec = function(map, curr) {
+    var rec = function (map, curr) {
       if (curr.right) rec(map, curr.right);
       map[curr.key] = curr.value;
       if (curr.left) rec(map, curr.left);
@@ -53,7 +53,7 @@ module.exports = class BST {
   toMapReverse() {
     var map = new Map();
     if (!this.root) return map;
-    var rec = function(map, curr) {
+    var rec = function (map, curr) {
       if (curr.left) rec(map, curr.left);
       map.set(curr.key, curr.value);
       if (curr.right) rec(map, curr.right);

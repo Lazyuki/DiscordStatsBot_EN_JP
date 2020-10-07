@@ -4,20 +4,21 @@ const Util = require('../classes/Util.js');
 
 module.exports.name = 'voiceLeaderboard';
 
-module.exports.alias = [
-  'vc',
-  'v'
-];
+module.exports.alias = ['vc', 'v'];
 
 module.exports.isAllowed = () => {
   return true;
 };
 
-module.exports.help = '`,v [username (default = invoker)]` Voice leaderboard for this server.';
+module.exports.help =
+  '`,v [username (default = invoker)]` Voice leaderboard for this server.';
 
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
-  let u = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
+  let u =
+    content == ''
+      ? message.author
+      : await Util.searchUser(message, content, server, bot);
   if (!u) {
     message.react('❓');
     return;
@@ -38,18 +39,23 @@ module.exports.command = async (message, content, bot, server) => {
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');
   let count = 1;
-  let found = false;	
+  let found = false;
 
   for (let user in result) {
-    let hours = Math.floor(result[user] / 60); 
-    let vcTime = `${hours ? hours + 'hr '  : ''}${result[user] % 60}min`;
-    if (count >= 25) { // the 25th person is either the 25th one or the user
+    let hours = Math.floor(result[user] / 60);
+    let vcTime = `${hours ? hours + 'hr ' : ''}${result[user] % 60}min`;
+    if (count >= 25) {
+      // the 25th person is either the 25th one or the user
       if (!found && user != memberID) {
         count++;
         continue;
       }
-      
-      embed.addField(count + ') ' + (await bot.fetchUser(user)).username, vcTime, true);
+
+      embed.addField(
+        count + ') ' + (await bot.fetchUser(user)).username,
+        vcTime,
+        true
+      );
       break;
     }
     let us = await bot.fetchUser(user);
@@ -58,5 +64,5 @@ module.exports.command = async (message, content, bot, server) => {
     embed.addField(count++ + ') ' + us.username, vcTime, true);
   }
   embed.setFooter('Current UTC time: ' + new Date().toUTCString());
-  channel.send({embed});
+  channel.send({ embed });
 };

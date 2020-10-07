@@ -16,7 +16,7 @@ function parseTime(timeString, pad) {
       const ret = date.toLocaleString('en-US', {
         hour: 'numeric',
         hour12: false,
-        timeZone: timezone
+        timeZone: timezone,
       });
       if (!pad && ret[0] === '0') {
         return ret[1];

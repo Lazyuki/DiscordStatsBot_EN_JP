@@ -1,8 +1,6 @@
 module.exports.name = 'ping';
 
-module.exports.alias = [
-  'ping'
-];
+module.exports.alias = ['ping'];
 
 module.exports.isAllowed = () => {
   return true;

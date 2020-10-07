@@ -5,17 +5,14 @@ const Util = require('../classes/Util.js');
 
 module.exports.name = 'channelLeaderboard';
 
-module.exports.alias = [
-  'channel-leaderboard',  
-  'chlb',
-  'c'
-];
+module.exports.alias = ['channel-leaderboard', 'chlb', 'c'];
 
 module.exports.isAllowed = () => {
   return true;
 };
 
-module.exports.help = '`,chlb [#channel] [#2nd_channel] [#3rd... [username | @mention]` Leaderboard for channels. Defaults to the current channel if nothing is specified.';
+module.exports.help =
+  '`,chlb [#channel] [#2nd_channel] [#3rd... [username | @mention]` Leaderboard for channels. Defaults to the current channel if nothing is specified.';
 
 module.exports.command = async (message, content, bot, server) => {
   let ch = message.channel;
@@ -26,7 +23,10 @@ module.exports.command = async (message, content, bot, server) => {
     channels = Array.from(message.mentions.channels.values());
   }
   content = content.replace(channelregex, '').trim();
-  let u = content == '' ? message.author : await Util.searchUser(message, content, server, bot);
+  let u =
+    content == ''
+      ? message.author
+      : await Util.searchUser(message, content, server, bot);
   if (!u) {
     message.react('❓');
     return;
@@ -58,12 +58,17 @@ module.exports.command = async (message, content, bot, server) => {
   let found = false;
 
   for (let user in result) {
-    if (count >= 25) { // the 25th person is either the 25th one or the user
+    if (count >= 25) {
+      // the 25th person is either the 25th one or the user
       if (!found && user != memberID) {
         count++;
         continue;
       }
-      embed.addField(count + ') ' + (await bot.fetchUser(user)).username, result[user], true);
+      embed.addField(
+        count + ') ' + (await bot.fetchUser(user)).username,
+        result[user],
+        true
+      );
       break;
     }
     let us = await bot.fetchUser(user);
@@ -72,5 +77,5 @@ module.exports.command = async (message, content, bot, server) => {
     embed.addField(count++ + ') ' + us.username, result[user], true);
   }
   embed.setFooter('Current UTC time: ' + new Date().toUTCString());
-  ch.send({embed});
+  ch.send({ embed });
 };

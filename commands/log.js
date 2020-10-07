@@ -2,12 +2,7 @@ const Discord = require('discord.js');
 const Util = require('../classes/Util.js');
 
 module.exports.name = 'logwarning';
-module.exports.alias = [
-  'log',
-  'silentwarn',
-  'silent'
-];
-
+module.exports.alias = ['log', 'silentwarn', 'silent'];
 
 module.exports.isAllowed = (message, server) => {
   return server.hiddenChannels.includes(message.channel.id);
@@ -36,7 +31,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (!member) {
     message.channel.send('Failed to get a member');
     return;
-  };
+  }
 
   content = content.trim();
 
@@ -49,22 +44,20 @@ module.exports.command = async (message, content, bot, server) => {
     issuer: message.author.id,
     link: message.url,
     silent: true,
-    warnMessage: content
-  }
+    warnMessage: content,
+  };
 
   if (server.warnlist[member.id]) {
-    server.warnlist[member.id].push(
-      warning
-    )
+    server.warnlist[member.id].push(warning);
   } else {
-    server.warnlist[member.id] = [
-      warning
-    ];
+    server.warnlist[member.id] = [warning];
   }
   message.channel.send({
     embed: new Discord.RichEmbed()
-      .setDescription(`Logged the warning for ${member} by ${message.author}. (They did not receive the warning from Ciri) `)
-      .setColor('0x42f46b')
+      .setDescription(
+        `Logged the warning for ${member} by ${message.author}. (They did not receive the warning from Ciri) `
+      )
+      .setColor('0x42f46b'),
   });
   server.save();
 };

@@ -1,7 +1,5 @@
 module.exports.name = 'watch';
-module.exports.alias = [
-  'watch'
-];
+module.exports.alias = ['watch'];
 module.exports.initialize = (json, server) => {
   server.watchedUsers = [];
   if (!json || !json['watchedUsers']) return;
@@ -12,7 +10,8 @@ module.exports.isAllowed = (message, server) => {
   return server.hiddenChannels.includes(message.channel.id);
 };
 
-module.exports.help = 'Watch a user for deleted messages `,watch <@mention or ID>`';
+module.exports.help =
+  'Watch a user for deleted messages `,watch <@mention or ID>`';
 
 module.exports.command = async (message, content, bot, server) => {
   if (content == '') {

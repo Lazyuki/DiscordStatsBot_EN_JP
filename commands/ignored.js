@@ -1,8 +1,6 @@
 module.exports.name = 'ignored';
 
-module.exports.alias = [
-  'ignored'
-];
+module.exports.alias = ['ignored'];
 
 module.exports.isAllowed = (message) => {
   return message.member.hasPermission('ADMINISTRATOR');

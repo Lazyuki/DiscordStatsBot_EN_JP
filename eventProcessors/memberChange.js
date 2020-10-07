@@ -17,8 +17,11 @@ module.exports.process = async (oldMember, newMember, server) => {
       embed.description = `**${oldMember.nickname}**'s nickname was changed to **${newMember.nickname}**`;
     }
     embed.color = Number('0x4286f4');
-    embed.setFooter(`${newMember.user.username} (${newMember.id})`,newMember.user.avatarURL);
+    embed.setFooter(
+      `${newMember.user.username} (${newMember.id})`,
+      newMember.user.avatarURL
+    );
     embed.setTimestamp();
-    server.guild.channels.get('277384105245802497').send({embed});
+    server.guild.channels.get('277384105245802497').send({ embed });
   }
 };

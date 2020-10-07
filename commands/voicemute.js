@@ -1,8 +1,5 @@
 module.exports.name = 'voiceMute';
-module.exports.alias = [
-  'voicemute',
-  'vm'
-];
+module.exports.alias = ['voicemute', 'vm'];
 
 const Discord = require('discord.js');
 const Util = require('../classes/Util.js');
@@ -27,13 +24,13 @@ module.exports.command = async (message, content, bot, server) => {
     }
     content = content.replace(Util.REGEX_RAW_ID, '').trim();
   }
-  
+
   if (targets.size === 0) {
     message.channel.send('You must mention them');
     return;
   }
   let reason = content;
-  if (!reason){
+  if (!reason) {
     reason = 'unspecified';
   }
   const AGT = server.guild.channels.get('755269708579733626');
@@ -48,28 +45,27 @@ module.exports.command = async (message, content, bot, server) => {
     embed.setFooter('Contact the DM Bot if you need to discuss this issue.');
     embed.color = Number('0xEC891D');
     embed.timestamp = new Date();
-    await member.send({embed});
+    await member.send({ embed });
     embed = new Discord.RichEmbed();
-    embed.setAuthor(`${member.user.tag} has been muted in voice chat`, member.user.avatarURL);
+    embed.setAuthor(
+      `${member.user.tag} has been muted in voice chat`,
+      member.user.avatarURL
+    );
     embed.description = `Reason: ${reason}`;
     embed.color = Number('0xEC891D');
     embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);
     embed.timestamp = new Date();
-    AGT.send({embed});
+    AGT.send({ embed });
     const warning = {
       issued: message.createdTimestamp,
       issuer: message.author.id,
       link: message.url,
-      warnMessage: 'Voice muted'
+      warnMessage: 'Voice muted',
     };
     if (server.warnlist[member.id]) {
-      server.warnlist[member.id].push(
-        warning
-      );
+      server.warnlist[member.id].push(warning);
     } else {
-      server.warnlist[member.id] = [
-        warning
-      ];
+      server.warnlist[member.id] = [warning];
     }
   }
   message.channel.send('✅ Voice Muted');

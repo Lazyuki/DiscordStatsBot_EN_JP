@@ -1,15 +1,13 @@
 module.exports.name = 'auditLog';
 
-module.exports.alias = [
-  'auditlog',
-  'al'
-];
+module.exports.alias = ['auditlog', 'al'];
 
 module.exports.isAllowed = (message) => {
   return message.member.hasPermission('VIEW_AUDIT_LOG');
 };
 
-module.exports.help = '__WP Only__ `,al [number <= 20 (default = 3)] [ALL_CAPS_ACTION] [Target User ID] [@mention the executor]` View audit log. Actions: <https://github.com/hydrabolt/discord.js/blob/stable/src/structures/GuildAuditLogs.js#L16>\n';
+module.exports.help =
+  '__WP Only__ `,al [number <= 20 (default = 3)] [ALL_CAPS_ACTION] [Target User ID] [@mention the executor]` View audit log. Actions: <https://github.com/hydrabolt/discord.js/blob/stable/src/structures/GuildAuditLogs.js#L16>\n';
 
 const Discord = require('discord.js');
 const IgnoredActions = ['INVITE_CREATE', 'MEMBER_UPDATE'];
@@ -17,9 +15,13 @@ const IgnoredActions = ['INVITE_CREATE', 'MEMBER_UPDATE'];
 function isInteresting(e) {
   if (e.executor.id == '309878089746219008') return false; // Canti
   if (IgnoredActions.indexOf(e.action) != -1) return false;
-  if (e.action == 'MEMBER_ROLE_UPDATE' &&
-      (e.executor.id == '116275390695079945' || e.executor.id == '172002275412279296')) return false; // Nadeko/Tatsu assigning roles
-  if (e.reason && e.reason == 'self assigned') return false; // Ciri's self assigning 
+  if (
+    e.action == 'MEMBER_ROLE_UPDATE' &&
+    (e.executor.id == '116275390695079945' ||
+      e.executor.id == '172002275412279296')
+  )
+    return false; // Nadeko/Tatsu assigning roles
+  if (e.reason && e.reason == 'self assigned') return false; // Ciri's self assigning
   return true;
 }
 
@@ -38,25 +40,28 @@ function embedEntry(entries) {
   let embed = new Discord.RichEmbed();
   let e = entries[0];
 
-  embed.setAuthor(`${capsToNormal(e.action)} by ${e.executor.username}`, e.executor.avatarURL);
+  embed.setAuthor(
+    `${capsToNormal(e.action)} by ${e.executor.username}`,
+    e.executor.avatarURL
+  );
   let str = '';
   if (e.target != null) {
     switch (e.targetType) {
-    case 'USER':
-      str += `__Target User__: \`${e.target.tag}\`\n`;
-      break;
-    case 'ROLE':
-      str += `__Target Role__: \`${e.target.name}\`\n`;
-      break;
-    case 'CHANNEL':
-      str += `__Target Channel__: \`#${e.target.name}\`\n`;
-      break;
-    default:
-      if (e.action == 'MESSAGE_DELETE') {
-        str += `__${e.extra.count} Messages by__: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;
+      case 'USER':
+        str += `__Target User__: \`${e.target.tag}\`\n`;
         break;
-      }
-      str += `__TargetType__: \`${e.targetType}\`\n`;
+      case 'ROLE':
+        str += `__Target Role__: \`${e.target.name}\`\n`;
+        break;
+      case 'CHANNEL':
+        str += `__Target Channel__: \`#${e.target.name}\`\n`;
+        break;
+      default:
+        if (e.action == 'MESSAGE_DELETE') {
+          str += `__${e.extra.count} Messages by__: \`${e.target.tag}\` in \`#${e.extra.channel.name}\`\n`;
+          break;
+        }
+        str += `__TargetType__: \`${e.targetType}\`\n`;
     }
   } else {
     str += `__TargetType__: \`${e.targetType}\`\n`;
@@ -69,76 +74,103 @@ function embedEntry(entries) {
       if (ent.reason) reason = ` : ${ent.reason}`;
       let vars = {};
       switch (e.action) {
-      case 'MEMBER_ROLE_UPDATE':
-        title = title.replace('$', '');
-        str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new[0].name}\`${reason}\n`;
-        break;
-      case 'ROLE_UPDATE':
-        vars.flip = true;
-      case 'CHANNEL_OVERWRITE_UPDATE': {
-        let perm = ent.changes[0].new ^ ent.changes[0].old;
-        let perms = new Discord.Permissions(null, perm).serialize(false);
-        let permKey = [];
-        for (let name in perms) {
-          if (perms[name]) permKey.push(name);
-        }
-        if ((perm & ent.changes[0].old) == 0) { // TODO this is fucked up. the order is opposite. LMAO
-          if (vars.flip) {
-            str += `・**Allow**: \`${permKey.join(', ')}\`\n`;
-          } else {
-            str += `・**${e.extra.name ? 'Deny' : capsToNormal(title.toUpperCase())}**: \`${permKey.join(', ')}\` for \`${e.extra.name ? e.extra.name : e.extra.user.tag}\`\n`;
+        case 'MEMBER_ROLE_UPDATE':
+          title = title.replace('$', '');
+          str += `・**${capsToNormal(title.toUpperCase())}**: \`${
+            ent.changes[0].new[0].name
+          }\`${reason}\n`;
+          break;
+        case 'ROLE_UPDATE':
+          vars.flip = true;
+        case 'CHANNEL_OVERWRITE_UPDATE': {
+          let perm = ent.changes[0].new ^ ent.changes[0].old;
+          let perms = new Discord.Permissions(null, perm).serialize(false);
+          let permKey = [];
+          for (let name in perms) {
+            if (perms[name]) permKey.push(name);
           }
-        } else {
-          if (vars.flip) {
-						  str += `・**Deny**: \`${permKey.join(', ')}\`\n`;
+          if ((perm & ent.changes[0].old) == 0) {
+            // TODO this is fucked up. the order is opposite. LMAO
+            if (vars.flip) {
+              str += `・**Allow**: \`${permKey.join(', ')}\`\n`;
+            } else {
+              str += `・**${
+                e.extra.name ? 'Deny' : capsToNormal(title.toUpperCase())
+              }**: \`${permKey.join(', ')}\` for \`${
+                e.extra.name ? e.extra.name : e.extra.user.tag
+              }\`\n`;
+            }
           } else {
-						  str += `・**${e.extra.name ? 'Allow' : capsToNormal(title.toUpperCase())}**: \`${permKey.join(', ')}\` for \`${e.extra.name ? e.extra.name : e.extra.user.tag}\`\n`;
+            if (vars.flip) {
+              str += `・**Deny**: \`${permKey.join(', ')}\`\n`;
+            } else {
+              str += `・**${
+                e.extra.name ? 'Allow' : capsToNormal(title.toUpperCase())
+              }**: \`${permKey.join(', ')}\` for \`${
+                e.extra.name ? e.extra.name : e.extra.user.tag
+              }\`\n`;
+            }
           }
+          break;
         }
-        break;
-      }
-      case 'CHANNEL_CREATE':
-      case 'EMOJI_CREATE':
-        str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].new}\`\n`;
-        break;
-      case 'CHANNEL_UPDATE':
-      case 'EMOJI_UPDATE':
-        str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].old}\` to \`${ent.changes[0].new}\`\n`;
-        break;
-      case 'CHANNEL_DELETE':
-      case 'EMOJI_DELETE':
-        str += `・**${capsToNormal(title.toUpperCase())}**: \`${ent.changes[0].old}\`\n`;
-        break;
-      case 'ROLE_CREATE':
-        title = e.changes[3].key;
-        str += `・**${capsToNormal(title.toUpperCase())}**: ${ent.changes[3].new}\n`;
-        break;
-      case 'ROLE_DELETE':
-        title = e.changes[3].key;
-        str += `・**${capsToNormal(title.toUpperCase())}**: ${ent.changes[3].old}\n`;
-        break;
-      case 'CHANNEL_OVERWRITE_CREATE':
-        title = e.changes[3].key;
-        str += `・**${capsToNormal(title.toUpperCase())}**: <@${ent.changes[2].new}>\n`
-        break;
-      case 'CHANNEL_OVERWRITE_DELETE':
-        str += `・**${capsToNormal(title.toUpperCase())}**: <@${ent.changes[2].old}>\n`;
-        break;
-      default:
-        str += `・**${title}**: \`${JSON.stringify(ent.changes)}\`${reason}\n`;
-        console.log(`Extra for ${e.action} = ${JSON.stringify(e.extra)}`);
+        case 'CHANNEL_CREATE':
+        case 'EMOJI_CREATE':
+          str += `・**${capsToNormal(title.toUpperCase())}**: \`${
+            ent.changes[0].new
+          }\`\n`;
+          break;
+        case 'CHANNEL_UPDATE':
+        case 'EMOJI_UPDATE':
+          str += `・**${capsToNormal(title.toUpperCase())}**: \`${
+            ent.changes[0].old
+          }\` to \`${ent.changes[0].new}\`\n`;
+          break;
+        case 'CHANNEL_DELETE':
+        case 'EMOJI_DELETE':
+          str += `・**${capsToNormal(title.toUpperCase())}**: \`${
+            ent.changes[0].old
+          }\`\n`;
+          break;
+        case 'ROLE_CREATE':
+          title = e.changes[3].key;
+          str += `・**${capsToNormal(title.toUpperCase())}**: ${
+            ent.changes[3].new
+          }\n`;
+          break;
+        case 'ROLE_DELETE':
+          title = e.changes[3].key;
+          str += `・**${capsToNormal(title.toUpperCase())}**: ${
+            ent.changes[3].old
+          }\n`;
+          break;
+        case 'CHANNEL_OVERWRITE_CREATE':
+          title = e.changes[3].key;
+          str += `・**${capsToNormal(title.toUpperCase())}**: <@${
+            ent.changes[2].new
+          }>\n`;
+          break;
+        case 'CHANNEL_OVERWRITE_DELETE':
+          str += `・**${capsToNormal(title.toUpperCase())}**: <@${
+            ent.changes[2].old
+          }>\n`;
+          break;
+        default:
+          str += `・**${title}**: \`${JSON.stringify(
+            ent.changes
+          )}\`${reason}\n`;
+          console.log(`Extra for ${e.action} = ${JSON.stringify(e.extra)}`);
       }
     }
   }
   switch (e.actionType) {
-  case 'CREATE':
-    embed.color = Number('0x87E966');
-    break;
-  case 'UPDATE':
-    embed.color = Number('0xff9900');
-    break;
-  case 'DELETE':
-    embed.color = Number('0xff3300');
+    case 'CREATE':
+      embed.color = Number('0x87E966');
+      break;
+    case 'UPDATE':
+      embed.color = Number('0xff9900');
+      break;
+    case 'DELETE':
+      embed.color = Number('0xff3300');
   }
   embed.timestamp = e.createdAt;
   embed.description = `${str}`;

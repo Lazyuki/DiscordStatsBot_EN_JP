@@ -1,18 +1,15 @@
 const Discord = require('discord.js');
 
 module.exports.name = 'tempMute';
-module.exports.alias = [
-  'tempmute',
-  'tm',
-  'shutup',
-  'timeout'
-];
+module.exports.alias = ['tempmute', 'tm', 'shutup', 'timeout'];
 
 function unmute(user_id, server) {
-  server.guild.fetchMember(user_id)
-    .then(member => {
+  server.guild
+    .fetchMember(user_id)
+    .then((member) => {
       member.removeRoles([CHAT_MUTED, VOICE_BANNED]);
-    }).catch(e => {
+    })
+    .catch((e) => {
       // member no longer exists
     });
   if (user_id in server.tempmutes) delete server.tempmutes[user_id];
@@ -24,16 +21,22 @@ module.exports.initialize = (json, server) => {
   server.tempmutes = json['tempmutes'];
   for (const user_id in server.tempmutes) {
     const time = server.tempmutes[user_id];
-    setTimeout(() => unmute(user_id, server), new Date(time).getTime() - new Date().getTime());
+    setTimeout(
+      () => unmute(user_id, server),
+      new Date(time).getTime() - new Date().getTime()
+    );
   }
 };
 
 module.exports.isAllowed = (message, server) => {
-  return server.guild.id === '189571157446492161' && message.member.hasPermission('MUTE_MEMBERS');
+  return (
+    server.guild.id === '189571157446492161' &&
+    message.member.hasPermission('MUTE_MEMBERS')
+  );
 };
 
-
-module.exports.help = "Mute users temporarily. `,tm <mentions or IDs> [time. Defaults to 5m] [reason]`\nExample: `,tm @someone @sometwo 3d1h30m shhhhhhhh`";
+module.exports.help =
+  'Mute users temporarily. `,tm <mentions or IDs> [time. Defaults to 5m] [reason]`\nExample: `,tm @someone @sometwo 3d1h30m shhhhhhhh`';
 
 const CHAT_MUTED = '259181555803619329';
 const VOICE_BANNED = '327917620462354442';
@@ -41,17 +44,17 @@ const VOICE_MUTED = '357687893566947329';
 const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/;
 
 /**
- * 
- * @param {String} content 
- * @param {Guild} guild 
+ *
+ * @param {String} content
+ * @param {Guild} guild
  * @returns {[Member, String]}
  */
- function getNextPossibleMember(content, guild) {
+function getNextPossibleMember(content, guild) {
   const firstWord = content.split(/(\s|><)+/)[0];
   const idMatches = /[0-9]{17,22}/.exec(firstWord);
   if (idMatches) {
     const id = idMatches[0];
-    try { 
+    try {
       const mem = guild.members.get(id) || null;
       return [mem, content.substr(firstWord.length + 1).trim()];
     } catch (e) {
@@ -63,16 +66,16 @@ const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/;
 }
 
 /**
- * 
- * @param {String} content 
- * @param {Guild} guild 
+ *
+ * @param {String} content
+ * @param {Guild} guild
  * @returns {[Member[], String]}
  */
- function getAllMembers(content, guild) {
+function getAllMembers(content, guild) {
   let currContent = content;
   const members = [];
   while (currContent) {
-    const [mem, nextContent] =  getNextPossibleMember(currContent, guild);
+    const [mem, nextContent] = getNextPossibleMember(currContent, guild);
     if (mem) {
       members.push(mem);
     }
@@ -110,7 +113,7 @@ module.exports.command = async (message, content, bot, server) => {
     days += Math.floor(hours / 24);
     hours %= 24;
   }
-  const totalSeconds = seconds + (minutes * 60) + (hours * 3600) + (days * 86400);
+  const totalSeconds = seconds + minutes * 60 + hours * 3600 + days * 86400;
   if (totalSeconds > 2592000) {
     message.channel.send("You can't mute them for more than a month");
     return;
@@ -121,10 +124,16 @@ module.exports.command = async (message, content, bot, server) => {
   const totalMillis = totalSeconds * 1000;
   const unmuteDateMillis = new Date().getTime() + totalMillis;
   const reason = restContent.replace(TIME_REGEX, '').trim();
-  const durationString = `${days ? `${days} days ` : ''}${hours ? `${hours} hours ` : ''}${minutes ? `${minutes} minutes ` : ''}${seconds ? `${seconds} seconds` : ''}`;
+  const durationString = `${days ? `${days} days ` : ''}${
+    hours ? `${hours} hours ` : ''
+  }${minutes ? `${minutes} minutes ` : ''}${
+    seconds ? `${seconds} seconds` : ''
+  }`;
   const embed = new Discord.RichEmbed();
   embed.setAuthor(`Temporarily Muted in ${message.guild.name}`);
-  embed.description = `You are muted for ${durationString}\nReason: ${reason || 'unspecified'}`;
+  embed.description = `You are muted for ${durationString}\nReason: ${
+    reason || 'unspecified'
+  }`;
   embed.color = Number('0xEC891D');
   embed.timestamp = new Date();
   for (const member of members) {
@@ -134,7 +143,7 @@ module.exports.command = async (message, content, bot, server) => {
       if (member.voiceChannel) await member.setVoiceChannel(null);
       await member.addRoles([CHAT_MUTED, VOICE_BANNED], 'Temp Muted');
       await member.send({ embed });
-    } catch(e) {
+    } catch (e) {
       // already muted
     }
 
@@ -143,22 +152,24 @@ module.exports.command = async (message, content, bot, server) => {
       issued: message.createdTimestamp,
       issuer: message.author.id,
       link: message.url,
-      warnMessage: 'Temp muted' + (reason ? `: ${reason}`: '')
+      warnMessage: 'Temp muted' + (reason ? `: ${reason}` : ''),
     };
     if (server.warnlist[member.id]) {
-      server.warnlist[member.id].push(
-        warning
-      );
+      server.warnlist[member.id].push(warning);
     } else {
-      server.warnlist[member.id] = [
-        warning
-      ];
+      server.warnlist[member.id] = [warning];
     }
   }
-  await message.channel.send(`✅ Muted ${members.map(m => m).join(', ')} for ${durationString}${reason ? `\nReason: ${reason}` : ''}`);
+  await message.channel.send(
+    `✅ Muted ${members.map((m) => m).join(', ')} for ${durationString}${
+      reason ? `\nReason: ${reason}` : ''
+    }`
+  );
   const agt = server.guild.channels.get('755269708579733626');
   embed.setAuthor('Temporarily Muted', message.author.avatarURL);
-  embed.description = `Duration: ${durationString}\nReason: ${reason || 'unspecified'}\nMembers: ${members.map(m => `${m}: (${m.user.tag})`).join('\n')}`;
+  embed.description = `Duration: ${durationString}\nReason: ${
+    reason || 'unspecified'
+  }\nMembers: ${members.map((m) => `${m}: (${m.user.tag})`).join('\n')}`;
   embed.setFooter(`In: #${message.channel.name}`);
   agt.send({ embed });
 };

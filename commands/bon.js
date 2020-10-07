@@ -1,18 +1,15 @@
 module.exports.name = 'bon';
-module.exports.alias = [
-  'bon',
-  'bonguide',
-  'bonginnerplus'
-];
+module.exports.alias = ['bon', 'bonguide', 'bonginnerplus'];
 module.exports.isAllowed = (message, server) => {
   if (server.guild.id != '189571157446492161') return false;
   return true;
 };
 
-module.exports.help = '`,bon` Bonyari#8184\'s guide';
+module.exports.help = "`,bon` Bonyari#8184's guide";
 const Discord = require('discord.js');
 const externalLink = '<:externallink:438354612379189268>';
-const link = 'https://docs.google.com/document/d/19FEIOJWbLhJQ-AmepxFBMC2ebhJJr9RBUMfMeatYuq8/edit?usp=sharing';
+const link =
+  'https://docs.google.com/document/d/19FEIOJWbLhJQ-AmepxFBMC2ebhJJr9RBUMfMeatYuq8/edit?usp=sharing';
 
 module.exports.command = async (message, content, bot, server) => {
   message.delete();
@@ -28,5 +25,5 @@ module.exports.command = async (message, content, bot, server) => {
   embed.url = link;
   embed.setFooter(`Written by ${bon.user.tag}`, bon ? bon.user.avatarURL : '');
   embed.color = 8843151;
-  message.channel.send({embed});
+  message.channel.send({ embed });
 };

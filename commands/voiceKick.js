@@ -1,19 +1,14 @@
-
-
 module.exports.name = 'voiceKick';
-module.exports.alias = [
-  'voicekick',
-  'vk'
-];
+module.exports.alias = ['voicekick', 'vk'];
 module.exports.isAllowed = async () => {
   return true;
 };
 
-module.exports.help = 'Kick yourself from a voice channel in N minutes. `,vk [number of minutes]`\nOr for mods, kick someone instantly `,vk <@someone>`';
-
+module.exports.help =
+  'Kick yourself from a voice channel in N minutes. `,vk [number of minutes]`\nOr for mods, kick someone instantly `,vk <@someone>`';
 
 async function removeFromVoice(members) {
-   for (let member of members) {
+  for (let member of members) {
     if (!member || !member.voiceChannel) continue;
     await member.setVoiceChannel(null);
   }
@@ -36,10 +31,10 @@ module.exports.command = async (message, content) => {
     message.channel.send('You need to be in a voice channel');
     return;
   }
-  let minutes = parseInt(content);  
+  let minutes = parseInt(content);
   if (isNaN(minutes) || minutes > 1440 || minutes < 0) minutes = 0;
   message.channel.send(`Kicking you from vc in ${minutes} minutes`);
   setTimeout(() => {
-    removeFromVoice( [message.member]);
+    removeFromVoice([message.member]);
   }, minutes * 60 * 1000);
 };

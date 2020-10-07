@@ -1,11 +1,12 @@
 module.exports.name = 'hidden';
 
-module.exports.alias = [
-  'hidden'
-];
+module.exports.alias = ['hidden'];
 
 module.exports.isAllowed = (message, server) => {
-  return message.member.hasPermission('ADMINISTRATOR') && server.hiddenChannels.includes(message.channel.id);
+  return (
+    message.member.hasPermission('ADMINISTRATOR') &&
+    server.hiddenChannels.includes(message.channel.id)
+  );
 };
 
 module.exports.help = 'Shows a list of hidden channels.';

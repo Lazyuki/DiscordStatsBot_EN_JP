@@ -11,10 +11,8 @@ const prcs = require('./prcs.js');
 // Set up Discord client settings.
 // Note: Disabling other events such as user update tends to break everything.
 const bot = new Discord.Client({
-  disableEveryone: true,
-  disabledEvents: [
-    'TYPING_START'
-  ]
+  disableMentions: 'everyone',
+  disabledEvents: ['TYPING_START'],
 });
 
 // Load initial configurations.
@@ -25,17 +23,19 @@ let time = new Date();
 let h = time.getUTCHours();
 let m = time.getUTCMinutes();
 let s = time.getUTCSeconds();
-let timeLeft = (24*60*60) - (h*60*60) - (m*60) - s;
-bot.setTimeout(() => { // Set up the day changing task
+let timeLeft = 24 * 60 * 60 - h * 60 * 60 - m * 60 - s;
+bot.setTimeout(() => {
+  // Set up the day changing task
   midnightTask(bot);
-},  timeLeft * 1000); // Time left until the next day
+}, timeLeft * 1000); // Time left until the next day
 
-bot.setTimeout(() => { // Set up hourly task
+bot.setTimeout(() => {
+  // Set up hourly task
   hourlyTask(bot);
   bot.setInterval(() => {
     hourlyTask(bot);
-  }, 60*60*1000);
-},  ((60 - m) * 60 - s + 1) * 1000); // one second more
+  }, 60 * 60 * 1000);
+}, ((60 - m) * 60 - s + 1) * 1000); // one second more
 
 bot.on('ready', () => {
   console.log('Logged in as ' + bot.user.username);
@@ -48,13 +48,16 @@ bot.on('ready', () => {
     if (guild.id == '293787390710120449') continue;
     bot.servers[guild.id] = new Server(guild, inits, prcs);
   }
-  let helps = [',help',',h',',halp',',tasukete'];
-  bot.user.setActivity(helps[Math.floor(Math.random() * helps.length)], {type:'LISTENING'});
+  let helps = [',help', ',h', ',halp', ',tasukete'];
+  bot.user.setActivity(helps[Math.floor(Math.random() * helps.length)], {
+    type: 'LISTENING',
+  });
 });
 
-bot.on('message', async message => {
+bot.on('message', async (message) => {
   if (message.author.bot || message.system) return; // Ignore messages by bots and system
-  if (message.channel.type === 'dm') { // Direct message.
+  if (message.channel.type === 'dm') {
+    // Direct message.
     respondDM(message);
     return;
   }
@@ -74,8 +77,8 @@ bot.on('message', async message => {
     mine = true;
   }
 
-  // Cache member => prevents weird errors 
-  if (!message.member) { 
+  // Cache member => prevents weird errors
+  if (!message.member) {
     message.member = await server.guild.member(message.author);
   }
   // Is it not a command?
@@ -86,8 +89,10 @@ bot.on('message', async message => {
   // Separate the command and the content
   let command = message.content.split(' ')[0].slice(1).toLowerCase();
   let content = message.content.substr(command.length + 2).trim();
-  if (commands[command]) { // if Ciri's command
-    if (commands[command].isAllowed(message, server, bot)) { // Check permission
+  if (commands[command]) {
+    // if Ciri's command
+    if (commands[command].isAllowed(message, server, bot)) {
+      // Check permission
       commands[command].command(message, content, bot, server, cmds);
       return;
     }
@@ -103,14 +108,14 @@ bot.on('messageUpdate', (oldMessage, newMessage) => {
   bot.servers[oldMessage.guild.id].addEdits(oldMessage, newMessage, bot);
 });
 
-bot.on('messageDelete', message => {
+bot.on('messageDelete', (message) => {
   if (message.author.bot || message.system) return;
   if (message.channel.type != 'text') return;
   if (message.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[message.guild.id].addDeletedMessage(message);
 });
 
-bot.on('messageDeleteBulk', messages => {
+bot.on('messageDeleteBulk', (messages) => {
   let m = messages.first();
   if (m.author.bot || m.system) return;
   if (m.channel.type != 'text') return;
@@ -126,7 +131,13 @@ bot.on('messageReactionAdd', async (reaction, user) => {
   if (m.channel.type != 'text') return;
   if (m.guild.id == '293787390710120449') {
     if (reaction.emoji.name == '▶') {
-      prcs.processors['REACT'][0].process(reaction, user, true, bot.servers['189571157446492161'], bot);
+      prcs.processors['REACT'][0].process(
+        reaction,
+        user,
+        true,
+        bot.servers['189571157446492161'],
+        bot
+      );
     }
     return; // Ignore my server
   }
@@ -139,14 +150,20 @@ bot.on('messageReactionRemove', async (reaction, user) => {
   if (m.channel.type != 'text') return;
   if (m.guild.id == '293787390710120449') {
     if (reaction.emoji.name == '▶') {
-      prcs.processors['REACT'][0].process(reaction, user, false, bot.servers['189571157446492161'], bot);
+      prcs.processors['REACT'][0].process(
+        reaction,
+        user,
+        false,
+        bot.servers['189571157446492161'],
+        bot
+      );
     }
     return; // Ignore my server
   }
   bot.servers[m.guild.id].processReaction(reaction, user, false, bot);
 });
 
-bot.on('raw', async event => { // Discord.js bug, fixed in master?
+bot.on('raw', async (event) => {
   if (event.t == 'MESSAGE_REACTION_REMOVE') {
     /* Prepare our event data */
     let { d: data } = event;
@@ -156,13 +173,21 @@ bot.on('raw', async event => { // Discord.js bug, fixed in master?
     if (channel.type != 'text') return;
     if (!channel.messages.has(data.message_id)) return; // Message not in cache
     let message = channel.messages.get(data.message_id);
-    let emojiKey = (data.emoji.id) ? `${data.emoji.name}:${data.emoji.id}` : data.emoji.name;
+    let emojiKey = data.emoji.id
+      ? `${data.emoji.name}:${data.emoji.id}`
+      : data.emoji.name;
     let reaction = message.reactions.get(emojiKey);
 
     /* Pretend to emit the event */
     if (message.guild.id == '293787390710120449') {
       if (reaction.emoji.toString() == '▶') {
-        prcs.processors['REACT'][0].process(reaction, user, false, bot.servers['189571157446492161'], bot);
+        prcs.processors['REACT'][0].process(
+          reaction,
+          user,
+          false,
+          bot.servers['189571157446492161'],
+          bot
+        );
       }
       return; // Ignore my server
     }
@@ -187,27 +212,27 @@ bot.on('guildMemberUpdate', (oldMember, newMember) => {
   bot.servers[oldMember.guild.id].memberUpdate(oldMember, newMember);
 });
 
-bot.on('guildMemberAdd', member => {
+bot.on('guildMemberAdd', (member) => {
   if (member.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[member.guild.id].addNewUser(member);
 });
 
 bot.on('guildBanAdd', (guild, user) => {
-  if (guild.id == '293787390710120449') return;// Ignore my server
+  if (guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[guild.id].banAdd(user);
 });
 
 bot.on('guildMemberRemove', (member) => {
-  if (member.guild.id == '293787390710120449') return;// Ignore my server
+  if (member.guild.id == '293787390710120449') return; // Ignore my server
   bot.servers[member.guild.id].removeUser(member);
 });
 
-bot.on('guildCreate', guild => {
+bot.on('guildCreate', (guild) => {
   bot.servers[guild.id] = new Server(guild, inits, prcs);
   console.log(`Server added: ${guild.name}`);
 });
 
-bot.on('guildDelete', guild => {
+bot.on('guildDelete', (guild) => {
   // let index = bot.servers.indexOf(guild.id);
   // if (index == -1) return;
   // bot.servers.splice(index, 1);
@@ -217,9 +242,10 @@ bot.on('guildDelete', guild => {
 // Respond to DMs since it's not supported there
 function respondDM(message) {
   let msgs = [
-    'Come on... I\'m not available here... \n https://media3.giphy.com/media/mfGYunx8bcWJy/giphy.gif',
+    "Come on... I'm not available here... \n https://media3.giphy.com/media/mfGYunx8bcWJy/giphy.gif",
     '*sigh* Why did you PM me https://68.media.tumblr.com/d0238a0224ac18b47d1ac2fbbb6dd168/tumblr_nselfnnY3l1rpd9dfo1_250.gif',
-    'I don\'t work here ¯\\\_(ツ)_/¯ http://cloud-3.steamusercontent.com/ugc/576816221180356023/FF4FF60F13F2A773123B3B26A19935944480F510/'];
+    "I don't work here ¯\\_(ツ)_/¯ http://cloud-3.steamusercontent.com/ugc/576816221180356023/FF4FF60F13F2A773123B3B26A19935944480F510/",
+  ];
   let msg = msgs[Math.floor(Math.random() * msgs.length)];
   message.channel.send(msg);
 }

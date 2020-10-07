@@ -16,13 +16,14 @@ exports.REGEX_ID = /<(@!?|#|@&|a?:[\S]+:)\d+>/g;
 exports.REGEX_RAW_ID = /(\d{17,21})/g;
 exports.REGEX_MESSAGE_ID = /(\d{17,21}(?:-\d{17,21})?)/g;
 
-
-exports.searchUser = function(message, content, server, bot) {
+exports.searchUser = function (message, content, server, bot) {
   let mentions = message.mentions.users;
   content = content.trim();
-  if (mentions.size != 0) { // Get mention
+  if (mentions.size != 0) {
+    // Get mention
     return mentions.first();
-  } else if (content != '') { // search name
+  } else if (content != '') {
+    // search name
     let regex = content[0] == '*';
     if (regex) {
       let r = new RegExp(content.substr(1, content.length), 'i');
@@ -46,7 +47,10 @@ exports.searchUser = function(message, content, server, bot) {
           return bot.fetchUser(id); // This returns a Promise
         }
         if (u == undefined) continue; // user left
-        if (u.user.tag.toLowerCase().startsWith(content) || (u.nickname && u.nickname.toLowerCase().startsWith(content))) {
+        if (
+          u.user.tag.toLowerCase().startsWith(content) ||
+          (u.nickname && u.nickname.toLowerCase().startsWith(content))
+        ) {
           return u.user;
         }
       }
@@ -54,7 +58,10 @@ exports.searchUser = function(message, content, server, bot) {
         if (id == content) {
           return mem.user;
         }
-        if (mem.user.tag.toLowerCase().startsWith(content) || (mem.nickname && mem.nickname.toLowerCase().startsWith(content))) {
+        if (
+          mem.user.tag.toLowerCase().startsWith(content) ||
+          (mem.nickname && mem.nickname.toLowerCase().startsWith(content))
+        ) {
           return mem.user;
         }
       }
@@ -64,13 +71,13 @@ exports.searchUser = function(message, content, server, bot) {
 };
 
 exports.LANG = Object.freeze({
-  ENG : 1,
-  JPN : 1 << 1,
-  OTH : 1 << 2,
-  ESC : 1 << 3
+  ENG: 1,
+  JPN: 1 << 1,
+  OTH: 1 << 2,
+  ESC: 1 << 3,
 });
 
-exports.lang = function(content) {
+exports.lang = function (content) {
   let jpCount = 0;
   let enCount = 0;
   let other = 0;
@@ -86,7 +93,7 @@ exports.lang = function(content) {
       jpCount++;
     } else if (exports.REGEX_ENG.test(l)) {
       enCount++;
-    } else if (!/[\sw]/i.test(l)){
+    } else if (!/[\sw]/i.test(l)) {
       other++;
     }
   }
@@ -95,18 +102,22 @@ exports.lang = function(content) {
   }
 
   if (jpCount < 3 && enCount < 3 && other > 0) return result | exports.LANG.OTH; // it's probably a face
-  return  jpCount * 1.7 > enCount ? result | exports.LANG.JPN : result | exports.LANG.ENG;
+  return jpCount * 1.7 > enCount
+    ? result | exports.LANG.JPN
+    : result | exports.LANG.ENG;
 };
 
-exports.postLogs = function(msg, server) {
+exports.postLogs = function (msg, server) {
   let embed = new Discord.RichEmbed();
   let date = new Date(msg.time);
-  embed.setAuthor(`${msg.atag} ID: ${msg.aid}` ,msg.apfp);
-  if (msg.del) { // message was deleted
+  embed.setAuthor(`${msg.atag} ID: ${msg.aid}`, msg.apfp);
+  if (msg.del) {
+    // message was deleted
     embed.title = `Message Deleted after ${msg.dur} seconds`;
     embed.description = msg.con;
     embed.color = Number('0xDB3C3C');
-  } else { // message was edited
+  } else {
+    // message was edited
     embed.title = `Message Edited after ${msg.dur} seconds`;
     embed.addField('Before:', `${msg.con}`, false);
     embed.addField('After:', `${msg.acon}`, false);
@@ -114,16 +125,17 @@ exports.postLogs = function(msg, server) {
   }
   embed.setFooter(`#${msg.ch}`);
   embed.timestamp = date;
-  if (msg.img != '') { // if != null
+  if (msg.img != '') {
+    // if != null
     embed.addField('imgur link', msg.img, false);
     embed.setThumbnail(msg.img);
   }
   let chan = server.guild.channels.get(server.modLog); // #mod_log
   if (!chan) return;
-  chan.send({embed});
+  chan.send({ embed });
 };
 
-exports.paginate = async function(channel, title, list, perPage, authorID) {
+exports.paginate = async function (channel, title, list, perPage, authorID) {
   const maxPageNum = Math.ceil(list.length / perPage) - 1;
   let currPage = 0;
 
@@ -148,25 +160,27 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
     await message.react('▶');
 
     const filter = (reaction, user) => reaction.me && user.id === authorID;
-    const collector = message.createReactionCollector(filter, { time: 60 * 1000 }); // 1 mintue
-    collector.on('collect', r => {
-      switch(r.emoji.name) {
-      case '▶':
-        if (currPage < maxPageNum) {
-          ++currPage;
-          message.edit({ embed: getEmbed()});
-        }
-        r.users.remove(authorID);
-        collector.empty();
-        break;
-      case '◀':
-        if (currPage > 0) {
-          --currPage;
-          message.edit({ embed: getEmbed()});
-        }
-        r.users.remove(authorID);
-        collector.empty();
-        break;
+    const collector = message.createReactionCollector(filter, {
+      time: 60 * 1000,
+    }); // 1 mintue
+    collector.on('collect', (r) => {
+      switch (r.emoji.name) {
+        case '▶':
+          if (currPage < maxPageNum) {
+            ++currPage;
+            message.edit({ embed: getEmbed() });
+          }
+          r.users.remove(authorID);
+          collector.empty();
+          break;
+        case '◀':
+          if (currPage > 0) {
+            --currPage;
+            message.edit({ embed: getEmbed() });
+          }
+          r.users.remove(authorID);
+          collector.empty();
+          break;
       }
     });
     collector.on('end', () => {
@@ -175,8 +189,16 @@ exports.paginate = async function(channel, title, list, perPage, authorID) {
   }
 };
 
-exports.userLeaderboard = async function(channel, embed, list, authorID, searchUser, format, bot) {
-  let foundRank = false;	
+exports.userLeaderboard = async function (
+  channel,
+  embed,
+  list,
+  authorID,
+  searchUser,
+  format,
+  bot
+) {
+  let foundRank = false;
   for (let i in list) {
     let [key, val] = list[i];
     let rank = parseInt(i) + 1;
@@ -196,9 +218,12 @@ exports.userLeaderboard = async function(channel, embed, list, authorID, searchU
       embed.addField(rank + ') ' + user.username, format(val), true);
     }
   }
-  if (foundRank) embed.setFooter(`${foundRank}) ${searchUser.username}: ${format(list[foundRank - 1][1])}`);
+  if (foundRank)
+    embed.setFooter(
+      `${foundRank}) ${searchUser.username}: ${format(list[foundRank - 1][1])}`
+    );
 
-  const msg = await channel.send({embed});
+  const msg = await channel.send({ embed });
   let reloadingNum = 0;
   async function reload(pageNum) {
     let myReloadingNum = ++reloadingNum;
@@ -212,14 +237,19 @@ exports.userLeaderboard = async function(channel, embed, list, authorID, searchU
           username = user.username;
           list[rank][2] = username;
         }
-        if (reloadingNum == myReloadingNum) embed.fields[i] = {name: `${rank + 1}) ${username}`, value: format(val), inline:true };
+        if (reloadingNum == myReloadingNum)
+          embed.fields[i] = {
+            name: `${rank + 1}) ${username}`,
+            value: format(val),
+            inline: true,
+          };
         else break;
       } else {
         embed.fields.length = i;
         break;
       }
     }
-    msg.edit({embed});
+    msg.edit({ embed });
   }
   paginate(msg, list, authorID, foundRank, reload);
 };

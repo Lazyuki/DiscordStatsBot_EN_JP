@@ -8,12 +8,12 @@ module.exports = class SimpleMessage {
       this.atag = message.author.tag; // Author username with the tag
       this.aid = message.author.id; // Author id
       this.apfp = message.author.avatarURL; // Author avatarURL
-      this.con = this.del ?  message.content : message.original; // Message content
+      this.con = this.del ? message.content : message.original; // Message content
       this.acon = this.del ? '' : message.content; // Message content after edit (only for edited messages)
       this.ch = message.channel.name; // Message channel name
       this.chid = message.channel.id; // Message channel id
       this.time = message.createdTimestamp; // Message time stamp
-      this.dur = ((new Date()).getTime() / 1000 - this.time / 1000).toFixed(1); // Message uptime duration in seconds
+      this.dur = (new Date().getTime() / 1000 - this.time / 1000).toFixed(1); // Message uptime duration in seconds
       this.img = ''; // ImageURL
     } else if (arg.simple) {
       let simple = arg.simple;

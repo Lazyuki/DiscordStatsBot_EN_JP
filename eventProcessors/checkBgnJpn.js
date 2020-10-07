@@ -24,7 +24,10 @@ module.exports.process = (message, server) => {
   let threshold = 2;
   for (let i = 0; i < content.length; i++) {
     let l = content[i];
-    if (/[\u4E00-\u9FAF]/.test(l) && !(N5.test(l) || N4.test(l) || N3plus.test(l))) {
+    if (
+      /[\u4E00-\u9FAF]/.test(l) &&
+      !(N5.test(l) || N4.test(l) || N3plus.test(l))
+    ) {
       if (server.kanjis[l]) {
         server.kanjis[l]++;
       } else {

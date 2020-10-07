@@ -2,7 +2,8 @@ const Util = require('./Util.js');
 
 module.exports = class UserRecord {
   constructor(arg) {
-    if (arg) { // build from backup
+    if (arg) {
+      // build from backup
       this.record = arg.record;
       this.thirty = arg.thirty;
       this.jp = arg.jp;
@@ -11,7 +12,8 @@ module.exports = class UserRecord {
       this.chans = arg.chans;
       this.rxn = arg.rxn ? arg.rxn : {};
       this.del = arg.del || 0;
-    } else { // build from scratch
+    } else {
+      // build from scratch
       this.record = new Array(31); //31 days
       this.thirty = 0;
       this.jp = 0;
@@ -36,7 +38,8 @@ module.exports = class UserRecord {
     if (!this.chans[channelID]) {
       this.chans[channelID] = 0;
     }
-    if (lang & Util.LANG.JPN) { // is Japanese
+    if (lang & Util.LANG.JPN) {
+      // is Japanese
       if (!this.record[today]['jpn']) {
         this.record[today]['jpn'] = 0;
       }
@@ -111,7 +114,7 @@ module.exports = class UserRecord {
   }
 
   voiceTime() {
-    return this.vc; 
+    return this.vc;
   }
 
   totalReactions() {
@@ -126,7 +129,7 @@ module.exports = class UserRecord {
   // Cleans up the old messages.
   // Returns true if this user hasn't spoken in the last 30 days.
   adjust(today) {
-    let earliestDay = (today) % 31; // (today - 1) % 30?
+    let earliestDay = today % 31; // (today - 1) % 30?
     for (var chan in this.record[earliestDay]) {
       if (chan == 'jpn') {
         this.jp -= this.record[earliestDay]['jpn'];
@@ -138,7 +141,8 @@ module.exports = class UserRecord {
         delete this.record[earliestDay]['eng'];
         continue;
       }
-      if (chan == 'rxn') { // reactions
+      if (chan == 'rxn') {
+        // reactions
         let reactions = this.record[earliestDay]['rxn'];
         for (let r in reactions) {
           if (!this.rxn[r]) continue;
@@ -148,12 +152,14 @@ module.exports = class UserRecord {
         delete this.record[earliestDay]['rxn'];
         continue;
       }
-      if (chan == 'vc') { // voice
+      if (chan == 'vc') {
+        // voice
         this.vc -= this.record[earliestDay]['vc'];
         delete this.record[earliestDay]['vc'];
         continue;
       }
-      if (chan === 'del') { // deletes
+      if (chan === 'del') {
+        // deletes
         this.del -= this.record[earliestDay]['del'];
         delete this.record[earliestDay]['del'];
         continue;
@@ -165,7 +171,6 @@ module.exports = class UserRecord {
       }
       this.thirty -= num;
       delete this.record[earliestDay][chan];
-
     }
     //this.record[earliestDay] == {};
     return this.thirty <= 0 && this.vc <= 0;

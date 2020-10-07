@@ -1,4 +1,3 @@
-
 module.exports.name = 'reactions';
 module.exports.events = ['REACT'];
 

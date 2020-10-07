@@ -2,21 +2,23 @@ const Discord = require('discord.js');
 const Util = require('../classes/Util.js');
 module.exports.name = 'delete';
 
-module.exports.alias = [
-  'delete',
-  'del'
-];
+module.exports.alias = ['delete', 'del'];
 
 module.exports.isAllowed = (message, server) => {
   if (server.guild.id === '189571157446492161') {
-    return (message.member.hasPermission('ADMINISTRATOR') || message.member.roles.has('543721608506900480') || message.member.roles.has('755269385094168576'));
+    return (
+      message.member.hasPermission('ADMINISTRATOR') ||
+      message.member.roles.has('543721608506900480') ||
+      message.member.roles.has('755269385094168576')
+    );
   } else if (server.guild.id === '292389599982911488') {
     return server.hiddenChannels.includes(message.channel.id);
   }
   return false;
 };
 
-module.exports.help = ' `,del [message_ids] [num_of_messages_to_delete=1(max=25)] [@mentions] [ has:link|image|"word" ]`\nDeletes messages by either specifying the IDs or by searching.\n e.g. `,del 543252928496926722 542576315115634688` `,del 3 @geralt has:link` `,del 5 has:"mods suck"`\nAdmins can use `-n` to skip logging';
+module.exports.help =
+  ' `,del [message_ids] [num_of_messages_to_delete=1(max=25)] [@mentions] [ has:link|image|"word" ]`\nDeletes messages by either specifying the IDs or by searching.\n e.g. `,del 543252928496926722 542576315115634688` `,del 3 @geralt has:link` `,del 5 has:"mods suck"`\nAdmins can use `-n` to skip logging';
 
 module.exports.command = async (message, content, bot, server) => {
   const delmsgs = [];
@@ -25,12 +27,20 @@ module.exports.command = async (message, content, bot, server) => {
   const users = message.mentions.users.keyArray();
   content = content.replace(Util.REGEX_USER, '');
   const message_ids = content.match(Util.REGEX_MESSAGE_ID);
-  let num_of_messages = (() => { const n = parseInt(content.split(' ')[0]); if (n && n > 0 && n <= 25) return n; else return 1;})();
+  let num_of_messages = (() => {
+    const n = parseInt(content.split(' ')[0]);
+    if (n && n > 0 && n <= 25) return n;
+    else return 1;
+  })();
   let msgChannel = message.channel;
 
   const link = /has:link/.test(content);
   const file = /has:image/.test(content);
-  const word = (() => {const m = /has:"(.*)"/.exec(content); if (m) return m[1]; else return null;})();
+  const word = (() => {
+    const m = /has:"(.*)"/.exec(content);
+    if (m) return m[1];
+    else return null;
+  })();
   content = content.replace(/has:(link|image|".+")/g, '');
 
   if (message_ids) {
@@ -64,7 +74,7 @@ module.exports.command = async (message, content, bot, server) => {
     let remaining = num_of_messages;
     let before = message.id;
     while (MAX_LOOP-- > 0 && remaining > 0) {
-      let msgs = await channel.fetchMessages({limit:100, before});
+      let msgs = await channel.fetchMessages({ limit: 100, before });
       for (let msg of msgs.values()) {
         before = msg.id;
         if (users.length && !users.includes(msg.author.id)) continue;
@@ -79,20 +89,22 @@ module.exports.command = async (message, content, bot, server) => {
   if (delmsgs.length == 0) {
     channel.send('No messages to delete.');
     return;
-  } 
+  }
   let AGT = server.guild.channels.get('755269708579733626');
   if (server.guild.id === '292389599982911488') {
     AGT = message.channel;
   }
-  if (!(content.includes('-n') && message.member.hasPermission('ADMINISTRATOR'))) {
+  if (
+    !(content.includes('-n') && message.member.hasPermission('ADMINISTRATOR'))
+  ) {
     let embed = new Discord.RichEmbed();
     let date = new Date();
-    embed.setAuthor(`${message.author.tag}`,message.author.avatarURL);
+    embed.setAuthor(`${message.author.tag}`, message.author.avatarURL);
     embed.title = `Message Delete: ${originalContent}`;
     embed.color = Number('0xff283a');
     embed.setFooter(`In #${msgChannel.name}`);
     embed.timestamp = date;
-  
+
     let imgCount = 1;
     let imgStr = '';
     for (let msg of delmsgs) {
@@ -100,26 +112,34 @@ module.exports.command = async (message, content, bot, server) => {
         imgStr += `File ${imgCount}: ||${msg.attachments.first().url}||\n`;
         ++imgCount;
       }
-      embed.addField(`Message by ${msg.author.tag} (${msg.author.id}):`, `${msg.attachments.size ? `File ${imgCount - 1} ${msg.content}` : (msg.content || '**empty**')}`, false);
+      embed.addField(
+        `Message by ${msg.author.tag} (${msg.author.id}):`,
+        `${
+          msg.attachments.size
+            ? `File ${imgCount - 1} ${msg.content}`
+            : msg.content || '**empty**'
+        }`,
+        false
+      );
     }
     if (imgStr) {
       await AGT.send(imgStr);
     }
-    await AGT.send({embed});
+    await AGT.send({ embed });
   }
-  
+
   try {
     message.delete();
-  } catch(e) {
+  } catch (e) {
     console.log('');
   }
   if (delmsgs.length == 1) {
     delmsgs[0].delete();
     let msg = await channel.send('✅ Deleted 1 message.');
-    msg.delete({timeout:5000});
+    msg.delete({ timeout: 5000 });
   } else {
     channel.bulkDelete(delmsgs);
     let msg = await channel.send(`✅ Deleted ${delmsgs.length} messages.`);
-    msg.delete({timeout:5000});
+    msg.delete({ timeout: 5000 });
   }
 };

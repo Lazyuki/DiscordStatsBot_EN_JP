@@ -2,22 +2,18 @@ const Discord = require('discord.js');
 
 module.exports.name = 'help';
 
-module.exports.alias = [
-  'help',
-  'h',
-  'halp',
-  'tasukete'
-];
+module.exports.alias = ['help', 'h', 'halp', 'tasukete'];
 
 module.exports.isAllowed = () => {
   return true;
 };
-module.exports.help = '`,help` Lists current commands. `,help <command>` to show details. <this is required> [this is optional]';
+module.exports.help =
+  '`,help` Lists current commands. `,help <command>` to show details. <this is required> [this is optional]';
 
 module.exports.command = (message, content, bot, server, cmds) => {
   let chan = message.channel;
   let cmd = cmds.commands[content];
-  let msg;  
+  let msg;
   const embed = new Discord.RichEmbed();
 
   if (cmd && cmd.isAllowed(message, server, bot)) {
@@ -28,7 +24,9 @@ module.exports.command = (message, content, bot, server, cmds) => {
     msg = { embed };
   } else {
     if (content) {
-      chan.send('The command does not exist. Type `,help` to list available commands');
+      chan.send(
+        'The command does not exist. Type `,help` to list available commands'
+      );
       return;
     }
     msg = '`,help [command]` for more info. Available commands are:\n';
@@ -37,7 +35,7 @@ module.exports.command = (message, content, bot, server, cmds) => {
         msg += `\`${cmds.commandNames[c].alias[0]}\`, `;
       }
     }
-    msg = msg.substr(0, msg.length - 2);    
+    msg = msg.substr(0, msg.length - 2);
   }
   chan.send(msg);
 };

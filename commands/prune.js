@@ -1,8 +1,6 @@
 module.exports.name = 'pruneMessages';
 
-module.exports.alias = [
-  'prune'
-];
+module.exports.alias = ['prune'];
 module.exports.isAllowed = (message, server) => {
   if (server.guild.id === '292389599982911488') {
     return server.hiddenChannels.includes(message.channel.id);
@@ -10,7 +8,8 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('ADMINISTRATOR');
 };
 
-module.exports.help = ' Deletes messages sent by specified users in the channel in the past 24 hours. Use their IDs. `,prune <#123454323454> 2345432345643 4543246543234 -h 10`\nUse `-h` for number of hours (24 by default)';
+module.exports.help =
+  ' Deletes messages sent by specified users in the channel in the past 24 hours. Use their IDs. `,prune <#123454323454> 2345432345643 4543246543234 -h 10`\nUse `-h` for number of hours (24 by default)';
 
 const Util = require('../classes/Util');
 
@@ -21,19 +20,24 @@ module.exports.command = async (message, content, bot, server) => {
   }
   const channelIdsMatches = /<#([0-9]+)>/g.exec(content);
   content = content.replace(Util.REGEX_CHAN, '');
-  const channel= channelIdsMatches ? server.guild.channels.get(channelIdsMatches[1]) : message.channel;
+  const channel = channelIdsMatches
+    ? server.guild.channels.get(channelIdsMatches[1])
+    : message.channel;
   const hourMatches = /-h ([0-9]+)/g.exec(content);
   content = content.replace(/-h ([0-9]+)/, '');
   const hour = hourMatches ? parseInt(hourMatches[1]) : 24;
   var ids = content.trim().split(' ');
   var lastMessageID = message.id;
   var done = false;
-  var now = (new Date()).getTime();
+  var now = new Date().getTime();
   var day = hour * 60 * 60 * 1000;
   var count = 0;
   var delCount = 0;
   while (!done) {
-    let messages = await channel.fetchMessages({limit:100,before:lastMessageID});
+    let messages = await channel.fetchMessages({
+      limit: 100,
+      before: lastMessageID,
+    });
     let delMsgs = [];
     let num = 0;
     for (var m of messages.values()) {
@@ -55,5 +59,7 @@ module.exports.command = async (message, content, bot, server) => {
       channel.bulkDelete(delMsgs);
     }
   }
-  message.channel.send(`Checked ${count} messages and deleted ${delCount} messages!`);
+  message.channel.send(
+    `Checked ${count} messages and deleted ${delCount} messages!`
+  );
 };

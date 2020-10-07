@@ -1,11 +1,9 @@
 module.exports.name = 'currentVC';
 
-module.exports.alias = [
-  'cvc'
-];
+module.exports.alias = ['cvc'];
 
 module.exports.isAllowed = (message, server, bot) => {
-  if (message.guild.id != '293787390710120449') return false;  // My server  
+  if (message.guild.id != '293787390710120449') return false; // My server
   return message.author.id == bot.owner_ID;
 };
 
@@ -15,6 +13,10 @@ module.exports.command = async (message, _, bot, server) => {
   for (var v in server.tempvc) {
     let t = server.tempvc[v];
     let member = await server.guild.member(v);
-    console.log(`${member.user.username}: ${Math.round((new Date().getTime() - t) / 60000)} min`);
+    console.log(
+      `${member.user.username}: ${Math.round(
+        (new Date().getTime() - t) / 60000
+      )} min`
+    );
   }
 };

@@ -1,9 +1,6 @@
 const Util = require('../classes/Util.js');
 module.exports.name = 'tag';
-module.exports.alias = [
-  'tag',
-  't'
-];
+module.exports.alias = ['tag', 't'];
 
 // Initialized in ../eventProcessors/userJoin.js
 
@@ -12,7 +9,8 @@ module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('MANAGE_ROLES');
 };
 
-module.exports.help = '__WP Only__ See the pin in <#277384105245802497>\n`,t < nj | fj | ne | fe | ol >... [ @mention, 1, 2, 3, id, -n ] `\n`,t en -n` Matches the most recent new user in this channel';
+module.exports.help =
+  '__WP Only__ See the pin in <#277384105245802497>\n`,t < nj | fj | ne | fe | ol >... [ @mention, 1, 2, 3, id, -n ] `\n`,t en -n` Matches the most recent new user in this channel';
 
 const LANG_ROLES = [
   { abbrev: 'nj', name: 'Native Japanese', id: '196765998706196480' },
@@ -22,14 +20,17 @@ const LANG_ROLES = [
   { abbrev: 'en', name: 'Native English', id: '197100137665921024' },
   { abbrev: 'fe', name: 'Fluent English', id: '241997079168155649' },
   { abbrev: 'ol', name: 'Other Language', id: '248982130246418433' },
-  { abbrev: 'nu', name: 'New User', id: '249695630606336000'},
+  { abbrev: 'nu', name: 'New User', id: '249695630606336000' },
 ];
 
-const roleRegex = new RegExp(`\\b(${LANG_ROLES.map(r => r.abbrev).join('|')})\\b`, 'gi');
-const roleIDs = LANG_ROLES.map(r => r.id);
+const roleRegex = new RegExp(
+  `\\b(${LANG_ROLES.map((r) => r.abbrev).join('|')})\\b`,
+  'gi'
+);
+const roleIDs = LANG_ROLES.map((r) => r.id);
 
 function getRole(key, value) {
-  return LANG_ROLES.find(r => r[key] === value);
+  return LANG_ROLES.find((r) => r[key] === value);
 }
 
 function joinEnglish(list) {
@@ -93,12 +94,14 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
 
-  message.delete({timeout: 200});
+  message.delete({ timeout: 200 });
 
-  const oldRoles = targetMember.roles.filter(r => roleIDs.includes(r.id)).map(r => getRole('id', r.id));
-  const newRoles = roles.map(r => getRole('abbrev', r));
-  const oldNames = new Set(oldRoles.map(r => r.name));
-  const newNames = new Set(newRoles.map(r => r.name));
+  const oldRoles = targetMember.roles
+    .filter((r) => roleIDs.includes(r.id))
+    .map((r) => getRole('id', r.id));
+  const newRoles = roles.map((r) => getRole('abbrev', r));
+  const oldNames = new Set(oldRoles.map((r) => r.name));
+  const newNames = new Set(newRoles.map((r) => r.name));
 
   let alreadyTagged = false;
   if (oldNames.size === newNames.size) {
@@ -107,7 +110,11 @@ module.exports.command = async (message, content, bot, server) => {
   }
 
   if (alreadyTagged) {
-    (await message.channel.send(`Already tagged as ${joinEnglish([...oldNames].map(n => `\`${n}\``))}`)).delete({timeout: 5000});
+    (
+      await message.channel.send(
+        `Already tagged as ${joinEnglish([...oldNames].map((n) => `\`${n}\``))}`
+      )
+    ).delete({ timeout: 5000 });
     return;
   }
 
@@ -123,8 +130,18 @@ module.exports.command = async (message, content, bot, server) => {
   }
 
   if (oldNames.size === 1 && oldNames.has('New User')) {
-    message.channel.send(`**${targetMember.user.username}**, you've been tagged as ${joinEnglish([...newNames].map(n => `<@&${getRole('name', n).id}>`))} by ${message.author.username}!`);
+    message.channel.send(
+      `**${targetMember.user.username}**, you've been tagged as ${joinEnglish(
+        [...newNames].map((n) => `<@&${getRole('name', n).id}>`)
+      )} by ${message.author.username}!`
+    );
   } else {
-    message.channel.send(`**${targetMember.user.username}**, you've been tagged as ${joinEnglish([...newNames].map(n => `<@&${getRole('name', n).id}>`))} instead of ${joinEnglish([...oldNames].map(n => `\`${n}\``))} by ${message.author.username}!`);
+    message.channel.send(
+      `**${targetMember.user.username}**, you've been tagged as ${joinEnglish(
+        [...newNames].map((n) => `<@&${getRole('name', n).id}>`)
+      )} instead of ${joinEnglish([...oldNames].map((n) => `\`${n}\``))} by ${
+        message.author.username
+      }!`
+    );
   }
 };

@@ -1,10 +1,8 @@
 module.exports.name = 'kanjiCheck';
-module.exports.alias = [
-  'kc'
-];
+module.exports.alias = ['kc'];
 
 module.exports.isAllowed = (message, server, bot) => {
-  if (message.guild.id != '293787390710120449') return false;  // My server    
+  if (message.guild.id != '293787390710120449') return false; // My server
   return message.author.id == bot.owner_ID;
 };
 
@@ -15,7 +13,7 @@ module.exports.command = (message, content, bot, server) => {
   for (var k in server.kanjis) {
     sortable.push([k, server.kanjis[k]]);
   }
-  sortable.sort(function(a, b) {
+  sortable.sort(function (a, b) {
     return b[1] - a[1];
   });
   let str = '';

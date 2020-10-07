@@ -1,14 +1,16 @@
 module.exports.name = 'raidban';
 
-module.exports.alias = [
-  'banraid',
-];
+module.exports.alias = ['banraid', 'raidban'];
 
 module.exports.isAllowed = (message, server) => {
-  return (message.member.hasPermission('BAN_MEMBERS') || message.member.roles.has('543721608506900480'));
+  return (
+    message.member.hasPermission('BAN_MEMBERS') ||
+    message.member.roles.has('543721608506900480')
+  );
 };
 
-module.exports.help = ' `,raidban <user> [--end user] [--except user-mentions]`\n Ban all the users joined after the mentioned guy. Can also specify the last guy with `--end`. ALL INCLUSIVE. \nExamples:\n`,raidban @NewGuy`\n`,raidban @FirstGuy --end @LastGuy --except @InnocentGuy` will ban @FirstGuy and anyone after that up to and including @LastGuy, except @InnocentGuy';
+module.exports.help =
+  ' `,raidban <user> [--end user] [--except user-mentions]`\n Ban all the users joined after the mentioned guy. Can also specify the last guy with `--end`. ALL INCLUSIVE. \nExamples:\n`,raidban @NewGuy`\n`,raidban @FirstGuy --end @LastGuy --except @InnocentGuy` will ban @FirstGuy and anyone after that up to and including @LastGuy, except @InnocentGuy';
 
 const Discord = require('discord.js');
 
@@ -57,7 +59,11 @@ module.exports.command = async (message, content, bot, server) => {
   server.guild.members.forEach((mem, memID) => {
     if (!mem.joinedAt) return;
     const memMillis = mem.joinedAt.getTime();
-    if (memMillis >= firstMillis && memMillis <= endMillis && !exceptionIDs.includes(memID)) {
+    if (
+      memMillis >= firstMillis &&
+      memMillis <= endMillis &&
+      !exceptionIDs.includes(memID)
+    ) {
       badPeople.push(mem);
     }
   });
@@ -67,18 +73,30 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
 
-  const banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning ${badPeople.length} people!**  <:hypergeralthinkban:443803651325034507>\n\n${badPeople.map(m => m.toString()).join('\n')}\n\nType \`confirm\` or \`cancel\``;
+  const banMessage = `<:hypergeralthinkban:443803651325034507>  **You are banning ${
+    badPeople.length
+  } people!**  <:hypergeralthinkban:443803651325034507>\n\n${badPeople
+    .map((m) => m.toString())
+    .join('\n')}\n\nType \`confirm\` or \`cancel\``;
   await message.channel.send(banMessage, { split: true });
-  const filter = m => m.member.id == executor.id;
-  const collector = message.channel.createMessageCollector(filter, { time: 45000 });
-  collector.on('collect', m => {
-    if (m.content.toLowerCase() === 'confirm' || m.content.toLowerCase() === 'confirm keep') {
+  const filter = (m) => m.member.id == executor.id;
+  const collector = message.channel.createMessageCollector(filter, {
+    time: 45000,
+  });
+  collector.on('collect', (m) => {
+    if (
+      m.content.toLowerCase() === 'confirm' ||
+      m.content.toLowerCase() === 'confirm keep'
+    ) {
       if (m.content.toLowerCase() === 'confirm keep') {
         deleteDays = 0;
       }
-      badPeople.forEach(async mem => {
+      badPeople.forEach(async (mem) => {
         try {
-          await mem.ban({ days: deleteDays, reason: `Issued by: ${executor.tag}. Reason: ${reason}` });
+          await mem.ban({
+            days: deleteDays,
+            reason: `Issued by: ${executor.tag}. Reason: ${reason}`,
+          });
         } catch (e) {
           await message.channel.send(`Failed to ban: ${mem}`);
         }

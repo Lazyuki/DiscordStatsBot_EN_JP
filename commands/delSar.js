@@ -1,13 +1,11 @@
 module.exports.name = 'deleteSelfAssignableRole';
 
-module.exports.alias = [
-  'delsar',
-  'dsar'
-];
+module.exports.alias = ['delsar', 'dsar'];
 
-module,exports.isAllowed = (message) => {
-  return message.member.hasPermission('ADMINISTRATOR');
-};
+module,
+  (exports.isAllowed = (message) => {
+    return message.member.hasPermission('ADMINISTRATOR');
+  });
 
 module.exports.help = ' `,dsar <role emoji>` Delete self assignable roles.';
 

@@ -1,18 +1,29 @@
 module.exports.name = 'activity';
 const Util = require('../classes/Util.js');
 
-module.exports.alias = [
-  'activity',
-  'ac'
-];
+module.exports.alias = ['activity', 'ac'];
 
 module.exports.isAllowed = () => {
   return true;
 };
 
-module.exports.help = '`,activity [ user ] [ -n ] [ -s ]` Displays server or user activity for the past 30 days (UTC). `-n` to show numbers, `-s` for the entire server';
+module.exports.help =
+  '`,activity [ user ] [ -n ] [ -s ]` Displays server or user activity for the past 30 days (UTC). `-n` to show numbers, `-s` for the entire server';
 
-const MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+const MONTH = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sept',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 function dateToString(d) {
@@ -36,14 +47,21 @@ module.exports.command = async (message, content, bot, server) => {
       for (let i = server.today; i > server.today - 30; i--) {
         let chans = record.record[(i + 31) % 31]; // for under flows
         for (let ch in chans) {
-          if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn' || ch == 'del') continue;
+          if (
+            ch == 'jpn' ||
+            ch == 'eng' ||
+            ch == 'vc' ||
+            ch == 'rxn' ||
+            ch == 'del'
+          )
+            continue;
           thirtyDays[count] += chans[ch];
         }
         count++;
       }
     }
   } else {
-    u =  await Util.searchUser(message, content, server, bot);
+    u = await Util.searchUser(message, content, server, bot);
     u = u || message.author;
     let record = server.users[u.id];
     if (!record) {
@@ -54,7 +72,14 @@ module.exports.command = async (message, content, bot, server) => {
     for (let i = server.today; i > server.today - 30; i--) {
       let chans = record.record[(i + 31) % 31]; // for under flows
       for (let ch in chans) {
-        if (ch == 'jpn' || ch == 'eng' || ch == 'vc' || ch == 'rxn' || ch == 'del') continue;
+        if (
+          ch == 'jpn' ||
+          ch == 'eng' ||
+          ch == 'vc' ||
+          ch == 'rxn' ||
+          ch == 'del'
+        )
+          continue;
         thirtyDays[count] += chans[ch];
       }
       count++;
@@ -68,7 +93,10 @@ module.exports.command = async (message, content, bot, server) => {
     const maxBar = '---------------';
     unit = `\nUnit: ${~~(max / maxBar.length)} messages`;
     for (let c of thirtyDays) {
-      s = `${dateToString(date)}: ${maxBar.substr(0, c / max * maxBar.length)}\n${s}`;
+      s = `${dateToString(date)}: ${maxBar.substr(
+        0,
+        (c / max) * maxBar.length
+      )}\n${s}`;
       date.setDate(date.getUTCDate() - 1);
     }
   } else {
@@ -78,5 +106,8 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   s = '```' + s;
-  message.channel.send(`Server activity${forServer ?  '' : ' for **' + u.tag + '**'}${unit}\n` + s, {split: true});
+  message.channel.send(
+    `Server activity${forServer ? '' : ' for **' + u.tag + '**'}${unit}\n` + s,
+    { split: true }
+  );
 };

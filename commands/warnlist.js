@@ -2,14 +2,13 @@ const Discord = require('discord.js');
 const Util = require('../classes/Util.js');
 
 module.exports.name = 'warnlist';
-module.exports.alias = [
-  'warnlist',
-  'warnlog',
-  'wl'
-];
+module.exports.alias = ['warnlist', 'warnlog', 'wl'];
 
 module.exports.isAllowed = (message, server) => {
-  return server.hiddenChannels.includes(message.channel.id) || ['755269708579733626', '697862475579785216'].includes(message.channel.id);
+  return (
+    server.hiddenChannels.includes(message.channel.id) ||
+    ['755269708579733626', '697862475579785216'].includes(message.channel.id)
+  );
 };
 
 module.exports.help = 'Warnings for the user `,warnlist [User]`';
@@ -21,9 +20,11 @@ module.exports.command = async (message, content, bot, server) => {
     for (let u of Object.keys(warnings)) {
       const warns = warnings[u].length;
       const user = await bot.fetchUser(u);
-      list.push(`<@${u}> ${user.tag}: ${warns} warning${warns === 1 ? '' : 's'}`)
+      list.push(
+        `<@${u}> ${user.tag}: ${warns} warning${warns === 1 ? '' : 's'}`
+      );
     }
-    Util.paginate(message.channel, 'All warnings', list, 10, message.author.id)
+    Util.paginate(message.channel, 'All warnings', list, 10, message.author.id);
     return;
   }
 
@@ -41,7 +42,7 @@ module.exports.command = async (message, content, bot, server) => {
   if (!userID) {
     message.channel.send('Failed to get a user');
     return;
-  };
+  }
 
   if (server.warnlist[userID]) {
     const warnings = server.warnlist[userID];
@@ -62,7 +63,7 @@ module.exports.command = async (message, content, bot, server) => {
       } catch (e) {
         issuerMember = null;
       }
-      
+
       if (link) {
         warnMessage += `\n[jump](${link})`;
       }
@@ -74,8 +75,14 @@ module.exports.command = async (message, content, bot, server) => {
         embed.fields = [];
         count = 1;
       }
-      embed.addField(`${new Date(issued).toGMTString()} by ${issuerMember ? issuerMember.user.tag : issuer }`, warnMessage, false);
-    } 
+      embed.addField(
+        `${new Date(issued).toGMTString()} by ${
+          issuerMember ? issuerMember.user.tag : issuer
+        }`,
+        warnMessage,
+        false
+      );
+    }
     message.channel.send({ embed });
   } else {
     message.channel.send('No warnings found');

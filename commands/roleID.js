@@ -1,7 +1,5 @@
 module.exports.name = 'getRoleID';
-module.exports.alias = [
-  'roleid'
-];
+module.exports.alias = ['roleid'];
 
 module.exports.isAllowed = () => {
   return true;
