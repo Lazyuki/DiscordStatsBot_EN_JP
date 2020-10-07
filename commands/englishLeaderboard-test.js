@@ -35,7 +35,7 @@ module.exports.command = async (message, content, bot, server) => {
     let record = users[user];
     let total = record.totalStats();
     if (total >= num) {
-      let mem = server.guild.members.get(user);
+      let mem = server.guild.members.cache.get(user);
       if (!mem) {
         try {
           mem = await server.guild.member(user);
@@ -44,7 +44,7 @@ module.exports.command = async (message, content, bot, server) => {
           continue;
         }
       }
-      if (mem.roles.has('196765998706196480')) {
+      if (mem.roles.cache.has('196765998706196480')) {
         let enUsage = (record.en / (record.jp + record.en)) * 100;
         if (!enUsage) continue;
         result.push([user, enUsage]);
@@ -54,7 +54,7 @@ module.exports.command = async (message, content, bot, server) => {
   result = result.sort((a, b) => {
     return b[1] - a[1];
   });
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   embed.title = 'English Usage Leaderboard-test';
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');

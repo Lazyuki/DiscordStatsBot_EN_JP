@@ -27,16 +27,16 @@ module.exports.command = async (message, content, bot, server) => {
     for (let mem of members.values()) {
       if (mem) {
         const roles = mem.roles;
-        if (roles.has(NE)) ++langs[0];
-        if (roles.has(NJ)) ++langs[1];
-        if (roles.has(FE)) ++langs[2];
-        if (roles.has(FJ)) ++langs[3];
-        if (roles.has(OL)) ++langs[4];
-        if (roles.has(NE) && roles.has(NJ)) ++langs[5];
-        if (roles.has(NJ) && roles.has(FE)) ++langs[6];
-        if (roles.has(NJ) && roles.has(OL)) ++langs[7];
-        if (roles.has(NE) && roles.has(OL)) ++langs[8];
-        if (roles.has(FJ) && roles.has(FE)) ++langs[9];
+        if (roles.cache.has(NE)) ++langs[0];
+        if (roles.cache.has(NJ)) ++langs[1];
+        if (roles.cache.has(FE)) ++langs[2];
+        if (roles.cache.has(FJ)) ++langs[3];
+        if (roles.cache.has(OL)) ++langs[4];
+        if (roles.cache.has(NE) && roles.cache.has(NJ)) ++langs[5];
+        if (roles.cache.has(NJ) && roles.cache.has(FE)) ++langs[6];
+        if (roles.cache.has(NJ) && roles.cache.has(OL)) ++langs[7];
+        if (roles.cache.has(NE) && roles.cache.has(OL)) ++langs[8];
+        if (roles.cache.has(FJ) && roles.cache.has(FE)) ++langs[9];
         ++langs[10];
       }
     }
@@ -53,16 +53,16 @@ module.exports.command = async (message, content, bot, server) => {
       const mem = server.guild.member(user);
       if (mem) {
         const roles = mem.roles;
-        if (roles.has(NE)) ++langs[0];
-        if (roles.has(NJ)) ++langs[1];
-        if (roles.has(FE)) ++langs[2];
-        if (roles.has(FJ)) ++langs[3];
-        if (roles.has(OL)) ++langs[4];
-        if (roles.has(NE) && roles.has(NJ)) ++langs[5];
-        if (roles.has(NJ) && roles.has(FE)) ++langs[6];
-        if (roles.has(NJ) && roles.has(OL)) ++langs[7];
-        if (roles.has(NE) && roles.has(OL)) ++langs[8];
-        if (roles.has(FJ) && roles.has(FE)) ++langs[9];
+        if (roles.cache.has(NE)) ++langs[0];
+        if (roles.cache.has(NJ)) ++langs[1];
+        if (roles.cache.has(FE)) ++langs[2];
+        if (roles.cache.has(FJ)) ++langs[3];
+        if (roles.cache.has(OL)) ++langs[4];
+        if (roles.cache.has(NE) && roles.cache.has(NJ)) ++langs[5];
+        if (roles.cache.has(NJ) && roles.cache.has(FE)) ++langs[6];
+        if (roles.cache.has(NJ) && roles.cache.has(OL)) ++langs[7];
+        if (roles.cache.has(NE) && roles.cache.has(OL)) ++langs[8];
+        if (roles.cache.has(FJ) && roles.cache.has(FE)) ++langs[9];
         ++langs[10];
       }
     }

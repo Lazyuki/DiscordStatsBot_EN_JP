@@ -38,7 +38,7 @@ module.exports.command = async (message, content, bot, server) => {
 
     if (record == undefined) {
       // the user hasn't sent anything in the past 30 days
-      let embed = new Discord.RichEmbed();
+      let embed = new Discord.MessageEmbed();
       embed.title = `Stats for ${user.tag}`;
       embed.description = "Hasn't said anything in the past 30 days";
       embed.color = Number('0x3A8EDB');
@@ -67,7 +67,7 @@ module.exports.command = async (message, content, bot, server) => {
   let topChans = '';
   for (let i = 0; i < 3 && i < topChannels.length; i++) {
     let perc = ((topChannels[i][1] / record.thirty) * 100).toFixed(1);
-    let channel = server.guild.channels.get(topChannels[i][0]);
+    let channel = server.guild.channels.cache.get(topChannels[i][0]);
     if (!channel) continue;
     topChans += '**#' + channel.name + '** : ' + perc + '%\n';
   }
@@ -120,7 +120,7 @@ module.exports.command = async (message, content, bot, server) => {
   for (let i = 0; i < 3 && i < topEmotesArr.length; i++) {
     let name = topEmotesArr[i][0];
     let regMatch = name.match(nameRegex);
-    if (regMatch && !bot.emojis.has(regMatch[2])) name = regMatch[1];
+    if (regMatch && !bot.emojis.cache.has(regMatch[2])) name = regMatch[1];
     topEmotes += `${name} ${topEmotesArr[i][1]} times\n`;
   }
 
@@ -130,19 +130,19 @@ module.exports.command = async (message, content, bot, server) => {
   let hours = Math.floor(record.vc / 60);
   let vcTime = `${hours ? hours + 'hr ' : ''}${record.vc % 60}min`;
 
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   let jp = false;
   if (user) {
-    let fire = member && member.roles.has('384286851260743680');
+    let fire = member && member.roles.cache.has('384286851260743680');
     jp =
       member &&
-      (member.roles.has('196765998706196480') ||
-        member.roles.has('292401145752846337'));
+      (member.roles.cache.has('196765998706196480') ||
+        member.roles.cache.has('292401145752846337'));
     embed.setAuthor(
       `${fire ? '🔥' : ''}Stats for ${user.tag}${
         member && member.nickname ? ' aka ' + member.nickname : ''
       }`,
-      user.avatarURL
+      user.avatarURL()
     );
     embed.color = fire ? Number('0xFF5500') : Number('0x3A8EDB');
     if (member) {

@@ -25,7 +25,7 @@ module.exports.process = (message, server, bot, language) => {
     let engCount = server.engUsed[message.author.id]++;
     if (engCount >= 2) {
       if (engCount <= 5) {
-        message.react(bot.emojis.get(geralthinkbans[engCount - 2])); // allow 2 english
+        message.react(bot.emojis.cache.get(geralthinkbans[engCount - 2])); // allow 2 english
       }
       if (engCount == 4 || engCount == 5) {
         message.channel.send(
@@ -33,7 +33,7 @@ module.exports.process = (message, server, bot, language) => {
         );
       }
       if (engCount >= 6) {
-        message.channel.overwritePermissions(
+        message.channel.createOverwrite(
           message.author,
           {
             SEND_MESSAGES: false,

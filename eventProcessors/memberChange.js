@@ -8,7 +8,7 @@ const Discord = require('discord.js');
 
 module.exports.process = async (oldMember, newMember, server) => {
   if (oldMember.nickname != newMember.nickname) {
-    let embed = new Discord.RichEmbed();
+    let embed = new Discord.MessageEmbed();
     if (!oldMember.nickname) {
       embed.description = `**${oldMember.user.username}**'s nickname was set to **${newMember.nickname}**`;
     } else if (!newMember.nickname) {
@@ -19,9 +19,9 @@ module.exports.process = async (oldMember, newMember, server) => {
     embed.color = Number('0x4286f4');
     embed.setFooter(
       `${newMember.user.username} (${newMember.id})`,
-      newMember.user.avatarURL
+      newMember.user.avatarURL()
     );
     embed.setTimestamp();
-    server.guild.channels.get('277384105245802497').send({ embed });
+    server.guild.channels.cache.get('277384105245802497').send({ embed });
   }
 };

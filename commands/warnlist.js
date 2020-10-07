@@ -19,7 +19,7 @@ module.exports.command = async (message, content, bot, server) => {
     const list = [];
     for (let u of Object.keys(warnings)) {
       const warns = warnings[u].length;
-      const user = await bot.fetchUser(u);
+      const user = await bot.users.fetch(u);
       list.push(
         `<@${u}> ${user.tag}: ${warns} warning${warns === 1 ? '' : 's'}`
       );
@@ -31,7 +31,7 @@ module.exports.command = async (message, content, bot, server) => {
   let userID;
   let mentions = message.mentions.users;
   if (mentions.size != 0) {
-    userID = mentions.first().id;
+    userID = mentions.cache.first().id;
   } else {
     const idMatch = content.match(Util.REGEX_RAW_ID);
     if (idMatch) {
@@ -46,7 +46,7 @@ module.exports.command = async (message, content, bot, server) => {
 
   if (server.warnlist[userID]) {
     const warnings = server.warnlist[userID];
-    const embed = new Discord.RichEmbed();
+    const embed = new Discord.MessageEmbed();
     let member;
     try {
       member = await server.guild.member(userID);

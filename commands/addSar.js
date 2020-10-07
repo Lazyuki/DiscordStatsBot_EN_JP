@@ -22,7 +22,7 @@ module.exports.command = (message, content, bot, server) => {
     return;
   }
   let regex = new RegExp(rolename, 'i');
-  for (let [, r] of server.guild.roles) {
+  for (let [, r] of server.guild.roles.cache) {
     if (regex.test(r.name)) {
       server.sars[emoji] = r.id;
       message.channel.send(`${emoji} assigned to ${r.name}`);

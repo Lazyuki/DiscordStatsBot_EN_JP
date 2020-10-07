@@ -12,7 +12,7 @@ module.exports.help =
 
 module.exports.command = (message, content, bot, server) => {
   let arr = server.hiddenChannels;
-  let chan = server.guild.channels.get(content);
+  let chan = server.guild.channels.cache.get(content);
   if (chan) {
     let index = arr.indexOf(content);
     if (index == -1) return;

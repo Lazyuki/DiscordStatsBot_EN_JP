@@ -21,7 +21,7 @@ module.exports.command = async (message, content, bot, server) => {
   let mentions = message.mentions.users;
   let user;
   if (mentions.size != 0) {
-    user = mentions.first();
+    user = mentions.cache.first();
   } else {
     // TODO: users.fetch first to cache?
     let member;

@@ -14,7 +14,7 @@ module.exports.command = (message, content, bot, server) => {
     return;
   }
   let s = '';
-  for (let [, r] of server.guild.roles) {
+  for (let [, r] of server.guild.roles.cache) {
     if (r.name.toLowerCase().includes(content)) {
       s += `${r.name} is \`<@&${r.id}>\`\n`;
     }

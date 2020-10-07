@@ -55,12 +55,12 @@ module.exports.command = async (message, content, bot, server) => {
 
   const isSearch = content.match(searchRegex);
   if (isSearch) {
-    const log = await message.channel.fetchMessages();
+    const log = await message.channel.messages.fetch();
     const nuID = getRole('abbrev', 'nu').id;
 
     for (let msg of log.values()) {
       const mem = msg.member;
-      if (mem && mem.roles.has(nuID)) {
+      if (mem && mem.roles.cache.has(nuID)) {
         targetMember = mem;
       }
     }
@@ -120,12 +120,12 @@ module.exports.command = async (message, content, bot, server) => {
 
   for (let r of oldRoles) {
     if (!newNames.has(r.name)) {
-      await targetMember.removeRole(r.id);
+      await targetMember.roles.remove(r.id);
     }
   }
   for (let r of newRoles) {
     if (!oldNames.has(r.name)) {
-      await targetMember.addRole(r.id, `by ${message.author.tag}`);
+      await targetMember.roles.add(r.id, `by ${message.author.tag}`);
     }
   }
 

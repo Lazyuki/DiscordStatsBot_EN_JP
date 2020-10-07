@@ -19,7 +19,7 @@ module.exports.command = async (message, content, bot, server) => {
   let userID;
   let mentions = message.mentions.users;
   if (mentions.size != 0) {
-    userID = mentions.first().id;
+    userID = mentions.cache.first().id;
   } else {
     const idMatch = content.match(Util.REGEX_RAW_ID);
     if (idMatch) {
@@ -37,7 +37,7 @@ module.exports.command = async (message, content, bot, server) => {
 
   const warnings = server.warnlist[userID];
   if (warnings) {
-    const member = server.guild.members.get(userID);
+    const member = server.guild.members.cache.get(userID);
     if (num) {
       const warning = warnings[num - 1];
       if (warning) {

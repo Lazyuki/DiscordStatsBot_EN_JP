@@ -45,7 +45,7 @@ module.exports.command = async (message, content, bot, server) => {
       timestamp_id
     ).date.getTime();
   }
-  const JHO = server.guild.channels.get('189571157446492161');
+  const JHO = server.guild.channels.cache.get('189571157446492161');
 
   if (lockdown === null) {
     if (server.lockdown) {
@@ -59,10 +59,10 @@ module.exports.command = async (message, content, bot, server) => {
 
   // Mute Mee6 and Rai
   try {
-    await JHO.overwritePermissions('159985870458322944', {
+    await JHO.createOverwrite('159985870458322944', {
       SEND_MESSAGES: false,
     }); // Mee6
-    await JHO.overwritePermissions('270366726737231884', {
+    await JHO.createOverwrite('270366726737231884', {
       SEND_MESSAGES: false,
     }); // Rai
   } catch (e) {

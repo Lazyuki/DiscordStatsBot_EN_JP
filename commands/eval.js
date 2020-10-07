@@ -16,7 +16,7 @@ module.exports.command = async (message, content, bot, server) => {
     let send = (str) => message.channel.send(str);
     let AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
     content = `try { ${content} } catch (e) { send(e.message) }`;
-    let embed = new Discord.RichEmbed();
+    let embed = new Discord.MessageEmbed();
     let func = new AsyncFunction(
       'message',
       'content',

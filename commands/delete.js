@@ -8,8 +8,8 @@ module.exports.isAllowed = (message, server) => {
   if (server.guild.id === '189571157446492161') {
     return (
       message.member.hasPermission('ADMINISTRATOR') ||
-      message.member.roles.has('543721608506900480') ||
-      message.member.roles.has('755269385094168576')
+      message.member.roles.cache.has('543721608506900480') ||
+      message.member.roles.cache.has('755269385094168576')
     );
   } else if (server.guild.id === '292389599982911488') {
     return server.hiddenChannels.includes(message.channel.id);
@@ -49,19 +49,19 @@ module.exports.command = async (message, content, bot, server) => {
       const linkId = id.match(/(?:\d{17,21})\/(\d{17,21})\/(\d{17,21})/);
       let msg;
       if (longId) {
-        const c = server.guild.channels.get(longId[1]);
+        const c = server.guild.channels.cache.get(longId[1]);
         if (c) {
-          msg = await c.fetchMessage(longId[2]);
+          msg = await c.messages.fetch(longId[2]);
           msgChannel = c;
         }
       } else if (linkId) {
-        const c = server.guild.channels.get(linkId[1]);
+        const c = server.guild.channels.cache.get(linkId[1]);
         if (c) {
-          msg = await c.fetchMessage(linkId[2]);
+          msg = await c.messages.fetch(linkId[2]);
           msgChannel = c;
         }
       } else {
-        msg = await channel.fetchMessage(id);
+        msg = await channel.messages.fetch(id);
       }
       if (msg) {
         delmsgs.push(msg);
@@ -74,7 +74,7 @@ module.exports.command = async (message, content, bot, server) => {
     let remaining = num_of_messages;
     let before = message.id;
     while (MAX_LOOP-- > 0 && remaining > 0) {
-      let msgs = await channel.fetchMessages({ limit: 100, before });
+      let msgs = await channel.messages.fetch({ limit: 100, before });
       for (let msg of msgs.values()) {
         before = msg.id;
         if (users.length && !users.includes(msg.author.id)) continue;
@@ -90,16 +90,16 @@ module.exports.command = async (message, content, bot, server) => {
     channel.send('No messages to delete.');
     return;
   }
-  let AGT = server.guild.channels.get('755269708579733626');
+  let AGT = server.guild.channels.cache.get('755269708579733626');
   if (server.guild.id === '292389599982911488') {
     AGT = message.channel;
   }
   if (
     !(content.includes('-n') && message.member.hasPermission('ADMINISTRATOR'))
   ) {
-    let embed = new Discord.RichEmbed();
+    let embed = new Discord.MessageEmbed();
     let date = new Date();
-    embed.setAuthor(`${message.author.tag}`, message.author.avatarURL);
+    embed.setAuthor(`${message.author.tag}`, message.author.avatarURL());
     embed.title = `Message Delete: ${originalContent}`;
     embed.color = Number('0xff283a');
     embed.setFooter(`In #${msgChannel.name}`);
@@ -109,7 +109,9 @@ module.exports.command = async (message, content, bot, server) => {
     let imgStr = '';
     for (let msg of delmsgs) {
       if (msg.attachments.size) {
-        imgStr += `File ${imgCount}: ||${msg.attachments.first().url}||\n`;
+        imgStr += `File ${imgCount}: ||${
+          msg.attachments.cache.first().url
+        }||\n`;
         ++imgCount;
       }
       embed.addField(

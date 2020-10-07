@@ -9,7 +9,7 @@ module.exports.help =
 
 async function removeFromVoice(members) {
   for (let member of members) {
-    if (!member || !member.voiceChannel) continue;
+    if (!member || !member.voice.channel) continue;
     await member.setVoiceChannel(null);
   }
 }
@@ -27,7 +27,7 @@ module.exports.command = async (message, content) => {
     }
     return;
   }
-  if (!message.member.voiceChannel) {
+  if (!message.member.voice.channel) {
     message.channel.send('You need to be in a voice channel');
     return;
   }

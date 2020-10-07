@@ -41,13 +41,13 @@ module.exports.command = async (message, content, bot, server) => {
     if (i >= num) break;
     let msg = server.deletedMessages[server.deletedMessages.length - 1 - i];
     if (chanMention) {
-      if (!chans.has(msg.chid)) continue;
+      if (!chans.cache.has(msg.chid)) continue;
     }
     if (userID) {
       if (userID != msg.aid) continue;
     }
 
-    let embed = new Discord.RichEmbed();
+    let embed = new Discord.MessageEmbed();
     let date = new Date(msg.time);
     embed.setAuthor(`${msg.atag} ID: ${msg.aid}`, msg.apfp);
     if (msg.del) {

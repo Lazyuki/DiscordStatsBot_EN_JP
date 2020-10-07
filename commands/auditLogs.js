@@ -37,12 +37,12 @@ function sameEntry(e, prev) {
 }
 
 function embedEntry(entries) {
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   let e = entries[0];
 
   embed.setAuthor(
     `${capsToNormal(e.action)} by ${e.executor.username}`,
-    e.executor.avatarURL
+    e.executor.avatarURL()
   );
   let str = '';
   if (e.target != null) {

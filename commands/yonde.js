@@ -18,7 +18,7 @@ module.exports.command = (message) => {
   } // 10 sec cooldown
   lastCalled = now;
   let mentioned = message.mentions.members.first();
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   embed.title = `${
     mentioned ? mentioned.user.username + 'さん、' : ''
   }ようこそ！！ 🎉 このサーバーの簡単な説明です`;

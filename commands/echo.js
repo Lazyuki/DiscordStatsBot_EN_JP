@@ -13,7 +13,7 @@ module.exports.help =
 
 module.exports.command = (message, content) => {
   if (!content) return;
-  if (message.member.roles.has('486851965121331200')) {
+  if (message.member.roles.cache.has('486851965121331200')) {
     // UHC
     message.channel.send(`${message.member} no cheating!`);
     return;

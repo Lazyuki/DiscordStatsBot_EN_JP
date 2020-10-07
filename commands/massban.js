@@ -5,7 +5,7 @@ module.exports.alias = ['banraid', 'raidban'];
 module.exports.isAllowed = (message, server) => {
   return (
     message.member.hasPermission('BAN_MEMBERS') ||
-    message.member.roles.has('543721608506900480')
+    message.member.roles.cache.has('543721608506900480')
   );
 };
 
@@ -93,7 +93,7 @@ module.exports.command = async (message, content, bot, server) => {
       }
       badPeople.forEach(async (mem) => {
         try {
-          await mem.ban({
+          await server.guild.members.ban(mem, {
             days: deleteDays,
             reason: `Issued by: ${executor.tag}. Reason: ${reason}`,
           });

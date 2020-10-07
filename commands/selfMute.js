@@ -2,10 +2,10 @@ module.exports.name = 'selfMute';
 module.exports.alias = ['selfmute', 'sm'];
 
 function unmute(user_id, server) {
-  server.guild
-    .fetchMember(user_id)
+  server.guild.members
+    .fetch(user_id)
     .then((member) => {
-      member.removeRoles([CHAT_MUTED, VOICE_BANNED]);
+      member.roles.remove([CHAT_MUTED, VOICE_BANNED]);
     })
     .catch(console.error);
   if (user_id in server.selfmutes) delete server.selfmutes[user_id];
@@ -82,7 +82,7 @@ module.exports.command = async (message, content, bot, server) => {
   const unmuteDateMillis = new Date().getTime() + totalMillis;
   server.selfmutes[member.id] = unmuteDateMillis;
 
-  await message.member.addRoles([CHAT_MUTED, VOICE_BANNED], 'Selfmuted');
+  await message.member.roles.add([CHAT_MUTED, VOICE_BANNED], 'Selfmuted');
   setTimeout(() => unmute(member.id, server), totalMillis);
 
   message.channel.send(

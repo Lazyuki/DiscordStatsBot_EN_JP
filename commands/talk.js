@@ -15,7 +15,7 @@ const channelIDRegex = /<#(\d{17,20})>/g;
 module.exports.command = (message, content, bot, server) => {
   let match = channelIDRegex.exec(content);
   if (match) {
-    channel = server.guild.channels.get(match[1]);
+    channel = server.guild.channels.cache.get(match[1]);
   }
   if (channel) {
     content = content.replace(channelIDRegex, '');

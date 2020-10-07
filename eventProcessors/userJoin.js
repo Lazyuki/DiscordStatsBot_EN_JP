@@ -12,12 +12,12 @@ module.exports.initialize = async (json, server) => {
   server.newUsers = json['newUsers'];
   if (server.guild.id == '189571157446492161') {
     server.invites = await server.guild.fetchInvites(); // Cleanup when saving...?
-    EWBF = server.guild.channels.get('277384105245802497');
-    JHO = server.guild.channels.get('189571157446492161');
-    AGT = server.guild.channels.get('755269708579733626');
+    EWBF = server.guild.channels.cache.get('277384105245802497');
+    JHO = server.guild.channels.cache.get('189571157446492161');
+    AGT = server.guild.channels.cache.get('755269708579733626');
   } else if (server.guild.id == '453115403829248010') {
     server.invites = await server.guild.fetchInvites(); // Cleanup when saving...?
-    DDJLog = server.guild.channels.get('453125855523241984');
+    DDJLog = server.guild.channels.cache.get('453125855523241984');
   }
 };
 module.exports.isAllowed = () => {
@@ -55,11 +55,11 @@ function generateDiffStr(diffMillis) {
 }
 
 function joinNotif(member, inv) {
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   embed.description = `📥 **${member.user.tag}** has \`joined\` the server. (${member.id})`;
   embed.setFooter(
     `User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`,
-    member.user.avatarURL
+    member.user.avatarURL()
   );
   embed.setTimestamp();
   embed.setColor(0x84a332);
@@ -82,9 +82,12 @@ async function bparker(member, inv) {
   )
     likelihood += 5;
   if (likelihood === 10) {
-    await member.ban({ days: 1, reason: 'Auto BAN bparker' });
+    await member.guild.members.ban(member, {
+      days: 1,
+      reason: 'Auto BAN bparker',
+    });
     setTimeout(async () => {
-      let msgs = await JHO.fetchMessages({ limit: 30 });
+      let msgs = await JHO.messages.fetch({ limit: 30 });
       for (let [, msg] of msgs) {
         if (
           msg.author.id == '159985870458322944' &&
@@ -108,7 +111,7 @@ async function bparker(member, inv) {
 }
 
 async function sendLockdownNotif(member, inv, lockdown, welcome) {
-  const embed = new Discord.RichEmbed();
+  const embed = new Discord.MessageEmbed();
   const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
   let likelihood = 0;
   const diffNow = new Date() - date;
@@ -160,18 +163,21 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   }`;
   embed.setFooter(
     `User Join (${member.guild.memberCount})\nLink: ${inv[0]} from ${inv[1].inviter.username}`,
-    member.user.avatarURL
+    member.user.avatarURL()
   );
   embed.setTimestamp();
   embed.setColor(0x84a332);
-  const banEmoji = member.guild.emojis.get(EJLX_BAN_EMOJI_ID);
+  const banEmoji = member.guild.emojis.cache.get(EJLX_BAN_EMOJI_ID);
   if (likelihood <= 3) {
     // not suspicious
-    welcome && (await member.removeRole(LOCKDOWN_ROLE_ID));
+    welcome && (await member.roles.remove(LOCKDOWN_ROLE_ID));
     welcome && (await JHO.send(welcome));
     return;
   } else if (likelihood === 10 && welcome) {
-    await member.ban({ days: 1, reason: 'Auto BAN. Matched all criteria.' });
+    await member.guild.members.ban(member, {
+      days: 1,
+      reason: 'Auto BAN. Matched all criteria.',
+    });
     await AGT.send({ embed });
     return;
   }
@@ -189,14 +195,14 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   }); // 10 minutes
   collector.on('collect', async (r) => {
     if (r.emoji.name === '✅') {
-      welcome && (await member.removeRole(LOCKDOWN_ROLE_ID));
+      welcome && (await member.roles.remove(LOCKDOWN_ROLE_ID));
       welcome && (await JHO.send(welcome));
       collector.stop();
     } else {
-      if (banReacted.has(r.users.lastKey())) {
-        await member.ban({
+      if (banReacted.has(r.users.cache.lastKey())) {
+        await member.guild.members.ban(member, {
           days: 1,
-          reason: `Banned by ${r.users.last()} during lockdown`,
+          reason: `Banned by ${r.users.cache.last()} during lockdown`,
         });
         collector.stop();
       } else {
@@ -206,7 +212,7 @@ async function sendLockdownNotif(member, inv, lockdown, welcome) {
   });
 
   collector.on('end', () => {
-    msg.clearReactions();
+    msg.reactions.removeAll();
   });
 }
 
@@ -214,7 +220,7 @@ async function postLogs(member, server) {
   const newInvites = await server.guild.fetchInvites();
   let inv = null;
   for (let [k, v] of newInvites) {
-    let old = server.invites.get(k);
+    let old = server.invites.cache.get(k);
     if (old) {
       if (old.uses < v.uses) {
         inv = [k, v];
@@ -234,13 +240,14 @@ async function postLogs(member, server) {
   let welcome = `Welcome ${member}. Please read <#189585230972190720> and tell us what your native language is!\n${member}さん、ようこそ! あなたの母語を教えてください! 注意事項は<#189585230972190720>に書いてあります。<@&357449148405907456>`;
 
   if (server.lockdown) {
-    await member.addRole(LOCKDOWN_ROLE_ID);
+    await member.roles.add(LOCKDOWN_ROLE_ID);
     await sendLockdownNotif(member, inv, server.lockdown, welcome);
     return;
   } else if (server.quickban) {
     await sendLockdownNotif(member, inv, server.quickban, null);
   } else if (
-    member.guild.members.get('270366726737231884').presence.status == 'offline'
+    member.guild.members.cache.get('270366726737231884').presence.status ==
+    'offline'
   ) {
     // rybot
     let embed = joinNotif(member, inv);
@@ -248,7 +255,7 @@ async function postLogs(member, server) {
   } else {
     setTimeout(async () => {
       let joinedSnowflake = generateSnowflake(member.joinedAt);
-      let msgs = await EWBF.fetchMessages({
+      let msgs = await EWBF.messages.fetch({
         limit: 20,
         after: joinedSnowflake,
       });
@@ -267,13 +274,14 @@ async function postLogs(member, server) {
   }
 
   if (
-    member.guild.members.get('159985870458322944').presence.status == 'offline'
+    member.guild.members.cache.get('159985870458322944').presence.status ==
+    'offline'
   ) {
     // mee6
     JHO.send(welcome);
   } else {
     setTimeout(async () => {
-      let msgs = await JHO.fetchMessages({ limit: 50 });
+      let msgs = await JHO.messages.fetch({ limit: 50 });
       for (let [, msg] of msgs) {
         if (
           msg.author.id == '159985870458322944' &&
@@ -295,7 +303,7 @@ async function postLogsDDJ(member, server) {
   let newInvites = await server.guild.fetchInvites();
   let inv = null;
   for (let [k, v] of newInvites) {
-    let old = server.invites.get(k);
+    let old = server.invites.cache.get(k);
     if (old) {
       if (old.uses < v.uses) {
         inv = [k, v];
@@ -313,7 +321,7 @@ async function postLogsDDJ(member, server) {
 module.exports.process = async (member, server) => {
   if (server.newUsers.unshift(member.id) > 3) server.newUsers.pop();
   if (tempList.includes(member.id)) {
-    await member.ban({ days: 1, reason: 'raid' });
+    await member.guild.members.ban(member, { days: 1, reason: 'raid' });
   }
   if (member.guild.id == '189571157446492161')
     setTimeout(() => postLogs(member, server), 500);

@@ -8,11 +8,14 @@ const commands = cmds.commands;
 const inits = cmds.inits;
 const prcs = require('./prcs.js');
 
+const ciriIntents = new Discord.Intents(Discord.Intents.ALL);
+ciriIntents.remove('GUILD_MESSAGE_TYPING', 'DIRECT_MESSAGE_TYPING');
+
 // Set up Discord client settings.
 // Note: Disabling other events such as user update tends to break everything.
 const bot = new Discord.Client({
   disableMentions: 'everyone',
-  disabledEvents: ['TYPING_START'],
+  ws: { intents: ciriIntents },
 });
 
 // Load initial configurations.
@@ -44,7 +47,7 @@ bot.on('ready', () => {
   // Initialize the bot and servers.
   bot.servers = {};
   bot.usableEmotes = [];
-  for (let guild of bot.guilds.values()) {
+  for (let guild of bot.guilds.cache.values()) {
     if (guild.id == '293787390710120449') continue;
     bot.servers[guild.id] = new Server(guild, inits, prcs);
   }
@@ -167,16 +170,16 @@ bot.on('raw', async (event) => {
   if (event.t == 'MESSAGE_REACTION_REMOVE') {
     /* Prepare our event data */
     let { d: data } = event;
-    let user = bot.users.get(data.user_id);
+    let user = bot.users.cache.get(data.user_id);
     if (user.bot) return;
-    let channel = bot.channels.get(data.channel_id);
+    let channel = bot.channels.cache.get(data.channel_id);
     if (channel.type != 'text') return;
-    if (!channel.messages.has(data.message_id)) return; // Message not in cache
-    let message = channel.messages.get(data.message_id);
+    if (!channel.messages.cache.has(data.message_id)) return; // Message not in cache
+    let message = channel.messages.cache.get(data.message_id);
     let emojiKey = data.emoji.id
       ? `${data.emoji.name}:${data.emoji.id}`
       : data.emoji.name;
-    let reaction = message.reactions.get(emojiKey);
+    let reaction = message.reactions.cache.get(emojiKey);
 
     /* Pretend to emit the event */
     if (message.guild.id == '293787390710120449') {

@@ -20,14 +20,14 @@ const normalPerms = [
 
 module.exports.command = async (message, content, bot, server) => {
   server.lockdown = null;
-  const JHO = server.guild.channels.get('189571157446492161');
-  JHO.permissionOverwrites
+  const JHO = server.guild.channels.cache.get('189571157446492161');
+  JHO.permissionOverwrites.cache
     .get('159985870458322944')
     .delete()
     .catch(() =>
       message.channel.send('Failed to delete MEE6 channel overwrites')
     ); // Mee6
-  JHO.permissionOverwrites
+  JHO.permissionOverwrites.cache
     .get('270366726737231884')
     .delete()
     .catch(() =>

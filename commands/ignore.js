@@ -14,7 +14,7 @@ module.exports.help =
   '`,ignore <#channel>` ignores a channel from leaderboards. Normal commands still work there.';
 
 module.exports.command = (message, content, bot, server) => {
-  let chan = server.guild.channels.get(content);
+  let chan = server.guild.channels.cache.get(content);
   if (chan) {
     if (server.ignoredChannels.includes(content)) return;
     server.ignoredChannels.push(chan);

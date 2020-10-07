@@ -25,15 +25,15 @@ module.exports.command = async (message, content, bot, server) => {
         server.unmuteQ.push(member.id);
       }
     }
-    await member.removeRole('357687893566947329');
-    const AGT = server.guild.channels.get('755269708579733626');
-    let embed = new Discord.RichEmbed();
+    await member.roles.remove('357687893566947329');
+    const AGT = server.guild.channels.cache.get('755269708579733626');
+    let embed = new Discord.MessageEmbed();
     embed.setAuthor(
       `${member.user.tag} has been unmuted in voice chat`,
-      member.user.avatarURL
+      member.user.avatarURL()
     );
     embed.color = Number('0x5EE07A');
-    embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);
+    embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL());
     embed.timestamp = new Date();
     AGT.send({ embed });
   }

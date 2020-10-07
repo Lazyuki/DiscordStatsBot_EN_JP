@@ -17,7 +17,7 @@ module.exports.help =
   '`,hide <#channel>` hides a channel from general commands, unless it was invoked in one of the hidden channels.';
 
 module.exports.command = (message, content, bot, server) => {
-  let chan = server.guild.channels.get(content);
+  let chan = server.guild.channels.cache.get(content);
   if (chan) {
     if (server.hiddenChannels.includes(content)) return;
     server.hiddenChannels.push(chan);

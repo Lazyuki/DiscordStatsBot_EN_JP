@@ -18,7 +18,7 @@ module.exports.command = async (message, content, bot, server) => {
   let channel = message.mentions.channels.first();
   if (channel) {
     server.sticky = channel.id;
-    channel.fetchMessages();
+    channel.messages.fetch();
     message.channel.send(`LSAR sticky channel set to <#${channel.id}>`);
   } else {
     message.channel.send('Please provide a valid channel');

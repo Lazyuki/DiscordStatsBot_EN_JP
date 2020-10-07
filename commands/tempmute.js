@@ -4,10 +4,10 @@ module.exports.name = 'tempMute';
 module.exports.alias = ['tempmute', 'tm', 'shutup', 'timeout'];
 
 function unmute(user_id, server) {
-  server.guild
-    .fetchMember(user_id)
+  server.guild.members
+    .fetch(user_id)
     .then((member) => {
-      member.removeRoles([CHAT_MUTED, VOICE_BANNED]);
+      member.roles.remove([CHAT_MUTED, VOICE_BANNED]);
     })
     .catch((e) => {
       // member no longer exists
@@ -55,7 +55,7 @@ function getNextPossibleMember(content, guild) {
   if (idMatches) {
     const id = idMatches[0];
     try {
-      const mem = guild.members.get(id) || null;
+      const mem = guild.members.cache.get(id) || null;
       return [mem, content.substr(firstWord.length + 1).trim()];
     } catch (e) {
       return [null, content.substr(firstWord.length + 1).trim()];
@@ -129,7 +129,7 @@ module.exports.command = async (message, content, bot, server) => {
   }${minutes ? `${minutes} minutes ` : ''}${
     seconds ? `${seconds} seconds` : ''
   }`;
-  const embed = new Discord.RichEmbed();
+  const embed = new Discord.MessageEmbed();
   embed.setAuthor(`Temporarily Muted in ${message.guild.name}`);
   embed.description = `You are muted for ${durationString}\nReason: ${
     reason || 'unspecified'
@@ -140,8 +140,8 @@ module.exports.command = async (message, content, bot, server) => {
     server.tempmutes[member.id] = unmuteDateMillis;
 
     try {
-      if (member.voiceChannel) await member.setVoiceChannel(null);
-      await member.addRoles([CHAT_MUTED, VOICE_BANNED], 'Temp Muted');
+      if (member.voice.channel) await member.setVoiceChannel(null);
+      await member.roles.add([CHAT_MUTED, VOICE_BANNED], 'Temp Muted');
       await member.send({ embed });
     } catch (e) {
       // already muted
@@ -165,8 +165,8 @@ module.exports.command = async (message, content, bot, server) => {
       reason ? `\nReason: ${reason}` : ''
     }`
   );
-  const agt = server.guild.channels.get('755269708579733626');
-  embed.setAuthor('Temporarily Muted', message.author.avatarURL);
+  const agt = server.guild.channels.cache.get('755269708579733626');
+  embed.setAuthor('Temporarily Muted', message.author.avatarURL());
   embed.description = `Duration: ${durationString}\nReason: ${
     reason || 'unspecified'
   }\nMembers: ${members.map((m) => `${m}: (${m.user.tag})`).join('\n')}`;

@@ -21,14 +21,14 @@ exports.searchUser = function (message, content, server, bot) {
   content = content.trim();
   if (mentions.size != 0) {
     // Get mention
-    return mentions.first();
+    return mentions.cache.first();
   } else if (content != '') {
     // search name
     let regex = content[0] == '*';
     if (regex) {
       let r = new RegExp(content.substr(1, content.length), 'i');
       for (let id in server.users) {
-        let u = server.guild.members.get(id); // TODO change to fetch?
+        let u = server.guild.members.cache.get(id); // TODO change to fetch?
         if (u == undefined) continue; // if left
         if (r.test(u.user.tag) || r.test(u.nickname)) {
           return u.user;
@@ -42,9 +42,9 @@ exports.searchUser = function (message, content, server, bot) {
     } else {
       content = content.toLowerCase();
       for (let id in server.users) {
-        let u = server.guild.members.get(id);
+        let u = server.guild.members.cache.get(id);
         if (id == content) {
-          return bot.fetchUser(id); // This returns a Promise
+          return bot.users.fetch(id); // This returns a Promise
         }
         if (u == undefined) continue; // user left
         if (
@@ -130,7 +130,7 @@ exports.postLogs = function (msg, server) {
     embed.addField('imgur link', msg.img, false);
     embed.setThumbnail(msg.img);
   }
-  let chan = server.guild.channels.get(server.modLog); // #mod_log
+  let chan = server.guild.channels.cache.get(server.modLog); // #mod_log
   if (!chan) return;
   chan.send({ embed });
 };
@@ -211,7 +211,7 @@ exports.userLeaderboard = async function (
         continue;
       }
     } else {
-      let user = await bot.fetchUser(key);
+      let user = await bot.users.fetch(key);
       if (!user) continue;
       list[i][2] = user.username;
       if (key == searchUser.id) foundRank = rank;
@@ -232,7 +232,7 @@ exports.userLeaderboard = async function (
       if (list[rank]) {
         let [key, val, username] = list[rank];
         if (!username) {
-          let user = await bot.fetchUser(key);
+          let user = await bot.users.fetch(key);
           if (!user) continue;
           username = user.username;
           list[rank][2] = username;

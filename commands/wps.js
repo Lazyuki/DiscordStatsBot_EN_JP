@@ -10,7 +10,7 @@ module.exports.help = 'Welcoming party stats';
 
 module.exports.command = (message, content, bot, server) => {
   const wps = server.guild.members.filter((m) => {
-    return m.roles.has('250907197075226625');
+    return m.roles.cache.has('250907197075226625');
   });
   let str = '';
   const sortedWps = new Map(

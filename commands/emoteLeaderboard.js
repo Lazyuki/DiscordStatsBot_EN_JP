@@ -16,7 +16,7 @@ module.exports.help =
 module.exports.command = async (message, content, bot, server) => {
   let channel = message.channel;
   let onlyServer = /-l?c?s/g.test(content)
-    ? server.guild.emojis.map((v) => {
+    ? server.guild.cache.emojis.map((v) => {
         return v.toString();
       })
     : null;
@@ -48,7 +48,7 @@ module.exports.command = async (message, content, bot, server) => {
     for (let emote in result) {
       let regMatch = emote.match(nameRegex);
       let temp = `${c ? count + ') ' : ''}${
-        regMatch && !bot.emojis.has(regMatch[2]) ? regMatch[1] : emote
+        regMatch && !bot.emojis.cache.has(regMatch[2]) ? regMatch[1] : emote
       } : ${result[emote]}\n`;
       count++;
       if (list.length + temp.length < 2000) list += temp;
@@ -72,7 +72,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
     channel.send(list);
   } else {
-    let embed = new Discord.RichEmbed();
+    let embed = new Discord.MessageEmbed();
     embed.title = `Emote Leaderboard${onlyServer ? ' for server emotes' : ''}`;
     embed.description = 'For the last 30 days (UTC time)';
     embed.color = Number('0x3A8EDB');

@@ -4,7 +4,7 @@ module.exports.name = 'unabn';
 module.exports.isAllowed = (message, server) => {
   return (
     message.member.hasPermission('ADMINISTRATOR') ||
-    message.member.roles.has('543721608506900480')
+    message.member.roles.cache.has('543721608506900480')
   );
 };
 module.exports.alias = ['unban'];
@@ -29,7 +29,7 @@ module.exports.command = async (message, content, bot, server) => {
     reason || 'unspecified'
   }`;
   try {
-    await server.guild.unban(userID, reason);
+    await server.guild.members.unban(userID, reason);
     message.channel.send(`✅ User <@${userID}> unbanned.`);
   } catch (e) {
     message.channel.send(

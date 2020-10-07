@@ -21,8 +21,8 @@ const normalPerms = [
 ];
 
 module.exports.command = async (message, content, bot, server) => {
-  let nu = server.guild.roles.get('249695630606336000'); // New User
-  if (nu.permissions.has('SEND_MESSAGES')) {
+  let nu = server.guild.roles.cache.get('249695630606336000'); // New User
+  if (nu.permissions.cache.has('SEND_MESSAGES')) {
     // Get rid of all permissions.
     nu.setPermissions(mutedPerms);
     server.guild.defaultRole.setPermissions(mutedPerms);

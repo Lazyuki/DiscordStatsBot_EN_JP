@@ -4,14 +4,16 @@ module.exports.events = ['VOICE'];
 function isVC(voiceMember) {
   return (
     voiceMember &&
-    voiceMember.voiceChannelID &&
-    voiceMember.voiceChannelID !== voiceMember.guild.afkChannelID &&
-    !voiceMember.deaf
+    voiceMember.voice.channelID &&
+    voiceMember.voice.channelID !== voiceMember.guild.afkChannelID &&
+    !voiceMember.voice.deaf
   );
 }
 module.exports.initialize = (json, server) => {
   server.tempvc = {};
-  for (let [, vc] of server.guild.channels.filter((c) => c.type === 'voice')) {
+  for (let [, vc] of server.guild.channels.cache.filter(
+    (c) => c.type === 'voice'
+  )) {
     for (let [, mem] of vc.members) {
       if (mem.user.bot) continue; // ignore bots
       if (isVC(mem.voice)) server.tempvc[mem.id] = new Date().getTime();

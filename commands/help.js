@@ -14,7 +14,7 @@ module.exports.command = (message, content, bot, server, cmds) => {
   let chan = message.channel;
   let cmd = cmds.commands[content];
   let msg;
-  const embed = new Discord.RichEmbed();
+  const embed = new Discord.MessageEmbed();
 
   if (cmd && cmd.isAllowed(message, server, bot)) {
     if (cmd.isCirillaCommand) return;

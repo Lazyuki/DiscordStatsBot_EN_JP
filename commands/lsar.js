@@ -17,7 +17,7 @@ module.exports.command = async (message, content, bot, server) => {
   let str = 'React with those emojis to toggle the roles.\n';
   let sortable = [];
   for (let emoji in server.sars) {
-    let role = server.guild.roles.get(server.sars[emoji]);
+    let role = server.guild.roles.cache.get(server.sars[emoji]);
     if (!role) continue;
     sortable.push([role.name, emoji]);
   }
@@ -34,7 +34,7 @@ module.exports.command = async (message, content, bot, server) => {
     let emote = sortable[i][1];
     let regMatch = emote.match(nameRegex);
     if (regMatch) {
-      emote = bot.emojis.get(regMatch[2]);
+      emote = bot.emojis.cache.get(regMatch[2]);
     }
     try {
       await msg.react(emote);

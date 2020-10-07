@@ -8,7 +8,7 @@ module.exports.isAllowed = (message, server) => {
   return (
     server.guild.id == '189571157446492161' &&
     (message.member.hasPermission('ADMINISTRATOR') ||
-      message.member.roles.has('543721608506900480'))
+      message.member.roles.cache.has('543721608506900480'))
   );
 };
 
@@ -38,11 +38,11 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   for (let m of badPeople) {
-    m.addRole('259181555803619329', `Issued by: ${message.author.tag}`);
+    m.roles.add('259181555803619329', `Issued by: ${message.author.tag}`);
     m.send(`You have been muted from ${server.guild}\nReason: ${reason}`);
     if (minutes) {
       setTimeout(() => {
-        m.removeRole('259181555803619329');
+        m.roles.remove('259181555803619329');
       }, minutes * 60 * 1000);
     }
     const warning = {
@@ -57,10 +57,10 @@ module.exports.command = async (message, content, bot, server) => {
       server.warnlist[m.id] = [warning];
     }
   }
-  const agt = server.guild.channels.get('755269708579733626');
-  let embed = new Discord.RichEmbed();
+  const agt = server.guild.channels.cache.get('755269708579733626');
+  let embed = new Discord.MessageEmbed();
   let date = new Date();
-  embed.setAuthor(`${message.author.tag}`, message.author.avatarURL);
+  embed.setAuthor(`${message.author.tag}`, message.author.avatarURL());
   embed.title = 'Chat Mute:';
   embed.addField(
     'Muted users:',

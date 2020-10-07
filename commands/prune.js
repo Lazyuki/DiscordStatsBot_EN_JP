@@ -21,7 +21,7 @@ module.exports.command = async (message, content, bot, server) => {
   const channelIdsMatches = /<#([0-9]+)>/g.exec(content);
   content = content.replace(Util.REGEX_CHAN, '');
   const channel = channelIdsMatches
-    ? server.guild.channels.get(channelIdsMatches[1])
+    ? server.guild.channels.cache.get(channelIdsMatches[1])
     : message.channel;
   const hourMatches = /-h ([0-9]+)/g.exec(content);
   content = content.replace(/-h ([0-9]+)/, '');
@@ -34,7 +34,7 @@ module.exports.command = async (message, content, bot, server) => {
   var count = 0;
   var delCount = 0;
   while (!done) {
-    let messages = await channel.fetchMessages({
+    let messages = await channel.messages.fetch({
       limit: 100,
       before: lastMessageID,
     });

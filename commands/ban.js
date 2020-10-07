@@ -14,7 +14,7 @@ module.exports.isAllowed = (message, server) => {
   return (
     server.guild.id == '189571157446492161' &&
     (message.member.hasPermission('ADMINISTRATOR') ||
-      message.member.roles.has('543721608506900480'))
+      message.member.roles.cache.has('543721608506900480'))
   );
 };
 
@@ -134,7 +134,10 @@ module.exports.command = async (message, content, bot, server) => {
             await message.channel.send(`Failed to DM the ban reason to ${mem}`);
           }
           try {
-            await mem.ban({ days: deleteDays, reason: auditLogReason });
+            await server.guild.members.ban(mem, {
+              days: deleteDays,
+              reason: auditLogReason,
+            });
             someBan = true;
             const warning = {
               issued: message.createdTimestamp,
@@ -156,7 +159,7 @@ module.exports.command = async (message, content, bot, server) => {
       await Promise.all(
         badIDs.map(async (id) => {
           try {
-            await server.guild.ban(id, {
+            await server.guild.members.ban(id, {
               days: deleteDays,
               reason: auditLogReason,
             });
@@ -197,10 +200,10 @@ module.exports.command = async (message, content, bot, server) => {
     if (endReason == 'Banned') {
       const actualBanned = badPeople.filter((p) => !failedBans.includes(p));
       message.channel.send('✅ Banned');
-      const agt = server.guild.channels.get('755269708579733626');
-      let embed = new Discord.RichEmbed();
+      const agt = server.guild.channels.cache.get('755269708579733626');
+      let embed = new Discord.MessageEmbed();
       let date = new Date();
-      embed.setAuthor(`${message.author.tag}`, message.author.avatarURL);
+      embed.setAuthor(`${message.author.tag}`, message.author.avatarURL());
       embed.title = 'Ban';
       embed.addField(
         'Banned users:',

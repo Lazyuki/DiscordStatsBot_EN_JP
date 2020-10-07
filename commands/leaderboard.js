@@ -34,7 +34,7 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   result = result.toMap();
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   embed.title = 'Leaderboard';
   embed.description = 'For the last 30 days (UTC time)';
   embed.color = Number('0x3A8EDB');
@@ -49,13 +49,13 @@ module.exports.command = async (message, content, bot, server) => {
         continue;
       }
       embed.addField(
-        count + ') ' + (await bot.fetchUser(user)).username,
+        count + ') ' + (await bot.users.fetch(user)).username,
         result[user],
         true
       );
       break;
     }
-    let us = await bot.fetchUser(user);
+    let us = await bot.users.fetch(user);
     if (!us) continue;
     if (user == memberID) found = true;
     embed.addField(count++ + ') ' + us.username, result[user], true);

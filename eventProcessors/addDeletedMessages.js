@@ -62,7 +62,7 @@ module.exports.process = async function (message, server) {
   let con = message.content;
   var imageURL = '';
   if (message.attachments.size > 0) {
-    imageURL = message.attachments.first().url;
+    imageURL = message.attachments.cache.first().url;
     message.content += `\n{Attachment (expired): ${imageURL} }`;
   } else if (message.content.length < 3) {
     return;
@@ -103,10 +103,10 @@ module.exports.process = async function (message, server) {
     return; // ignore eikyuu's server
   if (message.mentions.members.size > 10) {
     // SPAM alert!
-    let chan = server.guild.channels.get('366692441442615306'); // #mod_log
+    let chan = server.guild.channels.cache.get('366692441442615306'); // #mod_log
     if (chan == undefined) return;
     if (server.watchedUsers.includes(message.author.id)) {
-      message.member.addRole('259181555803619329'); // muted role
+      message.member.roles.add('259181555803619329'); // muted role
       chan.send(
         `**USER MUTED** ${message.author} has been muted. <@&240647591770062848> if this was a mistake, unmute them by removing the mute tag. If not, BAN THEM!`
       );

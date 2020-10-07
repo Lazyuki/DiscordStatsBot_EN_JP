@@ -38,7 +38,7 @@ module.exports.command = async (message, content, bot, server) => {
     let record = users[user];
     let total = record.totalStats();
     if (total >= num) {
-      let mem = server.guild.members.get(user);
+      let mem = server.guild.members.cache.get(user);
       if (!mem) {
         try {
           mem = await server.guild.member(user);
@@ -47,7 +47,7 @@ module.exports.command = async (message, content, bot, server) => {
           continue;
         }
       }
-      if (!mem.roles.has('196765998706196480')) {
+      if (!mem.roles.cache.has('196765998706196480')) {
         let jpnUsage = (record.jp / (record.jp + record.en)) * 100;
         if (!jpnUsage) continue;
         result.add(user, jpnUsage);
@@ -55,13 +55,13 @@ module.exports.command = async (message, content, bot, server) => {
     }
   }
   result = result.toMap();
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   embed.title = 'Japanese Usage Leaderboard';
   embed.description = `For the last 30 days [Total Message Threshold: ${num}]`;
   embed.color = Number('0x3A8EDB');
   let count = 1;
   let member = await server.guild.member(memberID);
-  let found = member.roles.has('196765998706196480');
+  let found = member.roles.cache.has('196765998706196480');
 
   for (let user in result) {
     if (count >= 25) {
@@ -71,13 +71,13 @@ module.exports.command = async (message, content, bot, server) => {
         continue;
       }
       embed.addField(
-        count + ') ' + (await bot.fetchUser(user)).username,
+        count + ') ' + (await bot.users.fetch(user)).username,
         result[user].toFixed(2) + '%',
         true
       );
       break;
     }
-    let us = await bot.fetchUser(user);
+    let us = await bot.users.fetch(user);
     if (!us) continue;
     if (user == memberID) found = true;
     embed.addField(

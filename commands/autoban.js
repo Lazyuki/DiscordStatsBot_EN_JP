@@ -59,10 +59,10 @@ function getInnatePenalty(member) {
       '543721608506900480',
       '755269385094168576',
       '250907197075226625',
-    ].some((r) => member.roles.has(r))
+    ].some((r) => member.roles.cache.has(r))
   ) {
     penalty -= 5;
-  } else if (member.roles.has('241997079168155649')) {
+  } else if (member.roles.cache.has('241997079168155649')) {
     // FE a bit trustworty
     penalty -= 2;
   } else if (
@@ -70,7 +70,7 @@ function getInnatePenalty(member) {
       '196765998706196480',
       '197100137665921024',
       '248982130246418433',
-    ].some((r) => member.roles.has(r))
+    ].some((r) => member.roles.cache.has(r))
   ) {
     penalty += 5; // no lang role
   }
@@ -85,7 +85,7 @@ module.exports.command = async (message, content, bot, server) => {
   const topN = parseInt(content, 10) || 1;
   const reason = `Issued by: ${executor.tag}. Troll/Spam (auto-detected by Ciri)`;
 
-  const recentMessages = await message.channel.fetchMessages({ limit: 30 });
+  const recentMessages = await message.channel.messages.fetch({ limit: 30 });
   const members = {};
   for (const m of recentMessages.array()) {
     const authorId = m.author.id;
@@ -152,7 +152,7 @@ module.exports.command = async (message, content, bot, server) => {
       await Promise.all(
         topNMemberIDs.map(async (id) => {
           try {
-            await server.guild.ban(id, {
+            await server.guild.members.ban(id, {
               days: deleteDays,
               reason,
             });
@@ -182,10 +182,10 @@ module.exports.command = async (message, content, bot, server) => {
     if (endReason == 'Banned') {
       const actualBanned = badPeople.filter((p) => !failedBans.includes(p));
       message.channel.send('✅ Banned');
-      const agt = server.guild.channels.get('755269708579733626');
-      let embed = new Discord.RichEmbed();
+      const agt = server.guild.channels.cache.get('755269708579733626');
+      let embed = new Discord.MessageEmbed();
       let date = new Date();
-      embed.setAuthor(`${message.author.tag}`, message.author.avatarURL);
+      embed.setAuthor(`${message.author.tag}`, message.author.avatarURL());
       embed.title = 'Ban';
       embed.addField(
         'Banned users:',

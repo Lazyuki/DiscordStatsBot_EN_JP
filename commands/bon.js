@@ -13,17 +13,20 @@ const link =
 
 module.exports.command = async (message, content, bot, server) => {
   message.delete();
-  const embed = new Discord.RichEmbed();
+  const embed = new Discord.MessageEmbed();
   let bon;
   try {
-    bon = await server.guild.fetchMember('149169203910279179');
+    bon = await server.guild.members.fetch('149169203910279179');
   } catch (e) {
     console.log('failed to fetch bon');
   }
 
   embed.title = `**HOW TO LEARN JAPANESE EFFICIENTLY** ${externalLink}`;
   embed.url = link;
-  embed.setFooter(`Written by ${bon.user.tag}`, bon ? bon.user.avatarURL : '');
+  embed.setFooter(
+    `Written by ${bon.user.tag}`,
+    bon ? bon.user.avatarURL() : ''
+  );
   embed.color = 8843151;
   message.channel.send({ embed });
 };

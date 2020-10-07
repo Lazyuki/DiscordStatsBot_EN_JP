@@ -21,7 +21,7 @@ module.exports.process = async (reaction, user, added, server, bot) => {
       code = `try { ${code} } catch (e) { send(e.message) }`;
       let AsyncFunction = Object.getPrototypeOf(async function () {})
         .constructor;
-      let embed = new Discord.RichEmbed();
+      let embed = new Discord.MessageEmbed();
       let func = new AsyncFunction(
         'message',
         'content',

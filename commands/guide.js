@@ -13,7 +13,7 @@ const Discord = require('discord.js');
 const externalLink = '<:externallink:438354612379189268>';
 
 module.exports.command = (message, content) => {
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   content = content.toLowerCase();
   if (content == 'guides') {
     embed.title = `__**Guides ${externalLink}**__`;

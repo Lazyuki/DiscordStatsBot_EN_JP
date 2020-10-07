@@ -12,7 +12,7 @@ module.exports.help =
   ' Edits the list of self-assignable roles in the lsar stickied channel. Checks for the last message sent by Ciri in the channel';
 
 module.exports.command = async (message, content, bot, server) => {
-  let stickiedChannel = server.guild.channels.get(server.sticky);
+  let stickiedChannel = server.guild.channels.cache.get(server.sticky);
   if (!stickiedChannel) {
     message.channel.send(
       'Cannot find the sticked channel. Try `,h sticky` first. '
@@ -20,7 +20,7 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
 
-  let msgs = await stickiedChannel.fetchMessages();
+  let msgs = await stickiedChannel.messages.fetch();
   let lsar = msgs.filter((msg) => msg.author.id === bot.user.id).first();
   if (!lsar) {
     message.channel.send("Cannot find Ciri's message");

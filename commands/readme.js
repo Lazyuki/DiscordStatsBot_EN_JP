@@ -21,7 +21,7 @@ module.exports.command = (message) => {
   } // 10 sec cooldown
   lastCalled = now;
   let mentioned = message.mentions.members.first();
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   embed.title = `WELCOME${
     mentioned ? ' ' + mentioned.user.username : ''
   }!! 🎉 READ ME!`;

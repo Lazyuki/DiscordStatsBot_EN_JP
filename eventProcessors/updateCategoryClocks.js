@@ -32,7 +32,7 @@ module.exports.process = async (server) => {
   if (server.categoryClocks.length > 0) {
     for (let c of server.categoryClocks) {
       const categoryID = c.id;
-      const category = server.guild.channels.get(categoryID);
+      const category = server.guild.channels.cache.get(categoryID);
       if (category) {
         category.setName(parseTime(c.timeString, c.pad));
       }

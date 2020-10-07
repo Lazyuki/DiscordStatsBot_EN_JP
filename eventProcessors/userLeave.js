@@ -4,9 +4,9 @@ let EWBF = null;
 let DDJLog = null;
 module.exports.initialize = (json, server) => {
   if (server.guild.id == '189571157446492161') {
-    EWBF = server.guild.channels.get('277384105245802497');
+    EWBF = server.guild.channels.cache.get('277384105245802497');
   } else if (server.guild.id == '453115403829248010') {
-    DDJLog = server.guild.channels.get('453125855523241984');
+    DDJLog = server.guild.channels.cache.get('453125855523241984');
   }
 };
 module.exports.isAllowed = () => {
@@ -15,11 +15,11 @@ module.exports.isAllowed = () => {
 
 const Discord = require('discord.js');
 function leaveNotif(member) {
-  let embed = new Discord.RichEmbed();
+  let embed = new Discord.MessageEmbed();
   embed.description = `📤 **${member.user.tag}** has \`left\` the server. (${member.id})`;
   embed.setFooter(
     `User Leave (${member.guild.memberCount})`,
-    member.user.avatarURL
+    member.user.avatarURL()
   );
   embed.setTimestamp();
   embed.setColor(0xc13c35);
@@ -29,9 +29,9 @@ module.exports.process = async (member, server) => {
   if (server.tempvc[member.id]) delete server.tempvc[member.id];
   if (member.guild.id == '189571157446492161') {
     // react gone for new users
-    const JHO = server.guild.channels.get('189571157446492161');
+    const JHO = server.guild.channels.cache.get('189571157446492161');
     if (server.newUsers.includes(member.id)) {
-      let msgs = await JHO.fetchMessages();
+      let msgs = await JHO.messages.fetch();
       for (let [, msg] of msgs) {
         if (
           msg.author.id == '159985870458322944' &&
@@ -43,7 +43,7 @@ module.exports.process = async (member, server) => {
       }
     }
     if (
-      member.guild.members.get('270366726737231884').presence.status ==
+      member.guild.members.cache.get('270366726737231884').presence.status ==
       'offline'
     ) {
       // rybot
@@ -51,7 +51,7 @@ module.exports.process = async (member, server) => {
       EWBF.send({ embed });
     } else {
       setTimeout(async () => {
-        let msgs = await EWBF.fetchMessages({ limit: 20 });
+        let msgs = await EWBF.messages.fetch({ limit: 20 });
         for (let [, msg] of msgs) {
           if (
             msg.author.id == '270366726737231884' &&

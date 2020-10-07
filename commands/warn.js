@@ -31,7 +31,7 @@ module.exports.command = async (message, content, bot, server) => {
   let member;
   let mentions = message.mentions.members;
   if (mentions.size != 0) {
-    member = mentions.first();
+    member = mentions.cache.first();
     content = content.replace(Util.REGEX_USER, '');
   } else {
     const idMatch = content.match(Util.REGEX_RAW_ID);
@@ -59,7 +59,7 @@ module.exports.command = async (message, content, bot, server) => {
     warnMessage: content,
   };
 
-  const embed = new Discord.RichEmbed();
+  const embed = new Discord.MessageEmbed();
   embed.title = `You have been officially warned on ${server.guild.name}`;
   embed.description = warning.warnMessage;
   embed.color = Number('0xDB3C3C');
@@ -70,14 +70,14 @@ module.exports.command = async (message, content, bot, server) => {
       .send({ embed })
       .then((m) => {
         message.channel.send({
-          embed: new Discord.RichEmbed()
+          embed: new Discord.MessageEmbed()
             .setDescription(`${member} has been warned by ${message.author}`)
             .setColor('0x42f46b'),
         });
       })
       .catch((e) => {
         message.channel.send({
-          embed: new Discord.RichEmbed()
+          embed: new Discord.MessageEmbed()
             .setDescription(
               `Failed to DM ${member.user.tag}. The user couldn't receive the warning.`
             )
@@ -87,7 +87,7 @@ module.exports.command = async (message, content, bot, server) => {
       });
   } else {
     message.channel.send({
-      embed: new Discord.RichEmbed()
+      embed: new Discord.MessageEmbed()
         .setDescription(
           `Logged the warning for ${member} by ${message.author}. (They did not receive the warning from Ciri) `
         )

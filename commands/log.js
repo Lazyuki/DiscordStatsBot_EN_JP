@@ -19,7 +19,7 @@ module.exports.command = async (message, content, bot, server) => {
   let member;
   let mentions = message.mentions.members;
   if (mentions.size != 0) {
-    member = mentions.first();
+    member = mentions.cache.first();
     content = content.replace(Util.REGEX_USER, '');
   } else {
     const idMatch = content.match(Util.REGEX_RAW_ID);
@@ -53,7 +53,7 @@ module.exports.command = async (message, content, bot, server) => {
     server.warnlist[member.id] = [warning];
   }
   message.channel.send({
-    embed: new Discord.RichEmbed()
+    embed: new Discord.MessageEmbed()
       .setDescription(
         `Logged the warning for ${member} by ${message.author}. (They did not receive the warning from Ciri) `
       )

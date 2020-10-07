@@ -7,8 +7,8 @@ module.exports.isAllowed = (message, server) => {
     return false;
   }
   if (
-    !message.member.roles.has('384286851260743680') &&
-    !message.member.roles.has('436573300810973185')
+    !message.member.roles.cache.has('384286851260743680') &&
+    !message.member.roles.cache.has('436573300810973185')
   )
     return false; // Hardcore role
   // disabled in #japanese_questions, #english_questions, #correct_me, #language_exchange, #nihongo-study, #eigo-no-beenkyo
@@ -33,8 +33,8 @@ const Discord = require('discord.js');
 module.exports.process = (message) => {
   let content = message.content;
   let isJapanese =
-    message.member.roles.has('196765998706196480') ||
-    message.member.roles.has('292401145752846337'); // has native japanese
+    message.member.roles.cache.has('196765998706196480') ||
+    message.member.roles.cache.has('292401145752846337'); // has native japanese
   if (
     message.channel.id == '225828894765350913' &&
     /^(k!|t!|[!.&%=+$])/.test(content)
@@ -63,7 +63,7 @@ module.exports.process = (message) => {
   if (isJapanese && lang & Util.LANG.JPN) {
     // Japanese
     if (content.length > 80) {
-      let embed = new Discord.RichEmbed();
+      let embed = new Discord.MessageEmbed();
       embed.description = content;
       embed.setFooter(`#${message.channel.name}`);
       embed.color = Number('0xDB3C3C');
@@ -78,7 +78,7 @@ module.exports.process = (message) => {
   if (!isJapanese && lang & Util.LANG.ENG) {
     // English
     if (content.length > 120) {
-      let embed = new Discord.RichEmbed();
+      let embed = new Discord.MessageEmbed();
       embed.description = content;
       embed.setFooter(`#${message.channel.name}`);
       embed.color = Number('0xDB3C3C');

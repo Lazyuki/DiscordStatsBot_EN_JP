@@ -14,7 +14,7 @@ module.exports.command = async (message, content, bot, server) => {
   let mentions = message.mentions.users;
   let userID = content.trim();
   if (mentions.size != 0) {
-    userID = mentions.firstKey();
+    userID = mentions.cache.firstKey();
   }
   if (!/^\d+$/.test(userID)) {
     message.channel.send('Invalid user or user ID. ');
