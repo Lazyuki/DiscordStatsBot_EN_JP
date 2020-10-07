@@ -21,7 +21,7 @@ exports.searchUser = function (message, content, server, bot) {
   content = content.trim();
   if (mentions.size != 0) {
     // Get mention
-    return mentions.cache.first();
+    return mentions.first();
   } else if (content != '') {
     // search name
     let regex = content[0] == '*';
