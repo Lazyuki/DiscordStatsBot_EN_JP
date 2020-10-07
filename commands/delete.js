@@ -109,9 +109,7 @@ module.exports.command = async (message, content, bot, server) => {
     let imgStr = '';
     for (let msg of delmsgs) {
       if (msg.attachments.size) {
-        imgStr += `File ${imgCount}: ||${
-          msg.attachments.cache.first().url
-        }||\n`;
+        imgStr += `File ${imgCount}: ||${msg.attachments.first().url}||\n`;
         ++imgCount;
       }
       embed.addField(

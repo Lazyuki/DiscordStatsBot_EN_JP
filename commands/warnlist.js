@@ -31,7 +31,7 @@ module.exports.command = async (message, content, bot, server) => {
   let userID;
   let mentions = message.mentions.users;
   if (mentions.size != 0) {
-    userID = mentions.cache.first().id;
+    userID = mentions.first().id;
   } else {
     const idMatch = content.match(Util.REGEX_RAW_ID);
     if (idMatch) {

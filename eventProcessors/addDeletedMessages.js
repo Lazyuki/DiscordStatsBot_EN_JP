@@ -62,7 +62,7 @@ module.exports.process = async function (message, server) {
   let con = message.content;
   var imageURL = '';
   if (message.attachments.size > 0) {
-    imageURL = message.attachments.cache.first().url;
+    imageURL = message.attachments.first().url;
     message.content += `\n{Attachment (expired): ${imageURL} }`;
   } else if (message.content.length < 3) {
     return;

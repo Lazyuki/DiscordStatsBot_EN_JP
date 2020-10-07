@@ -17,7 +17,7 @@ const request = require('request');
 
 module.exports.process = (message, server) => {
   if (message.attachments.size > 0) {
-    let imageURL = message.attachments.cache.first().url;
+    let imageURL = message.attachments.first().url;
     var options = {
       method: 'POST',
       url: 'https://api.imgur.com/3/image',
