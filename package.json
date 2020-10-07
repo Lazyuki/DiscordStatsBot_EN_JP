@@ -24,6 +24,7 @@
     "discord.js": "^12.3.1",
     "erlpack": "github:discordapp/erlpack",
     "express": "^4.16.3",
+    "long": "^4.0.0",
     "pg": "^7.4.3",
     "request": "^2.88.0",
     "zlib-sync": "^0.1.4"

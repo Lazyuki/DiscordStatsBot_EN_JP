@@ -220,7 +220,7 @@ async function postLogs(member, server) {
   const newInvites = await server.guild.fetchInvites();
   let inv = null;
   for (let [k, v] of newInvites) {
-    let old = server.invites.cache.get(k);
+    let old = server.invites.get(k);
     if (old) {
       if (old.uses < v.uses) {
         inv = [k, v];
@@ -303,7 +303,7 @@ async function postLogsDDJ(member, server) {
   let newInvites = await server.guild.fetchInvites();
   let inv = null;
   for (let [k, v] of newInvites) {
-    let old = server.invites.cache.get(k);
+    let old = server.invites.get(k);
     if (old) {
       if (old.uses < v.uses) {
         inv = [k, v];

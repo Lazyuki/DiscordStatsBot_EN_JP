@@ -38,10 +38,10 @@ module.exports = class Server {
     });
   }
 
-  async processVoice(oldMember, newMember) {
+  async processVoice(oldState, newState) {
     this.processors['VOICE'].forEach((p) => {
-      if (p.isAllowed(oldMember)) {
-        p.process(oldMember, newMember, this);
+      if (p.isAllowed(oldState.member)) {
+        p.process(oldState, newState, this);
       }
     });
   }
