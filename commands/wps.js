@@ -9,7 +9,7 @@ module.exports.isAllowed = (message, server) => {
 module.exports.help = 'Welcoming party stats';
 
 module.exports.command = (message, content, bot, server) => {
-  const wps = server.guild.members.filter((m) => {
+  const wps = server.guild.members.cache.filter((m) => {
     return m.roles.cache.has('250907197075226625');
   });
   let str = '';
