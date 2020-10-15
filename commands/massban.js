@@ -56,7 +56,7 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
 
-  server.guild.members.forEach((mem, memID) => {
+  server.guild.members.cache.forEach((mem, memID) => {
     if (!mem.joinedAt) return;
     const memMillis = mem.joinedAt.getTime();
     if (
