@@ -10,7 +10,7 @@ module.exports.isAllowed = (message, server) => {
 };
 
 module.exports.help =
-  ' `,raidban <user> [--end user] [--except user-mentions]`\n Ban all the users joined after the mentioned guy. Can also specify the last guy with `--end`. ALL INCLUSIVE. \nExamples:\n`,raidban @NewGuy`\n`,raidban @FirstGuy --end @LastGuy --except @InnocentGuy` will ban @FirstGuy and anyone after that up to and including @LastGuy, except @InnocentGuy';
+  ' `,raidban <user or timestamp Discord ID> [--end user or timestamp Discord ID] [--except user-mentions]`\n Ban all the users joined after the mentioned guy. Can also specify the last guy with `--end`. ALL INCLUSIVE. \nExamples:\n`,raidban @NewGuy`\n`,raidban @FirstGuy --end @LastGuy --except @InnocentGuy` will ban @FirstGuy and anyone after that up to and including @LastGuy, except @InnocentGuy';
 
 const Discord = require('discord.js');
 
@@ -50,7 +50,12 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
   let endMillis = nowMillis;
-  if (endMem && endMem.joinedAt) endMillis = endMem.joinedAt.getTime();
+  if (endMem && endMem.joinedAt) {
+    endMillis = endMem.joinedAt.getTime();
+  } else if (endID) {
+    const date = Discord.SnowflakeUtil.deconstruct(endID).date;
+    endMillis = date.getTime();
+  }
   if (endMillis - firstMillis < 0) {
     message.channel.send('The last guy joined before the first guy');
     return;
