@@ -2,7 +2,7 @@ module.exports.name = 'raidban';
 
 module.exports.alias = ['banraid', 'raidban'];
 
-module.exports.isAllowed = (message, server) => {
+module.exports.isAllowed = (message) => {
   return (
     message.member.hasPermission('BAN_MEMBERS') ||
     message.member.roles.cache.has('543721608506900480')
