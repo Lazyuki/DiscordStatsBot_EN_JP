@@ -30,7 +30,7 @@ module.exports.process = async (reaction, user, added, server) => {
     }
     if (added) {
       if (
-        reaction.emoji.id === '384286851260743680' &&
+        roleID === '384286851260743680' &&
         !LANG_ROLES.some((r) => member.roles.cache.has(r))
       ) {
         reaction.users.remove(user.id);
