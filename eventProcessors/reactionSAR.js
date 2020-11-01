@@ -1,3 +1,5 @@
+const LANG_ROLES = require('../commands/languages').LANG_ROLES;
+
 module.exports.name = 'reactionSelfAssignableRoles';
 module.exports.events = ['REACT'];
 
@@ -27,7 +29,14 @@ module.exports.process = async (reaction, user, added, server) => {
       return;
     }
     if (added) {
-      member.roles.add(roleID, 'self assigned');
+      if (
+        reaction.emoji.id === '384286851260743680' &&
+        !LANG_ROLES.some((r) => member.roles.cache.has(r))
+      ) {
+        reaction.users.remove(user.id);
+      } else {
+        member.roles.add(roleID, 'self assigned');
+      }
     } else {
       member.roles.remove(roleID, 'self assigned');
     }

@@ -13,7 +13,10 @@ const NE = '197100137665921024';
 const NJ = '196765998706196480';
 const FE = '241997079168155649';
 const FJ = '270391106955509770';
+const AJ = '681835604484423693';
 const OL = '248982130246418433';
+
+module.exports.LANG_ROLES = [NE, NJ, FE, FJ, AJ, OL];
 
 module.exports.command = async (message, content, bot, server) => {
   let min = parseInt(content);
