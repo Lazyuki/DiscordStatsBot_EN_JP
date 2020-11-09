@@ -90,7 +90,7 @@ module.exports.command = async (message, content, bot, server) => {
   for (const m of recentMessages.array()) {
     const authorId = m.author.id;
     if (m.author.bot) continue;
-    const penalty = getPenalty(m.content);
+    const penalty = getPenalty(m);
     if (authorId in members) {
       members[authorId] += penalty;
     } else {
