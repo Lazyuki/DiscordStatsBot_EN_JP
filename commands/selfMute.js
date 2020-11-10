@@ -86,9 +86,9 @@ module.exports.command = async (message, content, bot, server) => {
   setTimeout(() => unmute(member.id, server), totalMillis);
 
   message.channel.send(
-    `✅ Muted you for ${days ? `${days} days ` : ''}${
-      hours ? `${hours} hours ` : ''
-    }${minutes ? `${minutes} minutes ` : ''}${
+    `✅ ${message.author.username} self muted for ${
+      days ? `${days} days ` : ''
+    }${hours ? `${hours} hours ` : ''}${minutes ? `${minutes} minutes ` : ''}${
       seconds ? `${seconds} seconds` : ''
     } `
   );
