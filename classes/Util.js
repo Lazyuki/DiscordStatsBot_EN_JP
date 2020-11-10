@@ -253,3 +253,16 @@ exports.userLeaderboard = async function (
   }
   paginate(msg, list, authorID, foundRank, reload);
 };
+
+const runAt = (date, func) => {
+  const now = new Date().getTime();
+  const then = date.getTime();
+  const diff = Math.max(then - now, 0);
+  if (diff > 0x7fffffff)
+    setTimeout(function () {
+      runAt(date, func);
+    }, 0x7fffffff);
+  else setTimeout(func, diff);
+};
+
+exports.runAt = runAt;

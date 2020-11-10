@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const Util = require('../classes/Util');
 
 module.exports.name = 'tempMute';
 module.exports.alias = ['tempmute', 'tm', 'shutup', 'timeout'];
@@ -21,10 +22,7 @@ module.exports.initialize = (json, server) => {
   server.tempmutes = json['tempmutes'];
   for (const user_id in server.tempmutes) {
     const time = server.tempmutes[user_id];
-    setTimeout(
-      () => unmute(user_id, server),
-      new Date(time).getTime() - new Date().getTime()
-    );
+    Util.runAt(new Date(time), () => unmute(user_id, server));
   }
 };
 
@@ -149,7 +147,7 @@ module.exports.command = async (message, content, bot, server) => {
       // already muted
     }
 
-    setTimeout(() => unmute(member.id, server), totalMillis);
+    Util.runAt(new Date(unmuteDateMillis), () => unmute(member.id, server));
     const warning = {
       issued: message.createdTimestamp,
       issuer: message.author.id,
