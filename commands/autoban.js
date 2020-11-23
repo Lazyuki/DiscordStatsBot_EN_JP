@@ -20,7 +20,7 @@ function getPenalty(message) {
   let penalty = 0;
   let content = message.content.replace(Util.REGEX_ID, '');
   content = content.replace(Util.REGEX_EMOJIS, '');
-  if (content.test(Util.REGEX_URL)) {
+  if (Util.REGEX_URL.test(content)) {
     penalty += 2;
   }
   if (message.attachments && message.attachments.size > 0) {
@@ -36,7 +36,7 @@ function getPenalty(message) {
   if (/^[A-Z ]+$/.test(content)) penalty += 1;
   if (message.cleanContent.includes('@everyone')) penalty += 3;
   if (message.mentions.roles.has(ACTIVE_STAFF)) penalty -= 3;
-  if (content.test(/nigger/i)) penalty += 10;
+  if (/nigger/i.test(content)) penalty += 10;
 
   return penalty + other * 2;
 }
