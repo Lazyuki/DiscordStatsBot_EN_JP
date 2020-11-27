@@ -66,50 +66,6 @@ function joinNotif(member, inv) {
   return embed;
 }
 
-async function bparker(member, inv) {
-  const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
-  const username = member.user.username;
-  let likelihood = 0;
-  const diffNow = new Date() - date;
-  if (diffNow < 600000) {
-    // less than 10 minutes old
-    likelihood += 4;
-  }
-  if (inv[0] === 'japanese') likelihood++; // jp link
-  if (
-    (username.includes('Lexy') && username.includes('Maria')) ||
-    username === 'OaklandRaiders'
-  )
-    likelihood += 5;
-  if (likelihood === 10) {
-    await member.guild.members.ban(member, {
-      days: 1,
-      reason: 'Auto BAN bparker',
-    });
-    setTimeout(async () => {
-      let msgs = await JHO.messages.fetch({ limit: 30 });
-      for (let [, msg] of msgs) {
-        if (
-          msg.author.id == '159985870458322944' &&
-          msg.mentions.users.has(member.id)
-        ) {
-          // delete mee6 welcome
-          msg.delete();
-        }
-        if (
-          msg.author.id === '270366726737231884' &&
-          msg.content.includes(`Welcome ${username}`)
-        ) {
-          // delete Rai welcome
-          msg.delete();
-        }
-      }
-    }, 3000);
-    return true;
-  }
-  return false;
-}
-
 async function sendLockdownNotif(member, inv, lockdown, welcome) {
   const embed = new Discord.MessageEmbed();
   const date = Discord.SnowflakeUtil.deconstruct(member.id).date;
@@ -234,8 +190,6 @@ async function postLogs(member, server) {
   server.invites = newInvites;
   if (inv === null) inv = ['japanese', { inviter: { username: 'vanityURL' } }];
   console.log(`${member.user.username} joined with ${inv[0]}`);
-
-  if (await bparker(member, inv)) return;
 
   let welcome = `Welcome ${member}. Please read <#189585230972190720> and tell us what your native language is!\n${member}さん、ようこそ! あなたの母語を教えてください! 注意事項は<#189585230972190720>に書いてあります。<@&357449148405907456>`;
 

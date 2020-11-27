@@ -117,8 +117,6 @@ module.exports.command = async (message, content, bot, server) => {
     else cache.push(m.content);
   });
 
-  console.log(JSON.stringify(members));
-
   const topNMemberIDs = Object.entries(members)
     .sort(([, a], [, b]) => b - a)
     .map((ent) => ent[0])
@@ -180,7 +178,6 @@ module.exports.command = async (message, content, bot, server) => {
   });
   collector.on('end', (collected, endReason) => {
     if (endReason == 'Banned') {
-      const actualBanned = badPeople.filter((p) => !failedBans.includes(p));
       message.channel.send('✅ Banned');
       const agt = server.guild.channels.cache.get('755269708579733626');
       let embed = new Discord.MessageEmbed();
@@ -189,7 +186,7 @@ module.exports.command = async (message, content, bot, server) => {
       embed.title = 'Ban';
       embed.addField(
         'Banned users:',
-        actualBanned.map((b) => `<@${b}>`).join('\n'),
+        badPeople.map((b) => `<@${b}>`).join('\n'),
         false
       );
       embed.addField('Ban reason:', 'Trolling. (autoban)', false);
