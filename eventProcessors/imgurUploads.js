@@ -41,16 +41,20 @@ module.exports.process = (message, server) => {
           console.log(error);
           return;
         }
-        let ret = JSON.parse(body);
-        if (ret.data.link == undefined) {
-          console.log(JSON.stringify(ret));
-        } else {
-          this.watchedImagesID.push(message.id);
-          this.watchedImagesLink.push(ret.data.link);
-          if (this.watchedImagesID.length > 50) {
-            this.watchedImagesID.shift();
-            this.watchedImagesLink.shift();
+        try {
+          let ret = JSON.parse(body);
+          if (ret.data.link == undefined) {
+            console.log(JSON.stringify(ret));
+          } else {
+            this.watchedImagesID.push(message.id);
+            this.watchedImagesLink.push(ret.data.link);
+            if (this.watchedImagesID.length > 50) {
+              this.watchedImagesID.shift();
+              this.watchedImagesLink.shift();
+            }
           }
+        } catch (e) {
+          console.log(e);
         }
       }.bind(server)
     ); // Bind server as 'this' in the callback

@@ -117,6 +117,8 @@ module.exports.command = async (message, content, bot, server) => {
     else cache.push(m.content);
   });
 
+  console.log(JSON.stringify(members));
+
   const topNMemberIDs = Object.entries(members)
     .sort(([, a], [, b]) => b - a)
     .map((ent) => ent[0])
