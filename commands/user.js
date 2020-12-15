@@ -136,7 +136,8 @@ module.exports.command = async (message, content, bot, server) => {
     let fire = member && member.roles.cache.has('384286851260743680');
     jp =
       member &&
-      (member.roles.cache.has('196765998706196480') ||
+      ((member.roles.cache.has('196765998706196480') &&
+        !member.roles.cache.has('197100137665921024')) ||
         member.roles.cache.has('292401145752846337'));
     embed.setAuthor(
       `${fire ? '🔥' : ''}Stats for ${user.tag}${

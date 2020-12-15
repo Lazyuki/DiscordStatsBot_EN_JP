@@ -8,7 +8,9 @@ module.exports.isAllowed = (message) => {
 const Util = require('../classes/Util.js');
 
 module.exports.process = (message, server, bot, language) => {
-  let isJapanese = message.member.roles.cache.has('196765998706196480'); // has native japanese
+  let isJapanese =
+    message.member.roles.cache.has('196765998706196480') && // no dual natives
+    !message.member.roles.cache.has('197100137665921024'); // has native japanese
   if (
     (language & Util.LANG.JPN && isJapanese) ||
     (language & Util.LANG.ENG && !isJapanese)

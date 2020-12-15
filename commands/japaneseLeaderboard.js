@@ -47,7 +47,10 @@ module.exports.command = async (message, content, bot, server) => {
           continue;
         }
       }
-      if (!mem.roles.cache.has('196765998706196480')) {
+      if (
+        !member.roles.cache.has('196765998706196480') ||
+        member.roles.cache.has('197100137665921024')
+      ) {
         let jpnUsage = (record.jp / (record.jp + record.en)) * 100;
         if (!jpnUsage) continue;
         result.add(user, jpnUsage);

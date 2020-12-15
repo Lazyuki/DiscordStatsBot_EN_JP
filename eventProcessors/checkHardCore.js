@@ -33,7 +33,8 @@ const Discord = require('discord.js');
 module.exports.process = (message) => {
   let content = message.content;
   let isJapanese =
-    message.member.roles.cache.has('196765998706196480') ||
+    (message.member.roles.cache.has('196765998706196480') && // no dual natives
+      !message.member.roles.cache.has('197100137665921024')) ||
     message.member.roles.cache.has('292401145752846337'); // has native japanese
   if (
     message.channel.id == '225828894765350913' &&
