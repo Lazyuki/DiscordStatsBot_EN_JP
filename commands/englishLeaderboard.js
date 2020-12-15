@@ -48,8 +48,8 @@ module.exports.command = async (message, content, bot, server) => {
         }
       }
       if (
-        member.roles.cache.has('196765998706196480') &&
-        !member.roles.cache.has('197100137665921024')
+        mem.roles.cache.has('196765998706196480') &&
+        !mem.roles.cache.has('197100137665921024')
       ) {
         let enUsage = (record.en / (record.jp + record.en)) * 100;
         if (!enUsage) continue;
