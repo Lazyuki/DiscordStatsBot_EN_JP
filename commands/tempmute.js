@@ -4,16 +4,26 @@ const Util = require('../classes/Util');
 module.exports.name = 'tempMute';
 module.exports.alias = ['tempmute', 'tm', 'shutup', 'timeout'];
 
-function unmute(user_id, server) {
-  server.guild.members
-    .fetch(user_id)
-    .then((member) => {
-      member.roles.remove([CHAT_MUTED, VOICE_BANNED]);
-    })
-    .catch((e) => {
-      // member no longer exists
-    });
-  if (user_id in server.tempmutes) delete server.tempmutes[user_id];
+async function unmute(user_id, server) {
+  let member = server.guild.members.cache.get(user_id);
+  if (!member) {
+    try {
+      member = await server.guuild.members.fetch(user_id);
+    } catch (e) {
+      console.error(`Could not unmute ${user_id}. Failed to fetch member`, e);
+      delete server.tempmutes[user_id];
+      return;
+    }
+  }
+  try {
+    await member.roles.remove([CHAT_MUTED, VOICE_BANNED]);
+    delete server.tempmutes[user_id];
+  } catch (e) {
+    console.error(`Failed to remove tempmute roles for ${user_id}`, e);
+    setTimeout(() => {
+      unmute(user_id, server);
+    }, 180000); // Try 3 minutes later
+  }
 }
 
 module.exports.initialize = (json, server) => {

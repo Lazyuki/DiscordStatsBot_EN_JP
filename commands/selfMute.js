@@ -1,14 +1,26 @@
 module.exports.name = 'selfMute';
 module.exports.alias = ['selfmute', 'sm'];
 
-function unmute(user_id, server) {
-  server.guild.members
-    .fetch(user_id)
-    .then((member) => {
-      member.roles.remove([CHAT_MUTED, VOICE_BANNED]);
-    })
-    .catch(console.error);
-  if (user_id in server.selfmutes) delete server.selfmutes[user_id];
+async function unmute(user_id, server) {
+  let member = server.guild.members.cache.get(user_id);
+  if (!member) {
+    try {
+      member = await server.guuild.members.fetch(user_id);
+    } catch (e) {
+      console.error(`Could not unmute ${user_id}. Failed to fetch member`, e);
+      delete server.selfmutes[user_id];
+      return;
+    }
+  }
+  try {
+    await member.roles.remove([CHAT_MUTED, VOICE_BANNED]);
+    delete server.selfmutes[user_id];
+  } catch (e) {
+    console.error(`Failed to remove selfmute roles for ${user_id}`, e);
+    setTimeout(() => {
+      unmute(user_id, server);
+    }, 180000); // Try 3 minutes later
+  }
 }
 
 module.exports.initialize = (json, server) => {
@@ -81,6 +93,7 @@ module.exports.command = async (message, content, bot, server) => {
   const totalMillis = totalSeconds * 1000;
   const unmuteDateMillis = new Date().getTime() + totalMillis;
   server.selfmutes[member.id] = unmuteDateMillis;
+  server.save();
 
   await message.member.roles.add([CHAT_MUTED, VOICE_BANNED], 'Selfmuted');
   setTimeout(() => unmute(member.id, server), totalMillis);
