@@ -227,10 +227,9 @@ async function postLogs(member, server) {
     }, 5000);
   }
 
-  if (
-    member.guild.members.cache.get('159985870458322944').presence.status ==
-    'offline'
-  ) {
+  const mee = member.guild.members.cache.get('159985870458322944');
+
+  if (!mee || mee.presence.status == 'offline') {
     // mee6
     JHO.send(welcome);
   } else {
