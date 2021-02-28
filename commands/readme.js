@@ -27,7 +27,7 @@ module.exports.command = (message) => {
   }!! 🎉 READ ME!`;
   embed.description =
     '__**[Japanese Starting Guide](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md)**__<:externallink:438354612379189268>';
-  embed.setImage('https://i.imgur.com/7cjLRRM.png');
+  embed.setImage('https://i.imgur.com/MmAIJzT.png');
   embed.addField(
     '**↓Rules↓ ↑Link to Resources↑**',
     '<#189585230972190720>',

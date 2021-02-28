@@ -22,7 +22,7 @@ module.exports.command = (message) => {
   embed.title = `${
     mentioned ? mentioned.user.username + 'さん、' : ''
   }ようこそ！！ 🎉 このサーバーの簡単な説明です`;
-  embed.setImage('https://i.imgur.com/rXLn5Ay.png');
+  embed.setImage('https://i.imgur.com/NmUudeF.png');
   //embed.addField('日本語で雑談', '<#189629338142900224>', true);
   //embed.addField('英語に関する質問', '<#193959229030268938>', true);
   embed.addField(
