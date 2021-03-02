@@ -9,7 +9,7 @@ module.exports.help = '`,fe` explanation of fe';
 
 module.exports.command = async (message) => {
   message.channel.send(
-    "People with a 'Fluent' tag must have a near-native level of English, because what they write is an exemplar of what perfect English looks like. It's important that we set a good example for English learners, which is why it takes some time for people to receive their 'Fluent English' tag! We hope you understand."
+    "People with the 'Fluent' tag must set a good example for English learners. If we see you speak accurately and actively in English, you will receive the tag (may take a while)."
   );
   message.delete();
 };

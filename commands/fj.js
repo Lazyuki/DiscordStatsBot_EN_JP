@@ -9,7 +9,7 @@ module.exports.help = '`,fj` explanation of fj';
 
 module.exports.command = async (message) => {
   message.channel.send(
-    '深緑（日本語が流暢）のタグがお望みなら先ずはモデレーターかWPかの日本人とボイチャしてください。You will be given the Fluent Japanese role when Native Japanese Welcoming Party member or Moderator feels you are fluent, they will also want to talk to you in voice chat first.'
+    '深緑(日本語が流暢)のタグを得るためには、まずは管理者かWelcoming Partyの日本人が、あなたのテキストを読んで流暢だと認める必要があります。FJタグご希望の方は、ボイスチャット上でも日本語が流暢であることを確認させてもらいます。'
   );
   message.delete();
 };
