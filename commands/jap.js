@@ -13,7 +13,7 @@ module.exports.command = async (message) => {
   const embed = new Discord.MessageEmbed();
   embed.description =
     'We avoid "jap" on this server due to its historical use as a racial slur. We prefer "jp", "jpn", or "Japanese". Thanks for understanding.\n' +
-    '([Somme picture examples](https://imgur.com/a/lPVBo2y))\n' +
+    '([Some picture examples](https://imgur.com/a/lPVBo2y))\n' +
     '([Read more here](https://gist.github.com/ScoreUnder/e08b37a8af3c257107fc55fc7a8fcad6))';
   embed.color = Number('0xFF5500');
   message.channel.send({ embed });
