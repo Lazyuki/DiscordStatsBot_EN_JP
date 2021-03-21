@@ -20,6 +20,8 @@ const LANG_ROLES = [
   { abbrev: 'en', name: 'Native English', id: '197100137665921024' },
   { abbrev: 'fe', name: 'Fluent English', id: '241997079168155649' },
   { abbrev: 'ol', name: 'Other Language', id: '248982130246418433' },
+  { abbrev: 'hj', name: 'Heritage Japanese', id: '816895873493499935' },
+  { abbrev: 'aj', name: 'Advanced Japanese', id: '681835604484423693' },
   { abbrev: 'nu', name: 'New User', id: '249695630606336000' },
 ];
 
