@@ -89,6 +89,37 @@ module.exports.command = async (message, content, bot, server) => {
             .setColor('0xDB3C3C'),
         });
         warning.warnMessage += '\n(DM Failed)';
+        if (server.guild.id === '189571157446492161') {
+          message.channel.send(
+            'Would you like to send the warning in <#225828894765350913> and ping them? Type `confirm` or `cancel`'
+          );
+          const filter = (m) => m.member.id == message.author.id;
+          const collector = message.channel.createMessageCollector(filter, {
+            time: 45000,
+          });
+          collector.on('collect', async (m) => {
+            const resp = m.content.toLowerCase();
+            if (['confirm'].includes(resp)) {
+              collector.stop('sent');
+              const botMessage = await server.guild.channels.cache
+                .get('225828894765350913')
+                .send(
+                  `<@${member.id}> We could not send this warning as a DM because of your privacy settings. Contact <@713245294657273856> if you think this is a mistake.`,
+                  { embed }
+                );
+              const successEmbed = new Discord.MessageEmbed();
+              successEmbed.description = `✅ Warning sent in <#225828894765350913>. ([Jump](${botMessage.url}))`;
+              successEmbed.color = Number('0x4bf542');
+              message.channel.send({ embed: successEmbed });
+              warning.warnMessage +=
+                '(Messaged in <#225828894765350913> instead)';
+            } else if (resp === 'cancel') {
+              collector.stop('cancelled');
+              m.react('✅');
+              return;
+            }
+          });
+        }
       });
   } else {
     message.channel.send({
