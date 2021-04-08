@@ -47,7 +47,10 @@ module.exports.command = async (message, content, bot, server) => {
       let embed = new Discord.MessageEmbed();
       let dateStr = dateFormat(date, "UTC:ddd mmm dS, yyyy 'at' h:MM TT");
       embed.title = 'Creation time in UTC and your local time';
-      embed.setAuthor(users.cache.get(u).tag, users.cache.get(u).avatarURL());
+      embed.setAuthor(
+        server.guild.members.cache.get(u).tag,
+        server.guild.members.cache.get(u).avatarURL()
+      );
       embed.description =
         'Snowflake ID: ' +
         u +
