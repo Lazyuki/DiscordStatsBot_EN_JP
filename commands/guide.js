@@ -7,7 +7,7 @@ module.exports.isAllowed = (message, server) => {
 };
 
 module.exports.help =
-  '`,g [ guides | kana | kanji | grammar | vocab | IME | dictionary | anki ]` Japanese learning guide';
+  '`,g [ guides | kana | kanji | grammar | vocab | IME | dictionary | anki | pronunciation | learn | ]` Japanese learning guide';
 
 const Discord = require('discord.js');
 const externalLink = '<:externallink:438354612379189268>';
@@ -28,6 +28,11 @@ module.exports.command = (message, content) => {
     embed.addField(
       'A well written DJT guide',
       'https://djtguide.neocities.org/guide.html',
+      false
+    );
+    embed.addField(
+      'Guide for beginners written by Bonyari Boy',
+      'https://docs.google.com/document/d/19FEIOJWbLhJQ-AmepxFBMC2ebhJJr9RBUMfMeatYuq8/edit?usp=sharing',
       false
     );
   } else if (
@@ -125,6 +130,24 @@ module.exports.command = (message, content) => {
     embed.url = 'https://itazuraneko.neocities.org/learn/anki.html';
     embed.description =
       'Anki is a free and open-source flashcard program that utilizes spaced repetition.';
+  } else if (content === 'audio' || content === 'pronunciation') {
+    embed.title = `__**Pronunciation**__`;
+    embed.description = 'Look up pronunciations';
+    embed.addField(
+      'Forvo: Pronunciation audio examples given by native speakers',
+      'https://forvo.com/languages/ja/',
+      true
+    );
+    embed.addField(
+      'YouGlish: Search YouTube videos for instances of words',
+      'https://youglish.com/japanese',
+      true
+    );
+  } else if (content.includes('bon') || content === 'learn') {
+    embed.title = `**How to learn Japanese efficiently** ${externalLink}`;
+    embed.url =
+      'https://docs.google.com/document/d/19FEIOJWbLhJQ-AmepxFBMC2ebhJJr9RBUMfMeatYuq8/edit?usp=sharing';
+    embed.setFooter(`Written by Bonyari Boy`);
   } else {
     // embed.title = `__**New to Japanese? Start here! ${externalLink}**__`;
     // embed.url = 'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#beginner-guide';
