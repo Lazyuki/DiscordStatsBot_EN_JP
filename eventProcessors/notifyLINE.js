@@ -47,8 +47,9 @@ module.exports.process = async (message, server, bot) => {
   const skyz = await server.guild.member(skyzID);
 
   if (
-    me.presence.status == 'offline' &&
-    (message.mentions.users.has(bot.owner_ID) || hasActiveStaff)
+    (me.presence.status == 'offline' &&
+      (message.mentions.users.has(bot.owner_ID) || hasActiveStaff)) ||
+    (!me.roles.cache.has(activeStaff) && hasActiveStaff)
   ) {
     // If I'm offline
     notify(message, config.LINEnotifyToken);
