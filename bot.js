@@ -3,6 +3,7 @@ const init = require('./init.json');
 const Server = require('./classes/Server.js');
 const midnightTask = require('./classes/MidnightTask.js');
 const hourlyTask = require('./classes/HourlyTask.js');
+const lineNotify = require('./eventProcessors/notifyLINE');
 let cmds = require('./cmds.js');
 const commands = cmds.commands;
 const inits = cmds.inits;
@@ -58,7 +59,18 @@ bot.on('ready', () => {
 });
 
 bot.on('message', async (message) => {
-  if (message.author.bot || message.system) return; // Ignore messages by bots and system
+  if (message.author.bot || message.system) {
+    // Cirilla pinging Active staff
+    if (
+      message.author.id === '581691615010226188' &&
+      message.content.includes('240647591770062848')
+    ) {
+      if ((lineNotify.isAllowed(message, bot.servers[message.guild.id]), bot)) {
+        lineNotify.process(message, bot.servers[message.guild.id], bot);
+      }
+    }
+    return;
+  } // Ignore messages by bots and system
   if (message.channel.type === 'dm') {
     // Direct message.
     respondDM(message);
