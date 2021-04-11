@@ -94,7 +94,11 @@ module.exports.command = async (message, content, bot, server) => {
     if (authorId in members) {
       members[authorId] += penalty;
     } else {
-      const innatePenalty = getInnatePenalty(m.member);
+      let innatePenalty = getInnatePenalty(m.member);
+      const msgs = server.users[authorId].thirty;
+      if (msgs > 1000) innatePenalty -= 10;
+      else if (msgs > 300) innatePenalty -= 5;
+      else if (msgs > 100) innatePenalty -= 2;
       members[authorId] = penalty + innatePenalty;
     }
     if (m.mentions.roles.has(ACTIVE_STAFF)) {
