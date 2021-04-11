@@ -55,44 +55,52 @@ module.exports.command = async (message, content, bot, server) => {
   let targetID;
   let targetMember;
 
-  const isSearch = content.match(searchRegex);
-  if (isSearch) {
-    const log = await message.channel.messages.fetch();
-    const nuID = getRole('abbrev', 'nu').id;
-
-    for (let msg of log.values()) {
-      const mem = msg.member;
-      if (mem && mem.roles.cache.has(nuID)) {
-        targetMember = mem;
-      }
-    }
-    if (!targetMember) {
-      message.channel.send('Failed to find a new user in this channel');
-      return;
-    }
-  } else if (content) {
-    const numMatch = content.match(numRegex);
-    const idMatch = content.match(Util.REGEX_RAW_ID);
-    if (message.mentions.members.size) {
-      targetMember = message.mentions.members.first();
-    } else if (idMatch) {
-      targetID = idMatch[0];
-    } else if (numMatch) {
-      const num = numMatch[0];
-      targetID = server.newUsers[parseInt(num) - 1];
-    } else {
-      message.react('❓');
-      return;
-    }
-  } else {
-    targetID = server.newUsers[0];
+  if (message.reference) {
+    const reference = await message.channel.messages.fetch(
+      message.reference.messageID
+    );
+    targetMember = reference.member;
   }
 
   if (!targetMember) {
-    targetMember = await server.guild.member(targetID);
+    const isSearch = content.match(searchRegex);
+    if (isSearch) {
+      const log = await message.channel.messages.fetch();
+      const nuID = getRole('abbrev', 'nu').id;
+
+      for (let msg of log.values()) {
+        const mem = msg.member;
+        if (mem && mem.roles.cache.has(nuID)) {
+          targetMember = mem;
+        }
+      }
+      if (!targetMember) {
+        message.channel.send('Failed to find a new user in this channel');
+        return;
+      }
+    } else if (content) {
+      const numMatch = content.match(numRegex);
+      const idMatch = content.match(Util.REGEX_RAW_ID);
+      if (message.mentions.members.size) {
+        targetMember = message.mentions.members.first();
+      } else if (idMatch) {
+        targetID = idMatch[0];
+      } else if (numMatch) {
+        const num = numMatch[0];
+        targetID = server.newUsers[parseInt(num) - 1];
+      } else {
+        message.react('❓');
+        return;
+      }
+    } else {
+      targetID = server.newUsers[0];
+    }
     if (!targetMember) {
-      message.channel.send('Member not found');
-      return;
+      targetMember = await server.guild.member(targetID);
+      if (!targetMember) {
+        message.channel.send('Member not found');
+        return;
+      }
     }
   }
 
