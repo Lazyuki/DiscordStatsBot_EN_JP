@@ -26,7 +26,9 @@ module.exports.command = async (message, content, bot, server) => {
   const channel = message.channel;
   const users = message.mentions.users.keyArray();
   content = content.replace(Util.REGEX_USER, '');
-  const message_ids = content.match(Util.REGEX_MESSAGE_ID);
+  const message_ids = message.reference
+    ? [message.reference.messageID]
+    : content.match(Util.REGEX_MESSAGE_ID);
   let num_of_messages = (() => {
     const n = parseInt(content.split(' ')[0]);
     if (n && n > 0 && n <= 25) return n;

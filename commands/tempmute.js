@@ -44,7 +44,7 @@ module.exports.isAllowed = (message, server) => {
 };
 
 module.exports.help =
-  'Mute users temporarily. `,tm <mentions or IDs> [time. Defaults to 5m] [reason]`\nExample: `,tm @someone @sometwo 3d1h30m shhhhhhhh`';
+  'Mute users temporarily. `,tm <mentions or IDs> [time. Defaults to 15m] [reason]`\nExample: `,tm @someone @sometwo 3d1h30m shhhhhhhh`';
 
 const CHAT_MUTED = '259181555803619329';
 const VOICE_BANNED = '327917620462354442';
@@ -103,7 +103,7 @@ module.exports.command = async (message, content, bot, server) => {
   }
   let timeMatches = TIME_REGEX.exec(restContent);
   if (!timeMatches[0]) {
-    timeMatches = [null, 0, 0, 5, 0];
+    timeMatches = [null, 0, 0, 15, 0];
   }
   let days = parseInt(timeMatches[1] || 0);
   let hours = parseInt(timeMatches[2] || 0);
