@@ -21,7 +21,7 @@ module.exports.command = async (message, content, bot, server) => {
       const warns = warnings[u].length;
       const member = server.guild.members.cache.get(u);
       list.push(
-        `<@${u}> ${member ? member.user.tag : ''}: ${warns} warning${
+        `<@${u}> ${member ? member.user.tag : 'User Left'}: ${warns} warning${
           warns === 1 ? '' : 's'
         }`
       );
