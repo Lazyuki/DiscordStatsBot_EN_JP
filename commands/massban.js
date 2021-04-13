@@ -18,7 +18,7 @@ module.exports.command = async (message, content, bot, server) => {
   const badPeople = [];
   const executor = message.author;
   let deleteDays = 1;
-  const reason = 'Mass Ban';
+  const reason = 'Raid Mass Ban';
   let endID = null;
   const endFlag = content.match(/--end\s+([0-9]{17,21})/);
   if (endFlag) {
