@@ -65,7 +65,7 @@ bot.on('message', async (message) => {
       message.author.id === '581691615010226188' &&
       message.content.includes('240647591770062848')
     ) {
-      if ((lineNotify.isAllowed(message, bot.servers[message.guild.id]), bot)) {
+      if (lineNotify.isAllowed(message, bot.servers[message.guild.id], bot)) {
         lineNotify.process(message, bot.servers[message.guild.id], bot);
       }
     }
