@@ -7,7 +7,7 @@ module.exports.alias = ['warnlist', 'warnlog', 'wl'];
 module.exports.isAllowed = (message, server) => {
   return (
     server.hiddenChannels.includes(message.channel.id) ||
-    ['755269708579733626', '697862475579785216'].includes(message.channel.id)
+    message.channel.parentID === '360570306131132417'
   );
 };
 
