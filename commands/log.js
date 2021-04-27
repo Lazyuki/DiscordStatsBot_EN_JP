@@ -5,7 +5,12 @@ module.exports.name = 'logwarning';
 module.exports.alias = ['log', 'silentwarn', 'silent'];
 
 module.exports.isAllowed = (message, server) => {
-  return server.hiddenChannels.includes(message.channel.id);
+  return (
+    server.hiddenChannels.includes(message.channel.id) ||
+    (server.guild.id === '189571157446492161' &&
+      (message.member.hasPermission('BAN_MEMBERS') ||
+        message.member.roles.cache.has('543721608506900480')))
+  );
 };
 
 module.exports.help = 'Warn a user silently `,log <User> <Warning message>';
