@@ -73,7 +73,7 @@ module.exports.command = async (message, content, bot, server) => {
   for (let user in users) {
     const msgs = users[user].totalStats();
     const vcMins = users[user].voiceTime();
-    if (msgs >= msgLimit || vcMins >= vcLimit * 60) {
+    if (msgs > msgLimit || vcMins > vcLimit * 60) {
       const mem = server.guild.member(user);
       if (mem) {
         const roles = mem.roles;
