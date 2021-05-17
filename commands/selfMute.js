@@ -47,7 +47,7 @@ module.exports.isAllowed = (message, server) => {
   return (
     server.guild.id === '189571157446492161' ||
     (server.selfmuteRoles && server.selfmuteRoles.length) ||
-    'set' in message.content
+    message.content.includes('set')
   );
 };
 
