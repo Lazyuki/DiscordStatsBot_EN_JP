@@ -46,7 +46,8 @@ module.exports.initialize = (json, server) => {
 module.exports.isAllowed = (message, server) => {
   return (
     server.guild.id === '189571157446492161' ||
-    (server.selfmuteRoles && server.selfmuteRoles.length)
+    (server.selfmuteRoles && server.selfmuteRoles.length) ||
+    'set' in message.content
   );
 };
 
