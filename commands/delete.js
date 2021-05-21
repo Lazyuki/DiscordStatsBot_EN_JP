@@ -122,8 +122,8 @@ module.exports.command = async (message, content, bot, server) => {
         `Message by ${msg.author.tag} (${msg.author.id}):`,
         `${
           msg.attachments.size
-            ? `File ${imgCount - 1} ${msg.content}`
-            : msg.content || '**empty**'
+            ? `File ${imgCount - 1} ${msg.content.slice(0, 1000)}`
+            : msg.content.slice(0, 1023) || '**empty**'
         }`,
         false
       );
