@@ -146,18 +146,6 @@ module.exports.command = async (message, content, bot, server) => {
   embed.timestamp = new Date();
   for (const member of members) {
     server.tempmutes[member.id] = unmuteDateMillis;
-
-    try {
-      if (member.voice.channel) {
-        await member.voice.kick();
-      }
-      await member.roles.add([CHAT_MUTED, VOICE_BANNED], 'Temp Muted');
-      await member.send({ embed });
-    } catch (e) {
-      // already muted
-    }
-
-    Util.runAt(new Date(unmuteDateMillis), () => unmute(member.id, server));
     const warning = {
       issued: message.createdTimestamp,
       issuer: message.author.id,
@@ -169,6 +157,58 @@ module.exports.command = async (message, content, bot, server) => {
     } else {
       server.warnlist[member.id] = [warning];
     }
+
+    try {
+      if (member.voice.channel) {
+        await member.voice.kick();
+      }
+      await member.roles.add([CHAT_MUTED, VOICE_BANNED], 'Temp Muted');
+      member.send({ embed }).catch(() => {
+        if (message.channel.parentID === '360570306131132417') {
+          message.channel.send({
+            embed: new Discord.MessageEmbed()
+              .setDescription(
+                `Failed to DM ${member.user.tag}. The user couldn't receive the tempmute reason.`
+              )
+              .setColor('0xDB3C3C'),
+          });
+          warning.warnMessage += '\n(DM Failed)';
+          message.channel.send(
+            'Would you like to send the reason in <#225828894765350913> and ping them? Type `confirm` or `cancel`'
+          );
+          const filter = (m) => m.member.id == message.author.id;
+          const collector = message.channel.createMessageCollector(filter, {
+            time: 45000,
+          });
+          collector.on('collect', async (m) => {
+            const resp = m.content.toLowerCase();
+            if (['confirm'].includes(resp)) {
+              collector.stop('sent');
+              const botMessage = await server.guild.channels.cache
+                .get('225828894765350913')
+                .send(
+                  `<@${member.id}> We could not send this tempmute reason to you because of your privacy settings. Contact <@713245294657273856> if you think this is a mistake.`,
+                  { embed }
+                );
+              const successEmbed = new Discord.MessageEmbed();
+              successEmbed.description = `✅ Reason sent in <#225828894765350913>. ([Jump](${botMessage.url}))`;
+              successEmbed.color = Number('0x4bf542');
+              message.channel.send({ embed: successEmbed });
+              warning.warnMessage +=
+                '(Messaged in <#225828894765350913> instead)';
+            } else if (resp === 'cancel') {
+              collector.stop('cancelled');
+              m.react('✅');
+              return;
+            }
+          });
+        }
+      });
+    } catch (e) {
+      // already muted
+    }
+
+    Util.runAt(new Date(unmuteDateMillis), () => unmute(member.id, server));
   }
   await message.channel.send(
     `✅ Muted ${members.map((m) => m).join(', ')} for ${durationString}${
