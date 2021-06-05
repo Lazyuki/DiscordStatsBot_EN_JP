@@ -52,11 +52,42 @@ module.exports.isAllowed = (message, server) => {
 };
 
 module.exports.help =
-  "Mute yourself (text and voice) in the server. Mods can't unmute you so don't message them. `,selfmute 1d20h43m4s`";
+  "Mute yourself (text and voice) in the server. Mods can't unmute you so don't message them. `,selfmute 1d20h43m4s`.\nYou can delay it by using `in` like `,sm 1d10m in 4h`. The delay has to be under 24h.";
 
 const TIME_REGEX = /([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?/;
 const SECRET_REGEX = /remove <?@?!?([0-9]+)>?/;
 const SETTINGS_REGEX = /set (?:<?@?&?([0-9]+)>? ?)+/;
+
+function strToTime(str) {
+  let [all, days, hours, minutes, seconds] = TIME_REGEX.exec(str);
+  if (!all) {
+    return null;
+  }
+  [days, hours, minutes, seconds] = [days, hours, minutes, seconds].map((s) =>
+    parseInt(s || '0')
+  );
+
+  if (seconds >= 60) {
+    minutes += Math.floor(seconds / 60);
+    seconds %= 60;
+  }
+  if (minutes >= 60) {
+    hours += Math.floor(minutes / 60);
+    minutes %= 60;
+  }
+  if (hours >= 24) {
+    days += Math.floor(hours / 24);
+    hours %= 24;
+  }
+  const totalSeconds = seconds + minutes * 60 + hours * 3600 + days * 86400;
+  return {
+    totalSeconds,
+    days,
+    hours,
+    minutes,
+    seconds,
+  };
+}
 
 module.exports.command = async (message, content, bot, server) => {
   let matches = SECRET_REGEX.exec(content);
@@ -77,31 +108,36 @@ module.exports.command = async (message, content, bot, server) => {
     return;
   }
 
-  matches = TIME_REGEX.exec(content);
-  if (!matches) {
+  let delayMillis = 0;
+
+  if (content.includes('in')) {
+    const split = content.split('in');
+    content = split[0];
+    const delay = strToTime(split[1]);
+    if (!delay) {
+      message.channel.send(
+        'Invalid delay syntax. Only `d`, `h`, `m`, and `s` are supported. e.g. `,sm 1d in 3h10m`'
+      );
+      return;
+    }
+    if (delay.totalSeconds > 86400) {
+      message.channel.send("You can't delay selfmute for more than 24 hours");
+      return;
+    }
+    delayMillis = delay.totalSeconds * 1000;
+  }
+
+  const time = strToTime(content);
+
+  if (!time) {
     message.channel.send(
-      'Invalid time syntax. Only `d`, `h`, `m`, and `s` are supported. '
+      'Invalid time syntax. Only `d`, `h`, `m`, and `s` are supported. e.g. `,sm 1d3h10m`'
     );
     return;
   }
+  const { totalSeconds, days, hours, minutes, seconds } = time;
   const member = message.member;
-  let days = parseInt(matches[1] || 0);
-  let hours = parseInt(matches[2] || 0);
-  let minutes = parseInt(matches[3] || 0);
-  let seconds = parseInt(matches[4] || 0);
-  if (seconds >= 60) {
-    minutes += Math.floor(seconds / 60);
-    seconds %= 60;
-  }
-  if (minutes >= 60) {
-    hours += Math.floor(minutes / 60);
-    minutes %= 60;
-  }
-  if (hours >= 24) {
-    days += Math.floor(hours / 24);
-    hours %= 24;
-  }
-  const totalSeconds = seconds + minutes * 60 + hours * 3600 + days * 86400;
+
   if (totalSeconds > 259200) {
     message.channel.send("You can't mute yourself for more than 3 days");
     return;
@@ -114,14 +150,22 @@ module.exports.command = async (message, content, bot, server) => {
   server.selfmutes[member.id] = unmuteDateMillis;
   server.save();
 
-  await message.member.roles.add(server.selfmuteRoles, 'Selfmuted');
-  setTimeout(() => unmute(member.id, server), totalMillis);
+  setTimeout(() => {
+    (async () => {
+      await message.member.roles.add(server.selfmuteRoles, 'Selfmuted');
+      setTimeout(() => unmute(member.id, server), totalMillis);
+    })();
+  }, delayMillis);
+
+  if (delayMillis) {
+    message.channel.send(`✅ ${message.author.username} selfmute scheduled`);
+  }
 
   message.channel.send(
-    `✅ ${message.author.username} self muted for ${
-      days ? `${days} days ` : ''
-    }${hours ? `${hours} hours ` : ''}${minutes ? `${minutes} minutes ` : ''}${
-      seconds ? `${seconds} seconds` : ''
-    } `
+    `✅ ${message.author.username} selfmuted for ${
+      days ? `${days} day${days === 1 ? '' : 's'} ` : ''
+    }${hours ? `${hours} hour${hours === 1 ? '' : 's'} ` : ''}${
+      minutes ? `${minutes} minute${minutes === 1 ? '' : 's'} ` : ''
+    }${seconds ? `${seconds} second${seconds === 1 ? '' : 's'}` : ''} `
   );
 };
