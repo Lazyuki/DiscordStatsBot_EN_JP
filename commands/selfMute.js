@@ -112,8 +112,8 @@ module.exports.command = async (message, content, bot, server) => {
 
   if (content.includes('in')) {
     const split = content.split('in');
-    content = split[0];
-    const delay = strToTime(split[1]);
+    content = split[0].trim();
+    const delay = strToTime(split[1].trim());
     if (!delay) {
       message.channel.send(
         'Invalid delay syntax. Only `d`, `h`, `m`, and `s` are supported. e.g. `,sm 1d in 3h10m`'
