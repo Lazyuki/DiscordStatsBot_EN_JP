@@ -153,6 +153,15 @@ module.exports.command = async (message, content, bot, server) => {
   setTimeout(() => {
     (async () => {
       await message.member.roles.add(server.selfmuteRoles, 'Selfmuted');
+      message.channel.send(
+        `✅ ${message.author.username} selfmuted for ${
+          days ? `${days} day${days === 1 ? '' : 's'} ` : ''
+        }${hours ? `${hours} hour${hours === 1 ? '' : 's'} ` : ''}${
+          minutes ? `${minutes} minute${minutes === 1 ? '' : 's'} ` : ''
+        }${seconds ? `${seconds} second${seconds === 1 ? '' : 's'}` : ''} ${
+          delayMillis ? ' (as scheduled)' : ''
+        }`
+      );
       setTimeout(() => unmute(member.id, server), totalMillis);
     })();
   }, delayMillis);
@@ -160,12 +169,4 @@ module.exports.command = async (message, content, bot, server) => {
   if (delayMillis) {
     message.channel.send(`✅ ${message.author.username} selfmute scheduled`);
   }
-
-  message.channel.send(
-    `✅ ${message.author.username} selfmuted for ${
-      days ? `${days} day${days === 1 ? '' : 's'} ` : ''
-    }${hours ? `${hours} hour${hours === 1 ? '' : 's'} ` : ''}${
-      minutes ? `${minutes} minute${minutes === 1 ? '' : 's'} ` : ''
-    }${seconds ? `${seconds} second${seconds === 1 ? '' : 's'}` : ''} `
-  );
 };
