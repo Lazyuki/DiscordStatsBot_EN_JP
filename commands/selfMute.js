@@ -158,7 +158,7 @@ module.exports.command = async (message, content, bot, server) => {
           days ? `${days} day${days === 1 ? '' : 's'} ` : ''
         }${hours ? `${hours} hour${hours === 1 ? '' : 's'} ` : ''}${
           minutes ? `${minutes} minute${minutes === 1 ? '' : 's'} ` : ''
-        }${seconds ? `${seconds} second${seconds === 1 ? '' : 's'}` : ''} ${
+        }${seconds ? `${seconds} second${seconds === 1 ? '' : 's'}` : ''}${
           delayMillis ? ' (as scheduled)' : ''
         }`
       );
