@@ -1,6 +1,6 @@
 module.exports.name = 'move';
 
-module.exports.alias = ['move'];
+module.exports.alias = ['move', 'mv'];
 
 module.exports.isAllowed = (message, server) => {
   return server.guild.id == '189571157446492161';
