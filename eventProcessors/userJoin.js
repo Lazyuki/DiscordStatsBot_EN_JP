@@ -271,6 +271,39 @@ async function postLogsDDJ(member, server) {
   let embed = joinNotif(member, inv);
   DDJLog.send({ embed });
 }
+
+async function banBot(member, server) {
+  if (member.username.includes('twitter.com/h0nde')) {
+    await member.guild.members.ban(member, { days: 1, reason: 'fuck off bot' });
+  }
+  let channel;
+  if (server.guild.id === '189571157446492161') {
+    channel = server.guild.channels.cache.get('189571157446492161');
+  } else if (server.guild.id === '292389599982911488') {
+    channel = server.guild.channels.cache.get('292389599982911488');
+  }
+  if (channel) {
+    channel
+      .awaitMessages(
+        (m) => {
+          if (m.author.bot) {
+            if (
+              m.content.includes(member.id) ||
+              m.content.includes('twitter.com')
+            ) {
+              m.delete();
+              return true;
+            }
+          }
+          return false;
+        },
+        { max: 2, time: 10000, errors: ['time'] }
+      )
+      .then(() => {})
+      .catch(() => {});
+  }
+}
+
 module.exports.process = async (member, server) => {
   if (server.newUsers.unshift(member.id) > 3) server.newUsers.pop();
   if (tempList.includes(member.id)) {
@@ -280,4 +313,5 @@ module.exports.process = async (member, server) => {
     setTimeout(() => postLogs(member, server), 500);
   if (member.guild.id == '453115403829248010')
     setTimeout(() => postLogsDDJ(member, server), 500);
+  await banBot(member, server);
 };
