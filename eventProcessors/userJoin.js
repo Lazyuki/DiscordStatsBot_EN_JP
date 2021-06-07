@@ -303,6 +303,8 @@ async function banBot(member, server) {
       )
       .then(() => {})
       .catch(() => {});
+    const m = channel.messages.cache.find((m) => m.content.includes(member.id));
+    if (m) m.delete();
   }
 }
 
