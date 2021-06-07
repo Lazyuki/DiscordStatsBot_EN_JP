@@ -275,6 +275,8 @@ async function postLogsDDJ(member, server) {
 async function banBot(member, server) {
   if (member.user.username.includes('twitter.com/h0nde')) {
     await member.guild.members.ban(member, { days: 1, reason: 'fuck off bot' });
+  } else {
+    return;
   }
   let channel;
   if (server.guild.id === '189571157446492161') {
