@@ -233,6 +233,7 @@ async function postLogs(member, server) {
     // mee6
     JHO.send(welcome);
   } else {
+    if (member.user.username.includes('twitter.com')) return;
     setTimeout(async () => {
       let msgs = await JHO.messages.fetch({ limit: 50 });
       for (let [, msg] of msgs) {
