@@ -233,7 +233,7 @@ async function postLogs(member, server) {
     // mee6
     JHO.send(welcome);
   } else {
-    if (member.user.username.includes('twitter.com')) return;
+    if (member.user.username.toLowerCase().includes('twitter.com')) return;
     setTimeout(async () => {
       let msgs = await JHO.messages.fetch({ limit: 50 });
       for (let [, msg] of msgs) {
@@ -274,7 +274,7 @@ async function postLogsDDJ(member, server) {
 }
 
 async function banBot(member, server) {
-  if (member.user.username.includes('twitter.com/h0nde')) {
+  if (member.user.username.toLowerCase().includes('twitter.com')) {
     await member.guild.members.ban(member, { days: 1, reason: 'fuck off bot' });
   } else {
     return;
@@ -292,7 +292,7 @@ async function banBot(member, server) {
           if (m.author.bot) {
             if (
               m.content.includes(member.id) ||
-              m.content.includes('twitter.com')
+              m.content.toLowerCase().includes('twitter.com')
             ) {
               m.delete();
               return true;
