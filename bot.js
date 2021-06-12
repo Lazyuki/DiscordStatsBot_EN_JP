@@ -82,6 +82,10 @@ bot.on('message', async (message) => {
       if (ejlxMember.roles.cache.has('645021058184773643')) {
         if (message.content.toLowerCase().includes('potato')) {
           ejlxMember.roles.remove('645021058184773643');
+          respondDM(
+            message,
+            'Thanks for reading the rules! You can now head over to <#189571157446492161> and state your native language.'
+          );
           return;
         } else {
           respondDM(message, 'Hmm not quite...');
