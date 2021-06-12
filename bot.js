@@ -4,6 +4,7 @@ const Server = require('./classes/Server.js');
 const midnightTask = require('./classes/MidnightTask.js');
 const hourlyTask = require('./classes/HourlyTask.js');
 const lineNotify = require('./eventProcessors/notifyLINE');
+const sendWelcome = require('./eventProcessors/userJoin').sendJHOWelcome;
 let cmds = require('./cmds.js');
 const commands = cmds.commands;
 const inits = cmds.inits;
@@ -86,6 +87,7 @@ bot.on('message', async (message) => {
             message,
             'Thanks for reading the rules! You can now head over to <#189571157446492161> and state your native language.'
           );
+          sendWelcome(ejlxMember);
           return;
         } else {
           respondDM(message, 'Hmm not quite...');

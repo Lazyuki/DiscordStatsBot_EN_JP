@@ -20,6 +20,7 @@ module.exports.initialize = async (json, server) => {
     DDJLog = server.guild.channels.cache.get('453125855523241984');
   }
 };
+
 module.exports.isAllowed = () => {
   return true;
 };
@@ -44,6 +45,11 @@ function generateSnowflake(date) {
   )}0000100000000000000000`;
   return Long.fromString(BINARY, 2).toString();
 }
+
+module.exports.sendJHOWelcome = (member) => {
+  const welcome = `Welcome ${member}. Please read <#189585230972190720> and tell us what your native language is!\n${member}さん、ようこそ! あなたの母語を教えてください! 注意事項は<#189585230972190720>に書いてあります。<@&357449148405907456>`;
+  JHO.send(welcome);
+};
 
 function generateDiffStr(diffMillis) {
   const absDiff = Math.abs(diffMillis);
