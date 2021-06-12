@@ -73,6 +73,25 @@ bot.on('message', async (message) => {
   } // Ignore messages by bots and system
   if (message.channel.type === 'dm') {
     // Direct message.
+    // EJLX user
+    const ejlxMember = bot.servers[
+      '189571157446492161'
+    ].guild.members.cache.get(message.author.id);
+    if (ejlxMember) {
+      // Check for stage role
+      if (ejlxMember.roles.cache.has('645021058184773643')) {
+        if (message.content.toLowerCase().includes('potato')) {
+          ejlxMember.roles.remove('645021058184773643');
+          return;
+        } else {
+          respondDM(message, 'Hmm not quite...');
+          return;
+        }
+      } else if (message.content.toLowerCase().includes('potato')) {
+        respondDM(message, 'You already have access to the entire server');
+        return;
+      }
+    }
     respondDM(message);
     return;
   }
@@ -257,14 +276,11 @@ bot.on('guildDelete', (guild) => {
 });
 
 // Respond to DMs since it's not supported there
-function respondDM(message) {
-  let msgs = [
-    "Come on... I'm not available here... \n https://media3.giphy.com/media/mfGYunx8bcWJy/giphy.gif",
-    '*sigh* Why did you PM me https://68.media.tumblr.com/d0238a0224ac18b47d1ac2fbbb6dd168/tumblr_nselfnnY3l1rpd9dfo1_250.gif',
-    "I don't work here ¯\\_(ツ)_/¯ http://cloud-3.steamusercontent.com/ugc/576816221180356023/FF4FF60F13F2A773123B3B26A19935944480F510/",
-  ];
-  let msg = msgs[Math.floor(Math.random() * msgs.length)];
-  message.channel.send(msg);
+function respondDM(
+  message,
+  str = 'Please contact mods if you need to discuss something'
+) {
+  message.channel.send(str);
 }
 
 process.on('unhandledRejection', console.dir); // Show stack trace on unhandled rejection.
