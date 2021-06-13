@@ -240,7 +240,8 @@ async function postLogs(member, server) {
     JHO.send(welcome);
   } else {
     if (member.user.username.toLowerCase().includes('twitter.com')) return;
-    if (member.roles.cache.has('852380454546964490')) return; // Stage Visitor
+    if (member.guild.member(member.id).roles.cache.has('852380454546964490'))
+      return; // Stage Visitor
     setTimeout(async () => {
       let msgs = await JHO.messages.fetch({ limit: 50 });
       for (let [, msg] of msgs) {
