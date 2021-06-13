@@ -241,8 +241,11 @@ async function postLogs(member, server) {
   } else {
     if (member.user.username.toLowerCase().includes('twitter.com')) return;
     setTimeout(async () => {
-      if (member.guild.member(member.id).roles.cache.has('852380454546964490'))
+      if (
+        member.guild.member(member.id).roles.cache.has('645021058184773643')
+      ) {
         return; // Stage Visitor
+      }
       let msgs = await JHO.messages.fetch({ limit: 50 });
       for (let [, msg] of msgs) {
         if (
