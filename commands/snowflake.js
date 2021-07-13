@@ -79,7 +79,9 @@ module.exports.command = async (message, content, bot, server) => {
     }
     let dateStr = dateFormat(date, "UTC:ddd mmm dS, yyyy 'at' h:MM TT");
     embed.title = 'Creation time in UTC and your local time';
-    embed.description = `Snowflake ID: ${id}\nUnix Time in milliseconds: ${date.getTime()}`;
+    embed.description = `Snowflake ID: ${id}\nUnix Time in milliseconds: ${date.getTime()}\nYour Local Time: <t:${Math.floor(
+      date.getTime() / 1000
+    )}:F>`;
     embed.setFooter(`UTC | ${dateStr} --- Local`);
     embed.color = Number('0x3A8EDB');
     embed.timestamp = date;
