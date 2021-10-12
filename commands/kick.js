@@ -145,6 +145,7 @@ module.exports.command = async (message, content, bot, server) => {
       const actualBanned = badPeople.filter((p) => !failedBans.includes(p));
       message.channel.send('✅ Kicked');
       const agt = server.guild.channels.cache.get('755269708579733626');
+      if (!agt) return;
       let embed = new Discord.MessageEmbed();
       let date = new Date();
       embed.setAuthor(`${message.author.tag}`, message.author.avatarURL());
