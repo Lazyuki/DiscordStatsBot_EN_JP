@@ -57,7 +57,7 @@ module.exports.command = async (message, content, bot, server) => {
     );
     return;
   }
-  const bannedPeople = badPeople.map((id) => `<@${id}>`).join('\n');
+  const bannedPeople = badMembers.map((mem) => `<@${mem.id}>`).join('\n');
   const failedBans = [];
 
   let banMessage = `<:hypergeralthinkban:443803651325034507>  **You are kicking**  <:hypergeralthinkban:443803651325034507>\n\n${bannedPeople}\n\n__Reason__: ${reason}\nType \`confirm\` or \`cancel\``;
@@ -82,7 +82,7 @@ module.exports.command = async (message, content, bot, server) => {
             );
           }
           try {
-            await server.guild.members.kick(mem, {
+            await mem.kick({
               reason: auditLogReason,
             });
             someBan = true;
