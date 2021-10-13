@@ -82,9 +82,7 @@ module.exports.command = async (message, content, bot, server) => {
             );
           }
           try {
-            await mem.kick({
-              reason: auditLogReason,
-            });
+            await mem.kick(auditLogReason);
             someBan = true;
             const warning = {
               issued: message.createdTimestamp,
@@ -100,30 +98,6 @@ module.exports.command = async (message, content, bot, server) => {
           } catch (e) {
             await message.channel.send(`Failed to kick ${mem}`);
             failedBans.push(mem.id);
-          }
-        })
-      );
-      await Promise.all(
-        badIDs.map(async (id) => {
-          try {
-            await server.guild.members.kick(id, {
-              reason: auditLogReason,
-            });
-            someBan = true;
-            const warning = {
-              issued: message.createdTimestamp,
-              issuer: message.author.id,
-              link: message.url,
-              warnMessage: 'Kicked: ' + reason,
-            };
-            if (server.warnlist[id]) {
-              server.warnlist[id].push(warning);
-            } else {
-              server.warnlist[id] = [warning];
-            }
-          } catch (e) {
-            await message.channel.send(`Failed to kick <@${id}>`);
-            failedBans.push(id);
           }
         })
       );
