@@ -1,0 +1,36 @@
+// Server ID
+export const EJLX = "189571157446492161";
+
+// Role IDs
+export const ACTIVE_STAFF = "240647591770062848";
+export const ADMIN = "189594666365091850";
+export const STAFF = "543721608506900480";
+export const MINIMO = "755269385094168576";
+export const WP = "250907197075226625";
+
+// Language Role IDs
+export const NJ = "196765998706196480";
+export const FJ = "270391106955509770";
+export const AJ = "681835604484423693";
+export const HJ = "816895873493499935";
+export const NE = "197100137665921024";
+export const FE = "241997079168155649";
+export const FE2 = "820133363700596756";
+export const OL = "248982130246418433";
+export const NU = "249695630606336000";
+
+export const HC = "384286851260743680";
+
+// Channel IDs
+export const JHO = "189571157446492161";
+export const LANG_SWITCH = "376574779316109313";
+export const SENSITIVE_TOPICS = "193966083886153729";
+export const JP_CHAT = "189629338142900224";
+export const BEG_JPN = "208118574974238721";
+export const MOD_LOG = "366692441442615306";
+export const AGT = "755269708579733626";
+export const EWBF = "277384105245802497";
+
+// Catefory IDs
+export const CLOCK = "360571611021180929";
+export const MODERATION = "360570306131132417";
