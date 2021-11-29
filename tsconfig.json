@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "declaration": false,
+    "removeComments": false,
+    "alwaysStrict": true,
+    "pretty": false,
+    "module": "esnext",
+    "target": "es2021",
+    "sourceMap": true,
+    "skipDefaultLibCheck": true,
+    "outDir": "build"
+  },
+  "include": ["src"]
+}
