@@ -53,10 +53,10 @@ module.exports.process = (message) => {
     return; // #bot-spam
 
   if (/^\.\.\.\s[\S]+$/.test(content)) return; // nadeko quote
-  // if (!isJapanese) { // for welcoming
-  //   content = content.replace(/what'?s?\s(is\s)?(yo)?ur\snative\slang(uage)?/i, '');
-  //   content = content.replace(/welcome/i, '');
-  // }
+  if (!isJapanese) { // for welcoming
+    content = content.replace(/what'?s?\s(is\s)?(yo)?ur\snative\slang(uage)?/i, '');
+    content = content.replace(/welcome/i, '');
+  }
   content = content.replace(/```\S*\n[\s\S]*?```/g, ''); // ignore code block
 
   let lang = Util.lang(content); // Since it deletes special messages.
