@@ -11,7 +11,8 @@
     "target": "es2021",
     "sourceMap": true,
     "skipDefaultLibCheck": true,
-    "outDir": "build"
+    "outDir": "build",
+    "baseUrl": "src"
   },
   "include": ["src"]
 }

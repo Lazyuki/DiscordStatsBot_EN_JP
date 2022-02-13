@@ -1,8 +1,8 @@
-import { BotEvent } from "../types";
-import logger from "../logger";
+import { BotEvent } from 'types';
+import logger from 'logger';
 
-const event: BotEvent<"interactionCreate"> = {
-  eventName: "interactionCreate",
+const event: BotEvent<'interactionCreate'> = {
+  eventName: 'interactionCreate',
   once: false,
   processEvent: async (bot, interaction) => {
     logger.info(`Slash Command`);
@@ -17,7 +17,7 @@ const event: BotEvent<"interactionCreate"> = {
     } catch (error) {
       logger.error(error);
       await interaction.reply({
-        content: "There was an error while executing this command!",
+        content: 'There was an error while executing this command!',
         ephemeral: true,
       });
     }

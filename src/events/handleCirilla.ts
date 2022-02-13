@@ -1,5 +1,5 @@
 import { CIRILLA } from '../utils/constants';
-import { ACTIVE_STAFF } from '../utils/ejlxConstants';
+import { ACTIVE_STAFF } from '../utils/constants';
 import { BotEvent } from '../types';
 
 const event: BotEvent<'messageCreate'> = {

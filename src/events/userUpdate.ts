@@ -1,7 +1,7 @@
-import { ServerSettings } from '../types';
+import { ServerConfig } from '../types';
 
 declare module '../types' {
-  interface ServerSettings {
+  interface ServerConfig {
     tempMuted: string[];
   }
 }

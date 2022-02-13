@@ -1,4 +1,4 @@
-// Run at a specified time over setTimeout's limit
+// Run something at a specified time over setTimeout's limit
 // tslint:disable-next-line:ban-types
 const runAt = (date: Date, func: Function) => {
   const now = new Date().getTime();

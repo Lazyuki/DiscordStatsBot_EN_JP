@@ -12,9 +12,10 @@ const checkLang = (content: string) => {
   let enCount = 0;
   let other = 0;
   let result = 0;
-  content = content.replace(REGEX_URL, '');
-  content = content.replace(REGEX_ID, '');
-  content = content.replace(/o.o/i, '');
+  content = content
+    .replace(REGEX_URL, '')
+    .replace(REGEX_ID, '')
+    .replace(/o.o/i, '');
   for (const l of content) {
     if (l === '*' || l === '＊') {
       result |= LANG.ESC;

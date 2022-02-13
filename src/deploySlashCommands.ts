@@ -5,7 +5,7 @@ import env from 'env-var';
 
 import logger from './logger';
 import { BotCommand } from './types';
-import { EJLX } from './utils/ejlxConstants';
+import { EJLX } from './utils/constants';
 
 async function deploySlashCommands() {
   const commands = [];

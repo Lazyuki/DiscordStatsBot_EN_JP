@@ -1,27 +1,32 @@
 import { MessageEmbed } from 'discord.js';
-
-import { BotCommand } from '../../types';
+import { makeEmbed } from 'utils/embed';
+import { BotCommand } from 'types';
 
 const command: BotCommand = {
-  aliases: [],
   isAllowed: 'BOT_OWNER',
   description:
-    'Can access message, content, bot. Send to the channel with `send()`',
-  normalCommand: async (content, message, bot) => {
+    'Can access [message, content, bot, server, send, makeEmbed]. Send to the channel with `send()`',
+  examples: [
+    '{PF}eval send(message.guild.memberCount)',
+    '{PF}eval send(makeEmbed({ description: "Hello" }))',
+  ],
+  normalCommand: async ({ commandContent, message, bot, server }) => {
     try {
-      const send = async (str: string) => await message.channel.send(str);
+      const send = async (str: string) =>
+        await message.channel.send(str || '*empty*');
       const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
-      const evalContent = `try { ${content} } catch (e) { await send(e.message.substr(0, 4000)) }`;
+      const evalContent = `try { ${commandContent} } catch (e) { await send(e.message.substr(0, 4000)) }`;
       const embed = new MessageEmbed();
       const func = new AsyncFunction(
         'content',
         'message',
         'bot',
+        'server',
         'send',
-        'embed',
+        'makeEmbed',
         evalContent
       );
-      func(content, message, bot, send, embed);
+      func(commandContent, message, bot, server, send, makeEmbed);
     } catch (e) {
       await message.channel.send((e as Error).message);
     }

@@ -1,21 +1,23 @@
-import { BotCommand, ParsedBotCommand } from "../types";
-import { PERMISSIONS } from "./checkPermissions";
+import { BotCommand, ParsedBotCommand } from '../types';
+import { PERMISSIONS } from './checkPermissions';
 
 export default function parseCommand(
-  command: BotCommand,
+  { isAllowed, allowedServers, ...restCommand }: BotCommand,
   commandName: string
 ): ParsedBotCommand {
   const parsedCommand = {
-    ...command,
+    ...restCommand,
     name: commandName,
   } as ParsedBotCommand;
-  if (!command.isAllowed) {
-    parsedCommand.isAllowed = () => true;
-  } else if (typeof command.isAllowed === "string") {
-    parsedCommand.isAllowed = PERMISSIONS[command.isAllowed];
-  }
-  if (typeof command.help === "string") {
-    parsedCommand.help = () => command.help as string;
+  if (isAllowed === undefined) {
+    if (allowedServers) {
+      parsedCommand.isAllowed = (_, server) =>
+        allowedServers.includes(server.guild.id);
+    } else {
+      parsedCommand.isAllowed = () => true;
+    }
+  } else if (typeof isAllowed === 'string') {
+    parsedCommand.isAllowed = PERMISSIONS[isAllowed];
   }
   return parsedCommand;
 }

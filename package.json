@@ -1,0 +1,51 @@
+{
+  "name": "ciri",
+  "version": "2.0.0",
+  "description": "Discord Statistics & Moderation Bot for Eng-Jpn servers",
+  "private": true,
+  "scripts": {
+    "run": "bash ./run.sh ",
+    "lint": "prettier --write classes commands eventProcessors bot.js cmds.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lazyuki/DiscordStatsBot_EN_JP.git"
+  },
+  "author": "Lazyuki",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Lazyuki/DiscordStatsBot_EN_JP/issues"
+  },
+  "homepage": "https://github.com/Lazyuki/DiscordStatsBot_EN_JP#readme",
+  "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "axios": "^0.24.0",
+    "better-sqlite3": "^7.4.6",
+    "bufferutil": "^4.0.5",
+    "common-tags": "^1.8.2",
+    "discord-api-types": "^0.25.0",
+    "discord.js": "^13.3.1",
+    "dotenv": "^10.0.0",
+    "env-var": "^7.1.1",
+    "erlpack": "github:discord/erlpack",
+    "utf-8-validate": "^5.0.7",
+    "winston": "^3.3.3",
+    "zlib-sync": "^0.1.7"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.4.2",
+    "@types/common-tags": "^1.8.1",
+    "husky": "^4.3.0",
+    "prettier": "^2.1.2",
+    "pretty-quick": "^3.0.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "prettier": {
+    "singleQuote": true
+  }
+}

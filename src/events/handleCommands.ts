@@ -1,77 +1,111 @@
-import { BotEvent } from "../types";
-import logger from "../logger";
+import { BotEvent, SafeMessage } from 'types';
+import logger from 'logger';
+import { BotError, NotFoundError, UserError } from 'errors';
+import { EJLX } from 'utils/constants';
+import { DiscordAPIError } from '@discordjs/rest';
+import { errorEmbed } from 'utils/embed';
 
-const event: BotEvent<"messageCreate"> = {
-  eventName: "messageCreate",
+const event: BotEvent<'messageCreate'> = {
+  eventName: 'messageCreate',
   once: false,
   processEvent: async (bot, message) => {
-    if (message.channel.type === "DM") return;
+    if (message.channel.type === 'DM') return;
     if (message.author.bot || message.system) return;
     if (!message.guild) return;
-
-    let server = bot.servers[message.guild.id];
-    let serverOverride = false;
-    const match = message.content.match(/^!!(\d+),/);
-    if (match && message.author.id === bot.ownerId) {
-      server = bot.servers[match[1]];
-      message.content = message.content.replace(/^!!\d+/, "");
-      serverOverride = true;
-    }
-
-    // Changes my server to EJLX
-    let mine = false;
-    if (server === undefined) {
-      server = bot.servers["189571157446492161"];
-      mine = true;
-    }
-
-    // Member is not cached?
     if (!message.member) {
+      // Author's member instance is not cached???
       logger.warn(
         `Member is null for guild:${message.guild.id} message:${message.content}`
       );
       return;
     }
+
+    let server = bot.servers[message.guild.id];
+    let serverOverride = false;
+    const match = message.content.match(/^!!(\d+)/);
+    if (match && message.author.id === bot.ownerId) {
+      server = bot.servers[match[1]];
+      if (!server) {
+        throw new NotFoundError(`Server with ID: ${match[1]} not found.`);
+      }
+      message.content = message.content.replace(/^!!\d+/, '');
+      serverOverride = true;
+    }
+
     // Is it not a command?
-    if (!message.content.startsWith(server.prefix)) {
-      if (!mine && !serverOverride) server.processNewMessage(message, bot);
+    if (!message.content.toLocaleLowerCase().startsWith(server.config.prefix)) {
       return;
     }
     // Separate the command and the content
-    const commandName = message.content.split(" ")[0].slice(1).toLowerCase();
-    const content = message.content.substr(commandName.length + 2).trim();
+    const commandName = message.content
+      .split(' ')[0]
+      .slice(server.config.prefix.length)
+      .toLowerCase();
+    const commandContent = message.content
+      .slice(server.config.prefix.length + commandName.length)
+      .trim();
     const command = bot.commands.get(commandName);
     if (command) {
       // if Ciri's command
       if (command.isAllowed(message, server, bot) && command.normalCommand) {
         // Check permission
         try {
-          await command.normalCommand(content, message, bot, server, cmds);
+          await command.normalCommand({
+            commandContent,
+            message: message as SafeMessage,
+            bot,
+            server,
+            prefix: server.config.prefix,
+          });
         } catch (e) {
-          switch (e.type) {
-            case "USER_MISSING_PERMISSION": {
-              message.channel.send(
-                `You do not have permissions: ${e.permissions}`
+          const error = e as Error | DiscordAPIError | UserError | BotError;
+          if (error instanceof DiscordAPIError) {
+            await message.channel.send(`${error.name}: ${error.message}`);
+            if (error.code === 401) {
+              await message.channel.send(
+                errorEmbed(
+                  `${error.name}: ${error.message}\nMake sure the bot has required permissions`
+                )
               );
-              return;
+            } else {
+              await message.channel.send(
+                errorEmbed(`${error.name}: ${error.message}`)
+              );
             }
-            case "BOT_MISSING_PERMISSION": {
-              message.channel.send(`I need the permission: ${e.permissions}`);
-              return;
+            logger.warn(`${error.code} ${error.name}: ${error.message}`);
+          } else if (error instanceof UserError) {
+            await message.channel.send(
+              errorEmbed(`${error.name}: ${error.message}`)
+            );
+            switch (error) {
             }
-            case "INVALID_SYNTAX": {
-              message.channel.send(`Invalid Syntax: ${command.help}`);
-              return;
-            }
-            default: {
-              message.channel.send(`Unexpected Error Occurred`);
-            }
+          } else if (error instanceof BotError) {
+            await message.channel.send(
+              errorEmbed(
+                `There was an unexpected error with the bot.\n${error.name}: ${error.message}`
+              )
+            );
+            logger.error(
+              `${error.name}: ${error.message}\n${
+                error.stack || 'no stack trace'
+              }`
+            );
+          } else {
+            await message.channel.send(
+              errorEmbed(
+                `Unexpected Error: ${error.message}\n\n<@${bot.ownerId}> will look into this`
+              )
+            );
+            logger.error(
+              `${error.name}: ${error.message}\n${
+                error.stack || 'no stack trace'
+              }`
+            );
           }
         }
         return;
       }
     }
-    if (!mine && !serverOverride) server.processNewMessage(message, bot); // Wasn't a valid command, so process it
   },
 };
 

@@ -1,49 +1,59 @@
-import { Guild } from "discord.js";
-import fs from "fs";
+import { Guild } from 'discord.js';
+import fs from 'fs';
+import env from 'env-var';
 
-import { BotEvent, ServerSettings } from "../types";
+import logger from 'logger';
+import { Bot, ServerConfig, ServerTemp } from 'types';
+
+function getBackupFilePath(guildId: string, date: Date) {
+  const dateStr = date.toISOString().split('T')[0];
+  return `./backups/${dateStr}-${guildId}_config.json`;
+}
+
+function getRestoreFilePath(guildId: string) {
+  return `./${guildId}_config.json`;
+}
 
 class Server {
   guild: Guild;
-  settings: ServerSettings;
-  stats: ServerStats;
+  config: ServerConfig;
+  temp: ServerTemp;
+  cache: ServerStatsCache;
 
-  constructor(guild: Guild, command_inits, eventProcessors) {
+  constructor(guild: Guild, bot: Bot) {
     this.guild = guild;
-    const restoreFileName = `./.${this.guild.id}_settings.json`;
+    const restoreFileName = getRestoreFilePath(guild.id);
 
+    this.config = {
+      prefix: env.get('DEFAULT_PREFIX').required().asString(),
+    } as ServerConfig;
     if (fs.existsSync(restoreFileName)) {
-      const json = JSON.parse(fs.readFileSync(restoreFileName, "utf8"));
-      this.settings = json;
-    } else {
-      this.initialize(null, command_inits.concat(prcs.inits));
-      this.settings = { tempMuted: ["a"] };
+      const json = JSON.parse(fs.readFileSync(restoreFileName, 'utf8'));
+      this.config = json;
     }
+    bot.commandInits.forEach((init) => init(this.config));
   }
 
   save(backup = false) {
-    // Store the actual date?
     if (backup) {
-      const date = new Date().toLocaleDateString().replace(/\//g, "-");
+      const backupFile = getBackupFilePath(this.guild.id, new Date());
       try {
-        fs.writeFileSync(
-          `./backups/${this.guild.id}_log-${date}.json`,
-          JSON.stringify(this.settings),
-          "utf8"
-        );
+        fs.writeFileSync(backupFile, JSON.stringify(this.config), 'utf8');
+        const oldDate = new Date();
+        oldDate.setDate(oldDate.getDate() - 7);
+        const oldBackupFile = getBackupFilePath(this.guild.id, oldDate);
+        if (fs.existsSync(oldBackupFile)) {
+          fs.unlinkSync(oldBackupFile);
+        }
       } catch (e) {
-        console.log(e);
+        logger.error(e);
       }
-      console.log(`Backup has been created for ${this.guild.id}: ${date}`);
     } else {
       try {
-        fs.writeFileSync(
-          `./.${this.guild.id}_restore.json`,
-          JSON.stringify(this.settings),
-          "utf8"
-        );
+        const restoreFileName = getRestoreFilePath(this.guild.id);
+        fs.writeFileSync(restoreFileName, JSON.stringify(this.config), 'utf8');
       } catch (e) {
-        console.log(e);
+        logger.error(e);
       }
     }
   }

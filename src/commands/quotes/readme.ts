@@ -7,7 +7,7 @@ let lastCalled = 0;
 const command: BotCommand = {
   allowedServers: [EJLX],
   description:
-    'Readme message for new users in Japanese. Use `,readme` for English.',
+    'Readme message for new users in English. Use `,yonde` for Japanese.',
   normalCommand: async ({ message }) => {
     const now = new Date().getTime();
     // 10 seconds cooldown
@@ -18,20 +18,20 @@ const command: BotCommand = {
     lastCalled = now;
 
     const mentioned = message.mentions.members?.first();
-    await message.delete();
     await message.channel.send(
       makeEmbed({
         color: 'LUMINOUS_VIVID_PINK',
-        title: `${
-          mentioned ? mentioned.user.username + 'さん、' : ''
-        }ようこそ！！ 🎉 このサーバーの簡単な説明です`,
-        mainImage: 'https://i.imgur.com/NmUudeF.png',
+        title: `WELCOME${
+          mentioned ? ' ' + mentioned.user.username : ''
+        }!! 🎉 READ ME!`,
+        description:
+          '__**[Japanese Starting Guide](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md)**__<:externallink:438354612379189268>',
+        mainImage: 'https://i.imgur.com/MmAIJzT.png',
         fields: [
           {
-            name: '注意事項（必読）',
-            value:
-              '<#189585230972190720> で上にスクロールすると説明があります！',
-            inline: true,
+            name: '**↓Rules↓ ↑Link to Resources↑**',
+            value: '<#189585230972190720>',
+            inline: false,
           },
         ],
       })

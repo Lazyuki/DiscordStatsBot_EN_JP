@@ -1,30 +1,29 @@
 import { BotCommand } from '../../types';
-import { EJLX } from '../../utils/ejlxConstants';
 
 declare module '../../types' {
-  interface ServerSettings {
+  interface ServerConfig {
     ignoredChannels: string[];
   }
 }
 
 const command: BotCommand = {
-  allowedServers: [EJLX],
   isAllowed: 'ADMIN',
-  init: (settings, json) =>
-    (settings.ignoredChannels = json.ignoredChannels || []),
+  init: (config) => {
+    config.ignoredChannels ||= [];
+  },
   description:
-    'Ignores a channel from leaderboards. Commands will still work there',
-  arguments: '<#chanel-name>',
-  normalCommand: async (content, message, server) => {
-    const chan = server.guild.channels.cache.get(content);
+    'Ignores a channel from leaderboards. Commands will still work there. Useful for ignoring noisy channels such as quiz or bot-spam channels.',
+  arguments: '<#channel> [#channel2 ... ]',
+  normalCommand: async ({ commandContent, message, server }) => {
+    const chan = server.guild.channels.cache.get(commandContent);
     if (chan) {
-      if (server.settings.ignoredChannels.includes(chan.id)) return;
-      server.settings.ignoredChannels.push(chan.id);
+      if (server.config.ignoredChannels.includes(chan.id)) return;
+      server.config.ignoredChannels.push(chan.id);
       message.channel.send(`<#${chan.id}> is ignored now.`);
     } else if (message.mentions.channels.size !== 0) {
       for (const [id, ch] of message.mentions.channels) {
-        if (server.settings.ignoredChannels.includes(id)) return;
-        server.settings.ignoredChannels.push(id);
+        if (server.config.ignoredChannels.includes(id)) return;
+        server.config.ignoredChannels.push(id);
         message.channel.send(`<#${ch.id}> is ignored now.`);
       }
     }

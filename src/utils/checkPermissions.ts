@@ -1,14 +1,15 @@
-import { Message } from "discord.js";
-import Server from "../classes/Server";
-import { Bot, CommandPermissionLevel } from "../types";
-import { EJLX, MINIMO, STAFF, WP } from "./ejlxConstants";
+import { Message, PermissionString } from 'discord.js';
+
+import Server from '../classes/Server';
+import { Bot, CommandPermissionLevel } from '../types';
+import { EJLX, MINIMO, STAFF, WP } from './constants';
 
 export function checkEjlx(server: Server) {
   return server.guild.id === EJLX;
 }
 
 export function checkAdmin(message: Message) {
-  return message.member?.permissions.has("ADMINISTRATOR") || false;
+  return message.member?.permissions.has('ADMINISTRATOR') || false;
 }
 
 export function checkBotOwner(message: Message, server: Server, bot: Bot) {
@@ -38,9 +39,18 @@ export function checkWP(message: Message, server: Server) {
 
 export function checkServerMod(message: Message) {
   if (checkAdmin(message)) return true;
-  if (message.member?.permissions.has("MANAGE_GUILD")) return true;
+  if (message.member?.permissions.has('MANAGE_GUILD')) return true;
   return false;
 }
+
+export function checkSpecificPerm(
+  message: Message,
+  permission: PermissionString
+) {
+  return Boolean(message.member?.permissions.has(permission));
+}
+
+export function checkMuteMembers(message: Message) {}
 
 export const PERMISSIONS: Record<
   CommandPermissionLevel,
@@ -52,4 +62,9 @@ export const PERMISSIONS: Record<
   MINIMO: checkMinimo,
   WP: checkWP,
   SERVER_MODERATOR: checkServerMod,
+  MUTE_MEMBERS: (message: Message) =>
+    checkSpecificPerm(message, 'MUTE_MEMBERS'),
+  BAN_MEMBERS: (message: Message) => checkSpecificPerm(message, 'BAN_MEMBERS'),
+  KICK_MEMBERS: (message: Message) =>
+    checkSpecificPerm(message, 'KICK_MEMBERS'),
 };
