@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import Server from 'classes/Server';
+import Server from '@classes/Server';
 import { REGEX_RAW_ID, REGEX_RAW_ID_ONLY, REGEX_USER } from './regex';
 
 // content is command-stripped

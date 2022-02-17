@@ -6,10 +6,15 @@ import env from 'env-var';
 import logger from './logger';
 import { Bot, BotCommand, BotEvent, ParsedBotCommand } from './types';
 import parseCommand from './utils/parseCommand';
+import * as eventHandlers from './events';
+
 // import deploySlashCommands from './deploySlashCommands';
 
 // Must be the first line
 config();
+
+// When set to true, event handlers that send messages automatically will not fire
+const DEBUG_MODE = env.get('DEBUG').default('false').asBool();
 
 // Set up intents
 const UNWANTED_INTENTS = [
@@ -36,23 +41,30 @@ client.commandInits = [];
 client.servers = {};
 
 // Gather commands
-const commandFiles = fs
+const dirs = fs
   .readdirSync('./build/commands')
-  .filter((file: string) => file.endsWith('.js'));
+  .filter((file) => !file.includes('.js'));
 
-for (const fileName of commandFiles) {
-  const command = (await import(`./build/commands/${fileName}`)) as BotCommand;
-  const commandName = fileName.replace('.js', '');
-  const parsedCommand = parseCommand(command, commandName);
-  client.commands.set(commandName, parsedCommand);
-  if (parsedCommand.init) client.commandInits.push(parsedCommand.init);
-  parsedCommand.aliases?.forEach((alias) => {
-    if (client.commands.has(alias)) {
-      logger.error(`Command alias ${alias} is double assigned!`);
-      return;
-    }
-    client.commands.set(alias, parsedCommand);
-  });
+for (const dir of dirs) {
+  const commandFiles = fs
+    .readdirSync(`./build/commands/${dir}`)
+    .filter((file) => file.endsWith('.js'));
+  for (const fileName of commandFiles) {
+    const command = (await import(
+      `./commands/${dir}/${fileName}`
+    )) as BotCommand;
+    const commandName = fileName.replace('.js', '');
+    const parsedCommand = parseCommand(command, commandName);
+    client.commands.set(commandName, parsedCommand);
+    if (parsedCommand.init) client.commandInits.push(parsedCommand.init);
+    parsedCommand.aliases?.forEach((alias) => {
+      if (client.commands.has(alias)) {
+        logger.error(`Command alias ${alias} is double assigned!`);
+        return;
+      }
+      client.commands.set(alias, parsedCommand);
+    });
+  }
 }
 
 const eventFiles = fs
@@ -60,13 +72,14 @@ const eventFiles = fs
   .filter((file: string) => file.endsWith('.js'));
 
 for (const fileName of eventFiles) {
-  const event = (await import(`./build/events/${fileName}`)) as BotEvent<any>;
+  const event = (await import(`./events/${fileName}`)) as BotEvent<any>;
   if (event.once) {
     client.once(event.eventName, (...args) =>
       event.processEvent(client, ...args)
     );
   } else {
     client.on(event.eventName, (...args) => {
+      if (DEBUG_MODE && event.skipOnDebug) return;
       try {
         event.processEvent(client, ...args);
       } catch (e) {
@@ -81,5 +94,21 @@ for (const fileName of eventFiles) {
   }
 }
 
+process.on('unhandledRejection', logger.error); // Show stack trace on unhandled rejection.
+
+// setInterval(() => {
+//   // Set up hourly backup state task
+//   savingTask(client);
+// }, 60 * 60 * 1000);
+// const time = new Date();
+// let h = time.getUTCHours();
+// let m = time.getUTCMinutes();
+// let s = time.getUTCSeconds();
+// let timeLeft = 24 * 60 * 60 - h * 60 * 60 - m * 60 - s;
+// setTimeout(() => {
+//   // Set up the day changing task
+//   midnightTask(bot);
+// }, timeLeft * 1000); // Time left until the next day
+
 client.login(env.get('DISCORD_TOKEN').required().asString());
-// deploySlashCommands(); not yet
+// if (!DEBUG_MODE) deploySlashCommands();

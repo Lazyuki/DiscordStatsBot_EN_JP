@@ -2,8 +2,8 @@ import { Guild } from 'discord.js';
 import fs from 'fs';
 import env from 'env-var';
 
-import logger from 'logger';
-import { Bot, ServerConfig, ServerTemp } from 'types';
+import logger from '@/logger';
+import { Bot, ServerConfig, ServerTemp } from '@/types';
 
 function getBackupFilePath(guildId: string, date: Date) {
   const dateStr = date.toISOString().split('T')[0];
@@ -17,8 +17,8 @@ function getRestoreFilePath(guildId: string) {
 class Server {
   guild: Guild;
   config: ServerConfig;
-  temp: ServerTemp;
-  cache: ServerStatsCache;
+  // temp: ServerTemp;
+  // cache: ServerStatsCache;
 
   constructor(guild: Guild, bot: Bot) {
     this.guild = guild;

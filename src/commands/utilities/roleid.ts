@@ -1,5 +1,5 @@
-import { BotCommand } from 'types';
-import { CommandArgumentError } from 'errors';
+import { BotCommand } from '@/types';
+import { CommandArgumentError } from '@/errors';
 
 const command: BotCommand = {
   description: 'Get the role ID',

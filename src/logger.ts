@@ -1,4 +1,4 @@
-import { createLogger, transports, format } from 'winston';
+import winston from 'winston';
 
 const tz = () => {
   return new Date().toLocaleString('en-US', {
@@ -6,14 +6,14 @@ const tz = () => {
   });
 };
 
-const logger = createLogger({
+const logger = winston.createLogger({
   transports: [
-    new transports.File({ filename: 'all.log' }),
-    new transports.File({ filename: 'errors.log', level: 'error' }),
+    new winston.transports.File({ filename: 'all.log' }),
+    new winston.transports.File({ filename: 'errors.log', level: 'error' }),
   ],
-  format: format.combine(
-    format.timestamp({ format: tz }),
-    format.printf(
+  format: winston.format.combine(
+    winston.format.timestamp({ format: tz }),
+    winston.format.printf(
       (log) => `${log.timestamp} [${log.level.toUpperCase()}] ${log.message}`
     )
   ),

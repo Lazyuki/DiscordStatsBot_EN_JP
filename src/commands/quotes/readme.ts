@@ -1,6 +1,6 @@
-import { BotCommand } from 'types';
-import { EJLX } from 'utils/constants';
-import { makeEmbed } from 'utils/embed';
+import { BotCommand } from '@/types';
+import { EJLX } from '@utils/constants';
+import { makeEmbed } from '@utils/embed';
 
 let lastCalled = 0;
 
@@ -18,6 +18,7 @@ const command: BotCommand = {
     lastCalled = now;
 
     const mentioned = message.mentions.members?.first();
+    await message.delete();
     await message.channel.send(
       makeEmbed({
         color: 'LUMINOUS_VIVID_PINK',

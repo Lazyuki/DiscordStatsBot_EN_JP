@@ -1,6 +1,6 @@
-import { BotCommand } from 'types';
-import { EJLX } from 'utils/constants';
-import { makeEmbed } from 'utils/embed';
+import { BotCommand } from '@/types';
+import { EJLX } from '@utils/constants';
+import { makeEmbed } from '@utils/embed';
 
 let lastCalled = 0;
 

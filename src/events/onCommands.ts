@@ -1,17 +1,19 @@
-import { BotEvent, SafeMessage } from 'types';
-import logger from 'logger';
-import { BotError, NotFoundError, UserError } from 'errors';
-import { EJLX } from 'utils/constants';
+import { BotEvent, SafeMessage } from '@/types';
+import logger from '@/logger';
+import { BotError, NotFoundError, UserError } from '@/errors';
+import { EJLX } from '@utils/constants';
 import { DiscordAPIError } from '@discordjs/rest';
-import { errorEmbed } from 'utils/embed';
+import { errorEmbed } from '@utils/embed';
+import { Message, MessageOptions, Util } from 'discord.js';
+import safeSend from '@utils/safeSend';
+import { isNotDM } from '@utils/typeGuards';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
   once: false,
   processEvent: async (bot, message) => {
-    if (message.channel.type === 'DM') return;
+    if (!isNotDM(message)) return; // DM
     if (message.author.bot || message.system) return;
-    if (!message.guild) return;
     if (!message.member) {
       // Author's member instance is not cached???
       logger.warn(
@@ -46,41 +48,44 @@ const event: BotEvent<'messageCreate'> = {
       .trim();
     const command = bot.commands.get(commandName);
     if (command) {
-      // if Ciri's command
+      // Check permission
       if (command.isAllowed(message, server, bot) && command.normalCommand) {
-        // Check permission
+        const safeChannelSend = safeSend(message.channel.send);
+        const safeReply = safeSend(message.reply);
+
         try {
           await command.normalCommand({
             commandContent,
-            message: message as SafeMessage,
+            message,
             bot,
             server,
             prefix: server.config.prefix,
+            send: safeChannelSend,
+            reply: safeReply,
           });
         } catch (e) {
           const error = e as Error | DiscordAPIError | UserError | BotError;
           if (error instanceof DiscordAPIError) {
-            await message.channel.send(`${error.name}: ${error.message}`);
             if (error.code === 401) {
-              await message.channel.send(
+              await safeChannelSend(
                 errorEmbed(
                   `${error.name}: ${error.message}\nMake sure the bot has required permissions`
                 )
               );
             } else {
-              await message.channel.send(
+              await safeChannelSend(
                 errorEmbed(`${error.name}: ${error.message}`)
               );
             }
             logger.warn(`${error.code} ${error.name}: ${error.message}`);
           } else if (error instanceof UserError) {
-            await message.channel.send(
+            await safeChannelSend(
               errorEmbed(`${error.name}: ${error.message}`)
             );
             switch (error) {
             }
           } else if (error instanceof BotError) {
-            await message.channel.send(
+            await safeChannelSend(
               errorEmbed(
                 `There was an unexpected error with the bot.\n${error.name}: ${error.message}`
               )
@@ -91,7 +96,7 @@ const event: BotEvent<'messageCreate'> = {
               }`
             );
           } else {
-            await message.channel.send(
+            await safeChannelSend(
               errorEmbed(
                 `Unexpected Error: ${error.message}\n\n<@${bot.ownerId}> will look into this`
               )

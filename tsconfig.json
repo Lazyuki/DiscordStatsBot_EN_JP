@@ -12,7 +12,15 @@
     "sourceMap": true,
     "skipDefaultLibCheck": true,
     "outDir": "build",
-    "baseUrl": "src"
+    "baseUrl": ".",
+    "paths": {
+      "@classes/*": ["src/classes/*"],
+      "@commands/*": ["src/commands/*"],
+      "@database/*": ["src/database/*"],
+      "@events/*": ["src/events/*"],
+      "@utils/*": ["src/utils/*"],
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src"]
 }

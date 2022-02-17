@@ -6,6 +6,8 @@ import {
   Guild,
   Interaction,
   Message,
+  MessageOptions,
+  MessagePayload,
 } from 'discord.js';
 
 import Server from './classes/Server';
@@ -56,6 +58,8 @@ export interface BotCommand {
     server: Server;
     bot: Bot;
     prefix: string;
+    send: (options: string | MessageOptions) => Promise<Message | undefined>;
+    reply: (options: string | MessageOptions) => Promise<Message | undefined>;
   }) => void | Promise<void>;
   slashCommand?: SlashCommandBuilder;
   replyInteraction?: (interaction: Interaction) => void | Promise<void>;
@@ -70,6 +74,7 @@ export interface ParsedBotCommand extends BotCommand {
 export interface BotEvent<E extends keyof ClientEvents> {
   eventName: E;
   once: boolean;
+  skipOnDebug?: boolean;
   processEvent: (bot: Bot, ...args: ClientEvents[E]) => void | Promise<void>;
 }
 
@@ -81,3 +86,5 @@ export interface ServerConfig {
 // Extend the type from each command file
 // holds temporary states that might be needed after crash/restarts
 export interface ServerTemp {}
+
+export type LangType = 'JP' | 'EN' | 'OL';

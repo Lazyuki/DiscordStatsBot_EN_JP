@@ -1,5 +1,5 @@
-import { BotEvent } from 'types';
-import logger from 'logger';
+import { BotEvent } from '@/types';
+import logger from '@/logger';
 
 const event: BotEvent<'interactionCreate'> = {
   eventName: 'interactionCreate',

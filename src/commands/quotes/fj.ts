@@ -1,9 +1,9 @@
 import { MessageEmbed } from 'discord.js';
 import { stripIndents } from 'common-tags';
 
-import { BotCommand } from 'types';
-import { EJLX, FJ_COLOR } from 'utils/constants';
-import { makeEmbed } from 'utils/embed';
+import { BotCommand } from '@/types';
+import { EJLX, FJ_COLOR } from '@utils/constants';
+import { makeEmbed } from '@utils/embed';
 
 let lastCalled = 0;
 
@@ -17,6 +17,7 @@ const command: BotCommand = {
       return;
     } // 10 sec cooldown
     lastCalled = now;
+
     await message.channel.send(
       makeEmbed({
         color: FJ_COLOR,

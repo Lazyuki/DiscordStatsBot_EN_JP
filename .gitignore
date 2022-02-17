@@ -1,5 +1,9 @@
-config.json
 node_modules
+build
+discord_ciri.db
 nohup.out
 .env
 .DS_Store
+.*.json
+.vscode
+*.log

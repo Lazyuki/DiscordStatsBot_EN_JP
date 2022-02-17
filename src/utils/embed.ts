@@ -1,4 +1,4 @@
-import { ColorResolvable, MessageEmbed } from 'discord.js';
+import { ColorResolvable, MessageEmbed, Util } from 'discord.js';
 import {
   EMBED_BG_COLOR,
   ERROR_COLOR,
@@ -46,11 +46,30 @@ export const makeEmbed = ({
   fields,
 }: EmbedOptions) => {
   const embed = new MessageEmbed().setColor(color);
+  const additionalEmbeds: MessageEmbed[] = [];
   if (title) embed.setTitle(title);
   if (titleUrl) embed.setURL(titleUrl);
-  if (description) embed.setDescription(description);
-  if (authorName) embed.setAuthor(authorName, authorIcon, authorUrl);
-  if (footer) embed.setFooter(footer, footerIcon);
+  if (description) {
+    if (description.length > 4096) {
+      const [firstChunk, ...restChunk] = Util.splitMessage(description, {
+        maxLength: 4096,
+        append: '\n(continued)',
+        char: ['\n', ' ', '。'],
+      });
+      embed.setDescription(firstChunk);
+      restChunk.forEach((chunk) => {
+        const extraEmbed = new MessageEmbed()
+          .setColor(color)
+          .setDescription(chunk);
+        additionalEmbeds.push(extraEmbed);
+      });
+    } else {
+      embed.setDescription(description);
+    }
+  }
+  if (authorName)
+    embed.setAuthor({ name: authorName, iconURL: authorIcon, url: authorUrl });
+  if (footer) embed.setFooter({ text: footer, iconURL: footerIcon });
   if (thumbnailIcon) embed.setThumbnail(thumbnailIcon);
   if (mainImage) embed.setImage(mainImage);
   if (timestamp) {
@@ -58,7 +77,8 @@ export const makeEmbed = ({
     else embed.setTimestamp(new Date(timestamp));
   }
   if (fields) embed.addFields(...fields);
-  return { content, embeds: [embed] };
+
+  return { content, embeds: [embed, ...additionalEmbeds] };
 };
 
 export const successEmbed = (options: EmbedOptions | string) => {

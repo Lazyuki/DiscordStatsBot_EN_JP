@@ -5,3 +5,5 @@ declare module '../types' {
     tempMuted: string[];
   }
 }
+
+export default {};

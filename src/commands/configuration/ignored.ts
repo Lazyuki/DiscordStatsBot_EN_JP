@@ -9,7 +9,7 @@ const command: BotCommand = {
     for (const channelId of channels) {
       s += `<#${channelId}>\n`;
     }
-    message.channel.send(s);
+    await message.channel.send(s);
   },
 };
 

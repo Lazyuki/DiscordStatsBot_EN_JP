@@ -41,7 +41,7 @@ export const JP_CHAT = '189629338142900224';
 export const BEG_JPN = '208118574974238721';
 export const MOD_LOG = '366692441442615306';
 export const AGT = '755269708579733626';
-export const WP_CHAT = '';
+export const WP_CHAT = '918758304560328734';
 export const EWBF = '277384105245802497';
 
 // Category IDs

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS guilds(
-  guild_id BIGINT UNIQUE PRIMARY KEY,
+  guild_id BIGINT UNIQUE PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS messages(
@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS messages(
   lang TEXT CHECK(lang IN ('JP', 'EN', 'OL')) NOT NULL, 
   utc_date DATE NOT NULL,
   message_count INT NOT NULL,
+  CONSTRAINT messages_pk PRIMARY KEY ( guild_id, channel_id, user_id, lang, utc_date )
 );
-ALTER TABLE messages ADD CONSTRAINT messages_pk PRIMARY KEY (guild_id, channel_id, user_id, lang, utc_date);
 
 CREATE TABLE IF NOT EXISTS emojis(
   guild_id BIGINT NOT NULL REFERENCES guilds(guild_id),
@@ -18,24 +18,24 @@ CREATE TABLE IF NOT EXISTS emojis(
   emoji TEXT NOT NULL,
   utc_date DATE NOT NULL,
   emoji_count INT NOT NULL,
+  CONSTRAINT emojis_pk PRIMARY KEY ( guild_id, user_id, emoji, utc_date )
 );
-ALTER TABLE emojis ADD CONSTRAINT emojis_pk PRIMARY KEY (guild_id, user_id, emoji, utc_date);
 
 CREATE TABLE IF NOT EXISTS voice(
   guild_id BIGINT NOT NULL REFERENCES guilds(guild_id),
   user_id BIGINT NOT NULL,
   utc_date DATE NOT NULL,
   minute_count INT NOT NULL,
+  CONSTRAINT voice_pk PRIMARY KEY (guild_id, user_id, utc_date)
 );
-ALTER TABLE voice ADD CONSTRAINT voice_pk PRIMARY KEY (guild_id, user_id, utc_date);
 
 CREATE TABLE IF NOT EXISTS deletes(
   guild_id BIGINT NOT NULL REFERENCES guilds(guild_id),
   user_id BIGINT NOT NULL,
   utc_date DATE NOT NULL,
   delete_count INT NOT NULL,
+  CONSTRAINT deletes_pk PRIMARY KEY (guild_id, user_id, utc_date)
 );
-ALTER TABLE deletes ADD CONSTRAINT deletes_pk PRIMARY KEY (guild_id, user_id, utc_date);
 
 CREATE TABLE IF NOT EXISTS stickers(
   guild_id BIGINT NOT NULL REFERENCES guilds(guild_id),
@@ -43,8 +43,8 @@ CREATE TABLE IF NOT EXISTS stickers(
   sticker TEXT NOT NULL,
   utc_date DATE NOT NULL,
   sticker_count INT NOT NULL,
+  CONSTRAINT sticker_pk PRIMARY KEY (guild_id, user_id, sticker, utc_date)
 );
-ALTER TABLE stickers ADD CONSTRAINT stickers_pk PRIMARY KEY (guild_id, user_id, sticker, utc_date);
 
 CREATE TABLE IF NOT EXISTS modlog(
   guild_id BIGINT NOT NULL REFERENCES guilds(guild_id),
@@ -53,16 +53,18 @@ CREATE TABLE IF NOT EXISTS modlog(
   issuer_id BIGINT NOT NULL,
   message_link TEXT NOT NULL,
   silent BOOLEAN NOT NULL,
-  content TEXT NOT NULL,
+  content TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS commands(
-  guild_id BIGINT NOT NULL REFERENCES guild(guild_id),
+  guild_id BIGINT NOT NULL REFERENCES guilds(guild_id),
+  user_id BIGINT NOT NULL,
   command TEXT NOT NULL,
   utc_date DATE NOT NULL,
   command_count INTEGER NOT NULL,
+  CONSTRAINT commands_pk PRIMARY KEY (guild_id, user_id, command, utc_date)
 );
-ALTER TABLE commands ADD CONSTRAINT commands_pk PRIMARY KEY (guild_id, command, utc_date);
+
 
 -- indices -- 
 

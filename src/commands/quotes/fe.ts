@@ -1,8 +1,8 @@
 import { stripIndents } from 'common-tags';
 
-import { BotCommand } from 'types';
-import { EJLX, FE_COLOR } from 'utils/constants';
-import { makeEmbed } from 'utils/embed';
+import { BotCommand } from '@/types';
+import { EJLX, FE_COLOR } from '@utils/constants';
+import { makeEmbed } from '@utils/embed';
 
 let lastCalled = 0;
 

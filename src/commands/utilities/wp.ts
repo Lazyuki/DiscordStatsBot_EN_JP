@@ -1,5 +1,5 @@
-import { BotCommand } from 'types';
-import { WP } from 'utils/constants';
+import { BotCommand } from '@/types';
+import { WP } from '@utils/constants';
 
 const command: BotCommand = {
   isAllowed: 'WP',
