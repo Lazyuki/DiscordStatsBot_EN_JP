@@ -9,15 +9,20 @@ declare module '../../types' {
 
 const command: BotCommand = {
   isAllowed: 'MUTE_MEMBERS',
+  aliases: ['vm'],
   description: 'Voice mutes people',
   arguments: '<@person> [reason]',
-  examples: ['{PF}vm <@person> [@person2...] [reason]'],
+  examples: [
+    'vm @Geralt being too good at Japanese',
+    'vm 284840842026549259 299335689558949888 shut up',
+  ],
   normalCommand: async ({ commandContent, message }) => {
     let targets = message.mentions.members;
     let reason = commandContent.replace(REGEX_USER, '').trim();
     if (reason == '') {
       reason = 'unspecified';
     }
+    // don't mute bots
     // for (let [, member] of targets) {
     //   await member.setMute(true, `by ${message.author.tag} Reason: ${reason}`);
     //   await member.roles.add('357687893566947329'); // Voice mute role

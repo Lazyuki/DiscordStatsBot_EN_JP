@@ -4,7 +4,6 @@ import { WP } from '@utils/constants';
 const command: BotCommand = {
   isAllowed: 'WP',
   description: 'Welcoming Party stats',
-  examples: ['{PF}wp'],
   normalCommand: async ({ message, server }) => {
     const wps = server.guild.members.cache.filter((m) => {
       return m.roles.cache.has(WP);

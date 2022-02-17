@@ -1,14 +1,17 @@
 import { BotEvent } from '@/types';
 import { DM_MOD_BOT, EJLX, MAINICHI } from '@utils/constants';
-import { isNotDM } from '@utils/typeGuards';
+import isRateLimited from '@utils/rateLimit';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
   once: false,
   skipOnDebug: true,
   processEvent: async (bot, message) => {
-    if (message.channel.type !== 'DM') return;
     // Direct message.
+    if (message.channel.type !== 'DM') return;
+    if (message.author.bot) return;
+    // Max 1 message / second
+    if (isRateLimited(`DM_${message.author.id}`, 10)) return;
     // Check EJLX user
     const ejlxMember = bot.servers[EJLX]?.guild.members.cache.get(
       message.author.id

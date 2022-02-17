@@ -76,7 +76,7 @@ export const makeEmbed = ({
     if (typeof timestamp === 'boolean') embed.setTimestamp();
     else embed.setTimestamp(new Date(timestamp));
   }
-  if (fields) embed.addFields(...fields);
+  if (fields && fields.length) embed.addFields(...fields);
 
   return { content, embeds: [embed, ...additionalEmbeds] };
 };

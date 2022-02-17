@@ -2,21 +2,12 @@ import { BotCommand } from '@/types';
 import { EJLX } from '@utils/constants';
 import { makeEmbed } from '@utils/embed';
 
-let lastCalled = 0;
-
 const command: BotCommand = {
   allowedServers: [EJLX],
   description:
     'Readme message for new users in Japanese. Use `,readme` for English.',
+  rateLimitSeconds: 10,
   normalCommand: async ({ message }) => {
-    const now = new Date().getTime();
-    // 10 seconds cooldown
-    if (now - lastCalled < 10_000) {
-      message.delete();
-      return;
-    }
-    lastCalled = now;
-
     const mentioned = message.mentions.members?.first();
     await message.delete();
     await message.channel.send(

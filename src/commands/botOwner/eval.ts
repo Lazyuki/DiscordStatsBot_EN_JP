@@ -6,8 +6,8 @@ const command: BotCommand = {
   description:
     'Can access [message, content, bot, server, send, makeEmbed]. Send to the channel with `send()` or simply return',
   examples: [
-    '{PF}eval return message.guild.memberCount',
-    '{PF}eval send(makeEmbed({ description: "Hello" }))',
+    'eval return message.guild.memberCount',
+    'eval send(makeEmbed({ description: "Hello" }))',
   ],
   normalCommand: async ({
     commandContent,

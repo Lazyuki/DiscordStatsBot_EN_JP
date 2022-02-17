@@ -4,19 +4,11 @@ import { BotCommand } from '@/types';
 import { EJLX, FE_COLOR } from '@utils/constants';
 import { makeEmbed } from '@utils/embed';
 
-let lastCalled = 0;
-
 const command: BotCommand = {
   allowedServers: [EJLX],
   description: 'Explanation of the FE (Fluent English) role',
+  rateLimitSeconds: 10,
   normalCommand: async ({ message }) => {
-    const now = new Date().getTime();
-    if (now - lastCalled < 10_000) {
-      message.delete();
-      return;
-    } // 10 sec cooldown
-    lastCalled = now;
-
     await message.channel.send(
       makeEmbed({
         color: FE_COLOR,

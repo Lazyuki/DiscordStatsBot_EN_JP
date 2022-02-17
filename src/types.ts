@@ -2,7 +2,6 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import {
   Client,
   ClientEvents,
-  Collection,
   Guild,
   Interaction,
   Message,
@@ -15,7 +14,7 @@ import Server from './classes/Server';
 export interface Bot extends Client {
   ownerId: string;
   servers: Record<string, Server>;
-  commands: Collection<string, ParsedBotCommand>;
+  commands: Record<string, ParsedBotCommand>;
   commandInits: CommandInit[];
 }
 
@@ -48,10 +47,11 @@ export interface BotCommand {
   isAllowed?:
     | CommandPermissionLevel
     | ((message: Message, server: Server, bot: Bot) => boolean);
+  rateLimitSeconds?: number;
   description: string;
   arguments?: string;
   examples?: string[];
-  help?: string | ((message: Message, bot: Bot, prefix: string) => string);
+  options?: string[];
   normalCommand?: (commandInfo: {
     commandContent: string;
     message: SafeMessage;
@@ -67,8 +67,8 @@ export interface BotCommand {
 
 export interface ParsedBotCommand extends BotCommand {
   name: string;
+  category: string;
   isAllowed: (message: Message, server: Server, bot: Bot) => boolean;
-  help: (message: Message, bot: Bot, prefix: string) => string;
 }
 
 export interface BotEvent<E extends keyof ClientEvents> {

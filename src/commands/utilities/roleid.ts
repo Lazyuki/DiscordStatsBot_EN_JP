@@ -4,7 +4,7 @@ import { CommandArgumentError } from '@/errors';
 const command: BotCommand = {
   description: 'Get the role ID',
   arguments: '<role name (could be partial)>',
-  examples: ['{PF}roleid native japanese'],
+  examples: ['roleid native japanese'],
   normalCommand: async ({ commandContent, message, server }) => {
     const roleName = commandContent.toLowerCase().replace('@', '');
     if (!roleName) {

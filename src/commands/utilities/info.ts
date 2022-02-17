@@ -11,6 +11,7 @@ const command: BotCommand = {
         title: 'Ciri',
         description: stripIndents`
           Number of Servers: ${bot.guilds.cache.size}
+          Invite Link: 
           `,
       })
     );

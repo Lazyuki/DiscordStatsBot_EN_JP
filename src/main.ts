@@ -13,7 +13,7 @@ import parseCommand from './utils/parseCommand';
 config();
 
 // When set to true, event handlers that send messages automatically will not fire
-const DEBUG_MODE = env.get('DEBUG').default('false').asBool();
+const DEBUG_MODE = env.get('DEBUG').default('true').asBool();
 
 // Set up intents
 const UNWANTED_INTENTS = [
@@ -35,7 +35,7 @@ const client = new Client({
 }) as Bot;
 
 client.ownerId = env.get('OWNER_ID').required().asString();
-client.commands = new Collection<string, ParsedBotCommand>();
+client.commands = {};
 client.commandInits = [];
 client.servers = {};
 
@@ -54,15 +54,15 @@ for (const dir of dirs) {
     const commandName = fileName.replace('.js', '');
 
     console.log('command registered', commandName);
-    const parsedCommand = parseCommand(command, commandName);
-    client.commands.set(commandName, parsedCommand);
+    const parsedCommand = parseCommand(command, commandName, dir);
+    client.commands[commandName] = parsedCommand;
     if (parsedCommand.init) client.commandInits.push(parsedCommand.init);
     parsedCommand.aliases?.forEach((alias) => {
-      if (client.commands.has(alias)) {
+      if (client.commands[alias]) {
         logger.error(`Command alias ${alias} is double assigned!`);
         return;
       }
-      client.commands.set(alias, parsedCommand);
+      client.commands[alias] = parsedCommand;
     });
   }
 }

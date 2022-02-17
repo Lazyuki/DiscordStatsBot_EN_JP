@@ -7,6 +7,7 @@ import { errorEmbed } from '@utils/embed';
 import { Message, MessageOptions, Util } from 'discord.js';
 import safeSend from '@utils/safeSend';
 import { isNotDM } from '@utils/typeGuards';
+import isRateLimited from '@utils/rateLimit';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -35,7 +36,7 @@ const event: BotEvent<'messageCreate'> = {
     }
 
     // Is it not a command?
-    if (!message.content.toLocaleLowerCase().startsWith(server.config.prefix)) {
+    if (!message.content.toLowerCase().startsWith(server.config.prefix)) {
       return;
     }
     // Separate the command and the content
@@ -46,10 +47,21 @@ const event: BotEvent<'messageCreate'> = {
     const commandContent = message.content
       .slice(server.config.prefix.length + commandName.length)
       .trim();
-    const command = bot.commands.get(commandName);
+    const command = bot.commands[commandName];
     if (command) {
       // Check permission
       if (command.isAllowed(message, server, bot) && command.normalCommand) {
+        if (command.rateLimitSeconds) {
+          if (
+            isRateLimited(
+              `${command.name}_${message.channelId}`,
+              command.rateLimitSeconds
+            )
+          ) {
+            // Being rate limited
+            return;
+          }
+        }
         const sendChannel = message.channel.send.bind(message.channel);
         const replyMessage = message.reply.bind(message);
         const safeChannelSend = safeSend(sendChannel);

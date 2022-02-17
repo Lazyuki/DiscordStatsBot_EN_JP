@@ -1,13 +1,20 @@
 import { BotCommand, ParsedBotCommand } from '../types';
 import { PERMISSIONS } from './checkPermissions';
 
+function titleCase(str: string) {
+  const splitCapital = str.replace(/([A-Z])/, ' $1');
+  return splitCapital[0].toUpperCase() + splitCapital.slice(1);
+}
+
 export default function parseCommand(
   { isAllowed, allowedServers, ...restCommand }: BotCommand,
-  commandName: string
+  commandName: string,
+  categoryName: string
 ): ParsedBotCommand {
   const parsedCommand = {
     ...restCommand,
     name: commandName,
+    category: titleCase(categoryName),
   } as ParsedBotCommand;
   if (isAllowed === undefined) {
     if (allowedServers) {

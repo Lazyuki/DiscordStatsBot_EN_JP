@@ -8,7 +8,7 @@ const event: BotEvent<'interactionCreate'> = {
     logger.info(`Slash Command`);
     if (!interaction.isCommand()) return;
 
-    const command = bot.commands.get(interaction.commandName);
+    const command = bot.commands[interaction.commandName];
 
     if (!command || !command.replyInteraction) return;
 
