@@ -50,8 +50,10 @@ const event: BotEvent<'messageCreate'> = {
     if (command) {
       // Check permission
       if (command.isAllowed(message, server, bot) && command.normalCommand) {
-        const safeChannelSend = safeSend(message.channel.send);
-        const safeReply = safeSend(message.reply);
+        const sendChannel = message.channel.send.bind(message.channel);
+        const replyMessage = message.reply.bind(message);
+        const safeChannelSend = safeSend(sendChannel);
+        const safeReply = safeSend(replyMessage);
 
         try {
           await command.normalCommand({

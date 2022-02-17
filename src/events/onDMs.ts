@@ -7,7 +7,7 @@ const event: BotEvent<'messageCreate'> = {
   once: false,
   skipOnDebug: true,
   processEvent: async (bot, message) => {
-    if (message.channel.type === 'DM') return;
+    if (message.channel.type !== 'DM') return;
     // Direct message.
     // Check EJLX user
     const ejlxMember = bot.servers[EJLX]?.guild.members.cache.get(

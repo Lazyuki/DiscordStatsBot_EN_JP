@@ -35,6 +35,8 @@ function safeSend(_send: (m: MessageOptions) => Promise<Message | undefined>) {
           await _send({ content: chunk });
         });
         return createdMessage;
+      } else {
+        return await _send(content);
       }
     } else {
       return await _send({ content: '*empty result*' });

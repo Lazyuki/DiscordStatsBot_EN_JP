@@ -231,6 +231,11 @@ export const clearModLogForUser = db.prepare(`
     WHERE guild_id = $guildId AND user_id = $userId
 `);
 
+export const insertServer = db.prepare<{ guildId: string }>(`
+    INSERT OR IGNORE INTO guilds (guild_id)
+    VALUES ($guildId)
+`);
+
 export const insertMessages = db.prepare<{
   guildId: string;
   channelId: string;
@@ -244,12 +249,6 @@ export const insertMessages = db.prepare<{
     ON CONFLICT (guild_id, channel_id, user_id, lang, utc_date) DO UPDATE
     SET message_count = messages.message_count + EXCLUDED.message_count
 `);
-// `
-// INSERT INTO messages (guild_id, channel_id, user_id, lang, utc_date, message_count)
-//     VALUES(123456, 123456, 123456, 'JP', 2022-02-14, 1)
-//     ON CONFLICT (guild_id, channel_id, user_id, lang, utc_date) DO UPDATE
-//     SET message_count = messages.message_count + EXCLUDED.message_count;
-// `;
 
 export const insertEmojis = db.prepare(`
     INSERT INTO emojis (guild_id, user_id, emoji, utc_date, emoji_count)

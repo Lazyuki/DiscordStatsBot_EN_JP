@@ -6,7 +6,6 @@ import env from 'env-var';
 import logger from './logger';
 import { Bot, BotCommand, BotEvent, ParsedBotCommand } from './types';
 import parseCommand from './utils/parseCommand';
-import * as eventHandlers from './events';
 
 // import deploySlashCommands from './deploySlashCommands';
 
@@ -50,10 +49,11 @@ for (const dir of dirs) {
     .readdirSync(`./build/commands/${dir}`)
     .filter((file) => file.endsWith('.js'));
   for (const fileName of commandFiles) {
-    const command = (await import(
-      `./commands/${dir}/${fileName}`
-    )) as BotCommand;
+    const command = (await import(`./commands/${dir}/${fileName}`))
+      .default as BotCommand;
     const commandName = fileName.replace('.js', '');
+
+    console.log('command registered', commandName);
     const parsedCommand = parseCommand(command, commandName);
     client.commands.set(commandName, parsedCommand);
     if (parsedCommand.init) client.commandInits.push(parsedCommand.init);
@@ -72,7 +72,8 @@ const eventFiles = fs
   .filter((file: string) => file.endsWith('.js'));
 
 for (const fileName of eventFiles) {
-  const event = (await import(`./events/${fileName}`)) as BotEvent<any>;
+  const event = (await import(`./events/${fileName}`)).default as BotEvent<any>;
+  console.log('event registered', event);
   if (event.once) {
     client.once(event.eventName, (...args) =>
       event.processEvent(client, ...args)
@@ -94,7 +95,7 @@ for (const fileName of eventFiles) {
   }
 }
 
-process.on('unhandledRejection', logger.error); // Show stack trace on unhandled rejection.
+process.on('unhandledRejection', console.error); // Show stack trace on unhandled rejection.
 
 // setInterval(() => {
 //   // Set up hourly backup state task

@@ -1,4 +1,3 @@
-import { MessageEmbed } from 'discord.js';
 import { makeEmbed, successEmbed } from '@utils/embed';
 import { BotCommand } from '@/types';
 
@@ -21,7 +20,6 @@ const command: BotCommand = {
     try {
       const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
       const evalContent = `try { ${commandContent} } catch (e) { await send(e.message && e.message.substr(0, 2000)); }`;
-      const embed = new MessageEmbed();
       const func = new AsyncFunction(
         'content',
         'message',
