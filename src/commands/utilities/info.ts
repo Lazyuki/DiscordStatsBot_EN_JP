@@ -10,8 +10,8 @@ const command: BotCommand = {
       makeEmbed({
         title: 'Ciri',
         description: stripIndents`
-          Number of Servers: ${bot.guilds.cache.size}
-          Invite Link: 
+          **Number of Servers**: ${bot.guilds.cache.size}
+          **Uptime**: 
           `,
       })
     );

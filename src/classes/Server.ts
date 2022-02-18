@@ -17,11 +17,12 @@ function getRestoreFilePath(guildId: string) {
 class Server {
   guild: Guild;
   config: ServerConfig;
-  // temp: ServerTemp;
+  temp: ServerTemp; // temporary state that does NOT persist
   // cache: ServerStatsCache;
 
   constructor(guild: Guild, bot: Bot) {
     this.guild = guild;
+    this.temp = {} as ServerTemp;
     const restoreFileName = getRestoreFilePath(guild.id);
 
     this.config = {

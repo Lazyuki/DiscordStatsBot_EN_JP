@@ -1,19 +1,20 @@
-import { BotCommand } from '../../types';
+import { BotCommand } from '@/types';
 
-declare module '../../types' {
+declare module '@/types' {
   interface ServerConfig {
     ignoredChannels: string[];
   }
 }
 
 const command: BotCommand = {
-  isAllowed: 'ADMIN',
+  isAllowed: 'SERVER_MODERATOR',
   init: (config) => {
     config.ignoredChannels ||= [];
   },
   description:
-    'Ignores a channel from leaderboards. Commands will still work there. Useful for ignoring noisy channels such as quiz or bot-spam channels.',
+    'Ignores a channel from statistics. Bot commands will still work there. Useful for ignoring noisy channels such as quiz or bot-spam channels.',
   arguments: '<#channel> [#channel2 ... ]',
+  childCommands: ['ignored', 'unignore'],
   normalCommand: async ({ commandContent, message, server }) => {
     const chan = server.guild.channels.cache.get(commandContent);
     if (chan) {

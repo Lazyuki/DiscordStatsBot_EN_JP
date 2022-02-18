@@ -1,11 +1,5 @@
-import { BotCommand } from '../../types';
-import { REGEX_USER } from '../../utils/regex';
-
-declare module '../../types' {
-  interface ServerConfig {
-    ignoredChannels: string[];
-  }
-}
+import { BotCommand } from '@/types';
+import { REGEX_USER } from '@/utils/regex';
 
 const command: BotCommand = {
   isAllowed: 'MUTE_MEMBERS',

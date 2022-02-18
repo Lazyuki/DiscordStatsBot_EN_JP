@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS voice(
   guild_id BIGINT NOT NULL REFERENCES guilds(guild_id),
   user_id BIGINT NOT NULL,
   utc_date DATE NOT NULL,
-  minute_count INT NOT NULL,
+  second_count INT NOT NULL,
   CONSTRAINT voice_pk PRIMARY KEY (guild_id, user_id, utc_date)
 );
 

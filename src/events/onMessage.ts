@@ -2,17 +2,10 @@ import { TextChannel, NewsChannel, ThreadChannel } from 'discord.js';
 
 import { BotEvent } from '@/types';
 import { isNotDM } from '@utils/typeGuards';
-import { insertMessages } from '@database/statements';
+import { dbInsertMessages } from '@database/statements';
 import { getToday } from '@utils/formatStats';
 import checkLang from '@utils/checkLang';
-
-function getChannelId(channel: TextChannel | NewsChannel | ThreadChannel) {
-  if (channel.isThread()) {
-    return channel.parentId!;
-  } else {
-    return channel.id;
-  }
-}
+import { getParentChannelId } from '@utils/discordGetters';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -26,14 +19,14 @@ const event: BotEvent<'messageCreate'> = {
     const server = bot.servers[message.guild.id];
 
     const guildId = message.guild.id;
-    const channelId = getChannelId(message.channel);
+    const channelId = getParentChannelId(message.channel);
     if (server.config.ignoredChannels.includes(channelId)) return;
 
     const userId = message.member.id;
     const date = getToday();
     const { lang } = checkLang(message.content);
 
-    insertMessages.run({
+    dbInsertMessages.run({
       guildId,
       userId,
       channelId,

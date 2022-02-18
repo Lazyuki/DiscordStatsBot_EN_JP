@@ -1,5 +1,6 @@
 import { BotCommand } from '@/types';
 import { errorEmbed, makeEmbed } from '@utils/embed';
+import pluralize from '@utils/pluralize';
 import { EmbedField } from 'discord.js';
 
 const command: BotCommand = {
@@ -10,32 +11,40 @@ const command: BotCommand = {
       const command = bot.commands[commandName];
       if (!command) {
         await message.channel.send(
-          errorEmbed(
-            `Command \`${commandName}\` does not exit.\nType \`${server.config.prefix}help\` to see the list of available commands.`
-          )
+          errorEmbed({
+            content: `Command \`${commandName}\` does not exit.`,
+            footer: `Type "${server.config.prefix}help" to see the list of available commands.`,
+          })
         );
         return;
       } else if (!command.normalCommand) {
         await message.channel.send(
-          errorEmbed(
-            `Command \`${commandName}\` is for slash commands.\nType \`${server.config.prefix}help\` to see the list of available commands.`
-          )
+          errorEmbed({
+            content: `Command \`${commandName}\` is for slash commands.`,
+            footer: `Type "${server.config.prefix}help" to see the list of available commands.`,
+          })
         );
         return;
       } else {
         const title = command.name;
         const description = command.description;
         const footer = command.aliases
-          ? `Alias${
-              command.aliases.length === 1 ? '' : 'es'
-            }: ${command.aliases.join(', ')}`
+          ? `${pluralize(
+              'Alias',
+              'es',
+              command.aliases.length
+            )}: ${command.aliases.join(', ')}`
           : undefined;
         const args = command.arguments
-          ? { name: 'Arguments', value: command.arguments, inline: false }
+          ? {
+              name: pluralize('Argument', 's', command.arguments.length),
+              value: command.arguments,
+              inline: false,
+            }
           : null;
         const examples = command.examples
           ? {
-              name: 'Examples',
+              name: pluralize('Example', 's', command.examples.length),
               value: command.examples
                 .map((example) => `\`${server.config.prefix}${example}\``)
                 .join('\n'),
@@ -74,7 +83,7 @@ const command: BotCommand = {
       await message.channel.send(
         makeEmbed({
           fields,
-          footer: `To see more details, type "${server.config.prefix}help commandName"`,
+          footer: `Type "${server.config.prefix}help command" for help with each command`,
         })
       );
     }

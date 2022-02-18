@@ -1,7 +1,7 @@
-import { BotCommand } from '../../types';
+import { BotCommand } from '@/types';
 
 const command: BotCommand = {
-  isAllowed: 'ADMIN',
+  isAllowed: 'SERVER_MODERATOR',
   description: 'Show ignored channels',
   normalCommand: async ({ message, server }) => {
     const channels = server.config.ignoredChannels;

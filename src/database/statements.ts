@@ -1,6 +1,17 @@
-import logger from '@/logger';
 import { LangType } from '@/types';
 import db from '.';
+
+interface GuildUser {
+  guildId: string;
+  userId: string;
+}
+
+interface GuildUserDate extends GuildUser {
+  date: string; // ISO
+}
+interface GuildChannelUser extends GuildUserDate {
+  channelId: string;
+}
 
 export const getMessagesForUsers = db.prepare<{
   guildId: string;
@@ -12,7 +23,7 @@ export const getMessagesForUsers = db.prepare<{
     GROUP BY user_id
 `);
 
-export const getTop3EmojiForUser = db.prepare(`
+export const getTop3EmojiForUser = db.prepare<GuildUser>(`
     SELECT emoji, SUM(emoji_count) as count
     FROM emojis
     WHERE guild_id = $guildId AND user_id = $userId
@@ -21,19 +32,23 @@ export const getTop3EmojiForUser = db.prepare(`
     LIMIT 3
 `);
 
-export const getVoiceMinutesForUser = db.prepare(`
-    SELECT SUM(minute_count) as count
+export const getVoiceSecondsForUser = db.prepare<GuildUser>(`
+    SELECT SUM(second_count) as count
     FROM voice
     WHERE guild_id = $guildId AND user_id = $userId
 `);
 
-export const getDeletesForUser = db.prepare(`
+export const getDeletesForUser = db.prepare<GuildUser>(`
     SELECT SUM(delete_count) as count
     FROM deletes
     WHERE guild_id = $guildId AND user_id = $userId
 `);
 
-export const getLangPercentForUser = db.prepare(`
+export const getLangPercentForUser = db.prepare<
+  GuildUser & {
+    channelIds: string[];
+  }
+>(`
     WITH records AS (
         SELECT channel_id, lang, message_count, utc_date
         FROM messages
@@ -55,7 +70,7 @@ export const getLangPercentForUser = db.prepare(`
         WHERE utc_date > datetime('now', '-7 days')
 `);
 
-export const getLeaderboard = db.prepare(`
+export const getLeaderboard = db.prepare<GuildUser>(`
     WITH ranked AS (
         SELECT *, RANK() OVER(ORDER BY count DESC)
         FROM (
@@ -68,11 +83,13 @@ export const getLeaderboard = db.prepare(`
         SELECT * FROM ranked
     UNION ALL
         SELECT * FROM ranked WHERE user_id = $userId
-        
-
 `);
 
-export const getChannelLeaderboard = db.prepare(`
+export const getChannelLeaderboard = db.prepare<
+  GuildUser & {
+    channelIds: string[];
+  }
+>(`
     WITH ranked AS (
         SELECT *, RANK() OVER (ORDER BY count DESC)
         FROM (
@@ -83,14 +100,16 @@ export const getChannelLeaderboard = db.prepare(`
             ORDER BY count DESC
         ) AS cl
     )
-        
         SELECT * FROM ranked
     UNION ALL
         SELECT * FROM ranked WHERE user_id = $userId
         
 `);
 
-export const getJapaneseLeaderboard = db.prepare(`
+export const getJapaneseLeaderboard = db.prepare<{
+  guildId: string;
+  lowerLimit: number;
+}>(`
     WITH lang_usage AS (
         SELECT user_id, COALESCE(SUM(CASE WHEN lang = 'JP' THEN message_count END),0) as jp_count, SUM(message_count) as total
         FROM messages
@@ -103,7 +122,10 @@ export const getJapaneseLeaderboard = db.prepare(`
         ORDER BY jp_ratio DESC
 `);
 
-export const getEnglishLeaderboard = db.prepare(`
+export const getEnglishLeaderboard = db.prepare<{
+  guildId: string;
+  lowerLimit: number;
+}>(`
     WITH lang_usage AS (
         SELECT user_id, COALESCE(SUM(CASE WHEN lang = 'EN' THEN message_count END),0) as en_count, SUM(message_count) as total
         FROM messages
@@ -116,23 +138,7 @@ export const getEnglishLeaderboard = db.prepare(`
         ORDER BY en_ratio DESC
 `);
 
-// no percentile_disc in sqlite
-// export const getEmojiLeaderboardWithPercentile = db.prepare(`
-//     WITH emoji_counts AS (
-//         SELECT emoji, PERCENTILE_DISC($percentile) WITHIN GROUP(ORDER BY count) AS median, COUNT(user_id) AS spread
-//         FROM (
-//             SELECT emoji, user_id, SUM(emoji_count) as count
-//             FROM emojis
-//             WHERE guild_id = $guildId
-//             GROUP BY emoji, user_id
-//             ORDER BY count DESC
-//         ) AS el
-//         GROUP BY emoji
-//     )
-//         SELECT *, RANK() OVER (ORDER BY median DESC) from emoji_counts
-// `);
-
-export const getEmojiLeaderboarByNumUsers = db.prepare(`
+export const getEmojiLeaderboarByNumUsers = db.prepare<{ guildId: string }>(`
     WITH emoji_counts AS (
         SELECT emoji, SUM(count) as count, COUNT(user_id) AS spread
         FROM (
@@ -147,7 +153,7 @@ export const getEmojiLeaderboarByNumUsers = db.prepare(`
         SELECT *, RANK() OVER (ORDER BY spread DESC) from emoji_counts
 `);
 
-export const getEmojiLeaderboard = db.prepare(`
+export const getEmojiLeaderboard = db.prepare<{ guildId: string }>(`
     SELECT *, RANK() OVER (ORDER BY count DESC)
     FROM (
         SELECT emoji, SUM(emoji_count) as count
@@ -157,7 +163,9 @@ export const getEmojiLeaderboard = db.prepare(`
     ) AS el
 `);
 
-export const getSingleEmojiLeaderboard = db.prepare(`
+export const getSingleEmojiLeaderboard = db.prepare<
+  GuildUser & { emojiName: string }
+>(`
     WITH ranked AS (
         SELECT *, RANK() OVER (ORDER BY count DESC)
         FROM (
@@ -173,11 +181,11 @@ export const getSingleEmojiLeaderboard = db.prepare(`
         SELECT * FROM ranked WHERE user_id = $userId
 `);
 
-export const getVoiceLeaderboard = db.prepare(`
+export const getVoiceLeaderboard = db.prepare<GuildUser>(`
     WITH ranked AS (
         SELECT *, RANK() OVER (ORDER BY count DESC)
         FROM (
-            SELECT user_id, SUM(minute_count) as count
+            SELECT user_id, SUM(second_count) as count
             FROM voice
             WHERE guild_id = $guildId
             GROUP BY user_id
@@ -189,7 +197,7 @@ export const getVoiceLeaderboard = db.prepare(`
         SELECT * FROM ranked WHERE user_id = $userId
 `);
 
-export const getUserActivity = db.prepare(`
+export const getUserActivity = db.prepare<GuildUser>(`
     SELECT SUM(message_count) as count, utc_date
     FROM messages
     WHERE guild_id = $guildId AND user_id = $userId
@@ -197,7 +205,10 @@ export const getUserActivity = db.prepare(`
     ORDER BY utc_date ASC
 `);
 
-export const getChannelActivity = db.prepare(`
+export const getChannelActivity = db.prepare<{
+  guildId: string;
+  channelIds: string;
+}>(`
     SELECT SUM(message_count) as count, utc_date
     FROM messages
     WHERE guild_id = $guildId AND channel_id IN ($channelIds)
@@ -205,7 +216,7 @@ export const getChannelActivity = db.prepare(`
     ORDER BY utc_date ASC
 `);
 
-export const getServerActivity = db.prepare(`
+export const getServerActivity = db.prepare<{ guildId: string }>(`
     SELECT SUM(message_count) as count, utc_date
     FROM messages
     WHERE guild_id = $guildId
@@ -213,72 +224,94 @@ export const getServerActivity = db.prepare(`
     ORDER BY utc_date ASC
 `);
 
-export const getModLog = db.prepare(`
+export const getModLog = db.prepare<GuildUser>(`
     SELECT * FROM modlog
     WHERE guild_id = $guildId AND user_id = $userId
     ORDER BY utc_date ASC
 `);
 
-export const deleteModLogEntry = db.prepare(`
+export const deleteModLogEntry = db.prepare<GuildUser & { index: number }>(`
     DELETE FROM modlog
     WHERE guild_id = $guildId AND user_id = $userId
     ORDER BY utc_date ASC
     LIMIT 1 OFFSET $index
 `);
 
-export const clearModLogForUser = db.prepare(`
+export const clearModLogForUser = db.prepare<GuildUser>(`
     DELETE FROM modlog
     WHERE guild_id = $guildId AND user_id = $userId
 `);
 
-export const insertServer = db.prepare<{ guildId: string }>(`
-    INSERT OR IGNORE INTO guilds (guild_id)
+export const dbInsertServer = db.prepare<{ guildId: string }>(`
+    dbInsert OR IGNORE INTO guilds (guild_id)
     VALUES ($guildId)
 `);
 
-export const insertMessages = db.prepare<{
-  guildId: string;
-  channelId: string;
-  userId: string;
-  lang: LangType;
-  date: string;
-  messageCount: number;
-}>(`
-    INSERT INTO messages (guild_id, channel_id, user_id, lang, utc_date, message_count)
+export const dbInsertMessages = db.prepare<
+  GuildChannelUser & {
+    lang: LangType;
+    messageCount: number;
+  }
+>(`
+    dbInsert INTO messages (guild_id, channel_id, user_id, lang, utc_date, message_count)
     VALUES($guildId, $channelId, $userId, $lang, $date, $messageCount)
     ON CONFLICT (guild_id, channel_id, user_id, lang, utc_date) DO UPDATE
     SET message_count = messages.message_count + EXCLUDED.message_count
 `);
 
-export const insertEmojis = db.prepare(`
-    INSERT INTO emojis (guild_id, user_id, emoji, utc_date, emoji_count)
+export const dbInsertEmojis = db.prepare<
+  GuildUserDate & {
+    emoji: string;
+    emojiCount: number;
+  }
+>(`
+    dbInsert INTO emojis (guild_id, user_id, emoji, utc_date, emoji_count)
     VALUES($guildId, $userId, $emoji, $date, $emojiCount)
     ON CONFLICT (guild_id, user_id, emoji, utc_date) DO UPDATE
     SET emoji_count = emojis.emoji_count + EXCLUDED.emoji_count
 `);
 
-export const insertVoiceMinutes = db.prepare(`
-    INSERT INTO voice (guild_id, user_id, utc_date, minute_count)
-    VALUES($guildId, $userId, $date, $minuteCount)
+export const dbInsertVoiceSeconds = db.prepare<
+  GuildUserDate & {
+    secondCount: number;
+  }
+>(`
+    dbInsert INTO voice (guild_id, user_id, utc_date, second_count)
+    VALUES($guildId, $userId, $date, $secondCount)
     ON CONFLICT (guild_id, user_id, utc_date) DO UPDATE
-    SET minute_count = voice.minute_count + EXCLUDED.minute_count
+    SET second_count = voice.second_count + EXCLUDED.second_count
 `);
-export const insertDeletes = db.prepare(`
-    INSERT INTO deletes (guild_id, user_id, utc_date, delete_count)
+
+export const dbInsertDeletes = db.prepare<
+  GuildUserDate & {
+    deleteCount: number;
+  }
+>(`
+    dbInsert INTO deletes (guild_id, user_id, utc_date, delete_count)
     VALUES($guildId, $userId, $date, $deleteCount)
     ON CONFLICT (guild_id, user_id, utc_date) DO UPDATE
     SET delete_count = deletes.delete_count + EXCLUDED.delete_count
 `);
 
-export const insertStickers = db.prepare(`
-    INSERT INTO stickers (guild_id, user_id, sticker, utc_date, sticker_count)
+export const dbInsertStickers = db.prepare<
+  GuildUserDate & {
+    sticker: string;
+    stickerCount: number;
+  }
+>(`
+    dbInsert INTO stickers (guild_id, user_id, sticker, utc_date, sticker_count)
     VALUES($guildId, $userId, $sticker, $date, $stickerCount)
     ON CONFLICT (guild_id, user_id, sticker, utc_date) DO UPDATE
     SET sticker_count = stickers.sticker_count + EXCLUDED.sticker_count
 `);
 
-export const insertCommands = db.prepare(`
-    INSERT INTO commands (guild_id, user_id, command, utc_date, command_count)
+export const dbInsertCommands = db.prepare<
+  GuildUserDate & {
+    command: string;
+    commandCount: number;
+  }
+>(`
+    dbInsert INTO commands (guild_id, user_id, command, utc_date, command_count)
     VALUES($guildId, $userId, $command, $date, $commandCount)
     ON CONFLICT (guild_id, user_id, command, utc_date) DO UPDATE
     SET command_count = commands.command_count + EXCLUDED.command_count

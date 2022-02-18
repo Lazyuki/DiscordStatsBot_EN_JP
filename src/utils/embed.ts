@@ -82,7 +82,7 @@ export const makeEmbed = ({
 };
 
 export const successEmbed = (options: EmbedOptions | string) => {
-  const description = `✅ ${
+  const description = `✅  ${
     typeof options === 'string' ? options : options.description
   }`;
   if (typeof options === 'string') {
@@ -96,7 +96,7 @@ export const successEmbed = (options: EmbedOptions | string) => {
 };
 
 export const errorEmbed = (options: EmbedOptions | string) => {
-  const description = `❌ ${
+  const description = `❌  ${
     typeof options === 'string' ? options : options.description
   }`;
   if (typeof options === 'string') {
@@ -110,7 +110,7 @@ export const errorEmbed = (options: EmbedOptions | string) => {
 };
 
 export const warningEmbed = (options: EmbedOptions | string) => {
-  const description = `⚠️ ${
+  const description = `⚠️  ${
     typeof options === 'string' ? options : options.description
   }`;
   if (typeof options === 'string') {

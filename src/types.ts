@@ -47,6 +47,7 @@ export interface BotCommand {
   isAllowed?:
     | CommandPermissionLevel
     | ((message: Message, server: Server, bot: Bot) => boolean);
+  hidden?: boolean;
   rateLimitSeconds?: number;
   description: string;
   arguments?: string;
@@ -62,6 +63,8 @@ export interface BotCommand {
     reply: (options: string | MessageOptions) => Promise<Message | undefined>;
   }) => void | Promise<void>;
   slashCommand?: SlashCommandBuilder;
+  childCommands?: string[];
+  parentCommand?: string;
   replyInteraction?: (interaction: Interaction) => void | Promise<void>;
 }
 
@@ -76,6 +79,8 @@ export interface BotEvent<E extends keyof ClientEvents> {
   once: boolean;
   skipOnDebug?: boolean;
   processEvent: (bot: Bot, ...args: ClientEvents[E]) => void | Promise<void>;
+  init?: (bot: Bot) => void;
+  end?: (bot: Bot) => void;
 }
 
 // Extend the type from each command file

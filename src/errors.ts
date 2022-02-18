@@ -31,3 +31,11 @@ export class NotFoundError extends UserError {
     this.name = 'NotFoundError';
   }
 }
+
+export class UserNotFoundError extends UserError {
+  constructor(message = '', ...args: any[]) {
+    super(...args);
+    this.message = message;
+    this.name = 'UserNotFoundError';
+  }
+}

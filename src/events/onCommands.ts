@@ -1,6 +1,11 @@
 import { BotEvent, SafeMessage } from '@/types';
 import logger from '@/logger';
-import { BotError, NotFoundError, UserError } from '@/errors';
+import {
+  BotError,
+  NotFoundError,
+  UserError,
+  UserNotFoundError,
+} from '@/errors';
 import { EJLX } from '@utils/constants';
 import { DiscordAPIError } from '@discordjs/rest';
 import { errorEmbed } from '@utils/embed';
@@ -93,9 +98,17 @@ const event: BotEvent<'messageCreate'> = {
             }
             logger.warn(`${error.code} ${error.name}: ${error.message}`);
           } else if (error instanceof UserError) {
-            await safeChannelSend(
-              errorEmbed(`${error.name}: ${error.message}`)
-            );
+            if (error instanceof UserNotFoundError) {
+              await safeChannelSend(
+                errorEmbed(
+                  `User Not Found: User with ID ${error.message} is not on this server.`
+                )
+              );
+            } else {
+              await safeChannelSend(
+                errorEmbed(`${error.name}: ${error.message}`)
+              );
+            }
             switch (error) {
             }
           } else if (error instanceof BotError) {

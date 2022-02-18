@@ -1,6 +1,14 @@
-import { Guild, GuildChannel, GuildMember, Message } from 'discord.js';
+import {
+  Guild,
+  GuildChannel,
+  GuildMember,
+  Message,
+  PartialMessage,
+} from 'discord.js';
 
-export function isNotDM(message: Message): message is Message & {
+export function isNotDM(
+  message: Message | PartialMessage
+): message is Message & {
   guild: Guild;
   member: GuildMember;
   channel: GuildChannel;
