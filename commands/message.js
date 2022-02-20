@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const Util = require('../classes/Util.js');
 
 module.exports.name = 'message';
-module.exports.alias = ['message, msg'];
+module.exports.alias = ['message', 'msg'];
 
 module.exports.isAllowed = (message, server) => {
   return message.member.hasPermission('BAN_MEMBERS');
