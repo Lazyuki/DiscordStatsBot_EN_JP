@@ -10,7 +10,7 @@ const db = new Database('discord_ciri.db');
 
 export function initTables() {
   const dbInit = fs.readFileSync(
-    path.resolve(path.dirname(__filename) + '/db.sql'),
+    path.resolve(path.dirname(__filename) + '/schema.sql'),
     'utf8'
   );
   const queryBlocks = dbInit.split('\n\n');
