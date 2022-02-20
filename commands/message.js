@@ -5,7 +5,12 @@ module.exports.name = 'message';
 module.exports.alias = ['message', 'msg'];
 
 module.exports.isAllowed = (message, server) => {
-  return message.member.hasPermission('BAN_MEMBERS');
+  return (
+    server.hiddenChannels.includes(message.channel.id) ||
+    (server.guild.id === '189571157446492161' &&
+      (message.member.hasPermission('BAN_MEMBERS') ||
+        message.member.roles.cache.has('543721608506900480')))
+  );
 };
 
 module.exports.help = 'DM a user';
