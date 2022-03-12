@@ -28,7 +28,7 @@ export function getSecondDiff(now: number, then: number) {
 
 const event: BotEvent<'guildMemberUpdate'> = {
   eventName: 'guildMemberUpdate',
-  once: false,
+  skipOnDebug: false,
   processEvent: async (bot, oldMember, newMember) => {
     if (oldMember.user.bot) return;
     const now = new Date().getTime();
@@ -50,7 +50,7 @@ const event: BotEvent<'guildMemberUpdate'> = {
       }
     }
   },
-  init: (bot) => {
+  onBotInit: (bot) => {
     const now = new Date().getTime();
     for (const server of Object.values(bot.servers)) {
       server.temp.vc = {};
@@ -67,8 +67,7 @@ const event: BotEvent<'guildMemberUpdate'> = {
       });
     }
   },
-
-  end: (bot) => {
+  onBotExit: (bot) => {
     const now = new Date().getTime();
     for (const server of Object.values(bot.servers)) {
       for (const userId in server.temp.vc) {

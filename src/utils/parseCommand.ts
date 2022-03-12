@@ -8,12 +8,10 @@ function titleCase(str: string) {
 
 export default function parseCommand(
   { isAllowed, allowedServers, ...restCommand }: BotCommand,
-  commandName: string,
   categoryName: string
 ): ParsedBotCommand {
   const parsedCommand = {
     ...restCommand,
-    name: commandName,
     category: titleCase(categoryName),
   } as ParsedBotCommand;
   if (isAllowed === undefined) {

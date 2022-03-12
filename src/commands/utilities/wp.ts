@@ -2,6 +2,7 @@ import { BotCommand } from '@/types';
 import { WP } from '@utils/constants';
 
 const command: BotCommand = {
+  name: 'wp',
   isAllowed: 'WP',
   description: 'Welcoming Party stats',
   normalCommand: async ({ message, server }) => {

@@ -6,6 +6,7 @@ import { EJLX, FJ_COLOR } from '@utils/constants';
 import { makeEmbed } from '@utils/embed';
 
 const command: BotCommand = {
+  name: 'fj',
   allowedServers: [EJLX],
   description: 'Explanation of the FJ (Fluent Japanese) role',
   rateLimitSeconds: 10,

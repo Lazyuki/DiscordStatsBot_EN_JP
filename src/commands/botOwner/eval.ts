@@ -2,6 +2,7 @@ import { makeEmbed, successEmbed } from '@utils/embed';
 import { BotCommand } from '@/types';
 
 const command: BotCommand = {
+  name: 'eval',
   isAllowed: 'BOT_OWNER',
   description:
     'Can access [message, content, bot, server, send, makeEmbed]. Send to the channel with `send()` or simply return',

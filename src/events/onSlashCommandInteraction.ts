@@ -3,7 +3,7 @@ import logger from '@/logger';
 
 const event: BotEvent<'interactionCreate'> = {
   eventName: 'interactionCreate',
-  once: false,
+  skipOnDebug: true,
   processEvent: async (bot, interaction) => {
     logger.info(`Slash Command`);
     if (!interaction.isCommand()) return;

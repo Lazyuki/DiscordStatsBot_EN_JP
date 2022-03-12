@@ -3,6 +3,7 @@ import { EJLX } from '@utils/constants';
 import { makeEmbed } from '@utils/embed';
 
 const command: BotCommand = {
+  name: 'yonde',
   allowedServers: [EJLX],
   description:
     'Readme message for new users in Japanese. Use `,readme` for English.',

@@ -10,8 +10,9 @@ declare module '@/types' {
 }
 
 const command: BotCommand = {
+  name: 'watch',
   isAllowed: 'ADMIN',
-  init: (config) => {
+  onCommandInit: (config) => {
     config.watched ||= [];
   },
   description: 'Watch a user for deleted messages',

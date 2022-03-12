@@ -7,6 +7,7 @@ import { dbInsertServer } from '@database/statements';
 const event: BotEvent<'ready'> = {
   eventName: 'ready',
   once: true,
+  skipOnDebug: false,
   processEvent(bot) {
     for (const guild of bot.guilds.cache.values()) {
       bot.servers[guild.id] = new Server(guild, bot);

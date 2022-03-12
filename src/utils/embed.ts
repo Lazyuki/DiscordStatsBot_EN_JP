@@ -81,6 +81,18 @@ export const makeEmbed = ({
   return { content, embeds: [embed, ...additionalEmbeds] };
 };
 
+export const cleanEmbed = (options: EmbedOptions | string) => {
+  const description = `✅  ${
+    typeof options === 'string' ? options : options.description
+  }`;
+  if (typeof options === 'string') {
+    return makeEmbed({ description });
+  }
+  return makeEmbed({
+    ...options,
+    description,
+  });
+};
 export const successEmbed = (options: EmbedOptions | string) => {
   const description = `✅  ${
     typeof options === 'string' ? options : options.description

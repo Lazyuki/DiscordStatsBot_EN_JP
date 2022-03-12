@@ -6,6 +6,7 @@
     "declaration": false,
     "removeComments": false,
     "alwaysStrict": true,
+    "resolveJsonModule": true,
     "pretty": false,
     "module": "esnext",
     "target": "es2021",
@@ -16,6 +17,7 @@
     "paths": {
       "@classes/*": ["src/classes/*"],
       "@commands/*": ["src/commands/*"],
+      "@database": ["src/database"],
       "@database/*": ["src/database/*"],
       "@events/*": ["src/events/*"],
       "@utils/*": ["src/utils/*"],

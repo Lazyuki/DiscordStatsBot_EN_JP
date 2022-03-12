@@ -4,9 +4,18 @@ import pluralize from '@utils/pluralize';
 import { EmbedField } from 'discord.js';
 
 const command: BotCommand = {
-  description: 'Recursion much?',
+  name: 'help',
+  description: 'You need help with help?',
   normalCommand: async ({ message, bot, commandContent, server }) => {
     const commandName = commandContent.trim().toLowerCase();
+    if (commandName === 'command') {
+      await message.channel.send(
+        errorEmbed({
+          content: `When I said \`Type "${server.config.prefix}help command"\`, you were supposed to swap \`command\` with an actual name of a command in the list.`,
+        })
+      );
+      return;
+    }
     if (commandName) {
       const command = bot.commands[commandName];
       if (!command) {

@@ -8,10 +8,9 @@ async function storeMediaTemporarily(id: string, mediaLink: string) {}
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
-  once: false,
+  skipOnDebug: false,
   processEvent: async (bot, message) => {
     if (!isNotDM(message)) return; // DM
-    if (!message.guild || !message.member) return; // DM
     if (message.author.bot || message.system) return;
     if (/^(,,?,?|[.>\[$=+%&]|[tk]!|-h)[a-zA-Z]/.test(message.content)) return; // Bot commands
     const server = bot.servers[message.guild.id];

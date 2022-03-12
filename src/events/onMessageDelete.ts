@@ -10,17 +10,21 @@ import { makeEmbed } from '@utils/embed';
 
 const event: BotEvent<'messageDelete'> = {
   eventName: 'messageDelete',
-  once: false,
+  skipOnDebug: true,
   processEvent: async (bot, message) => {
     if (!isNotDM(message)) return; // DM
-    if (!message.guild || !message.member) return; // DM
-    if (message.author.bot || message.system) return;
-    if (/^(,,?,?|[.>\[$=+%&]|[tk]!|-h)[a-zA-Z]/.test(message.content)) return; // Bot commands
+    if (!message.guild) return; // DM
+    const author = message.author;
+    const content = message.content;
+    if (!author) return; // Partial message without author
+    if (content === null) return; // null content?
+    if (author.bot || message.system) return;
+    if (/^(,,?,?|[.>\[$=+%&]|[tk]!|-h)[a-zA-Z]/.test(content)) return; // Bot commands
 
     const server = bot.servers[message.guild.id];
     const guildId = message.guild.id;
     const channelId = getParentChannelId(message.channel);
-    const userId = message.author.id;
+    const userId = author.id;
     if (!server.config.ignoredChannels.includes(channelId)) {
       dbInsertDeletes.run({
         guildId,
@@ -38,7 +42,7 @@ const event: BotEvent<'messageDelete'> = {
       setTimeout(() => {
         if (message.attachments.size > 0) {
           message.attachments.forEach((attachment) => {});
-        } else if (message.content.length <= 3) {
+        } else if (content.length <= 3) {
           // too short to care
           return;
         }
@@ -48,10 +52,10 @@ const event: BotEvent<'messageDelete'> = {
         modLog.send(
           makeEmbed({
             color: DELETE_COLOR,
-            authorName: `${message.author.tag} (${message.author})`,
-            authorIcon: `${message.author.displayAvatarURL()}`,
+            authorName: `${author.tag} (${author})`,
+            authorIcon: `${author.displayAvatarURL()}`,
             title: `Message Deleted after ${timeDiffMillis}`, // TODO: format time
-            description: message.content,
+            description: content,
             footer: `#${channelName || 'unknown'}`,
             timestamp: true,
           })

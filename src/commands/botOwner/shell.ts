@@ -9,6 +9,7 @@ import { codeBlock } from '@utils/formatString';
 let openShell: ChildProcess | null = null;
 
 const command: BotCommand = {
+  name: 'shell',
   isAllowed: 'BOT_OWNER',
   description: 'Run shell commands',
   options: ['-i (interactive shell)'],

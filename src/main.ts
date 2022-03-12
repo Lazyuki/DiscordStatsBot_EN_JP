@@ -37,6 +37,8 @@ const client = new Client({
 client.ownerId = env.get('OWNER_ID').required().asString();
 client.commands = {};
 client.commandInits = [];
+client.botInits = [];
+client.botExits = [];
 client.servers = {};
 
 // Gather commands
@@ -49,20 +51,26 @@ for (const dir of dirs) {
     .readdirSync(`./build/commands/${dir}`)
     .filter((file) => file.endsWith('.js'));
   for (const fileName of commandFiles) {
-    const command = (await import(`./commands/${dir}/${fileName}`))
-      .default as BotCommand;
-    const commandName = fileName.replace('.js', '');
-
-    console.log('command registered', commandName);
-    const parsedCommand = parseCommand(command, commandName, dir);
-    client.commands[commandName] = parsedCommand;
-    if (parsedCommand.init) client.commandInits.push(parsedCommand.init);
-    parsedCommand.aliases?.forEach((alias) => {
-      if (client.commands[alias]) {
-        logger.error(`Command alias ${alias} is double assigned!`);
-        return;
-      }
-      client.commands[alias] = parsedCommand;
+    let commands = (await import(`./commands/${dir}/${fileName}`)).default as
+      | BotCommand
+      | BotCommand[];
+    if (!Array.isArray(commands)) {
+      commands = [commands];
+    }
+    commands.forEach((command) => {
+      const parsedCommand = parseCommand(command, dir);
+      const commandName = parseCommand.name;
+      client.commands[commandName] = parsedCommand;
+      if (parsedCommand.onCommandInit)
+        client.commandInits.push(parsedCommand.onCommandInit);
+      parsedCommand.aliases?.forEach((alias) => {
+        if (client.commands[alias]) {
+          logger.error(`Command alias ${alias} is double assigned!`);
+          return;
+        }
+        client.commands[alias] = parsedCommand;
+      });
+      console.log('command registered', commandName);
     });
   }
 }
@@ -72,30 +80,43 @@ const eventFiles = fs
   .filter((file: string) => file.endsWith('.js'));
 
 for (const fileName of eventFiles) {
-  const event = (await import(`./events/${fileName}`)).default as BotEvent<any>;
-  console.log('event registered', event);
-  if (event.once) {
-    client.once(event.eventName, (...args) =>
-      event.processEvent(client, ...args)
-    );
-  } else {
-    client.on(event.eventName, (...args) => {
-      if (DEBUG_MODE && event.skipOnDebug) return;
-      try {
-        event.processEvent(client, ...args);
-      } catch (e) {
-        const error = e as Error;
-        logger.error(
-          `Error processing event ${event.eventName}. ${error.name}: ${
-            error.message
-          }\n${error.stack || 'no stack trace'}`
-        );
-      }
-    });
+  let events = (await import(`./events/${fileName}`)).default as
+    | BotEvent<any>
+    | BotEvent<any>[];
+  if (!Array.isArray(events)) {
+    events = [events];
   }
+
+  events.forEach((event) => {
+    console.log('event registered', event);
+    if (event.once) {
+      client.once(event.eventName, async (...args) => {
+        await event.processEvent(client, ...args);
+      });
+    } else {
+      client.on(event.eventName, async (...args) => {
+        if (DEBUG_MODE && event.skipOnDebug) return;
+        try {
+          await event.processEvent(client, ...args);
+        } catch (e) {
+          const error = e as Error;
+          logger.error(
+            `Error processing event ${event.eventName}. ${error.name}: ${
+              error.message
+            }\n${error.stack || 'no stack trace'}`
+          );
+        }
+      });
+    }
+  });
 }
 
 process.on('unhandledRejection', console.error); // Show stack trace on unhandled rejection.
+
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM signal received.');
+  process.exit(0);
+});
 
 // setInterval(() => {
 //   // Set up hourly backup state task

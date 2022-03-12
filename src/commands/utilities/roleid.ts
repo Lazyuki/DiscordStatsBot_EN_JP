@@ -2,6 +2,7 @@ import { BotCommand } from '@/types';
 import { CommandArgumentError } from '@/errors';
 
 const command: BotCommand = {
+  name: 'roleid',
   description: 'Get the role ID',
   arguments: '<role name (could be partial)>',
   examples: ['roleid native japanese'],

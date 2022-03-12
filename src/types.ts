@@ -15,7 +15,9 @@ export interface Bot extends Client {
   ownerId: string;
   servers: Record<string, Server>;
   commands: Record<string, ParsedBotCommand>;
-  commandInits: CommandInit[];
+  commandInits: OnCommandInit[];
+  botInits: OnBotInit[];
+  botExits: OnBotExit[];
 }
 
 export type CommandPermissionLevel =
@@ -37,13 +39,16 @@ export type BotCommandCategory =
   | 'Miscellaneous'
   | 'Bot Owner';
 
-export type CommandInit = (serverConfigJson: Partial<ServerConfig>) => void;
+export type OnCommandInit = (serverConfigJson: Partial<ServerConfig>) => void;
+export type OnBotInit = (bot: Bot) => void;
+export type OnBotExit = (bot: Bot) => void;
 export type SafeMessage = Message & { guild: Guild };
 
 export interface BotCommand {
+  name: string;
   aliases?: string[];
   allowedServers?: string[];
-  init?: CommandInit;
+  onCommandInit?: OnCommandInit;
   isAllowed?:
     | CommandPermissionLevel
     | ((message: Message, server: Server, bot: Bot) => boolean);
@@ -64,8 +69,11 @@ export interface BotCommand {
   }) => void | Promise<void>;
   slashCommand?: SlashCommandBuilder;
   childCommands?: string[];
+  subCommands?: string[];
   parentCommand?: string;
   replyInteraction?: (interaction: Interaction) => void | Promise<void>;
+  onBotInit?: OnBotInit;
+  onBotExit?: OnBotExit;
 }
 
 export interface ParsedBotCommand extends BotCommand {
@@ -76,11 +84,11 @@ export interface ParsedBotCommand extends BotCommand {
 
 export interface BotEvent<E extends keyof ClientEvents> {
   eventName: E;
-  once: boolean;
-  skipOnDebug?: boolean;
+  once?: boolean;
+  skipOnDebug: boolean;
   processEvent: (bot: Bot, ...args: ClientEvents[E]) => void | Promise<void>;
-  init?: (bot: Bot) => void;
-  end?: (bot: Bot) => void;
+  onBotInit?: OnBotInit;
+  onBotExit?: OnBotExit;
 }
 
 // Extend the type from each command file

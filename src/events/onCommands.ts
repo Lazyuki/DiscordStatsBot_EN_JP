@@ -16,7 +16,7 @@ import isRateLimited from '@utils/rateLimit';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
-  once: false,
+  skipOnDebug: false,
   processEvent: async (bot, message) => {
     if (!isNotDM(message)) return; // DM
     if (message.author.bot || message.system) return;

@@ -3,7 +3,7 @@ import { BotEvent } from '@/types';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
-  once: false,
+  skipOnDebug: true,
   processEvent: async (bot, message) => {
     if (
       message.author.id === CIRILLA &&

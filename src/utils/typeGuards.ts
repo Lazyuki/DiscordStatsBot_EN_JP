@@ -1,18 +1,22 @@
 import {
   Guild,
-  GuildChannel,
   GuildMember,
   Message,
+  NewsChannel,
   PartialMessage,
+  TextChannel,
+  ThreadChannel,
 } from 'discord.js';
 
-export function isNotDM(
-  message: Message | PartialMessage
-): message is Message & {
+type GuildMessage<M> = M & {
   guild: Guild;
   member: GuildMember;
-  channel: GuildChannel;
-} {
+  channel: NewsChannel | TextChannel | ThreadChannel;
+};
+
+export function isNotDM<M extends Message | PartialMessage>(
+  message: M
+): message is GuildMessage<M> {
   return Boolean(
     message.channel.type !== 'DM' && message.guild && message.member
   );

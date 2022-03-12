@@ -7,6 +7,7 @@ const DEFAULT_PREFIX = env.get('DEFAULT_PREFIX').required().asString();
 const VALID_PREFIX = /^\S{1,10}$/;
 
 const command: BotCommand = {
+  name: 'prefix',
   isAllowed: 'SERVER_MODERATOR',
   description:
     'Change the command prefix. Leave blank to restore the default prefix',

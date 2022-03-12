@@ -29,7 +29,7 @@ declare module '@/types' {
 
 const event: BotEvent<'guildMemberRemove'> = {
   eventName: 'guildMemberRemove',
-  once: false,
+  skipOnDebug: true,
   processEvent: async (bot, member) => {
     const server = bot.servers[member.guild.id];
     if (server.temp.vc[member.id]) {

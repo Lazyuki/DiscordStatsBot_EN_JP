@@ -5,6 +5,7 @@ import { EJLX, FE_COLOR } from '@utils/constants';
 import { makeEmbed } from '@utils/embed';
 
 const command: BotCommand = {
+  name: 'fe',
   allowedServers: [EJLX],
   description: 'Explanation of the FE (Fluent English) role',
   rateLimitSeconds: 10,
