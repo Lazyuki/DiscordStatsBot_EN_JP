@@ -6,8 +6,14 @@
   "private": true,
   "scripts": {
     "dev": "node --es-module-specifier-resolution=node --enable-source-maps build/main.js",
+    "watch": "",
     "build": "rm -rf build && tsc -p . && tscpaths -p tsconfig.json -s ./src -o ./build && cp ./src/database/schema.sql ./build/database",
-    "start": "node build/main.js",
+    "build:watch": "pm2 start npm --watch -- run build",
+    "start": "pm2 start build/main.js --name ciri --stop-exit-codes 0 --node-args='--es-module-specifier-resolution=node --enable-source-maps'",
+    "kill": "pm2 stop ciri",
+    "pm2": "pm2",
+    "pm2ls": "pm2 ls",
+    "pm2logs": "pm2 logs",
     "lint": "prettier --write src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -33,6 +39,7 @@
     "dotenv": "^10.0.0",
     "env-var": "^7.1.1",
     "erlpack": "github:discord/erlpack",
+    "pm2": "^5.2.0",
     "typescript": "^4.5.5",
     "utf-8-validate": "^5.0.7",
     "winston": "^3.3.3",

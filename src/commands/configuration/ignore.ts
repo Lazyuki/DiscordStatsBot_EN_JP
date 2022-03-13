@@ -2,7 +2,7 @@ import { BotCommand } from '@/types';
 
 const ignore: BotCommand = {
   name: 'ignore',
-  isAllowed: 'SERVER_MODERATOR',
+  isAllowed: 'ADMIN',
   onCommandInit: (server) => {
     server.config.ignoredChannels ||= [];
   },

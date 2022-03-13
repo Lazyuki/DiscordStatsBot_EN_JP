@@ -6,7 +6,6 @@ import { makeEmbed } from '@utils/embed';
 
 const createEvent: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
-  once: false,
   skipOnDebug: true,
   processEvent: async (bot, message) => {
     if (!checkSafeMessage(bot, message)) {

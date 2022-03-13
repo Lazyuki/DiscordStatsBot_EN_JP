@@ -4,6 +4,14 @@ Show various stats for the last 30 days in a server.
 
 This is made for English & Japanese servers.
 
+## Testing
+
+1. Set `DEBUG=true` in `.env`
+2. Run the bot
+   ```bash
+   npm run dev
+   ```
+
 ## Deploying
 
 1. Install dependencies
@@ -15,6 +23,7 @@ This is made for English & Japanese servers.
 2. Create `.env` based on `sample.env`
 
 3. Run the bot
+
    ```bash
    npm start
    ```

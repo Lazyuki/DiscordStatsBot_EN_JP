@@ -6,7 +6,7 @@ import { makeEmbed } from '@utils/embed';
 const hardcore: BotCommand = {
   name: 'hardcore',
   allowedServers: [EJLX, MAINICHI],
-  isAllowed: 'SERVER_MODERATOR',
+  isAllowed: 'ADMIN',
   aliases: ['hc'],
   description:
     'Set up hardcore related configurations. You can set the configurations for `role/japanese/ignored`. You **MUST** set `role` which is a role that enables the hardcore mode, and also set `japanese` which is a role for native japanese speakers.',

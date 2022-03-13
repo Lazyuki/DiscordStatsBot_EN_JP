@@ -9,9 +9,9 @@ declare module '@/types' {
   interface ServerConfig {
     prefix: string;
     statistics: boolean;
-    hardcoreIgnoredChannels: string[];
-    hardcoreRole?: string;
     japaneseRole?: string;
+    hardcoreRole?: string;
+    hardcoreIgnoredChannels: string[];
     ignoredChannels: string[];
     hiddenChannels: string[];
     voiceMuteRoles: string[];
@@ -22,7 +22,7 @@ declare module '@/types' {
     logNameChanges: boolean;
     modLogChannel?: string;
     ignoredBotPrefixes: string[];
-    permanentReactionRoleAssignmentMessage?: string;
+    permanentReactionRoleAssignmentMessage?: string; // maybe not
   }
 }
 

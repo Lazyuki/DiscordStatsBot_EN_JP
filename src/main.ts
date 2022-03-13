@@ -6,6 +6,9 @@ import env from 'env-var';
 import logger from './logger';
 import { Bot, BotCommand, BotEvent, ParsedBotCommand } from './types';
 import parseCommand from './utils/parseCommand';
+import hourlyTask from './tasks/hourlyTask';
+import dailyTask from './tasks/dailyTask';
+import exitTask from '@tasks/exitTask';
 
 // import deploySlashCommands from './deploySlashCommands';
 
@@ -118,24 +121,17 @@ process.on('unhandledRejection', (reason, promise) => {
   logger.error(`UNHANDLED PROMISE REJECTION at ${promise}\nReason: ${reason}`);
 });
 
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM signal received.');
+process.on('SIGINT', () => {
+  logger.info('SIGINT signal received.');
+  exitTask(client);
   process.exit(0);
 });
 
-// setInterval(() => {
-//   // Set up hourly backup state task
-//   savingTask(client);
-// }, 60 * 60 * 1000);
-// const time = new Date();
-// let h = time.getUTCHours();
-// let m = time.getUTCMinutes();
-// let s = time.getUTCSeconds();
-// let timeLeft = 24 * 60 * 60 - h * 60 * 60 - m * 60 - s;
-// setTimeout(() => {
-//   // Set up the day changing task
-//   midnightTask(bot);
-// }, timeLeft * 1000); // Time left until the next day
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM signal received.');
+  exitTask(client);
+  process.exit(0);
+});
 
 client.login(env.get('DISCORD_TOKEN').required().asString());
 // if (!DEBUG_MODE) deploySlashCommands();
