@@ -4,14 +4,13 @@ import env from 'env-var';
 
 import { cleanEmbed, errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
 import { BotCommand } from '@/types';
-import { CommandArgumentError } from '@/errors';
 import { appendCodeBlock, codeBlock } from '@utils/formatString';
 
 const command: BotCommand = {
   name: 'update',
   isAllowed: 'BOT_OWNER',
   description: 'Pull from git and restart the bot',
-  normalCommand: async ({ commandContent, message, send }) => {
+  normalCommand: async ({ bot, message, ...rest }) => {
     const exec = util.promisify(execPromise);
     // const dir = env.get('PROJECT_DIR').asString();
     // if (!dir) {
@@ -35,7 +34,7 @@ const command: BotCommand = {
       }
     }
     if (gitpull.stderr) {
-      await send(
+      await message.channel.send(
         errorEmbed(
           `Error during \`${gitpullCommand}\`:\n${codeBlock(gitpull.stderr)}`
         )
@@ -50,7 +49,7 @@ const command: BotCommand = {
       );
       const build = await exec(buildCommand);
       if (build.stderr) {
-        await send(
+        await message.channel.send(
           errorEmbed(
             `Error during \`${buildCommand}\`:\n${codeBlock(build.stderr)}`
           )
@@ -62,10 +61,14 @@ const command: BotCommand = {
       );
       if (build.stdout.includes('error')) {
         // TS error
-        await send(errorEmbed(`Build failed. Aborting...`));
+        await message.channel.send(errorEmbed(`Build failed. Aborting...`));
         return;
       }
-      // TODO: call restart script
+      await bot.commands['restart'].normalCommand?.({
+        bot,
+        message,
+        ...rest,
+      });
     }
   },
 };

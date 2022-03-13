@@ -1,13 +1,24 @@
+# Node
 node_modules
+
+# Build
 build
+
+# Runtime artifacts
 discord_ciri.db
 nohup.out
+*.log
+*.tmp
+
+# Secrets
 .env
+
+# Junk
 .DS_Store
 .*.json
 .vscode
-*.log
 
+# Backups
+backups
 configs
 schedules
-backups

@@ -69,33 +69,29 @@ class Server {
     return false;
   }
 
-  save(backup = false) {
-    if (backup) {
-      const backupFile = getBackupFilePath(this.guild.id, new Date());
-      try {
-        fs.writeFileSync(backupFile, JSON.stringify(this.config), 'utf8');
-        const oldDate = new Date();
-        oldDate.setDate(oldDate.getDate() - 7);
-        const oldBackupFile = getBackupFilePath(this.guild.id, oldDate);
-        if (fs.existsSync(oldBackupFile)) {
-          fs.unlinkSync(oldBackupFile);
-        }
-      } catch (e) {
-        logger.error(e);
+  backup() {
+    const backupFile = getBackupFilePath(this.guild.id, new Date());
+    try {
+      fs.writeFileSync(backupFile, JSON.stringify(this.config), 'utf8');
+      const oldDate = new Date();
+      oldDate.setDate(oldDate.getDate() - 7);
+      const oldBackupFile = getBackupFilePath(this.guild.id, oldDate);
+      if (fs.existsSync(oldBackupFile)) {
+        fs.unlinkSync(oldBackupFile);
       }
-    } else {
-      try {
-        const configFileName = getConfigFilePath(this.guild.id);
-        fs.writeFileSync(configFileName, JSON.stringify(this.config), 'utf8');
-        const scheduleFileName = getScheduleFilePath(this.guild.id);
-        fs.writeFileSync(
-          scheduleFileName,
-          JSON.stringify(this.schedule),
-          'utf8'
-        );
-      } catch (e) {
-        logger.error(e);
-      }
+    } catch (e) {
+      logger.error(e);
+    }
+  }
+
+  save() {
+    try {
+      const configFileName = getConfigFilePath(this.guild.id);
+      fs.writeFileSync(configFileName, JSON.stringify(this.config), 'utf8');
+      const scheduleFileName = getScheduleFilePath(this.guild.id);
+      fs.writeFileSync(scheduleFileName, JSON.stringify(this.schedule), 'utf8');
+    } catch (e) {
+      logger.error(e);
     }
   }
 }

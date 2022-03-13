@@ -20,6 +20,7 @@
       "@database": ["src/database"],
       "@database/*": ["src/database/*"],
       "@events/*": ["src/events/*"],
+      "@tasks/*": ["src/tasks/*"],
       "@utils/*": ["src/utils/*"],
       "@/*": ["src/*"]
     }

@@ -1,3 +1,4 @@
+import exitTask from '@/tasks/exitTask';
 import { BotCommand } from '@/types';
 import db from '@database';
 
@@ -5,15 +6,9 @@ const command: BotCommand = {
   name: 'kill',
   isAllowed: 'BOT_OWNER',
   description: 'Kill the bot',
-  normalCommand: async ({ bot, message, send }) => {
+  normalCommand: async ({ bot, message }) => {
     await message.channel.send('Good bye...');
-    for (const serverId in bot.servers) {
-      const server = bot.servers[serverId];
-      server.save();
-    }
-    bot.destroy();
-    db.close();
-    process.exit(0);
+    exitTask(bot, message);
   },
 };
 

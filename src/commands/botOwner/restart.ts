@@ -1,5 +1,5 @@
+import exitTask from '@tasks/exitTask';
 import { BotCommand } from '@/types';
-import db from '@database';
 
 const command: BotCommand = {
   name: 'restart',
@@ -7,13 +7,7 @@ const command: BotCommand = {
   description: 'Restart the bot',
   normalCommand: async ({ bot, message }) => {
     await message.channel.send('Restarting...');
-    // Write to file which guild/channel/thread the restart command was called in
-    for (const serverId in bot.servers) {
-      const server = bot.servers[serverId];
-      server.save();
-    }
-    bot.destroy();
-    db.close();
+    exitTask(bot, message);
     process.exit(2);
   },
 };

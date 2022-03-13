@@ -397,14 +397,18 @@ const tablesToClean = [
   'commands',
 ];
 
-export const clearOldRecordStatements = (() => {
+const clearOldRecordStatements = (() => {
   const statements = [];
   for (const table of tablesToClean) {
     statements.push(
       db.prepare(`
             DELETE FROM ${table} WHERE utc_date < datetime('now', '-30 days'); 
-        `).run
+        `)
     );
   }
   return statements;
 })();
+
+export const clearOldRecords = () => {
+  clearOldRecordStatements.forEach((statement) => statement.run());
+};
