@@ -1,6 +1,7 @@
+import logger from '@/logger';
+
 // Run something at a specified time over setTimeout's limit of around 25 days
-// tslint:disable-next-line:ban-types
-const runAt = (date: Date, func: Function) => {
+const runAt = (date: Date, func: () => void | Promise<void>) => {
   const now = new Date().getTime();
   const then = date.getTime();
   const diff = Math.max(then - now, 0);
@@ -8,7 +9,15 @@ const runAt = (date: Date, func: Function) => {
     setTimeout(() => {
       runAt(date, func);
     }, 0x7fffffff);
-  else setTimeout(func, diff);
+  else
+    setTimeout(async () => {
+      try {
+        await func();
+      } catch (e) {
+        const error = e as Error;
+        logger.error(`runAt function error: ${error?.message}`);
+      }
+    }, diff);
 };
 
 export default runAt;

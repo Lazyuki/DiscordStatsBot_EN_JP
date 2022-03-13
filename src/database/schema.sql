@@ -56,6 +56,12 @@ CREATE TABLE IF NOT EXISTS modlog(
   content TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS watched(
+  guild_id BIGINT NOT NULL REFERENCES guilds(guild_id),
+  user_id BIGINT NOT NULL,
+  CONSTRAINT watched_pk PRIMARY KEY (guild_id, user_id)
+);
+
 CREATE TABLE IF NOT EXISTS commands(
   guild_id BIGINT NOT NULL REFERENCES guilds(guild_id),
   user_id BIGINT NOT NULL,

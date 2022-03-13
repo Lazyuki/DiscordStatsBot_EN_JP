@@ -1,4 +1,4 @@
-import { BotEvent, SafeMessage } from '@/types';
+import { BotEvent } from '@/types';
 import logger from '@/logger';
 import {
   BotError,
@@ -20,13 +20,6 @@ const event: BotEvent<'messageCreate'> = {
   processEvent: async (bot, message) => {
     if (!isNotDM(message)) return; // DM
     if (message.author.bot || message.system) return;
-    if (!message.member) {
-      // Author's member instance is not cached???
-      logger.warn(
-        `Member is null for guild:${message.guild.id} message:${message.content}`
-      );
-      return;
-    }
 
     let server = bot.servers[message.guild.id];
     let serverOverride = false;

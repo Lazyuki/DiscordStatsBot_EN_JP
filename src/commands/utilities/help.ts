@@ -11,7 +11,7 @@ const command: BotCommand = {
     if (commandName === 'command') {
       await message.channel.send(
         errorEmbed({
-          content: `When I said \`Type "${server.config.prefix}help command"\`, you were supposed to swap \`command\` with an actual name of a command in the list.`,
+          content: `When I said \`Type "${server.config.prefix}help command"\`, you were supposed to swap \`command\` with an actual command in the list.`,
         })
       );
       return;

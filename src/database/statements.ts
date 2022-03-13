@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 import { LangType } from '@/types';
 import db from '.';
 
@@ -12,6 +14,33 @@ interface GuildUserDate extends GuildUser {
 interface GuildChannelUser extends GuildUserDate {
   channelId: string;
 }
+
+function humanFileSize(bytes: number, dp = 1) {
+  const threshold = 1024;
+  if (Math.abs(bytes) < threshold) {
+    return bytes + ' B';
+  }
+  const units = ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+  let u = -1;
+  const r = 10 ** dp;
+
+  do {
+    bytes /= threshold;
+    ++u;
+  } while (
+    Math.round(Math.abs(bytes) * r) / r >= threshold &&
+    u < units.length - 1
+  );
+
+  return bytes.toFixed(dp) + ' ' + units[u];
+}
+
+export const getDatabaseFileSize = () => {
+  const fileName = db.name;
+  if (fs.existsSync(fileName)) {
+    return humanFileSize(fs.statSync(fileName).size);
+  }
+};
 
 export const getMessagesForUsers = db.prepare<{
   guildId: string;
@@ -242,8 +271,33 @@ export const clearModLogForUser = db.prepare<GuildUser>(`
     WHERE guild_id = $guildId AND user_id = $userId
 `);
 
+export const clearModLogForGuild = db.prepare<{ guildId: string }>(`
+    DELETE FROM modlog
+    WHERE guild_id = $guildId
+`);
+
+export const getWatched = db.prepare<{ guildId: string }>(`
+    SELECT user_id FROM watched
+    WHERE guild_id = $guildId
+`);
+
+export const deleteWatched = db.prepare<GuildUser>(`
+    DELETE FROM watched  
+    WHERE guild_id = $guildId AND user_id = $userId
+`);
+
+export const clearWatchedForGuild = db.prepare<{ guildId: string }>(`
+    DELETE FROM watched  
+    WHERE guild_id = $guildId
+`);
+
+export const deleteGuild = db.prepare<{ guildId: string }>(`
+  DELETE FROM guilds
+  WHERE guild_id = $guildId
+`);
+
 export const dbInsertServer = db.prepare<{ guildId: string }>(`
-    dbInsert OR IGNORE INTO guilds (guild_id)
+    INSERT OR IGNORE INTO guilds (guild_id)
     VALUES ($guildId)
 `);
 
@@ -253,7 +307,7 @@ export const dbInsertMessages = db.prepare<
     messageCount: number;
   }
 >(`
-    dbInsert INTO messages (guild_id, channel_id, user_id, lang, utc_date, message_count)
+    INSERT INTO messages (guild_id, channel_id, user_id, lang, utc_date, message_count)
     VALUES($guildId, $channelId, $userId, $lang, $date, $messageCount)
     ON CONFLICT (guild_id, channel_id, user_id, lang, utc_date) DO UPDATE
     SET message_count = messages.message_count + EXCLUDED.message_count
@@ -265,7 +319,7 @@ export const dbInsertEmojis = db.prepare<
     emojiCount: number;
   }
 >(`
-    dbInsert INTO emojis (guild_id, user_id, emoji, utc_date, emoji_count)
+    INSERT INTO emojis (guild_id, user_id, emoji, utc_date, emoji_count)
     VALUES($guildId, $userId, $emoji, $date, $emojiCount)
     ON CONFLICT (guild_id, user_id, emoji, utc_date) DO UPDATE
     SET emoji_count = emojis.emoji_count + EXCLUDED.emoji_count
@@ -276,7 +330,7 @@ export const dbInsertVoiceSeconds = db.prepare<
     secondCount: number;
   }
 >(`
-    dbInsert INTO voice (guild_id, user_id, utc_date, second_count)
+    INSERT INTO voice (guild_id, user_id, utc_date, second_count)
     VALUES($guildId, $userId, $date, $secondCount)
     ON CONFLICT (guild_id, user_id, utc_date) DO UPDATE
     SET second_count = voice.second_count + EXCLUDED.second_count
@@ -287,7 +341,7 @@ export const dbInsertDeletes = db.prepare<
     deleteCount: number;
   }
 >(`
-    dbInsert INTO deletes (guild_id, user_id, utc_date, delete_count)
+    INSERT INTO deletes (guild_id, user_id, utc_date, delete_count)
     VALUES($guildId, $userId, $date, $deleteCount)
     ON CONFLICT (guild_id, user_id, utc_date) DO UPDATE
     SET delete_count = deletes.delete_count + EXCLUDED.delete_count
@@ -299,7 +353,7 @@ export const dbInsertStickers = db.prepare<
     stickerCount: number;
   }
 >(`
-    dbInsert INTO stickers (guild_id, user_id, sticker, utc_date, sticker_count)
+    INSERT INTO stickers (guild_id, user_id, sticker, utc_date, sticker_count)
     VALUES($guildId, $userId, $sticker, $date, $stickerCount)
     ON CONFLICT (guild_id, user_id, sticker, utc_date) DO UPDATE
     SET sticker_count = stickers.sticker_count + EXCLUDED.sticker_count
@@ -311,10 +365,27 @@ export const dbInsertCommands = db.prepare<
     commandCount: number;
   }
 >(`
-    dbInsert INTO commands (guild_id, user_id, command, utc_date, command_count)
+    INSERT INTO commands (guild_id, user_id, command, utc_date, command_count)
     VALUES($guildId, $userId, $command, $date, $commandCount)
     ON CONFLICT (guild_id, user_id, command, utc_date) DO UPDATE
     SET command_count = commands.command_count + EXCLUDED.command_count
+`);
+
+export const dbInsertModLogEntry = db.prepare<
+  GuildUserDate & {
+    issuerId: string;
+    messageLink: string;
+    silent: boolean;
+    content: string;
+  }
+>(`
+    INSERT INTO modlog (guild_id, user_id, utc_date, issuer_id, message_link, silent, content)
+    VALUES($guildId, $userId, $date, $issuerId, $messageLink, $silent, $content)
+`);
+
+export const dbInsertWatchedUser = db.prepare<GuildUser>(`
+    INSERT OR IGNORE INTO watched (guild_id, user_id)
+    VALUES($guildId, $userId)
 `);
 
 const tablesToClean = [

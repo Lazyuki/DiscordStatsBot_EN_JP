@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node --es-module-specifier-resolution=node --enable-source-maps build/main.js",
     "build": "rm -rf build && tsc -p . && tscpaths -p tsconfig.json -s ./src -o ./build && cp ./src/database/schema.sql ./build/database",
-    "start": "",
+    "start": "node build/main.js",
     "lint": "prettier --write src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

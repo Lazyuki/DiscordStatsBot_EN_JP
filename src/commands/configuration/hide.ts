@@ -1,16 +1,10 @@
 import { BotCommand } from '@/types';
 
-declare module '@/types' {
-  interface ServerConfig {
-    hiddenChannels: string[];
-  }
-}
-
 const hide: BotCommand = {
   name: 'hide',
   isAllowed: 'ADMIN',
-  onCommandInit: (config) => {
-    config.hiddenChannels ||= [];
+  onCommandInit: (server) => {
+    server.config.hiddenChannels ||= [];
   },
   description:
     'Hide a channel from statistics commands, unless invoked in one of the hidden channels. Useful for keeping mod channels hidden',

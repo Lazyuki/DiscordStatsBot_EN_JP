@@ -9,7 +9,7 @@ const command: BotCommand = {
   normalCommand: async ({ commandContent, message, server }) => {
     const roleName = commandContent.toLowerCase().replace('@', '');
     if (!roleName) {
-      throw new CommandArgumentError('Please enter a role');
+      throw new CommandArgumentError('Please specify a role');
     }
     let roles = '';
     for (const role of server.guild.roles.cache.values()) {

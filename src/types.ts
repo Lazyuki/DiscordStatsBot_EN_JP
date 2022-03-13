@@ -3,10 +3,15 @@ import {
   Client,
   ClientEvents,
   Guild,
+  GuildMember,
   Interaction,
   Message,
   MessageOptions,
   MessagePayload,
+  NewsChannel,
+  PartialMessage,
+  TextChannel,
+  ThreadChannel,
 } from 'discord.js';
 
 import Server from './classes/Server';
@@ -39,16 +44,20 @@ export type BotCommandCategory =
   | 'Miscellaneous'
   | 'Bot Owner';
 
-export type OnCommandInit = (serverConfigJson: Partial<ServerConfig>) => void;
+export type OnCommandInit = (server: Server) => void;
 export type OnBotInit = (bot: Bot) => void;
 export type OnBotExit = (bot: Bot) => void;
-export type SafeMessage = Message & { guild: Guild };
+export type GuildMessage<M extends Message | PartialMessage> = M & {
+  guild: Guild;
+  member: GuildMember;
+  channel: NewsChannel | TextChannel | ThreadChannel;
+};
 
 export interface BotCommand {
   name: string;
   aliases?: string[];
   allowedServers?: string[];
-  onCommandInit?: OnCommandInit;
+  requiredServerConfigs?: (keyof ServerConfig)[];
   isAllowed?:
     | CommandPermissionLevel
     | ((message: Message, server: Server, bot: Bot) => boolean);
@@ -60,7 +69,7 @@ export interface BotCommand {
   options?: string[];
   normalCommand?: (commandInfo: {
     commandContent: string;
-    message: SafeMessage;
+    message: GuildMessage<Message>;
     server: Server;
     bot: Bot;
     prefix: string;
@@ -72,6 +81,7 @@ export interface BotCommand {
   subCommands?: string[];
   parentCommand?: string;
   replyInteraction?: (interaction: Interaction) => void | Promise<void>;
+  onCommandInit?: OnCommandInit;
   onBotInit?: OnBotInit;
   onBotExit?: OnBotExit;
 }
@@ -99,5 +109,11 @@ export interface ServerConfig {
 // Extend the type from each command file
 // holds temporary states that might be needed after crash/restarts
 export interface ServerTemp {}
+// Extend the type from each command file
+// cache to store some database stored data
+export interface ServerCache {}
+// Extend the type from each command file
+// Schedules to keep track even if the bot crashes
+export interface ServerSchedule {}
 
 export type LangType = 'JP' | 'EN' | 'OL';

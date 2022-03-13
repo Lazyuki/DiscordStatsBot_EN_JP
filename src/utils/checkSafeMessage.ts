@@ -5,16 +5,13 @@ import {
   TextChannel,
   ThreadChannel,
 } from 'discord.js';
-import { Bot } from '@/types';
+import { Bot, GuildMessage } from '@/types';
 import { isNotDM } from './typeGuards';
 
-interface SafeMessage extends Message {
-  guild: Guild;
-  member: GuildMember;
-  channel: TextChannel | ThreadChannel;
-}
-
-function checkSafeMessage(bot: Bot, message: Message): message is SafeMessage {
+function checkSafeMessage(
+  bot: Bot,
+  message: Message
+): message is GuildMessage<Message> {
   if (!isNotDM(message)) return false; // DM
   if (message.author.bot || message.system) return false; // Don't care about other bots
   if (/^(,,?,?|[.>\[$=+%&]|[tk]!|-h|\.\.\. )[a-zA-Z]/.test(message.content)) {

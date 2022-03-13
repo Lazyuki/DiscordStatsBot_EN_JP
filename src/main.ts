@@ -88,7 +88,6 @@ for (const fileName of eventFiles) {
   }
 
   events.forEach((event) => {
-    console.log('event registered', event);
     if (event.once) {
       client.once(event.eventName, async (...args) => {
         await event.processEvent(client, ...args);
@@ -111,7 +110,13 @@ for (const fileName of eventFiles) {
   });
 }
 
-process.on('unhandledRejection', console.error); // Show stack trace on unhandled rejection.
+process.on('uncaughtExceptionMonitor', (error, origin) => {
+  logger.error(`UNCAUGHT EXCEPTION at ${origin}\nError: ${error}`);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error(`UNHANDLED PROMISE REJECTION at ${promise}\nReason: ${reason}`);
+});
 
 process.on('SIGTERM', () => {
   logger.info('SIGTERM signal received.');

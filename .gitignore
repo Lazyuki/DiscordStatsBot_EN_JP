@@ -7,3 +7,7 @@ nohup.out
 .*.json
 .vscode
 *.log
+
+configs
+schedules
+backups

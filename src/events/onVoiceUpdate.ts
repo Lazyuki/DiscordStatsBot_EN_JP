@@ -1,4 +1,4 @@
-import { BotEvent } from '../types';
+import { BotEvent } from '@/types';
 import { dbInsertVoiceSeconds } from '@database/statements';
 import {
   Collection,

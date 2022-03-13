@@ -1,22 +1,31 @@
 import { CommandArgumentError, UserNotFoundError } from '@/errors';
 import { BotCommand } from '@/types';
+import {
+  getWatched,
+  deleteWatched,
+  dbInsertWatchedUser,
+} from '@database/statements';
 import { errorEmbed, successEmbed, warningEmbed } from '@utils/embed';
+import pluralize from '@utils/pluralize';
+import { REGEX_RAW_ID } from '@utils/regex';
 import { User } from 'discord.js';
 
 declare module '@/types' {
-  interface ServerConfig {
+  interface ServerCache {
     watched: string[];
   }
 }
 
-const command: BotCommand = {
+const watch: BotCommand = {
   name: 'watch',
   isAllowed: 'ADMIN',
-  onCommandInit: (config) => {
-    config.watched ||= [];
+  onCommandInit: (server) => {
+    const res = getWatched.all({ guildId: server.guild.id });
+    console.log(res);
+    server.cache.watched = res as string[];
   },
   description: 'Watch a user for deleted messages',
-  arguments: '<@person>',
+  arguments: '<@user>',
   childCommands: ['watched', 'unwatch'],
   hidden: true,
   normalCommand: async ({ commandContent, message, server, send }) => {
@@ -41,12 +50,12 @@ const command: BotCommand = {
       return;
     }
 
-    if (server.config.watched.includes(user.id)) {
+    if (server.cache.watched.includes(user.id)) {
       await send(
         warningEmbed(`${user} (${user.tag}) is already being watched`)
       );
     } else {
-      server.config.watched.push(user.id);
+      server.cache.watched.push(user.id);
       await send(
         successEmbed(
           `${user} (${user.tag}) is now being watched for deleted messages`
@@ -56,4 +65,72 @@ const command: BotCommand = {
   },
 };
 
-export default command;
+const unwatch: BotCommand = {
+  name: 'unwatch',
+  isAllowed: 'ADMIN',
+  description: 'Unwatch a userr',
+  arguments: '<@user> <@user2>',
+  parentCommand: 'watch',
+  hidden: true,
+  normalCommand: async ({ commandContent, message, server, send }) => {
+    if (!commandContent) {
+      throw new CommandArgumentError('Please specify users or ');
+    }
+    const userIDs = commandContent.match(REGEX_RAW_ID);
+    if (!userIDs) {
+      throw new CommandArgumentError(
+        'Please specify users with IDs or mentions'
+      );
+    }
+    const successIDs: string[] = [];
+    const failIDs: string[] = [];
+
+    for (const id of userIDs) {
+      if (server.cache.watched.includes(id)) {
+        successIDs.push(id);
+        deleteWatched.run({ guildId: server.guild.id, userId: id });
+      } else {
+        failIDs.push(id);
+      }
+    }
+
+    const res = getWatched.all({ guildId: server.guild.id });
+    server.cache.watched = res as string[];
+
+    if (successIDs.length) {
+      await message.channel.send(
+        successEmbed(
+          `Successfully unwatched ${successIDs
+            .map((id) => `<@${id}>`)
+            .join(' ')}`
+        )
+      );
+    }
+    if (failIDs.length) {
+      await message.channel.send(
+        errorEmbed(
+          `${pluralize('User', 's', failIDs.length)} ${failIDs
+            .map((id) => `<@${id}>`)
+            .join(' ')} ${pluralize(
+            '',
+            'were',
+            failIDs.length,
+            'was'
+          )} not watched`
+        )
+      );
+    }
+  },
+};
+
+const watched: BotCommand = {
+  name: 'watched',
+  isAllowed: 'ADMIN',
+  description: 'List watched users',
+  parentCommand: 'watch',
+  hidden: true,
+  normalCommand: async ({ send, server }) => {
+    await send(server.cache.watched.map((w) => `<@${w}>`).join(' '));
+  },
+};
+export default [watch, unwatch, watched];

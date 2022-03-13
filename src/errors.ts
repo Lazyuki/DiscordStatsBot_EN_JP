@@ -24,6 +24,22 @@ export class CommandArgumentError extends UserError {
   }
 }
 
+export class ConflictError extends UserError {
+  constructor(message = '', ...args: any[]) {
+    super(...args);
+    this.message = message;
+    this.name = 'ConflictError';
+  }
+}
+
+export class InvalidSubCommandError extends CommandArgumentError {
+  constructor(message = '', ...args: any[]) {
+    super(...args);
+    this.message = message;
+    this.name = 'InvalidSubCommandError';
+  }
+}
+
 export class NotFoundError extends UserError {
   constructor(message = '', ...args: any[]) {
     super(...args);

@@ -6,7 +6,7 @@ const command: BotCommand = {
   isAllowed: 'MUTE_MEMBERS',
   aliases: ['vm'],
   description: 'Voice mutes people',
-  arguments: '<@person> [reason]',
+  arguments: '<@user> [reason]',
   examples: [
     'vm @Geralt being too good at Japanese',
     'vm 284840842026549259 299335689558949888 shut up',

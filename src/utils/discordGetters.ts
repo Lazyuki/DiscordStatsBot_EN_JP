@@ -10,6 +10,8 @@ export function getParentChannelId(
   }
 }
 
-export function getTextChannel(guild: Guild, channelId: string) {
+export function getTextChannel(guild: Guild, channelId?: string) {
+  if (!channelId) return null;
   const channel = guild.channels.cache.get(channelId);
+  return channel?.isText() ? channel : null;
 }

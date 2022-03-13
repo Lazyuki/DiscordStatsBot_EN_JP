@@ -15,7 +15,7 @@ const event: BotEvent<'messageCreate'> = {
     if (/^(,,?,?|[.>\[$=+%&]|[tk]!|-h)[a-zA-Z]/.test(message.content)) return; // Bot commands
     const server = bot.servers[message.guild.id];
     const userId = message.member.id;
-    if (!server.config.watched.includes(userId)) return;
+    if (!server.cache.watched.includes(userId)) return;
 
     if (message.attachments.size > 0) {
       message.attachments.forEach((attachment) => {

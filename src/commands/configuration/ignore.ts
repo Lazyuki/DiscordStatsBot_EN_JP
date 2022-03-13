@@ -1,16 +1,10 @@
 import { BotCommand } from '@/types';
 
-declare module '@/types' {
-  interface ServerConfig {
-    ignoredChannels: string[];
-  }
-}
-
 const ignore: BotCommand = {
   name: 'ignore',
   isAllowed: 'SERVER_MODERATOR',
-  onCommandInit: (config) => {
-    config.ignoredChannels ||= [];
+  onCommandInit: (server) => {
+    server.config.ignoredChannels ||= [];
   },
   description:
     'Ignore a channel from statistics. Bot commands will still work there. Useful for ignoring noisy channels such as quiz or bot-spam channels.',

@@ -19,3 +19,8 @@ export function appendCodeBlock(str: string, addition: string) {
 export function code(str: string) {
   return `\`${str}\``;
 }
+
+export function camelCaseToNormal(str: string) {
+  const splitCapital = str.replace(/([A-Z])/, ' $1');
+  return splitCapital[0].toUpperCase() + splitCapital.slice(1);
+}

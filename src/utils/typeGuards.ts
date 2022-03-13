@@ -1,3 +1,4 @@
+import { GuildMessage } from '@/types';
 import {
   Guild,
   GuildMember,
@@ -7,12 +8,6 @@ import {
   TextChannel,
   ThreadChannel,
 } from 'discord.js';
-
-type GuildMessage<M> = M & {
-  guild: Guild;
-  member: GuildMember;
-  channel: NewsChannel | TextChannel | ThreadChannel;
-};
 
 export function isNotDM<M extends Message | PartialMessage>(
   message: M

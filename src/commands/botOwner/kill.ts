@@ -1,4 +1,5 @@
 import { BotCommand } from '@/types';
+import db from '@database';
 
 const command: BotCommand = {
   name: 'kill',
@@ -11,6 +12,7 @@ const command: BotCommand = {
       server.save();
     }
     bot.destroy();
+    db.close();
     process.exit(0);
   },
 };

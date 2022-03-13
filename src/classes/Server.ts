@@ -3,36 +3,70 @@ import fs from 'fs';
 import env from 'env-var';
 
 import logger from '@/logger';
-import { Bot, ServerConfig, ServerTemp } from '@/types';
+import {
+  Bot,
+  ServerConfig,
+  ServerTemp,
+  ServerCache,
+  ServerSchedule,
+} from '@/types';
 
 function getBackupFilePath(guildId: string, date: Date) {
   const dateStr = date.toISOString().split('T')[0];
   return `./backups/${dateStr}-${guildId}_config.json`;
 }
 
-function getRestoreFilePath(guildId: string) {
-  return `./${guildId}_config.json`;
+function getConfigFilePath(guildId: string) {
+  return `./configs/${guildId}_config.json`;
+}
+function getScheduleFilePath(guildId: string) {
+  return `./schedules/${guildId}_schedule.json`;
 }
 
 class Server {
   guild: Guild;
   config: ServerConfig;
-  temp: ServerTemp; // temporary state that does NOT persist
-  // cache: ServerStatsCache;
+  temp: ServerTemp; // temporary server state that does not persist
+  cache: ServerCache; // Database cache that does not persist
+  schedule: ServerSchedule; // Schedules to keep track of
 
   constructor(guild: Guild, bot: Bot) {
     this.guild = guild;
     this.temp = {} as ServerTemp;
-    const restoreFileName = getRestoreFilePath(guild.id);
+    this.cache = {} as ServerCache;
 
+    const configFileName = getConfigFilePath(guild.id);
     this.config = {
       prefix: env.get('DEFAULT_PREFIX').required().asString(),
     } as ServerConfig;
-    if (fs.existsSync(restoreFileName)) {
-      const json = JSON.parse(fs.readFileSync(restoreFileName, 'utf8'));
+    if (fs.existsSync(configFileName)) {
+      const json = JSON.parse(fs.readFileSync(configFileName, 'utf8'));
       this.config = json;
     }
-    bot.commandInits.forEach((init) => init(this.config));
+
+    const scheduleFileName = getScheduleFilePath(guild.id);
+    this.schedule = {} as ServerSchedule;
+    if (fs.existsSync(scheduleFileName)) {
+      const json = JSON.parse(fs.readFileSync(scheduleFileName, 'utf8'));
+      this.schedule = json;
+    }
+    try {
+      bot.commandInits.forEach((init) => init(this));
+      this.save();
+    } catch (e) {
+      const error = e as Error;
+      logger.error(`Server Command Initialization Error: ${error?.message}`);
+    }
+  }
+
+  readFromBackup(date: Date) {
+    const backupFile = getBackupFilePath(this.guild.id, date);
+    if (fs.existsSync(backupFile)) {
+      const json = JSON.parse(fs.readFileSync(backupFile, 'utf8'));
+      this.config = json;
+      return true;
+    }
+    return false;
   }
 
   save(backup = false) {
@@ -51,8 +85,14 @@ class Server {
       }
     } else {
       try {
-        const restoreFileName = getRestoreFilePath(this.guild.id);
-        fs.writeFileSync(restoreFileName, JSON.stringify(this.config), 'utf8');
+        const configFileName = getConfigFilePath(this.guild.id);
+        fs.writeFileSync(configFileName, JSON.stringify(this.config), 'utf8');
+        const scheduleFileName = getScheduleFilePath(this.guild.id);
+        fs.writeFileSync(
+          scheduleFileName,
+          JSON.stringify(this.schedule),
+          'utf8'
+        );
       } catch (e) {
         logger.error(e);
       }

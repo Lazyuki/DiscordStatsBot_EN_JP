@@ -1,8 +1,8 @@
 # Discord-Stats-Bot
 
-It shows stats for the last 30 days of the server she's in.
+Show various stats for the last 30 days in a server.
 
-This is made for Japanese Language Exchange servers.
+This is made for English & Japanese servers.
 
 ## Deploying
 
@@ -12,7 +12,9 @@ This is made for Japanese Language Exchange servers.
    npm install
    ```
 
-2. Run bot
+2. Create `.env` based on `sample.env`
+
+3. Run the bot
    ```bash
    npm start
    ```

@@ -36,3 +36,9 @@ export function parseUsers(
   }
   return [userIds, content.trim()];
 }
+
+export function parseChannels(
+  message: Message,
+  content: string,
+  server: Server
+) {}
