@@ -1,16 +1,18 @@
 import { CommandArgumentError, InvalidSubCommandError } from '@/errors';
 import { BotCommand, ServerConfig } from '@/types';
+import { parseSnowflakeIDs } from '@utils/argumentParsers';
 import { errorEmbed, makeEmbed } from '@utils/embed';
 import { camelCaseToNormal } from '@utils/formatString';
 import { stripIndent } from 'common-tags';
+import { config } from 'dotenv';
 import { DEFAULT_PREFIX } from './prefix';
 
 declare module '@/types' {
   interface ServerConfig {
     prefix: string;
     statistics: boolean;
-    japaneseRole?: string;
-    hardcoreRole?: string;
+    japaneseRole: string;
+    hardcoreRole: string;
     hardcoreIgnoredChannels: string[];
     ignoredChannels: string[];
     hiddenChannels: string[];
@@ -18,107 +20,223 @@ declare module '@/types' {
     chatMuteRoles: string[];
     blindRoles: string[];
     selfMuteRoles: string[];
-    userLogChannel?: string;
+    userLogChannel: string;
     logNameChanges: boolean;
-    modLogChannel?: string;
+    modLogChannel: string;
     ignoredBotPrefixes: string[];
-    permanentReactionRoleAssignmentMessage?: string; // maybe not
   }
 }
 
 type ConfigType = 'channel' | 'boolean' | 'role' | 'string' | 'message';
 
-interface ConfigInfo {
+function getStringConfig(subCommand: string, values: string): string {
+  if (subCommand === 'reset') return '';
+  if (subCommand === 'set') return values;
+  throw new CommandArgumentError('You can only `set` or `reset` this config');
+}
+
+function applyConfig<Key extends keyof ServerConfig>(
+  configInfo: ConfigInfo<Key>,
+  subCommand: string,
+  currentSettings: ServerConfig,
+  values: string
+): string {
+  if (configInfo) if (subCommand === 'reset') currentSettings[key] = '';
+  if (subCommand === 'set') return values;
+  throw new CommandArgumentError('You can only `set` or `reset` this config');
+}
+
+function getBooleanConfig(subCommand: string): boolean {
+  if (subCommand === 'enable') return true;
+  if (subCommand === 'disable') return false;
+  throw new CommandArgumentError(
+    'You can only `enable` or `disable` this config.'
+  );
+}
+
+function getStringArrayConfig(
+  subCommand: string,
+  values: string,
+  currentSettings: ServerConfig,
+  filter: (id: string) => boolean
+): string[] {
+  if (subCommand === 'reset') return [];
+  if (subCommand === 'add') {
+    const { ids } = parseSnowflakeIDs(values);
+    const filtered = ids.filter(filter);
+    return [...currentSettings, ...filtered];
+  }
+  if (subCommand === 'remove') {
+    const { ids } = parseSnowflakeIDs(values);
+    const filtered = currentSettings.filter((s) => !ids.includes(s));
+    if (filtered.length === currentSettings.length) {
+      throw new CommandArgumentError(
+        `None of "${values}" matched the current config`
+      );
+    }
+    return filtered;
+  }
+  throw new CommandArgumentError(
+    'You can only `add`, `remove`, or `reset` this config'
+  );
+}
+
+interface BooleanConfigInfo {
+  type: Extract<ConfigType, 'boolean'>;
+  description: string;
+  isArray?: false;
+  restricted?: boolean;
+  parser: (subCommand: string) => boolean;
+}
+interface StringConfigInfo {
+  type: Exclude<ConfigType, 'boolean'>;
+  description: string;
+  isArray?: false;
+  restricted?: boolean;
+  parser: (subCommand: string, values: string) => string;
+}
+interface ArrayConfigInfo {
+  type: Exclude<ConfigType, 'boolean'>;
+  description: string;
+  isArray: true;
+  restricted?: boolean;
+  parser: (
+    subCommand: string,
+    values: string,
+    currentSettings: string[],
+    filter: (id: string) => boolean
+  ) => string[];
+}
+
+type ConfigInfo<Key extends keyof ServerConfig> = {
+  key: Key;
   type: ConfigType;
   description: string;
   isArray?: boolean;
   restricted?: boolean;
+  parser: (
+    subCommand: string,
+    values: string,
+    currentSettings: ServerConfig[Key],
+    filter: (id: string) => boolean
+  ) => ServerConfig[Key];
+};
+
+function getConfigInfo<Key extends keyof ServerConfig>(
+  config: ConfigInfo<Key>
+) {
+  return config;
 }
 
-const CONFIGURABLE_SERVER_CONFIG = {
-  prefix: {
+const CONFIGURABLE_SERVER_CONFIG = [
+  getConfigInfo({
+    key: 'prefix',
     type: 'string',
     description: "This bot's command prefix.",
-  },
-  statistics: {
+    parser: getStringConfig,
+  }),
+  getConfigInfo({
+    key: 'statistics',
     type: 'boolean',
     description: 'Enables statistics. Only the bot owner can change this.',
     restricted: true,
-  },
-  japaneseRole: {
+    parser: getBooleanConfig,
+  }),
+  getConfigInfo({
+    key: 'japaneseRole',
     type: 'role',
     description: 'Role for native Japanese speakers.',
-  },
-  hardcoreRole: {
+    parser: getStringConfig,
+  }),
+  getConfigInfo({
+    key: 'hardcoreRole',
     type: 'role',
     description: 'Role that enables the hardcore mode.',
-  },
-  hardcoreIgnoredChannels: {
+    parser: getStringConfig,
+  }),
+  getConfigInfo({
+    key: 'hardcoreIgnoredChannels',
     type: 'channel',
     isArray: true,
     description: 'Channels that are ignored from the hardcore mode.',
-  },
-  ignoredChannels: {
+    parser: getStringArrayConfig,
+  }),
+  getConfigInfo({
+    key: 'ignoredChannels',
     type: 'channel',
     isArray: true,
     description:
       'Channels that are ignored from server statistics. Bot commands will still work. Useful for channels like bot-spam or quiz.',
-  },
-  hiddenChannels: {
+    parser: getStringArrayConfig,
+  }),
+  getConfigInfo({
+    key: 'hiddenChannels',
     type: 'channel',
     isArray: true,
     description:
       'Channels that are hidden from general server statistics. Messages will still be counted, but these channels will only show up on user stats if the command is invoked from one of the hidden channels. Useful for mod channels.',
-  },
-  voiceMuteRoles: {
+    parser: getStringArrayConfig,
+  }),
+  getConfigInfo({
+    key: 'voiceMuteRoles',
     type: 'role',
     isArray: true,
     description: 'Role that mutes users in voice channels.',
-  },
-  chatMuteRoles: {
+    parser: getStringArrayConfig,
+  }),
+  getConfigInfo({
+    key: 'chatMuteRoles',
     type: 'role',
     isArray: true,
     description: 'Role that mutes users in text channels.',
-  },
-  blindRoles: {
+    parser: getStringArrayConfig,
+  }),
+  getConfigInfo({
+    key: 'blindRoles',
     type: 'role',
     isArray: true,
     description: 'Role[s] that makes users not able to see/read channels.',
-  },
-  selfMuteRoles: {
+    parser: getStringArrayConfig,
+  }),
+  getConfigInfo({
+    key: 'selfMuteRoles',
     type: 'role',
     isArray: true,
     description: 'Role[s] used when users want to mute themselves.',
-  },
-  userLogChannel: {
+    parser: getStringArrayConfig,
+  }),
+  getConfigInfo({
+    key: 'userLogChannel',
     type: 'channel',
     description:
       'Channel used for logging user join/leave notifications. Setting this channel enables these notifications. You can additinally enable "Log Name Changes" to log nickname/username changes in this channel.',
-  },
-  logNameChanges: {
+    parser: getStringConfig,
+  }),
+  getConfigInfo({
+    key: 'logNameChanges',
     type: 'boolean',
     description:
       'Enables logging user nickname/username changes in the "User Log Channel".',
-  },
-  modLogChannel: {
+    parser: getBooleanConfig,
+  }),
+  getConfigInfo({
+    key: 'modLogChannel',
     type: 'channel',
     description: 'Channel used for logging mod related information.',
-  },
-  ignoredBotPrefixes: {
+    parser: getStringConfig,
+  }),
+  getConfigInfo({
+    key: 'ignoredBotPrefixes',
     type: 'string',
     isArray: true,
     description:
       'Prefixes that are used for other bots in the server. This will prevent bot commands from being included in the server statistics.',
-  },
-  permanentReactionRoleAssignmentMessage: {
-    type: 'message',
-    description:
-      'Message link for the reaction role message (generally in #server_rules or somewhere similar) if the reaction role feature is enabled.',
-  },
-} as const;
+    parser: getStringArrayConfig,
+  }),
+] as const;
 
-const CONFIG_KEYS = Object.keys(CONFIGURABLE_SERVER_CONFIG) as Readonly<
-  (keyof typeof CONFIGURABLE_SERVER_CONFIG)[]
+const CONFIG_KEYS = CONFIGURABLE_SERVER_CONFIG.map((c) => c.key) as Readonly<
+  (keyof ServerConfig)[]
 >;
 
 function formatStringType(type: ConfigType, value: string) {
@@ -194,11 +312,10 @@ const command: BotCommand = {
         makeEmbed({
           title: 'Current Server Configuration',
           description: stripIndent`
-            ${CONFIG_KEYS.map((configKey, index) => {
-              `**${index + 1}. ${camelCaseToNormal(configKey)}**: ${formatValue(
-                CONFIGURABLE_SERVER_CONFIG[configKey].type,
-                server.config[configKey]
-              )}`;
+            ${CONFIGURABLE_SERVER_CONFIG.map((config, index) => {
+              `**${index + 1}. ${camelCaseToNormal(
+                config.key
+              )}**: ${formatValue(config.type, server.config[config.key])}`;
             }).join('\n')}
             `,
           footer: `Type "${server.config.prefix}config config_number help" for more info on each config`,
@@ -216,8 +333,8 @@ const command: BotCommand = {
           `${configNumStr} is not a valid config number. Type \`${server.config.prefix}config\` to show the list of config and numbers`
         );
       }
-      const configKey = CONFIG_KEYS[configNum - 1];
-      const configInfo = CONFIGURABLE_SERVER_CONFIG[configKey] as ConfigInfo;
+      const configInfo = CONFIGURABLE_SERVER_CONFIG[configNum - 1];
+      const configKey = configInfo.key;
       const currentConfig = server.config[configKey];
       const availableSubCommands = getAvailableSubCommands(
         configInfo.type,
@@ -256,11 +373,19 @@ const command: BotCommand = {
           );
           return;
         }
+        if (configInfo.key === 'prefix') {
+          const newVal = configInfo.parser(
+            subCommand,
+            rest.join(' '),
+            server.config[configInfo.key],
+            () => true
+          );
+        }
         if (availableSubCommands.includes(subCommand)) {
           switch (subCommand) {
             case 'enable':
             case 'disable': {
-              (server.config[configKey] as any) = subCommand === 'enable';
+              server.config[configKey] = configInfo.parser(subCommand);
               return;
             }
             case 'reset': {

@@ -2,6 +2,33 @@ import { Message } from 'discord.js';
 import Server from '@classes/Server';
 import { REGEX_RAW_ID, REGEX_RAW_ID_ONLY, REGEX_USER } from './regex';
 
+/**
+ *
+ * @param str string with snowflake IDs
+ * @param greedy if set to false, it will stop when it first encounters a non-snowflake-ID word. Otherwise it will get all snowflake IDs whereever they appear in the string.
+ * @returns { ids: string[], rest: string } parsed IDs and also the rest of the string with IDs stripped out.
+ */
+export function parseSnowflakeIDs(str: string, greedy = false) {
+  const words = str.split(/\s+/);
+  const ids: string[] = [];
+  const nonIds: string[] = [];
+  for (const [i, word] of words.entries()) {
+    const match = word.match(REGEX_RAW_ID);
+    if (match) {
+      ids.push(...match);
+    } else {
+      if (!greedy) {
+        nonIds.push(...words.slice(i));
+        break;
+      } else {
+        nonIds.push(word);
+      }
+    }
+  }
+
+  return { ids, rest: nonIds.join(' ') };
+}
+
 // content is command-stripped
 export function parseUsers(
   message: Message,

@@ -33,6 +33,8 @@ export const FE2 = '820133363700596756';
 export const OL = '248982130246418433';
 export const NU = '249695630606336000';
 
+export const EJLX_LANG_ROLE_IDS = [NJ, FJ, AJ, HJ, NE, FE, FE2, OL];
+
 // Channel IDs
 export const SERVER_RULES = '189585230972190720';
 export const INTRODUCTION = '395741560840519680';
