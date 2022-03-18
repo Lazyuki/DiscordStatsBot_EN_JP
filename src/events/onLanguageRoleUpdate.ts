@@ -14,6 +14,12 @@ import pluralize from '@utils/pluralize';
 
 type Member = PartialGuildMember | GuildMember;
 
+interface RoleChangeAuditLogEntry {
+  key: '$add' | '$remove';
+  old: undefined;
+  new: { name: string; id: string }[]; // [ { name: 'Fluent English/英語が流暢', id: '241997079168155649' } ]
+}
+
 async function getRoleChangeAuditLogs(guild: Guild, userId: string) {
   const auditLogs = await guild.fetchAuditLogs({
     limit: 20,
@@ -33,11 +39,11 @@ async function getRoleChangeAuditLogs(guild: Guild, userId: string) {
       }
       const newActions = actions[executorId] || { add: [], remove: [] };
       entry.changes?.forEach((change) => {
-        console.log(change);
-        if (change.old) {
-          newActions.remove.push(change.old as string);
+        const roleChange = change as RoleChangeAuditLogEntry;
+        if (roleChange.key.includes('add')) {
+          newActions.add.push(roleChange.new?.[0]?.id);
         } else {
-          newActions.add.push(change.old as string);
+          newActions.remove.push(roleChange.new?.[0]?.id);
         }
       });
       actions[executorId] = newActions;
@@ -106,7 +112,7 @@ const bulkUpdator: Record<string, { oldMember: Member; newMember: Member }> =
 
 const event: BotEvent<'guildMemberUpdate'> = {
   eventName: 'guildMemberUpdate',
-  skipOnDebug: true,
+  skipOnDebug: false,
   processEvent: async (bot, oldMember, newMember) => {
     if (newMember.guild.id !== EJLX) return;
     const roleDiff = oldMember.roles.cache.difference(newMember.roles.cache);
@@ -123,7 +129,7 @@ const event: BotEvent<'guildMemberUpdate'> = {
         };
         setTimeout(async () => {
           await notifyLanguageRoleChange(newMember.id, ewbf);
-        }, 10_000);
+        }, 5_000);
       }
     }
   },

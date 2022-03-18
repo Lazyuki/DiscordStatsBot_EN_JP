@@ -2,7 +2,7 @@ import fs from 'fs';
 import { Message } from 'discord.js';
 
 import { Bot, GuildMessage } from '@/types';
-import db from '@database';
+import db from '@db';
 
 export const RESTART_TMP_FILE = '.restart.tmp';
 

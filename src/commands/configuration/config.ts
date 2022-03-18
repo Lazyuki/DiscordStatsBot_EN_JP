@@ -1,11 +1,12 @@
+import { stripIndent } from 'common-tags';
+
 import { CommandArgumentError, InvalidSubCommandError } from '@/errors';
 import { BotCommand, ServerConfig } from '@/types';
 import { parseSnowflakeIDs } from '@utils/argumentParsers';
 import { errorEmbed, makeEmbed } from '@utils/embed';
 import { camelCaseToNormal } from '@utils/formatString';
-import { stripIndent } from 'common-tags';
-import { config } from 'dotenv';
-import { DEFAULT_PREFIX } from './prefix';
+import { DEFAULT_PREFIX } from '@/envs';
+import { Guild } from 'discord.js';
 
 declare module '@/types' {
   interface ServerConfig {
@@ -35,17 +36,6 @@ function getStringConfig(subCommand: string, values: string): string {
   throw new CommandArgumentError('You can only `set` or `reset` this config');
 }
 
-function applyConfig<Key extends keyof ServerConfig>(
-  configInfo: ConfigInfo<Key>,
-  subCommand: string,
-  currentSettings: ServerConfig,
-  values: string
-): string {
-  if (configInfo) if (subCommand === 'reset') currentSettings[key] = '';
-  if (subCommand === 'set') return values;
-  throw new CommandArgumentError('You can only `set` or `reset` this config');
-}
-
 function getBooleanConfig(subCommand: string): boolean {
   if (subCommand === 'enable') return true;
   if (subCommand === 'disable') return false;
@@ -57,7 +47,7 @@ function getBooleanConfig(subCommand: string): boolean {
 function getStringArrayConfig(
   subCommand: string,
   values: string,
-  currentSettings: ServerConfig,
+  currentSettings: string[],
   filter: (id: string) => boolean
 ): string[] {
   if (subCommand === 'reset') return [];
@@ -81,33 +71,6 @@ function getStringArrayConfig(
   );
 }
 
-interface BooleanConfigInfo {
-  type: Extract<ConfigType, 'boolean'>;
-  description: string;
-  isArray?: false;
-  restricted?: boolean;
-  parser: (subCommand: string) => boolean;
-}
-interface StringConfigInfo {
-  type: Exclude<ConfigType, 'boolean'>;
-  description: string;
-  isArray?: false;
-  restricted?: boolean;
-  parser: (subCommand: string, values: string) => string;
-}
-interface ArrayConfigInfo {
-  type: Exclude<ConfigType, 'boolean'>;
-  description: string;
-  isArray: true;
-  restricted?: boolean;
-  parser: (
-    subCommand: string,
-    values: string,
-    currentSettings: string[],
-    filter: (id: string) => boolean
-  ) => string[];
-}
-
 type ConfigInfo<Key extends keyof ServerConfig> = {
   key: Key;
   type: ConfigType;
@@ -124,7 +87,7 @@ type ConfigInfo<Key extends keyof ServerConfig> = {
 
 function getConfigInfo<Key extends keyof ServerConfig>(
   config: ConfigInfo<Key>
-) {
+): ConfigInfo<Key> {
   return config;
 }
 
@@ -288,6 +251,17 @@ function getAvailableValues(type: ConfigType, isArray?: boolean) {
   }
 }
 
+function getFilter(configType: ConfigType, guild: Guild) {
+  switch (configType) {
+    case 'channel':
+      return (id: string) => Boolean(guild.channels.cache.get(id));
+    case 'role':
+      return (id: string) => Boolean(guild.roles.cache.get(id));
+    default:
+      return () => true;
+  }
+}
+
 const command: BotCommand = {
   name: 'config',
   isAllowed: 'ADMIN',
@@ -305,7 +279,7 @@ const command: BotCommand = {
     'config 3 remove #bot-spam',
     'config 14 enable',
   ],
-  normalCommand: async ({ commandContent, message, server, bot }) => {
+  normalCommand: async ({ commandContent, message, server, bot, ...rest }) => {
     if (!commandContent) {
       // Show current config
       await message.channel.send(
@@ -322,7 +296,8 @@ const command: BotCommand = {
         })
       );
     } else {
-      const [configNumStr, subCommand, ...rest] = commandContent.split(/\s+/);
+      const [configNumStr, subCommand, ...restCommand] =
+        commandContent.split(/\s+/);
       const configNum = parseInt(configNumStr);
       if (
         isNaN(configNum) ||
@@ -330,21 +305,22 @@ const command: BotCommand = {
         configNum > CONFIG_KEYS.length
       ) {
         throw new CommandArgumentError(
-          `${configNumStr} is not a valid config number. Type \`${server.config.prefix}config\` to show the list of config and numbers`
+          `${configNumStr} is not a valid config number. Type \`${server.config.prefix}config\` to show the list of configs and their numbers`
         );
       }
       const configInfo = CONFIGURABLE_SERVER_CONFIG[configNum - 1];
       const configKey = configInfo.key;
+      const configValue = restCommand.join(' ');
       const currentConfig = server.config[configKey];
-      const availableSubCommands = getAvailableSubCommands(
-        configInfo.type,
-        configInfo.isArray
-      );
-      const possibleValues = getAvailableValues(
-        configInfo.type,
-        configInfo.isArray
-      );
       if (!subCommand) {
+        const availableSubCommands = getAvailableSubCommands(
+          configInfo.type,
+          configInfo.isArray
+        );
+        const possibleValues = getAvailableValues(
+          configInfo.type,
+          configInfo.isArray
+        );
         await message.channel.send(
           makeEmbed({
             title: camelCaseToNormal(configKey),
@@ -356,12 +332,12 @@ const command: BotCommand = {
             }\`${configInfo.isArray ? 's' : ''}
             **How to Update**: ${
               configInfo.restricted
-                ? `Contact the bot owner <@${bot.ownerId}> to update this value**`
+                ? `Contact the bot owner <@${bot.ownerId}> to update this value`
                 : `Type \`${
                     server.config.prefix
-                  }config ${configNum} ${availableSubCommands.join(
-                    '/'
-                  )} ${possibleValues}\``
+                  }config ${configNum} <${availableSubCommands.join(
+                    ' | '
+                  )}> [${possibleValues}]\``
             }
             `,
           })
@@ -374,45 +350,22 @@ const command: BotCommand = {
           return;
         }
         if (configInfo.key === 'prefix') {
-          const newVal = configInfo.parser(
-            subCommand,
-            rest.join(' '),
-            server.config[configInfo.key],
-            () => true
-          );
+          await bot.commands['prefix'].normalCommand?.({
+            commandContent: subCommand === 'set' ? configValue : '',
+            message,
+            server,
+            bot,
+            ...rest,
+          });
+          return;
         }
-        if (availableSubCommands.includes(subCommand)) {
-          switch (subCommand) {
-            case 'enable':
-            case 'disable': {
-              server.config[configKey] = configInfo.parser(subCommand);
-              return;
-            }
-            case 'reset': {
-              if (configKey === 'prefix') {
-                server.config.prefix = DEFAULT_PREFIX;
-              } else {
-                (server.config[configKey] as any) = configInfo.isArray
-                  ? []
-                  : undefined;
-              }
-              return;
-            }
-            case 'set': {
-              const value = rest[0];
-              if (!value)
-                throw new CommandArgumentError(
-                  `You need to specify some value when using \`set\` in \`config\``
-                );
-            }
-          }
-        } else {
-          throw new CommandArgumentError(
-            `${subCommand} is not the correct sub command for this config. Use one of [ ${availableSubCommands.join(
-              ' | '
-            )} ] to update this config.`
-          );
-        }
+        // Typescript can't handle it but these types are checked at build time.
+        (server.config[configKey] as any) = configInfo.parser(
+          subCommand,
+          configValue,
+          server.config[configKey] as never,
+          getFilter(configInfo.type, server.guild)
+        );
       }
     }
   },

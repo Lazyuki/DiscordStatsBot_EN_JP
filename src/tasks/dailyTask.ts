@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 import { Bot } from '@/types';
-import db from '@database';
+import db from '@db';
 import { clearOldRecords } from '@database/statements';
 
 const DATABASE_BACKUP_DAYS = 3;

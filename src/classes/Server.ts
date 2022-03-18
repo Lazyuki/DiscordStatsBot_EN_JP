@@ -1,7 +1,7 @@
 import { Guild } from 'discord.js';
 import fs from 'fs';
-import env from 'env-var';
 
+import { DEFAULT_PREFIX } from '@/envs';
 import logger from '@/logger';
 import {
   Bot,
@@ -37,7 +37,7 @@ class Server {
 
     const configFileName = getConfigFilePath(guild.id);
     this.config = {
-      prefix: env.get('DEFAULT_PREFIX').required().asString(),
+      prefix: DEFAULT_PREFIX,
     } as ServerConfig;
     if (fs.existsSync(configFileName)) {
       const json = JSON.parse(fs.readFileSync(configFileName, 'utf8'));

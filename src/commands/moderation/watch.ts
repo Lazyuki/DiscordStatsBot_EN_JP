@@ -21,7 +21,6 @@ const watch: BotCommand = {
   isAllowed: 'ADMIN',
   onCommandInit: (server) => {
     const res = getWatched.all({ guildId: server.guild.id });
-    console.log(res);
     server.cache.watched = res as string[];
   },
   description: 'Watch a user for deleted messages',

@@ -1,6 +1,6 @@
 import exitTask from '@tasks/exitTask';
 import { BotCommand } from '@/types';
-import db from '@database';
+import db from '@db';
 
 const command: BotCommand = {
   name: 'kill',

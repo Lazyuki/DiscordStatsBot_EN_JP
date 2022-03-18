@@ -1,10 +1,8 @@
-import env from 'env-var';
-
 import { BotCommand } from '@/types';
 import { errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
+import { DEFAULT_PREFIX } from '@/envs';
 
-export const DEFAULT_PREFIX = env.get('DEFAULT_PREFIX').required().asString();
-export const VALID_PREFIX = /^\S{1,10}$/;
+export const VALID_PREFIX = /^\S{1,5}$/;
 
 const command: BotCommand = {
   name: 'prefix',
@@ -18,7 +16,7 @@ const command: BotCommand = {
       if (currentPrefix === DEFAULT_PREFIX) {
         await send(
           makeEmbed({
-            description: `The command prefix in this server is ${DEFAULT_PREFIX}`,
+            description: `The command prefix in this server is using the default prefix, \`${DEFAULT_PREFIX}\``,
           })
         );
       } else {
@@ -40,7 +38,7 @@ const command: BotCommand = {
       } else {
         await send(
           errorEmbed(
-            'The command prefix must not contain any spaces and cannot be longer than 10 characters'
+            'The command prefix must not contain any spaces and cannot be longer than 5 characters'
           )
         );
       }

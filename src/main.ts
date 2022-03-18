@@ -1,22 +1,16 @@
-import { config } from 'dotenv';
+import 'source-map-support/register';
 import { Client, Collection, Intents } from 'discord.js';
 import fs from 'fs';
-import env from 'env-var';
 
-import logger from './logger';
-import { Bot, BotCommand, BotEvent, ParsedBotCommand } from './types';
-import parseCommand from './utils/parseCommand';
-import hourlyTask from './tasks/hourlyTask';
-import dailyTask from './tasks/dailyTask';
+import { DEBUG, OWNER_ID, DISCORD_TOKEN } from '@/envs';
+import logger from '@/logger';
+import { Bot, BotCommand, BotEvent, ParsedBotCommand } from '@/types';
+import parseCommand from '@utils/parseCommand';
+import hourlyTask from '@tasks/hourlyTask';
+import dailyTask from '@tasks/dailyTask';
 import exitTask from '@tasks/exitTask';
 
 // import deploySlashCommands from './deploySlashCommands';
-
-// Must be the first line
-config();
-
-// When set to true, event handlers that send messages automatically will not fire
-const DEBUG_MODE = env.get('DEBUG').default('true').asBool();
 
 // Set up intents
 const UNWANTED_INTENTS = [
@@ -37,7 +31,7 @@ const client = new Client({
   ),
 }) as Bot;
 
-client.ownerId = env.get('OWNER_ID').required().asString();
+client.ownerId = OWNER_ID;
 client.commands = {};
 client.commandInits = [];
 client.botInits = [];
@@ -62,7 +56,7 @@ for (const dir of dirs) {
     }
     commands.forEach((command) => {
       const parsedCommand = parseCommand(command, dir);
-      const commandName = parseCommand.name;
+      const commandName = parsedCommand.name;
       client.commands[commandName] = parsedCommand;
       if (parsedCommand.onCommandInit)
         client.commandInits.push(parsedCommand.onCommandInit);
@@ -97,7 +91,7 @@ for (const fileName of eventFiles) {
       });
     } else {
       client.on(event.eventName, async (...args) => {
-        if (DEBUG_MODE && event.skipOnDebug) return;
+        if (DEBUG && event.skipOnDebug) return;
         try {
           await event.processEvent(client, ...args);
         } catch (e) {
@@ -114,11 +108,13 @@ for (const fileName of eventFiles) {
 }
 
 process.on('uncaughtExceptionMonitor', (error, origin) => {
-  logger.error(`UNCAUGHT EXCEPTION at ${origin}\nError: ${error}`);
+  logger.error(`UNCAUGHT EXCEPTION at ${origin}`);
+  logger.error(error);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  logger.error(`UNHANDLED PROMISE REJECTION at ${promise}\nReason: ${reason}`);
+  logger.error(`UNHANDLED PROMISE REJECTION at ${promise}`);
+  logger.error(reason);
 });
 
 process.on('SIGINT', () => {
@@ -133,5 +129,5 @@ process.on('SIGTERM', () => {
   process.exit(0);
 });
 
-client.login(env.get('DISCORD_TOKEN').required().asString());
-// if (!DEBUG_MODE) deploySlashCommands();
+client.login(DISCORD_TOKEN);
+// if (!DEBUG) deploySlashCommands();
