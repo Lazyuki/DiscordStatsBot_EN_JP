@@ -2,7 +2,7 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import fs from 'fs';
 
-import { DISCORD_TOKEN, CLIENT_ID } from '@/envs';
+import { DISCORD_TOKEN, APPLICATION_ID } from '@/envs';
 import logger from '@/logger';
 import { BotCommand } from '@/types';
 import { EJLX } from '@utils/constants';
@@ -23,7 +23,7 @@ async function deploySlashCommands() {
   const rest = new REST({ version: '9' }).setToken(DISCORD_TOKEN);
 
   try {
-    await rest.put(Routes.applicationGuildCommands(CLIENT_ID, EJLX), {
+    await rest.put(Routes.applicationGuildCommands(APPLICATION_ID, EJLX), {
       body: commands,
     });
     logger.info('Successfully registered application commands.');

@@ -9,9 +9,8 @@ import {
 import { EJLX } from '@utils/constants';
 import { DiscordAPIError } from '@discordjs/rest';
 import { errorEmbed } from '@utils/embed';
-import { Message, MessageOptions, Util } from 'discord.js';
 import safeSend from '@utils/safeSend';
-import { isNotDM } from '@utils/typeGuards';
+import { isNotDM } from '@utils/guildUtils';
 import isRateLimited from '@utils/rateLimit';
 
 const event: BotEvent<'messageCreate'> = {

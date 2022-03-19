@@ -9,7 +9,7 @@ import {
 
 import { makeEmbed } from '@utils/embed';
 import { BotEvent } from '@/types';
-import { getTextChannel } from '@utils/discordGetters';
+import { getTextChannel } from '@utils/guildUtils';
 
 async function sendNameChange(
   message: string,

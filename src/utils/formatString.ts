@@ -21,6 +21,6 @@ export function code(str: string) {
 }
 
 export function camelCaseToNormal(str: string) {
-  const splitCapital = str.replace(/([A-Z])/, ' $1');
+  const splitCapital = str.replace(/([A-Z])/g, ' $1');
   return splitCapital[0].toUpperCase() + splitCapital.slice(1);
 }

@@ -1,11 +1,10 @@
 import { TextChannel, NewsChannel, ThreadChannel } from 'discord.js';
 
 import { BotEvent } from '@/types';
-import { isNotDM } from '@utils/typeGuards';
 import { dbInsertMessages } from '@database/statements';
 import { getToday } from '@utils/formatStats';
 import checkLang from '@utils/checkLang';
-import { getParentChannelId } from '@utils/discordGetters';
+import { getParentChannelId, isMessageInChannels } from '@utils/guildUtils';
 import checkSafeMessage from '@utils/checkSafeMessage';
 
 const event: BotEvent<'messageCreate'> = {
@@ -19,7 +18,7 @@ const event: BotEvent<'messageCreate'> = {
     const server = bot.servers[message.guild.id];
     const guildId = message.guild.id;
     const channelId = getParentChannelId(message.channel);
-    if (server.config.ignoredChannels.includes(channelId)) return;
+    if (isMessageInChannels(message, server.config.ignoredChannels)) return;
 
     const userId = message.member.id;
     const date = getToday();

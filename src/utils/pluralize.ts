@@ -4,7 +4,7 @@ export default function pluralize(
   length: number = 0,
   singularSuffix: string = ''
 ) {
-  if (length === 0) {
+  if (length === 1) {
     return `${word}${singularSuffix}`;
   } else {
     return `${word}${pluralSuffix}`;

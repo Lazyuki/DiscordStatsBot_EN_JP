@@ -1,3 +1,4 @@
+import { version } from 'discord.js';
 import { stripIndent } from 'common-tags';
 
 import { BotCommand } from '@/types';
@@ -16,7 +17,10 @@ const command: BotCommand = {
           **Bot Owner**: <@${bot.ownerId}>
           **Uptime**: ${millisToDuration(bot.uptime)}
           **Number of Servers**: ${bot.guilds.cache.size}
+          **Number of Cached Users**: ${bot.users.cache.size}
+
           ==== Technical =====
+          **Discord.js Version**: ${version}
           **Node Version**: ${process.versions['node']}
           **Database Size**: ${getDatabaseFileSize() || 'Unknown'}
           `,

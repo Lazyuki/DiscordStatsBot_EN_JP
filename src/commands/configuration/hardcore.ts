@@ -1,75 +1,90 @@
 import { InvalidSubCommandError } from '@/errors';
 import { BotCommand } from '@/types';
 import { EJLX, MAINICHI } from '@utils/constants';
-import { makeEmbed } from '@utils/embed';
+import { errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
+import pluralize from '@utils/pluralize';
+import { stripIndent } from 'common-tags';
 
 const hardcore: BotCommand = {
   name: 'hardcore',
   allowedServers: [EJLX, MAINICHI],
-  isAllowed: 'ADMIN',
+  requiredServerConfigs: ['japaneseRoles', 'hardcoreRole'],
   aliases: ['hc'],
-  description:
-    'Set up hardcore related configurations. You can set the configurations for `role/japanese/ignored`. You **MUST** set `role` which is a role that enables the hardcore mode, and also set `japanese` which is a role for native japanese speakers.',
-  arguments: '[role | japanese | ignore]',
-  subCommands: ['role', 'japanese', 'ignore'],
-  examples: [
-    'hardcore',
-    'hardcore japanese @native_japanese_role',
-    'hardcore role @hardcore_role',
-    'hardcore ignore #bot-spam #quiz-channel',
-  ],
+  description: `Enable/disable hardcore. Use \`{PREFIX}}config\` to manage hardcore related configs.`,
+  arguments: '[enable | disable]',
+  examples: ['hardcore', 'hc enable'],
   normalCommand: async ({ commandContent, message, server }) => {
     const hardcoreRole = server.config.hardcoreRole;
-    const japaneseRole = server.config.japaneseRole;
+    const japaneseRole = server.config.japaneseRoles;
     const hardcoreIgnoredChannels = server.config.hardcoreIgnoredChannels;
+    const isEnabled = message.member.roles.cache.has(hardcoreRole);
     if (!commandContent) {
-      const isEnabled = hardcoreRole && japaneseRole;
-      await message.channel.send(
-        makeEmbed({
-          description: `Hardcore mode is ${
-            isEnabled ? '**enabled**' : '**disabled**'
-          } on this server.${
-            isEnabled
-              ? ''
-              : ' You must have the Hardcore Role and the Japanese Role set up to enable this feature.'
-          }`,
-          fields: [
-            {
-              name: 'Hardcore Role',
-              value: hardcoreRole
-                ? `<&${hardcoreRole}>`
-                : `Type \`${server.config.prefix}hardcore role @server's-hardcore-role\` to set this up`,
-              inline: true,
-            },
-            {
-              name: 'Japanese Role',
-              value: japaneseRole
-                ? `<&${japaneseRole}>`
-                : `Type \`${server.config.prefix}hardcore japanese @server's-native-japanese-role\` to set this up`,
-              inline: true,
-            },
-            {
-              name: 'Hardcore Ignored Channels',
-              value: hardcoreIgnoredChannels
-                ? hardcoreIgnoredChannels
-                    .map((channelId) => `<#${channelId}>`)
-                    .join(' ')
-                : `No hardcore ignored channels. Type \`${server.config.prefix}hardcore ignore #channel1 #channel2...\` to set this up`,
-              inline: true,
-            },
-          ],
-        })
+      const isJapanese = server.config.japaneseRoles.some((r) =>
+        message.member.roles.cache.has(r)
       );
-    } else {
-      const subCommand = commandContent.split(' ')[0];
-      const restCommand = commandContent.replace(subCommand, '').trim();
-      if (!['role', 'japanese', 'ignore'].includes(subCommand)) {
-        throw new InvalidSubCommandError(
-          '`hardcore` only accepts the following sub commands: `role`, `japanese`, and `ignore`.'
+      if (isEnabled) {
+        await message.channel.send(
+          makeEmbed({
+            description: stripIndent`
+          You are currently using hardcore mode. You cannot type ${
+            isJapanese ? 'Japanese' : 'English'
+          } on this server
+          ${
+            hardcoreIgnoredChannels?.length
+              ? ` except in ${hardcoreIgnoredChannels
+                  .map((c) => `<#${hardcoreIgnoredChannels}>`)
+                  .join(' ')}`
+              : ''
+          }. 
+          `,
+            footer: `Type \`${server.config.prefix}hc disable\` to disable.`,
+          })
+        );
+      } else {
+        await message.channel.send(
+          makeEmbed({
+            description: stripIndent`
+            If you enable hardcore mode, you will not be able to type ${
+              isJapanese ? 'Japanese' : 'English'
+            } on this server
+          ${
+            hardcoreIgnoredChannels?.length
+              ? ` except in ${hardcoreIgnoredChannels
+                  .map((c) => `<#${hardcoreIgnoredChannels}>`)
+                  .join(' ')}`
+              : ''
+          }. 
+          `,
+            footer: `Type \`${server.config.prefix}hc enable\` to enable Hardcore.`,
+          })
         );
       }
-      switch (subCommand) {
-        case 'role': {
+    } else {
+      const subCommand = commandContent.split(' ')[0].toLowerCase();
+      if (!['enable', 'disable'].includes(subCommand)) {
+        throw new InvalidSubCommandError(
+          '`hardcore` only accepts the following sub commands: `enable` | `disable`.'
+        );
+      }
+      if (subCommand === 'enable') {
+        if (!isEnabled) {
+          await message.channel.send(
+            successEmbed('Successfully enabled hardcore mode')
+          );
+        } else {
+          await message.channel.send(
+            errorEmbed('You already have hardcore mode enabled')
+          );
+        }
+      } else {
+        if (isEnabled) {
+          await message.channel.send(
+            successEmbed('Successfully disabled hardcore mode')
+          );
+        } else {
+          await message.channel.send(
+            errorEmbed('You do not have hardcore mode enabled.')
+          );
         }
       }
     }

@@ -36,7 +36,10 @@ const command: BotCommand = {
         return;
       } else {
         const title = command.name;
-        const description = command.description;
+        const description = command.description.replaceAll(
+          '{PREFIX}',
+          server.config.prefix
+        );
         const footer = command.aliases
           ? `${pluralize(
               'Alias',

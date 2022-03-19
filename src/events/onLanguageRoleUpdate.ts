@@ -8,7 +8,7 @@ import {
 import { makeEmbed } from '@utils/embed';
 import { EJLX, EJLX_LANG_ROLE_IDS, EWBF, RAI } from '@utils/constants';
 import { BotEvent } from '@/types';
-import { getTextChannel } from '@utils/discordGetters';
+import { getTextChannel } from '@utils/guildUtils';
 import { REGEX_RAW_ID } from '@utils/regex';
 import pluralize from '@utils/pluralize';
 
@@ -34,12 +34,13 @@ async function getRoleChangeAuditLogs(guild: Guild, userId: string) {
       let executorId = executor.id;
       if (executor.bot) {
         const reason = entry.reason;
-        const match = reason?.match(REGEX_RAW_ID); // Issued by
+        const match = reason?.match(REGEX_RAW_ID); // Role update reason must contain the user ID of the issuer
         if (match) executorId = match[0];
       }
       const newActions = actions[executorId] || { add: [], remove: [] };
       entry.changes?.forEach((change) => {
         const roleChange = change as RoleChangeAuditLogEntry;
+        if (!EJLX_LANG_ROLE_IDS.includes(roleChange.new?.[0]?.id)) return;
         if (roleChange.key.includes('add')) {
           newActions.add.push(roleChange.new?.[0]?.id);
         } else {
@@ -48,6 +49,12 @@ async function getRoleChangeAuditLogs(guild: Guild, userId: string) {
       });
       actions[executorId] = newActions;
     });
+  Object.keys(actions).forEach((executorId) => {
+    const changes = actions[executorId];
+    if (changes.add.length === 0 && changes.remove.length === 0) {
+      delete actions[executorId];
+    }
+  });
   return actions;
 }
 
@@ -71,6 +78,7 @@ async function notifyLanguageRoleChange(
     (executorId) =>
       newMember.guild.members.cache.get(executorId)?.user.tag || 'unknown'
   );
+  const sortedNewRoleIds = EJLX_LANG_ROLE_IDS.filter((id) => newRoles.has(id));
 
   // only 1 person changed the roles
   if (oldRoles.size === 0) {
@@ -81,11 +89,11 @@ async function notifyLanguageRoleChange(
         description: `${newMember}'s language role${pluralize(
           '',
           's have',
-          newRoles.size,
+          sortedNewRoleIds.length,
           ' has'
-        )} been set to ${newRoles.map((r) => r).join(' ')} by ${executors.join(
-          ', '
-        )}`,
+        )} been set to ${sortedNewRoleIds
+          .map((r) => `<@&${r}>`)
+          .join(' ')} by ${executors.join(', ')}`,
         footer: `${newMember.user.tag} language role update`,
       })
     );
@@ -96,9 +104,11 @@ async function notifyLanguageRoleChange(
         description: `${newMember}'s language role${pluralize(
           '',
           's have',
-          newRoles.size,
+          sortedNewRoleIds.length,
           ' has'
-        )} been set to ${newRoles.map((r) => r).join(' ')} instead of ${oldRoles
+        )} been set to ${sortedNewRoleIds
+          .map((r) => `<@&${r}>`)
+          .join(' ')} instead of ${oldRoles
           .map((r) => `\`${r.name}\``)
           .join(', ')} by ${executors.join(', ')}`,
         footer: `${newMember.user.tag} language role update`,

@@ -3,23 +3,23 @@ import { stripIndent } from 'common-tags';
 import { CommandArgumentError, InvalidSubCommandError } from '@/errors';
 import { BotCommand, ServerConfig } from '@/types';
 import { parseSnowflakeIDs } from '@utils/argumentParsers';
-import { errorEmbed, makeEmbed } from '@utils/embed';
+import { errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
 import { camelCaseToNormal } from '@utils/formatString';
-import { DEFAULT_PREFIX } from '@/envs';
 import { Guild } from 'discord.js';
+import { DEFAULT_PREFIX } from '@/envs';
 
 declare module '@/types' {
   interface ServerConfig {
     prefix: string;
     statistics: boolean;
-    japaneseRole: string;
+    japaneseRoles: string[];
     hardcoreRole: string;
     hardcoreIgnoredChannels: string[];
     ignoredChannels: string[];
     hiddenChannels: string[];
     voiceMuteRoles: string[];
     chatMuteRoles: string[];
-    blindRoles: string[];
+    focusRoles: string[];
     selfMuteRoles: string[];
     userLogChannel: string;
     logNameChanges: boolean;
@@ -27,6 +27,24 @@ declare module '@/types' {
     ignoredBotPrefixes: string[];
   }
 }
+
+const DEFAULT_CONFIG: ServerConfig = {
+  prefix: DEFAULT_PREFIX,
+  statistics: false,
+  japaneseRoles: [],
+  hardcoreRole: '',
+  hardcoreIgnoredChannels: [],
+  ignoredChannels: [],
+  hiddenChannels: [],
+  voiceMuteRoles: [],
+  chatMuteRoles: [],
+  focusRoles: [],
+  selfMuteRoles: [],
+  userLogChannel: '',
+  logNameChanges: false,
+  modLogChannel: '',
+  ignoredBotPrefixes: [],
+};
 
 type ConfigType = 'channel' | 'boolean' | 'role' | 'string' | 'message';
 
@@ -75,7 +93,7 @@ type ConfigInfo<Key extends keyof ServerConfig> = {
   key: Key;
   type: ConfigType;
   description: string;
-  isArray?: boolean;
+  isArray: ServerConfig[Key] extends any[] ? true : false;
   restricted?: boolean;
   parser: (
     subCommand: string,
@@ -95,33 +113,38 @@ const CONFIGURABLE_SERVER_CONFIG = [
   getConfigInfo({
     key: 'prefix',
     type: 'string',
+    isArray: false,
     description: "This bot's command prefix.",
     parser: getStringConfig,
   }),
   getConfigInfo({
     key: 'statistics',
     type: 'boolean',
+    isArray: false,
     description: 'Enables statistics. Only the bot owner can change this.',
     restricted: true,
     parser: getBooleanConfig,
   }),
   getConfigInfo({
-    key: 'japaneseRole',
+    key: 'japaneseRoles',
     type: 'role',
-    description: 'Role for native Japanese speakers.',
-    parser: getStringConfig,
+    isArray: true,
+    description:
+      'Roles for native Japanese speakers. This will affect hardcore mode and user statistics',
+    parser: getStringArrayConfig,
   }),
   getConfigInfo({
     key: 'hardcoreRole',
     type: 'role',
-    description: 'Role that enables the hardcore mode.',
+    isArray: false,
+    description: 'Role used for hardcore mode.',
     parser: getStringConfig,
   }),
   getConfigInfo({
     key: 'hardcoreIgnoredChannels',
     type: 'channel',
     isArray: true,
-    description: 'Channels that are ignored from the hardcore mode.',
+    description: 'Channels or categories that are ignored from hardcore mode.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({
@@ -129,7 +152,7 @@ const CONFIGURABLE_SERVER_CONFIG = [
     type: 'channel',
     isArray: true,
     description:
-      'Channels that are ignored from server statistics. Bot commands will still work. Useful for channels like bot-spam or quiz.',
+      'Channels or categories that are ignored from server statistics. Bot commands will still work. Useful for channels like bot-spam or quiz.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({
@@ -137,7 +160,7 @@ const CONFIGURABLE_SERVER_CONFIG = [
     type: 'channel',
     isArray: true,
     description:
-      'Channels that are hidden from general server statistics. Messages will still be counted, but these channels will only show up on user stats if the command is invoked from one of the hidden channels. Useful for mod channels.',
+      'Channels or categories that are hidden from general server statistics. Messages will still be counted, but these channels will only show up on user stats if the command is invoked from one of the hidden channels. Useful for mod channels.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({
@@ -151,26 +174,27 @@ const CONFIGURABLE_SERVER_CONFIG = [
     key: 'chatMuteRoles',
     type: 'role',
     isArray: true,
-    description: 'Role that mutes users in text channels.',
+    description: 'Roles that mute users in text channels.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({
-    key: 'blindRoles',
+    key: 'focusRoles',
     type: 'role',
     isArray: true,
-    description: 'Role[s] that makes users not able to see/read channels.',
+    description: 'Roles that make users to not see/read channels.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({
     key: 'selfMuteRoles',
     type: 'role',
     isArray: true,
-    description: 'Role[s] used when users want to mute themselves.',
+    description: 'Roles used when users want to mute themselves.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({
     key: 'userLogChannel',
     type: 'channel',
+    isArray: false,
     description:
       'Channel used for logging user join/leave notifications. Setting this channel enables these notifications. You can additinally enable "Log Name Changes" to log nickname/username changes in this channel.',
     parser: getStringConfig,
@@ -178,6 +202,7 @@ const CONFIGURABLE_SERVER_CONFIG = [
   getConfigInfo({
     key: 'logNameChanges',
     type: 'boolean',
+    isArray: false,
     description:
       'Enables logging user nickname/username changes in the "User Log Channel".',
     parser: getBooleanConfig,
@@ -185,6 +210,7 @@ const CONFIGURABLE_SERVER_CONFIG = [
   getConfigInfo({
     key: 'modLogChannel',
     type: 'channel',
+    isArray: false,
     description: 'Channel used for logging mod related information.',
     parser: getStringConfig,
   }),
@@ -203,9 +229,10 @@ const CONFIG_KEYS = CONFIGURABLE_SERVER_CONFIG.map((c) => c.key) as Readonly<
 >;
 
 function formatStringType(type: ConfigType, value: string) {
+  if (!value) return '`None`';
   if (type === 'channel') return `<#${value}>`;
   if (type === 'role') return `<@&${value}>`;
-  return value;
+  return `\`${value}\``;
 }
 
 function formatValue(
@@ -216,13 +243,13 @@ function formatValue(
     return formatStringType(type, value);
   } else if (Array.isArray(value)) {
     if (value.length === 0) {
-      return 'None';
+      return '`None`';
     }
     return value.map((v) => formatStringType(type, v)).join(', ');
   } else if (typeof value === 'boolean') {
-    return value ? 'Enabled' : 'Disabled';
+    return value ? '`Enabled`' : '`Disabled`';
   } else {
-    return 'None';
+    return '`None`';
   }
 }
 
@@ -266,7 +293,7 @@ const command: BotCommand = {
   name: 'config',
   isAllowed: 'ADMIN',
   onCommandInit: (server) => {
-    server.config.hardcoreIgnoredChannels ||= [];
+    server.config = { ...DEFAULT_CONFIG, ...server.config };
   },
   description: 'View or update bot config for this server',
   arguments: '[number] [add/remove | enable/disable | set/reset] [value]',
@@ -285,19 +312,19 @@ const command: BotCommand = {
       await message.channel.send(
         makeEmbed({
           title: 'Current Server Configuration',
-          description: stripIndent`
-            ${CONFIGURABLE_SERVER_CONFIG.map((config, index) => {
-              `**${index + 1}. ${camelCaseToNormal(
+          description: CONFIGURABLE_SERVER_CONFIG.map(
+            (config, index) =>
+              `${index + 1}. **${camelCaseToNormal(
                 config.key
-              )}**: ${formatValue(config.type, server.config[config.key])}`;
-            }).join('\n')}
-            `,
+              )}**: ${formatValue(config.type, server.config[config.key])}`
+          ).join('\n'),
           footer: `Type "${server.config.prefix}config config_number help" for more info on each config`,
         })
       );
     } else {
-      const [configNumStr, subCommand, ...restCommand] =
-        commandContent.split(/\s+/);
+      const [configNumStr, subCommand, ...restCommand] = commandContent
+        .toLowerCase()
+        .split(/\s+/);
       const configNum = parseInt(configNumStr);
       if (
         isNaN(configNum) ||
@@ -312,7 +339,7 @@ const command: BotCommand = {
       const configKey = configInfo.key;
       const configValue = restCommand.join(' ');
       const currentConfig = server.config[configKey];
-      if (!subCommand) {
+      if (!subCommand || subCommand === 'help') {
         const availableSubCommands = getAvailableSubCommands(
           configInfo.type,
           configInfo.isArray
@@ -366,6 +393,12 @@ const command: BotCommand = {
           server.config[configKey] as never,
           getFilter(configInfo.type, server.guild)
         );
+        await message.channel.send(
+          successEmbed(
+            `Config for **${camelCaseToNormal(configKey)}** has been updated.`
+          )
+        );
+        return;
       }
     }
   },

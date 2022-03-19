@@ -11,7 +11,7 @@ import { makeEmbed } from '@utils/embed';
 import { EJLX, EWBF, RAI } from '@utils/constants';
 import { BotEvent } from '@/types';
 import { getSecondDiff } from './onVoiceUpdate';
-import { getTextChannel } from '@utils/discordGetters';
+import { getTextChannel } from '@utils/guildUtils';
 
 async function notifyUserLeave(
   member: PartialGuildMember | GuildMember,

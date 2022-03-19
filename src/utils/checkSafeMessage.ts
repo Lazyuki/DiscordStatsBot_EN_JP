@@ -6,7 +6,7 @@ import {
   ThreadChannel,
 } from 'discord.js';
 import { Bot, GuildMessage } from '@/types';
-import { isNotDM } from './typeGuards';
+import { isNotDM } from './guildUtils';
 
 function checkSafeMessage(
   bot: Bot,

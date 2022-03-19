@@ -1,6 +1,6 @@
 import { BotEvent } from '@/types';
 import checkLang from '@utils/checkLang';
-import { getParentChannelId } from '@utils/discordGetters';
+import { isMessageInChannels } from '@utils/guildUtils';
 import checkSafeMessage from '@utils/checkSafeMessage';
 import { makeEmbed } from '@utils/embed';
 
@@ -12,15 +12,16 @@ const createEvent: BotEvent<'messageCreate'> = {
       return;
     }
     const server = bot.servers[message.guild.id];
-    if (!server.config.hardcoreRole || !server.config.japaneseRole) return; // Hardcore not configured on this server
+    if (!server.config.hardcoreRole || !server.config.japaneseRoles?.length)
+      return; // Hardcore not configured on this server
 
-    const channelId = getParentChannelId(message.channel);
     if (!message.member.roles.cache.has(server.config.hardcoreRole)) return;
-    if (server.config.hardcoreIgnoredChannels.includes(channelId)) return;
-    if (server.config.hiddenChannels.includes(channelId)) return; // Not in mod channels
+    if (isMessageInChannels(message, server.config.hardcoreIgnoredChannels))
+      return;
+    if (isMessageInChannels(message, server.config.hiddenChannels)) return; // Not in mod channels
 
-    const isJapanese = message.member.roles.cache.has(
-      server.config.japaneseRole
+    const isJapanese = server.config.japaneseRoles.some((r) =>
+      message.member.roles.cache.has(r)
     );
 
     const { lang, escaped } = checkLang(message.content);

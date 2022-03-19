@@ -21,7 +21,7 @@ import {
 import { BotEvent } from '@/types';
 import { getSecondDiff } from './onVoiceUpdate';
 import { stripIndents } from 'common-tags';
-import { getTextChannel } from '@utils/discordGetters';
+import { getTextChannel } from '@utils/guildUtils';
 
 async function notifyUserJoin(
   member: GuildMember,

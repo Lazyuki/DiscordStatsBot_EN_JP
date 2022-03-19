@@ -21,4 +21,5 @@ nohup.out
 # Backups
 backups
 configs
+data
 schedules

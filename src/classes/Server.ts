@@ -1,7 +1,6 @@
 import { Guild } from 'discord.js';
 import fs from 'fs';
 
-import { DEFAULT_PREFIX } from '@/envs';
 import logger from '@/logger';
 import {
   Bot,
@@ -11,15 +10,24 @@ import {
   ServerSchedule,
 } from '@/types';
 
+function safeCreateDir(dir: string) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+}
+
 function getBackupFilePath(guildId: string, date: Date) {
   const dateStr = date.toISOString().split('T')[0];
+  safeCreateDir('./backups');
   return `./backups/${dateStr}-${guildId}_config.json`;
 }
 
 function getConfigFilePath(guildId: string) {
+  safeCreateDir('./configs');
   return `./configs/${guildId}_config.json`;
 }
 function getScheduleFilePath(guildId: string) {
+  safeCreateDir('./schedules');
   return `./schedules/${guildId}_schedule.json`;
 }
 
@@ -36,9 +44,7 @@ class Server {
     this.cache = {} as ServerCache;
 
     const configFileName = getConfigFilePath(guild.id);
-    this.config = {
-      prefix: DEFAULT_PREFIX,
-    } as ServerConfig;
+    this.config = {} as ServerConfig;
     if (fs.existsSync(configFileName)) {
       const json = JSON.parse(fs.readFileSync(configFileName, 'utf8'));
       this.config = json;

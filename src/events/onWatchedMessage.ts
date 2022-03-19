@@ -1,7 +1,7 @@
 import { TextChannel, NewsChannel, ThreadChannel } from 'discord.js';
 
 import { BotEvent } from '@/types';
-import { isNotDM } from '@utils/typeGuards';
+import { isNotDM } from '@utils/guildUtils';
 import logger from '@/logger';
 
 async function storeMediaTemporarily(id: string, mediaLink: string) {}

@@ -1,9 +1,13 @@
 import { BotEvent } from '@/types';
-import { isNotDM } from '@utils/typeGuards';
 import { dbInsertDeletes, dbInsertMessages } from '@database/statements';
 import { getToday } from '@utils/formatStats';
 import { DELETE_COLOR, EJLX, MAINICHI, MOD_LOG } from '@utils/constants';
-import { getParentChannelId, getTextChannel } from '@utils/discordGetters';
+import {
+  getParentChannelId,
+  getTextChannel,
+  isMessageInChannels,
+  isNotDM,
+} from '@utils/guildUtils';
 import { makeEmbed } from '@utils/embed';
 import { formatDuration, intervalToDuration } from 'date-fns';
 
@@ -19,7 +23,7 @@ const event: BotEvent<'messageDelete'> = {
     const guildId = message.guild.id;
     const channelId = getParentChannelId(message.channel);
     const userId = message.author.id;
-    if (!server.config.ignoredChannels.includes(channelId)) {
+    if (!isMessageInChannels(message, server.config.ignoredChannels)) {
       dbInsertDeletes.run({
         guildId,
         userId,
