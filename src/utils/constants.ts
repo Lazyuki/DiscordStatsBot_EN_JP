@@ -1,4 +1,4 @@
-// Server ID
+// Server IDs
 export const EJLX = '189571157446492161';
 export const TESTING_SERVER = '293787390710120449';
 export const MAINICHI = '292389599982911488';

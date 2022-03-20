@@ -1,11 +1,16 @@
 import { TextChannel, NewsChannel, ThreadChannel } from 'discord.js';
 
 import { BotEvent } from '@/types';
-import { dbInsertMessages } from '@database/statements';
+import {
+  dbInsertEmojis,
+  dbInsertMessages,
+  dbInsertStickers,
+} from '@database/statements';
 import { getToday } from '@utils/formatStats';
 import checkLang from '@utils/checkLang';
 import { getParentChannelId, isMessageInChannels } from '@utils/guildUtils';
 import checkSafeMessage from '@utils/checkSafeMessage';
+import { REGEX_CUSTOM_EMOTES, REGEX_EMOJIS } from '@utils/regex';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -32,6 +37,50 @@ const event: BotEvent<'messageCreate'> = {
       lang,
       messageCount: 1,
     });
+
+    const emojis: Record<string, number> = {};
+
+    const discordEmojis = message.content.match(REGEX_CUSTOM_EMOTES);
+    if (discordEmojis) {
+      for (const emoji of discordEmojis) {
+        if (emoji in emojis) {
+          emojis[emoji] += 1;
+        } else {
+          emojis[emoji] = 1;
+        }
+      }
+    }
+    const unicodeEmojis = message.content.match(REGEX_EMOJIS);
+    if (unicodeEmojis) {
+      for (const emoji of unicodeEmojis) {
+        if (emoji in emojis) {
+          emojis[emoji] += 1;
+        } else {
+          emojis[emoji] = 1;
+        }
+      }
+    }
+    Object.entries(emojis).forEach(([emoji, emojiCount]) => {
+      dbInsertEmojis.run({
+        guildId,
+        userId,
+        date,
+        emoji,
+        emojiCount,
+      });
+    });
+
+    if (message.stickers?.size) {
+      message.stickers.forEach((sticker) => {
+        dbInsertStickers.run({
+          guildId,
+          userId,
+          date,
+          sticker: `${sticker.name}:${sticker.guildId}`,
+          stickerCount: 1,
+        });
+      });
+    }
   },
 };
 

@@ -32,6 +32,14 @@ export class ConflictError extends UserError {
   }
 }
 
+export class InvalidOptionError extends UserError {
+  constructor(message = '', ...args: any[]) {
+    super(...args);
+    this.message = message;
+    this.name = 'InvalidOptionError';
+  }
+}
+
 export class InvalidSubCommandError extends CommandArgumentError {
   constructor(message = '', ...args: any[]) {
     super(...args);

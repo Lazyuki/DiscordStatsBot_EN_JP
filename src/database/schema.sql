@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS modlog(
   utc_date DATE NOT NULL,
   issuer_id BIGINT NOT NULL,
   message_link TEXT NOT NULL,
+  kind TEXT NOT NULL,
   silent BOOLEAN NOT NULL,
   content TEXT NOT NULL
 );

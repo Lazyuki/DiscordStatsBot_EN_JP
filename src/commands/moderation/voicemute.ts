@@ -11,9 +11,9 @@ const command: BotCommand = {
     'vm @Geralt being too good at Japanese',
     'vm 284840842026549259 299335689558949888 shut up',
   ],
-  normalCommand: async ({ commandContent, message }) => {
+  normalCommand: async ({ content, message }) => {
     let targets = message.mentions.members;
-    let reason = commandContent.replace(REGEX_USER, '').trim();
+    let reason = content.replace(REGEX_USER, '').trim();
     if (reason == '') {
       reason = 'unspecified';
     }

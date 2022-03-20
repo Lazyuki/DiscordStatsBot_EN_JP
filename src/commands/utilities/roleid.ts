@@ -6,8 +6,8 @@ const command: BotCommand = {
   description: 'Get the role ID',
   arguments: '<role name (could be partial)>',
   examples: ['roleid native japanese'],
-  normalCommand: async ({ commandContent, message, server }) => {
-    const roleName = commandContent.toLowerCase().replace('@', '');
+  normalCommand: async ({ content, message, server }) => {
+    const roleName = content.toLowerCase().replace('@', '');
     if (!roleName) {
       throw new CommandArgumentError('Please specify a role');
     }

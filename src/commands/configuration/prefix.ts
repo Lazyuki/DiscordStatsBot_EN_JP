@@ -10,9 +10,9 @@ const command: BotCommand = {
   description:
     'Change the command prefix. Leave blank to restore the default prefix',
   examples: ['prefix c!', 'prefix'],
-  normalCommand: async ({ commandContent, server, send }) => {
+  normalCommand: async ({ content, server, send }) => {
     const currentPrefix = server.config.prefix;
-    if (!commandContent) {
+    if (!content) {
       if (currentPrefix === DEFAULT_PREFIX) {
         await send(
           makeEmbed({
@@ -28,11 +28,11 @@ const command: BotCommand = {
         );
       }
     } else {
-      if (VALID_PREFIX.test(commandContent)) {
-        server.config.prefix = commandContent;
+      if (VALID_PREFIX.test(content)) {
+        server.config.prefix = content;
         await send(
           successEmbed(
-            `The command prefix has been set to \`${commandContent}\` from \`${currentPrefix}\``
+            `The command prefix has been set to \`${content}\` from \`${currentPrefix}\``
           )
         );
       } else {

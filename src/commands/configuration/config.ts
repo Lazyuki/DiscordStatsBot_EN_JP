@@ -2,7 +2,7 @@ import { stripIndent } from 'common-tags';
 
 import { CommandArgumentError, InvalidSubCommandError } from '@/errors';
 import { BotCommand, ServerConfig } from '@/types';
-import { parseSnowflakeIDs } from '@utils/argumentParsers';
+import { parseSnowflakeIds } from '@utils/argumentParsers';
 import { errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
 import { camelCaseToNormal } from '@utils/formatString';
 import { Guild } from 'discord.js';
@@ -70,12 +70,12 @@ function getStringArrayConfig(
 ): string[] {
   if (subCommand === 'reset') return [];
   if (subCommand === 'add') {
-    const { ids } = parseSnowflakeIDs(values);
+    const { ids } = parseSnowflakeIds(values);
     const filtered = ids.filter(filter);
     return [...currentSettings, ...filtered];
   }
   if (subCommand === 'remove') {
-    const { ids } = parseSnowflakeIDs(values);
+    const { ids } = parseSnowflakeIds(values);
     const filtered = currentSettings.filter((s) => !ids.includes(s));
     if (filtered.length === currentSettings.length) {
       throw new CommandArgumentError(
@@ -306,8 +306,8 @@ const command: BotCommand = {
     'config 3 remove #bot-spam',
     'config 14 enable',
   ],
-  normalCommand: async ({ commandContent, message, server, bot, ...rest }) => {
-    if (!commandContent) {
+  normalCommand: async ({ content, message, server, bot, ...rest }) => {
+    if (!content) {
       // Show current config
       await message.channel.send(
         makeEmbed({
@@ -322,7 +322,7 @@ const command: BotCommand = {
         })
       );
     } else {
-      const [configNumStr, subCommand, ...restCommand] = commandContent
+      const [configNumStr, subCommand, ...restCommand] = content
         .toLowerCase()
         .split(/\s+/);
       const configNum = parseInt(configNumStr);
@@ -378,7 +378,7 @@ const command: BotCommand = {
         }
         if (configInfo.key === 'prefix') {
           await bot.commands['prefix'].normalCommand?.({
-            commandContent: subCommand === 'set' ? configValue : '',
+            content: subCommand === 'set' ? configValue : '',
             message,
             server,
             bot,

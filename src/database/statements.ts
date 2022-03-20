@@ -375,12 +375,13 @@ export const dbInsertModLogEntry = db.prepare<
   GuildUserDate & {
     issuerId: string;
     messageLink: string;
+    kind: string;
     silent: boolean;
     content: string;
   }
 >(`
-    INSERT INTO modlog (guild_id, user_id, utc_date, issuer_id, message_link, silent, content)
-    VALUES($guildId, $userId, $date, $issuerId, $messageLink, $silent, $content)
+    INSERT INTO modlog (guild_id, user_id, utc_date, issuer_id, message_link, kind, silent, content)
+    VALUES($guildId, $userId, $date, $issuerId, $messageLink, $kind, $silent, $content)
 `);
 
 export const dbInsertWatchedUser = db.prepare<GuildUser>(`

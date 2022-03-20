@@ -10,7 +10,7 @@ import { CommandArgumentError, ConflictError } from '@/errors';
 import logger from '@/logger';
 
 declare module '@/types' {
-  interface ServerSchedule {
+  interface ServerSchedules {
     selfMutes: Record<string, number>;
     scheduledSelfMutes: Record<string, { muteAt: number; unmuteAt: number }>;
   }
@@ -38,7 +38,7 @@ async function getMemberOrRepeat(
         return;
       }
       // User left? Remove self mutes
-      delete server.schedule.selfMutes[userId];
+      delete server.data.schedules.selfMutes[userId];
       return;
     }
   }
@@ -48,7 +48,7 @@ async function getMemberOrRepeat(
 async function unmute(member: GuildMember, server: Server) {
   try {
     await member.roles.remove(server.config.selfMuteRoles);
-    delete server.schedule.selfMutes[member.id];
+    delete server.data.schedules.selfMutes[member.id];
   } catch (e) {
     // User left?
     logger.error(
@@ -64,7 +64,7 @@ async function mute(
 ) {
   try {
     await member.roles.add(server.config.selfMuteRoles);
-    server.schedule.selfMutes[member.id] = unmuteAtMillis;
+    server.data.schedules.selfMutes[member.id] = unmuteAtMillis;
     runAt(
       new Date(unmuteAtMillis),
       async () =>
@@ -88,14 +88,14 @@ function scheduleMute(
   muteAt: Date,
   unmuteAt: Date
 ) {
-  server.schedule.scheduledSelfMutes[member.id] = {
+  server.data.schedules.scheduledSelfMutes[member.id] = {
     muteAt: muteAt.getTime(),
     unmuteAt: unmuteAt.getTime(),
   };
   runAt(muteAt, () => {
     getMemberOrRepeat(member.id, server, async (m, s) => {
       await mute(m, s, unmuteAt.getTime());
-      delete server.schedule.scheduledSelfMutes[member.id];
+      delete server.data.schedules.scheduledSelfMutes[member.id];
     });
   });
 }
@@ -117,21 +117,22 @@ const command: BotCommand = {
   aliases: ['sm'],
   description: 'Mute self for some amount of time',
   requiredServerConfigs: ['selfMuteRoles'],
+  requiredBotPermissions: ['MANAGE_ROLES'],
   onCommandInit: (server) => {
-    server.schedule.scheduledSelfMutes ||= {};
-    server.schedule.selfMutes ||= {};
+    server.data.schedules.scheduledSelfMutes ||= {};
+    server.data.schedules.selfMutes ||= {};
 
-    Object.entries(server.schedule.scheduledSelfMutes).map(
+    Object.entries(server.data.schedules.scheduledSelfMutes).map(
       ([userId, schedule]) => {}
     );
-    Object.entries(server.schedule.selfMutes).map(
+    Object.entries(server.data.schedules.selfMutes).map(
       ([userId, unmuteAtMillis]) => {}
     );
   },
-  normalCommand: async ({ message, commandContent, server }) => {
+  normalCommand: async ({ message, content, server }) => {
     setTimeout(() => message.delete(), 200);
     const existingSchedule =
-      server.schedule.scheduledSelfMutes[message.member.id];
+      server.data.schedules.scheduledSelfMutes[message.member.id];
     if (existingSchedule) {
       // User already have scheduled mute
       throw new ConflictError(
@@ -140,7 +141,7 @@ const command: BotCommand = {
         )}`
       );
     }
-    const [muteDuration, muteDelay] = commandContent.split('in');
+    const [muteDuration, muteDelay] = content.split('in');
     const totalMillis = strToTime(muteDuration);
     const delayMillis = muteDelay !== undefined ? strToTime(muteDelay) : null;
     if (!totalMillis) {

@@ -10,8 +10,8 @@ const hide: BotCommand = {
     'Hide a channel from statistics commands, unless invoked in one of the hidden channels. Useful for keeping mod channels hidden',
   arguments: '<#channel> [#channel2 ... ]',
   childCommands: ['hidden', 'unhide'],
-  normalCommand: async ({ commandContent, message, server }) => {
-    const chan = server.guild.channels.cache.get(commandContent);
+  normalCommand: async ({ content, message, server }) => {
+    const chan = server.guild.channels.cache.get(content);
     if (chan) {
       if (server.config.hiddenChannels.includes(chan.id)) return;
       server.config.hiddenChannels.push(chan.id);
@@ -46,8 +46,8 @@ const unhide: BotCommand = {
   isAllowed: 'ADMIN',
   description: 'Un-hide channels',
   parentCommand: 'hide',
-  normalCommand: async ({ message, server, commandContent }) => {
-    const chan = server.guild.channels.cache.get(commandContent);
+  normalCommand: async ({ message, server, content }) => {
+    const chan = server.guild.channels.cache.get(content);
     if (chan) {
       const index = server.config.hiddenChannels.indexOf(chan.id);
       if (index === -1) {

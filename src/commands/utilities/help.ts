@@ -6,8 +6,8 @@ import { EmbedField } from 'discord.js';
 const command: BotCommand = {
   name: 'help',
   description: 'You need help with help?',
-  normalCommand: async ({ message, bot, commandContent, server }) => {
-    const commandName = commandContent.trim().toLowerCase();
+  normalCommand: async ({ message, bot, content, server }) => {
+    const commandName = content.trim().toLowerCase();
     if (commandName === 'command') {
       await message.channel.send(
         errorEmbed({
@@ -47,6 +47,23 @@ const command: BotCommand = {
               command.aliases.length
             )}: ${command.aliases.join(', ')}`
           : undefined;
+        const options = command.options
+          ? {
+              name: pluralize('Option', 's', command.options.length),
+              value: command.options
+                .map(
+                  (option) =>
+                    `${option.name}: \`-${
+                      option.short
+                    }\` ${option.description.replace(
+                      '{PREFIX}',
+                      server.config.prefix
+                    )}`
+                )
+                .join('\n'),
+              inline: false,
+            }
+          : null;
         const args = command.arguments
           ? {
               name: pluralize('Argument', 's', command.arguments.length),

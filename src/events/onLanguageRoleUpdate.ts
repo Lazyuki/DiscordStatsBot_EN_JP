@@ -122,7 +122,7 @@ const bulkUpdator: Record<string, { oldMember: Member; newMember: Member }> =
 
 const event: BotEvent<'guildMemberUpdate'> = {
   eventName: 'guildMemberUpdate',
-  skipOnDebug: false,
+  skipOnDebug: true,
   processEvent: async (bot, oldMember, newMember) => {
     if (newMember.guild.id !== EJLX) return;
     const roleDiff = oldMember.roles.cache.difference(newMember.roles.cache);

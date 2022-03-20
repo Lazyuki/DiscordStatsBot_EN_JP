@@ -10,6 +10,7 @@ import {
   MessagePayload,
   NewsChannel,
   PartialMessage,
+  PermissionString,
   TextChannel,
   ThreadChannel,
 } from 'discord.js';
@@ -23,7 +24,10 @@ export interface Bot extends Client {
   commandInits: OnCommandInit[];
   botInits: OnBotInit[];
   botExits: OnBotExit[];
+  botConfig: BotConfig;
 }
+
+export type LangType = 'JP' | 'EN' | 'OL';
 
 export type CommandPermissionLevel =
   | 'BOT_OWNER'
@@ -58,6 +62,7 @@ export interface BotCommand {
   aliases?: string[];
   allowedServers?: string[];
   requiredServerConfigs?: (keyof ServerConfig)[];
+  requiredBotPermissions?: PermissionString[];
   isAllowed?:
     | CommandPermissionLevel
     | ((message: Message, server: Server, bot: Bot) => boolean);
@@ -66,13 +71,14 @@ export interface BotCommand {
   description: string;
   arguments?: string;
   examples?: string[];
-  options?: string[];
+  options?: CommandOption[];
   normalCommand?: (commandInfo: {
-    commandContent: string;
+    content: string;
     message: GuildMessage<Message>;
     server: Server;
     bot: Bot;
     prefix: string;
+    options: ResolvedCommandOptions | null;
     send: (options: string | MessageOptions) => Promise<Message | undefined>;
     reply: (options: string | MessageOptions) => Promise<Message | undefined>;
   }) => void | Promise<void>;
@@ -85,6 +91,41 @@ export interface BotCommand {
   onBotInit?: OnBotInit;
   onBotExit?: OnBotExit;
 }
+
+export interface CommandOption {
+  name: string; // can be used as --name
+  short:
+    | 'a'
+    | 'b'
+    | 'c'
+    | 'd'
+    | 'e'
+    | 'f'
+    | 'g'
+    | 'h'
+    | 'i'
+    | 'j'
+    | 'k'
+    | 'l'
+    | 'm'
+    | 'n'
+    | 'o'
+    | 'p'
+    | 'q'
+    | 'r'
+    | 's'
+    | 't'
+    | 'u'
+    | 'v'
+    | 'w'
+    | 'x'
+    | 'y'
+    | 'z'; // 1 letter string. can be used as -short
+  bool: boolean; // whether it takes an argument
+  description: string;
+}
+
+export type ResolvedCommandOptions = Record<string, boolean | string>;
 
 export interface ParsedBotCommand extends BotCommand {
   name: string;
@@ -101,6 +142,19 @@ export interface BotEvent<E extends keyof ClientEvents> {
   onBotExit?: OnBotExit;
 }
 
+export type ModLogType = 'warn' | 'mute' | 'timeout' | 'voicemute' | 'log';
+
+export interface ModLogEntry {
+  guildId: string;
+  userId: string;
+  date: string; // ISO
+  issuerId: string;
+  messageLink: string;
+  kind: ModLogType;
+  silent: boolean;
+  content: string;
+}
+
 // Extend the type from each command file
 export interface ServerConfig {
   prefix: string;
@@ -110,10 +164,11 @@ export interface ServerConfig {
 // holds temporary states that might be needed after crash/restarts
 export interface ServerTemp {}
 // Extend the type from each command file
-// cache to store some database stored data
-export interface ServerCache {}
-// Extend the type from each command file
 // Schedules to keep track even if the bot crashes
-export interface ServerSchedule {}
+export interface ServerSchedules {}
 
-export type LangType = 'JP' | 'EN' | 'OL';
+export interface ServerData {
+  schedules: ServerSchedules;
+}
+// Config for the bot itself, to be shared across servers
+export interface BotConfig {}

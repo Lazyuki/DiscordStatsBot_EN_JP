@@ -9,16 +9,16 @@ const hardcore: BotCommand = {
   name: 'hardcore',
   allowedServers: [EJLX, MAINICHI],
   requiredServerConfigs: ['japaneseRoles', 'hardcoreRole'],
+  requiredBotPermissions: ['MANAGE_MESSAGES'],
   aliases: ['hc'],
   description: `Enable/disable hardcore. Use \`{PREFIX}}config\` to manage hardcore related configs.`,
   arguments: '[enable | disable]',
   examples: ['hardcore', 'hc enable'],
-  normalCommand: async ({ commandContent, message, server }) => {
+  normalCommand: async ({ content, message, server }) => {
     const hardcoreRole = server.config.hardcoreRole;
-    const japaneseRole = server.config.japaneseRoles;
     const hardcoreIgnoredChannels = server.config.hardcoreIgnoredChannels;
     const isEnabled = message.member.roles.cache.has(hardcoreRole);
-    if (!commandContent) {
+    if (!content) {
       const isJapanese = server.config.japaneseRoles.some((r) =>
         message.member.roles.cache.has(r)
       );
@@ -60,7 +60,7 @@ const hardcore: BotCommand = {
         );
       }
     } else {
-      const subCommand = commandContent.split(' ')[0].toLowerCase();
+      const subCommand = content.split(' ')[0].toLowerCase();
       if (!['enable', 'disable'].includes(subCommand)) {
         throw new InvalidSubCommandError(
           '`hardcore` only accepts the following sub commands: `enable` | `disable`.'

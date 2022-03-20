@@ -12,6 +12,7 @@ import { errorEmbed } from '@utils/embed';
 import safeSend from '@utils/safeSend';
 import { isNotDM } from '@utils/guildUtils';
 import isRateLimited from '@utils/rateLimit';
+import { optionParser } from '@utils/optionParser';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -41,7 +42,7 @@ const event: BotEvent<'messageCreate'> = {
       .split(' ')[0]
       .slice(server.config.prefix.length)
       .toLowerCase();
-    const commandContent = message.content
+    let content = message.content
       .slice(server.config.prefix.length + commandName.length)
       .trim();
     const command = bot.commands[commandName];
@@ -63,13 +64,23 @@ const event: BotEvent<'messageCreate'> = {
         const replyMessage = message.reply.bind(message);
         const safeChannelSend = safeSend(sendChannel);
         const safeReply = safeSend(replyMessage);
+        let options = null;
+        if (command.options) {
+          const { restContent, resolvedOptions } = optionParser(
+            content,
+            command.options
+          );
+          content = restContent.trim();
+          options = resolvedOptions;
+        }
 
         try {
           await command.normalCommand({
-            commandContent,
+            content,
             message,
             bot,
             server,
+            options,
             prefix: server.config.prefix,
             send: safeChannelSend,
             reply: safeReply,

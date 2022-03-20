@@ -8,7 +8,7 @@ const sar: BotCommand = {
   arguments: '',
   childCommands: ['lsar', 'esar', 'asar', 'dsar', 'csar'],
   examples: [],
-  normalCommand: async ({ commandContent, bot, ...rest }) => {},
+  normalCommand: async ({ content, bot, ...rest }) => {},
 };
 
 export default sar;

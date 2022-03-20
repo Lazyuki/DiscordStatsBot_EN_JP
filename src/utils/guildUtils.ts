@@ -6,6 +6,7 @@ import {
   Guild,
   PartialMessage,
   Message,
+  GuildMember,
 } from 'discord.js';
 
 export function isNotDM<M extends Message | PartialMessage>(

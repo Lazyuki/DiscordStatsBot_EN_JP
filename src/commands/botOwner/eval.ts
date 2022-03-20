@@ -10,17 +10,10 @@ const command: BotCommand = {
     'eval return message.guild.memberCount',
     'eval send(makeEmbed({ description: "Hello" }))',
   ],
-  normalCommand: async ({
-    commandContent,
-    message,
-    bot,
-    server,
-    reply,
-    send,
-  }) => {
+  normalCommand: async ({ content, message, bot, server, reply, send }) => {
     try {
       const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
-      const evalContent = `try { ${commandContent} } catch (e) { await send(e.message && e.message.substr(0, 2000)); }`;
+      const evalContent = `try { ${content} } catch (e) { await send(e.message && e.message.substr(0, 2000)); }`;
       const func = new AsyncFunction(
         'content',
         'message',
@@ -30,14 +23,7 @@ const command: BotCommand = {
         'makeEmbed',
         evalContent
       );
-      const ret = await func(
-        commandContent,
-        message,
-        bot,
-        server,
-        send,
-        makeEmbed
-      );
+      const ret = await func(content, message, bot, server, send, makeEmbed);
       if (ret !== undefined) {
         await send(successEmbed(String(ret) || '*empty string*'));
       } else {

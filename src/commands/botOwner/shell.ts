@@ -12,17 +12,24 @@ const command: BotCommand = {
   name: 'shell',
   isAllowed: 'BOT_OWNER',
   description: 'Run shell commands',
-  options: ['-i (interactive shell)'],
+  options: [
+    {
+      name: 'interactive',
+      short: 'i',
+      bool: true,
+      description: 'Start an interactive shell',
+    },
+  ],
   examples: ['shell tail -n 100 error.log', 'shell -i'],
-  normalCommand: async ({ commandContent, message, send }) => {
-    if (!commandContent) {
+  normalCommand: async ({ content, message, send }) => {
+    if (!content) {
       throw new CommandArgumentError('Enter a command');
     }
-    if (commandContent === 'end' && openShell) {
+    if (content === 'end' && openShell) {
       openShell.kill();
       openShell = null;
       return;
-    } else if (commandContent === '-i') {
+    } else if (content === '-i') {
       try {
         const shell = spawn('zsh', ['-i']);
         shell.stdout.setEncoding('utf8');
@@ -34,11 +41,11 @@ const command: BotCommand = {
         await send((e as Error).message);
       }
     } else if (openShell) {
-      openShell.stdin?.write(commandContent);
+      openShell.stdin?.write(content);
     } else {
       const exec = util.promisify(execPromise);
       await message.channel.sendTyping();
-      const { stdout, stderr } = await exec(`cd ~/Ciri && ${commandContent}`);
+      const { stdout, stderr } = await exec(`cd ~/Ciri && ${content}`);
       if (stdout) {
         await send(codeBlock(stdout));
       }

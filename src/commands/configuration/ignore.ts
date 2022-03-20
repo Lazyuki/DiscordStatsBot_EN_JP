@@ -10,8 +10,8 @@ const ignore: BotCommand = {
     'Ignore a channel from statistics. Bot commands will still work there. Useful for ignoring noisy channels such as quiz or bot-spam channels.',
   arguments: '<#channel> [#channel2 ... ]',
   childCommands: ['ignored', 'unignore'],
-  normalCommand: async ({ commandContent, message, server }) => {
-    const chan = server.guild.channels.cache.get(commandContent);
+  normalCommand: async ({ content, message, server }) => {
+    const chan = server.guild.channels.cache.get(content);
     if (chan) {
       if (server.config.ignoredChannels.includes(chan.id)) return;
       server.config.ignoredChannels.push(chan.id);
@@ -46,8 +46,8 @@ const unignore: BotCommand = {
   isAllowed: 'SERVER_MODERATOR',
   description: 'Un-ignore channels',
   parentCommand: 'ignore',
-  normalCommand: async ({ message, server, commandContent }) => {
-    const chan = server.guild.channels.cache.get(commandContent);
+  normalCommand: async ({ message, server, content }) => {
+    const chan = server.guild.channels.cache.get(content);
     if (chan) {
       const index = server.config.ignoredChannels.indexOf(chan.id);
       if (index === -1) {

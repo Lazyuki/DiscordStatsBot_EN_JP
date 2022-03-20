@@ -32,7 +32,7 @@ const event: BotEvent<'messageDelete'> = {
       });
     }
 
-    if (server.cache.watched.includes(userId)) {
+    if (server.temp.watched.includes(userId)) {
       const modLog = getTextChannel(message.guild, server.config.modLogChannel);
       if (!modLog) return;
 

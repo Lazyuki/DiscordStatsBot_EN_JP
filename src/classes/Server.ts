@@ -6,8 +6,8 @@ import {
   Bot,
   ServerConfig,
   ServerTemp,
-  ServerCache,
-  ServerSchedule,
+  ServerSchedules,
+  ServerData,
 } from '@/types';
 
 function safeCreateDir(dir: string) {
@@ -26,22 +26,23 @@ function getConfigFilePath(guildId: string) {
   safeCreateDir('./configs');
   return `./configs/${guildId}_config.json`;
 }
-function getScheduleFilePath(guildId: string) {
-  safeCreateDir('./schedules');
-  return `./schedules/${guildId}_schedule.json`;
+function getDataFilePath(guildId: string) {
+  safeCreateDir('./data');
+  return `./data/${guildId}_data.json`;
 }
 
 class Server {
   guild: Guild;
-  config: ServerConfig;
+  config: ServerConfig; // config for each server
   temp: ServerTemp; // temporary server state that does not persist
-  cache: ServerCache; // Database cache that does not persist
-  schedule: ServerSchedule; // Schedules to keep track of
+  data: ServerData; // server data that persists but not stored in the database.
 
   constructor(guild: Guild, bot: Bot) {
     this.guild = guild;
     this.temp = {} as ServerTemp;
-    this.cache = {} as ServerCache;
+    this.data = {
+      schedules: {} as ServerSchedules,
+    } as ServerData;
 
     const configFileName = getConfigFilePath(guild.id);
     this.config = {} as ServerConfig;
@@ -50,11 +51,10 @@ class Server {
       this.config = json;
     }
 
-    const scheduleFileName = getScheduleFilePath(guild.id);
-    this.schedule = {} as ServerSchedule;
-    if (fs.existsSync(scheduleFileName)) {
-      const json = JSON.parse(fs.readFileSync(scheduleFileName, 'utf8'));
-      this.schedule = json;
+    const dataFileName = getDataFilePath(guild.id);
+    if (fs.existsSync(dataFileName)) {
+      const json = JSON.parse(fs.readFileSync(dataFileName, 'utf8'));
+      this.data = json;
     }
     try {
       bot.commandInits.forEach((init) => init(this));
@@ -94,8 +94,8 @@ class Server {
     try {
       const configFileName = getConfigFilePath(this.guild.id);
       fs.writeFileSync(configFileName, JSON.stringify(this.config), 'utf8');
-      const scheduleFileName = getScheduleFilePath(this.guild.id);
-      fs.writeFileSync(scheduleFileName, JSON.stringify(this.schedule), 'utf8');
+      const dataFileName = getDataFilePath(this.guild.id);
+      fs.writeFileSync(dataFileName, JSON.stringify(this.data), 'utf8');
     } catch (e) {
       logger.error(e);
     }
