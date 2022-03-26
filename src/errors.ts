@@ -16,6 +16,14 @@ export class BotError extends Error {
   }
 }
 
+export class UserPermissionError extends UserError {
+  constructor(message = '', ...args: any[]) {
+    super(...args);
+    this.message = message;
+    this.name = 'UserPermissionError';
+  }
+}
+
 export class CommandArgumentError extends UserError {
   constructor(message = '', ...args: any[]) {
     super(...args);
@@ -56,10 +64,13 @@ export class NotFoundError extends UserError {
   }
 }
 
-export class UserNotFoundError extends UserError {
+/**
+ * If message is empty, react to the message with a question mark. Otherwise, send an error embed saying `Member not found: ${message}`
+ */
+export class MemberNotFoundError extends UserError {
   constructor(message = '', ...args: any[]) {
     super(...args);
     this.message = message;
-    this.name = 'UserNotFoundError';
+    this.name = 'MemberNotFoundError';
   }
 }

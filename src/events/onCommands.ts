@@ -1,10 +1,11 @@
+import { Util } from 'discord.js';
 import { BotEvent } from '@/types';
 import logger from '@/logger';
 import {
   BotError,
   NotFoundError,
   UserError,
-  UserNotFoundError,
+  MemberNotFoundError,
 } from '@/errors';
 import { EJLX } from '@utils/constants';
 import { DiscordAPIError } from '@discordjs/rest';
@@ -64,7 +65,7 @@ const event: BotEvent<'messageCreate'> = {
         const replyMessage = message.reply.bind(message);
         const safeChannelSend = safeSend(sendChannel);
         const safeReply = safeSend(replyMessage);
-        let options = null;
+        let options = {};
         if (command.options) {
           const { restContent, resolvedOptions } = optionParser(
             content,
@@ -101,12 +102,18 @@ const event: BotEvent<'messageCreate'> = {
             }
             logger.warn(`${error.code} ${error.name}: ${error.message}`);
           } else if (error instanceof UserError) {
-            if (error instanceof UserNotFoundError) {
-              await safeChannelSend(
-                errorEmbed(
-                  `User Not Found: User with ID ${error.message} is not on this server.`
-                )
-              );
+            if (error instanceof MemberNotFoundError) {
+              if (error.message) {
+                await safeChannelSend(
+                  errorEmbed(
+                    `Member not found: \`${Util.escapeInlineCode(
+                      error.message
+                    )}\``
+                  )
+                );
+              } else {
+                await message.react('❓');
+              }
             } else {
               await safeChannelSend(
                 errorEmbed(`${error.name}: ${error.message}`)

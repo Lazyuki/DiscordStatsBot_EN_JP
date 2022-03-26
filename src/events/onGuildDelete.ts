@@ -11,9 +11,9 @@ const event: BotEvent<'guildDelete'> = {
   skipOnDebug: false,
   processEvent: async (bot, guild) => {
     delete bot.servers[guild.id];
-    clearModLogForGuild.run({ guildId: guild.id }); // Delete all mod log entries
-    clearWatchedForGuild.run({ guildId: guild.id }); // Delete all watched users
-    // deleteGuild.run({ guildId: guild.id }); // Delete guild (causes NULL REFERENCE?)
+    clearModLogForGuild({ guildId: guild.id }); // Delete all mod log entries
+    clearWatchedForGuild({ guildId: guild.id }); // Delete all watched users
+    // deleteGuild({ guildId: guild.id }); // Delete guild (causes NULL REFERENCE?)
 
     logger.info(
       `Guild "${guild.name}" (ID: ${guild.id}, Members: ${guild.memberCount}) deleted`

@@ -1,12 +1,11 @@
 import { BotEvent } from '@/types';
-import { dbInsertVoiceSeconds } from '@database/statements';
+import { insertVoiceSeconds } from '@database/statements';
 import {
   Collection,
   GuildMember,
   PartialGuildMember,
   VoiceBasedChannel,
 } from 'discord.js';
-import { getToday } from '@utils/formatStats';
 
 declare module '@/types' {
   interface ServerTemp {
@@ -40,11 +39,11 @@ const event: BotEvent<'guildMemberUpdate'> = {
     } else if (isVoiceActive(oldMember) && !isVoiceActive(newMember)) {
       if (server.temp.vc[userId]) {
         const secondCount = getSecondDiff(now, server.temp.vc[userId]);
-        dbInsertVoiceSeconds.run({
+        insertVoiceSeconds({
           guildId: oldMember.guild.id,
           userId,
           secondCount,
-          date: getToday(),
+          date: bot.utcDay,
         });
         delete server.temp.vc[userId];
       }
@@ -72,11 +71,11 @@ const event: BotEvent<'guildMemberUpdate'> = {
     for (const server of Object.values(bot.servers)) {
       for (const userId in server.temp.vc) {
         const secondCount = getSecondDiff(now, server.temp.vc[userId]);
-        dbInsertVoiceSeconds.run({
+        insertVoiceSeconds({
           guildId: server.guild.id,
           userId,
           secondCount,
-          date: getToday(),
+          date: bot.utcDay,
         });
       }
     }

@@ -1,35 +1,37 @@
-import { TextChannel, MessageEmbed, MessageReaction, User } from "discord.js";
+import { TextBasedChannel, MessageReaction, User } from 'discord.js';
+import { makeEmbed } from './embed';
 
-const paginate = async (
-  channel: TextChannel,
+async function paginate(
+  channel: TextBasedChannel,
   title: string,
-  list: Record<string, [string, string, any]>,
+  list: string[],
   perPage: number,
   authorID: string
-) => {
-  const maxPageNum = Math.ceil(Object.keys(list).length / perPage) - 1;
+) {
+  const totalItems = list.length;
+  const maxPageNum = Math.ceil(totalItems / perPage) - 1;
   let currPage = 0;
 
   function getEmbed() {
-    let description = "";
+    let description = '';
     for (let i = 0; i < perPage; i++) {
       const actualIndex = i + currPage * perPage;
-      if (actualIndex >= Object.keys(list).length) break;
-      description += list[actualIndex] + "\n";
+      if (actualIndex >= totalItems) break;
+      description += list[actualIndex] + '\n';
     }
-    const embed = new MessageEmbed()
-      .setTitle(title)
-      .setFooter(`${currPage + 1}/${maxPageNum + 1}`)
-      .setColor(0x3a8edb)
-      .setDescription(description || "Empty");
-    return embed;
+    return makeEmbed({
+      title,
+      description: description || '*empty*',
+      footer: `Page: ${currPage + 1}/${maxPageNum + 1}`,
+      color: '#3a8edb',
+    });
   }
 
-  const message = await channel.send({ embeds: [getEmbed()] });
+  const message = await channel.send(getEmbed());
 
   if (maxPageNum > 0) {
-    await message.react("◀");
-    await message.react("▶");
+    await message.react('◀');
+    await message.react('▶');
 
     const filter = (reaction: MessageReaction, user: User) =>
       reaction.me && user.id === authorID;
@@ -38,30 +40,30 @@ const paginate = async (
       time: 60_000, // 1 mintue
     });
 
-    collector.on("collect", (r) => {
+    collector.on('collect', (r) => {
       switch (r.emoji.name) {
-        case "▶":
+        case '▶':
           if (currPage < maxPageNum) {
             ++currPage;
-            message.edit({ embeds: [getEmbed()] });
+            message.edit(getEmbed());
           }
           r.users.remove(authorID);
           collector.empty();
           break;
-        case "◀":
+        case '◀':
           if (currPage > 0) {
             --currPage;
-            message.edit({ embeds: [getEmbed()] });
+            message.edit(getEmbed());
           }
           r.users.remove(authorID);
           collector.empty();
           break;
       }
     });
-    collector.on("end", () => {
+    collector.on('end', () => {
       message.reactions.removeAll();
     });
   }
-};
+}
 
 export default paginate;

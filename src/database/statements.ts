@@ -1,10 +1,14 @@
 import fs from 'fs';
 
-import { LangType } from '@/types';
+import { LangType, ModLogEntry } from '@/types';
 import db from '.';
+import { Statement } from 'better-sqlite3';
 
-interface GuildUser {
+interface GuildId {
   guildId: string;
+}
+
+interface GuildUser extends GuildId {
   userId: string;
 }
 
@@ -14,6 +18,20 @@ interface GuildUserDate extends GuildUser {
 interface GuildChannelUser extends GuildUserDate {
   channelId: string;
 }
+
+interface Count {
+  count: number;
+}
+
+interface UserCount extends Count {
+  userId: string;
+}
+
+interface DateCount extends Count {
+  date: string;
+}
+
+const BOOLEAN_KEYS = ['silent'];
 
 function humanFileSize(bytes: number, dp = 1) {
   const threshold = 1024;
@@ -35,6 +53,83 @@ function humanFileSize(bytes: number, dp = 1) {
   return bytes.toFixed(dp) + ' ' + units[u];
 }
 
+function snakeToCamelCase(snake: string) {
+  return snake.replace(/_(.)/g, (g) => g.replace('_', '').toUpperCase());
+}
+
+const arrayStatements: Record<string, Statement[]> = {};
+
+function getArrayStatement(key: string, sql: string, arr: any[]) {
+  if (!(key in arrayStatements)) {
+    arrayStatements[key] = [];
+  }
+  if (!arrayStatements[key][arr.length]) {
+    const statement = db.prepare(
+      sql.replace('ARRAY_VALUES', arr.map(() => '?').join(','))
+    );
+    arrayStatements[key][arr.length] = statement;
+  }
+  return arrayStatements[key][arr.length];
+}
+
+function makeGetAllWithArray<P, R>(key: string, sql: string) {
+  return (params: P, array: string[]) => {
+    const statement = getArrayStatement(key, sql, array);
+    return sqlToJs(statement.all(...array, jsToSql(params))) as R[];
+  };
+}
+
+function sqlToJs(rows: any[]) {
+  if (Array.isArray(rows)) {
+    return rows.map((row) => {
+      const ret: Record<string, any> = {};
+      for (const [key, value] of Object.entries(row)) {
+        const camelCaseKey = snakeToCamelCase(key);
+        if (key.endsWith('_id')) {
+          ret[camelCaseKey] =
+            typeof value === 'bigint' || typeof value === 'number'
+              ? String(value)
+              : value;
+        } else if (key in BOOLEAN_KEYS) {
+          ret[camelCaseKey] = value === 1;
+        } else if (key === 'utc_date') {
+          ret['date'] = value;
+        } else if (typeof value === 'bigint') {
+          ret[camelCaseKey] = Number(value);
+        } else {
+          ret[camelCaseKey] = value;
+        }
+      }
+      return ret;
+    });
+  }
+  return null;
+}
+
+function jsToSql<T>(params: T) {
+  const ret = {} as any;
+  Object.entries(params).forEach(([key, value]) => {
+    if (BOOLEAN_KEYS.includes(key)) {
+      ret[key] = value ? 1 : 0;
+    } else if (Array.isArray(value)) {
+      ret[key] = value.join(', ');
+    } else {
+      ret[key] = value;
+    }
+  });
+  return ret;
+}
+
+function makeGetAllRows<P, R>(sql: string) {
+  const statement = db.prepare<P>(sql);
+  return (params: P) => sqlToJs(statement.all(jsToSql(params))) as R[];
+}
+
+function makeStatement<P>(sql: string) {
+  const statement = db.prepare<P>(sql);
+  return (params: P) => statement.run(jsToSql(params));
+}
+
 export const getDatabaseFileSize = () => {
   const fileName = db.name;
   if (fs.existsSync(fileName)) {
@@ -42,17 +137,10 @@ export const getDatabaseFileSize = () => {
   }
 };
 
-export const getMessagesForUsers = db.prepare<{
-  guildId: string;
-  userIds: string[];
-}>(`
-    SELECT user_id, SUM(message_count) as count
-    FROM messages
-    WHERE guild_id = $guildId AND user_id IN ($userIds)
-    GROUP BY user_id
-`);
-
-export const getTop3EmojiForUser = db.prepare<GuildUser>(`
+export const getTop3EmojiForUser = makeGetAllRows<
+  GuildUser,
+  Count & { emoji: string }
+>(`
     SELECT emoji, SUM(emoji_count) as count
     FROM emojis
     WHERE guild_id = $guildId AND user_id = $userId
@@ -61,30 +149,35 @@ export const getTop3EmojiForUser = db.prepare<GuildUser>(`
     LIMIT 3
 `);
 
-export const getVoiceSecondsForUser = db.prepare<GuildUser>(`
+export const getVoiceSecondsForUser = makeGetAllRows<GuildUser, Count>(`
     SELECT SUM(second_count) as count
     FROM voice
     WHERE guild_id = $guildId AND user_id = $userId
 `);
 
-export const getDeletesForUser = db.prepare<GuildUser>(`
+export const getDeletesForUser = makeGetAllRows<GuildUser, Count>(`
     SELECT SUM(delete_count) as count
     FROM deletes
     WHERE guild_id = $guildId AND user_id = $userId
 `);
 
-export const getLangPercentForUser = db.prepare<
-  GuildUser & {
-    channelIds: string[];
-  }
->(`
+export const getUserMessages = makeGetAllWithArray<
+  GuildUser,
+  { count: number; channelId?: string; lang?: LangType }
+>(
+  'getUserMessages',
+  `
     WITH records AS (
         SELECT channel_id, lang, message_count, utc_date
         FROM messages
-        WHERE guild_id = $guildId AND user_id = $userId AND channel_id NOT IN ($channelIds)
+        WHERE guild_id = $guildId AND user_id = $userId AND channel_id NOT IN (ARRAY_VALUES)
     )
         SELECT NULL AS channel_id, NULL AS lang, SUM(message_count) AS count
         FROM records
+    UNION ALL 
+        SELECT NULL, NULL, SUM(message_count) as count
+        FROM records
+        WHERE utc_date > datetime('now', '-7 days')
     UNION ALL
         SELECT NULL, lang, SUM(message_count) AS count
         FROM records
@@ -93,13 +186,10 @@ export const getLangPercentForUser = db.prepare<
         SELECT channel_id, NULL, SUM(message_count) AS count
         FROM records
         GROUP BY channel_id
-    UNION ALL 
-        SELECT NULL, NULL, SUM(message_count) as count
-        FROM records
-        WHERE utc_date > datetime('now', '-7 days')
-`);
+`
+);
 
-export const getLeaderboard = db.prepare<GuildUser>(`
+export const getLeaderboard = makeGetAllRows<GuildUser, UserCount>(`
     WITH ranked AS (
         SELECT *, RANK() OVER(ORDER BY count DESC)
         FROM (
@@ -114,10 +204,11 @@ export const getLeaderboard = db.prepare<GuildUser>(`
         SELECT * FROM ranked WHERE user_id = $userId
 `);
 
-export const getChannelLeaderboard = db.prepare<
+export const getChannelLeaderboard = makeGetAllRows<
   GuildUser & {
     channelIds: string[];
-  }
+  },
+  UserCount
 >(`
     WITH ranked AS (
         SELECT *, RANK() OVER (ORDER BY count DESC)
@@ -135,10 +226,16 @@ export const getChannelLeaderboard = db.prepare<
         
 `);
 
-export const getJapaneseLeaderboard = db.prepare<{
-  guildId: string;
-  lowerLimit: number;
-}>(`
+export const getJapaneseLeaderboard = makeGetAllRows<
+  {
+    guildId: string;
+    lowerLimit: number;
+  },
+  {
+    userId: string;
+    jpRatio: number;
+  }
+>(`
     WITH lang_usage AS (
         SELECT user_id, COALESCE(SUM(CASE WHEN lang = 'JP' THEN message_count END),0) as jp_count, SUM(message_count) as total
         FROM messages
@@ -151,10 +248,13 @@ export const getJapaneseLeaderboard = db.prepare<{
         ORDER BY jp_ratio DESC
 `);
 
-export const getEnglishLeaderboard = db.prepare<{
-  guildId: string;
-  lowerLimit: number;
-}>(`
+export const getEnglishLeaderboard = makeGetAllRows<
+  {
+    guildId: string;
+    lowerLimit: number;
+  },
+  { userId: string; enRatio: number }
+>(`
     WITH lang_usage AS (
         SELECT user_id, COALESCE(SUM(CASE WHEN lang = 'EN' THEN message_count END),0) as en_count, SUM(message_count) as total
         FROM messages
@@ -167,7 +267,10 @@ export const getEnglishLeaderboard = db.prepare<{
         ORDER BY en_ratio DESC
 `);
 
-export const getEmojiLeaderboarByNumUsers = db.prepare<{ guildId: string }>(`
+export const getEmojiLeaderboarByNumUsers = makeGetAllRows<
+  GuildId,
+  UserCount & { emoji: string; rank: number }
+>(`
     WITH emoji_counts AS (
         SELECT emoji, SUM(count) as count, COUNT(user_id) AS spread
         FROM (
@@ -182,7 +285,10 @@ export const getEmojiLeaderboarByNumUsers = db.prepare<{ guildId: string }>(`
         SELECT *, RANK() OVER (ORDER BY spread DESC) from emoji_counts
 `);
 
-export const getEmojiLeaderboard = db.prepare<{ guildId: string }>(`
+export const getEmojiLeaderboard = makeGetAllRows<
+  GuildId,
+  { emoji: string; count: number; rank: number }
+>(`
     SELECT *, RANK() OVER (ORDER BY count DESC)
     FROM (
         SELECT emoji, SUM(emoji_count) as count
@@ -192,8 +298,9 @@ export const getEmojiLeaderboard = db.prepare<{ guildId: string }>(`
     ) AS el
 `);
 
-export const getSingleEmojiLeaderboard = db.prepare<
-  GuildUser & { emojiName: string }
+export const getSingleEmojiLeaderboard = makeGetAllRows<
+  GuildUser & { emojiName: string },
+  UserCount
 >(`
     WITH ranked AS (
         SELECT *, RANK() OVER (ORDER BY count DESC)
@@ -210,7 +317,7 @@ export const getSingleEmojiLeaderboard = db.prepare<
         SELECT * FROM ranked WHERE user_id = $userId
 `);
 
-export const getVoiceLeaderboard = db.prepare<GuildUser>(`
+export const getVoiceLeaderboard = makeGetAllRows<GuildUser, UserCount>(`
     WITH ranked AS (
         SELECT *, RANK() OVER (ORDER BY count DESC)
         FROM (
@@ -226,7 +333,7 @@ export const getVoiceLeaderboard = db.prepare<GuildUser>(`
         SELECT * FROM ranked WHERE user_id = $userId
 `);
 
-export const getUserActivity = db.prepare<GuildUser>(`
+export const getUserActivity = makeGetAllRows<GuildUser, DateCount>(`
     SELECT SUM(message_count) as count, utc_date
     FROM messages
     WHERE guild_id = $guildId AND user_id = $userId
@@ -234,10 +341,13 @@ export const getUserActivity = db.prepare<GuildUser>(`
     ORDER BY utc_date ASC
 `);
 
-export const getChannelActivity = db.prepare<{
-  guildId: string;
-  channelIds: string;
-}>(`
+export const getChannelActivity = makeGetAllRows<
+  {
+    guildId: string;
+    channelIds: string;
+  },
+  DateCount
+>(`
     SELECT SUM(message_count) as count, utc_date
     FROM messages
     WHERE guild_id = $guildId AND channel_id IN ($channelIds)
@@ -245,7 +355,7 @@ export const getChannelActivity = db.prepare<{
     ORDER BY utc_date ASC
 `);
 
-export const getServerActivity = db.prepare<{ guildId: string }>(`
+export const getServerActivity = makeGetAllRows<GuildId, DateCount>(`
     SELECT SUM(message_count) as count, utc_date
     FROM messages
     WHERE guild_id = $guildId
@@ -253,55 +363,63 @@ export const getServerActivity = db.prepare<{ guildId: string }>(`
     ORDER BY utc_date ASC
 `);
 
-export const getModLog = db.prepare<GuildUser>(`
+export const getModLogForGuild = makeGetAllRows<GuildId, UserCount>(`
+    SELECT user_id, COUNT(content) as count
+    FROM modlog
+    WHERE guild_id = $guildId 
+    GROUP BY user_id
+`);
+
+export const getModLogForUser = makeGetAllRows<GuildUser, ModLogEntry>(`
     SELECT * FROM modlog
     WHERE guild_id = $guildId AND user_id = $userId
     ORDER BY utc_date ASC
 `);
 
-export const deleteModLogEntry = db.prepare<GuildUser & { index: number }>(`
+export const deleteModLogEntry = makeStatement<GuildUser & { index: number }>(`
     DELETE FROM modlog
     WHERE guild_id = $guildId AND user_id = $userId
     ORDER BY utc_date ASC
     LIMIT 1 OFFSET $index
 `);
 
-export const clearModLogForUser = db.prepare<GuildUser>(`
+export const clearModLogForUser = makeStatement<GuildUser>(`
     DELETE FROM modlog
     WHERE guild_id = $guildId AND user_id = $userId
 `);
 
-export const clearModLogForGuild = db.prepare<{ guildId: string }>(`
+export const clearModLogForGuild = makeStatement<GuildId>(`
     DELETE FROM modlog
     WHERE guild_id = $guildId
 `);
 
-export const getWatched = db.prepare<{ guildId: string }>(`
-    SELECT user_id FROM watched
+export const getWatched = makeGetAllRows<GuildId, { userId: string }>(`
+    SELECT user_id
+    FROM watched
     WHERE guild_id = $guildId
 `);
 
-export const deleteWatched = db.prepare<GuildUser>(`
+export const deleteWatched = makeStatement<GuildUser>(`
     DELETE FROM watched  
     WHERE guild_id = $guildId AND user_id = $userId
 `);
 
-export const clearWatchedForGuild = db.prepare<{ guildId: string }>(`
+export const clearWatchedForGuild = makeStatement<GuildId>(`
     DELETE FROM watched  
     WHERE guild_id = $guildId
 `);
 
-export const deleteGuild = db.prepare<{ guildId: string }>(`
+export const deleteGuild = makeStatement<GuildId>(`
   DELETE FROM guilds
   WHERE guild_id = $guildId
 `);
 
-export const dbInsertServer = db.prepare<{ guildId: string }>(`
+export const insertServer = makeStatement<GuildId>(`
     INSERT OR IGNORE INTO guilds (guild_id)
     VALUES ($guildId)
 `);
 
-export const dbInsertMessages = db.prepare<
+export const insertMessages = makeStatement<
   GuildChannelUser & {
     lang: LangType;
     messageCount: number;
@@ -313,7 +431,7 @@ export const dbInsertMessages = db.prepare<
     SET message_count = messages.message_count + EXCLUDED.message_count
 `);
 
-export const dbInsertEmojis = db.prepare<
+export const insertEmojis = makeStatement<
   GuildUserDate & {
     emoji: string;
     emojiCount: number;
@@ -325,7 +443,7 @@ export const dbInsertEmojis = db.prepare<
     SET emoji_count = emojis.emoji_count + EXCLUDED.emoji_count
 `);
 
-export const dbInsertVoiceSeconds = db.prepare<
+export const insertVoiceSeconds = makeStatement<
   GuildUserDate & {
     secondCount: number;
   }
@@ -336,7 +454,7 @@ export const dbInsertVoiceSeconds = db.prepare<
     SET second_count = voice.second_count + EXCLUDED.second_count
 `);
 
-export const dbInsertDeletes = db.prepare<
+export const insertDeletes = makeStatement<
   GuildUserDate & {
     deleteCount: number;
   }
@@ -347,7 +465,7 @@ export const dbInsertDeletes = db.prepare<
     SET delete_count = deletes.delete_count + EXCLUDED.delete_count
 `);
 
-export const dbInsertStickers = db.prepare<
+export const insertStickers = makeStatement<
   GuildUserDate & {
     sticker: string;
     stickerCount: number;
@@ -359,7 +477,7 @@ export const dbInsertStickers = db.prepare<
     SET sticker_count = stickers.sticker_count + EXCLUDED.sticker_count
 `);
 
-export const dbInsertCommands = db.prepare<
+export const insertCommands = makeStatement<
   GuildUserDate & {
     command: string;
     commandCount: number;
@@ -371,20 +489,19 @@ export const dbInsertCommands = db.prepare<
     SET command_count = commands.command_count + EXCLUDED.command_count
 `);
 
-export const dbInsertModLogEntry = db.prepare<
-  GuildUserDate & {
-    issuerId: string;
-    messageLink: string;
-    kind: string;
-    silent: boolean;
-    content: string;
-  }
->(`
+type DbModLog = GuildUserDate & {
+  issuerId: string;
+  messageLink: string;
+  kind: string;
+  silent: boolean;
+  content: string;
+};
+export const insertModLog = makeStatement<DbModLog>(`
     INSERT INTO modlog (guild_id, user_id, utc_date, issuer_id, message_link, kind, silent, content)
     VALUES($guildId, $userId, $date, $issuerId, $messageLink, $kind, $silent, $content)
 `);
 
-export const dbInsertWatchedUser = db.prepare<GuildUser>(`
+export const insertWatchedUser = makeStatement<GuildUser>(`
     INSERT OR IGNORE INTO watched (guild_id, user_id)
     VALUES($guildId, $userId)
 `);

@@ -33,6 +33,7 @@ async function getRoleChangeAuditLogs(guild: Guild, userId: string) {
       if (!executor) return;
       let executorId = executor.id;
       if (executor.bot) {
+        if (executor.id === RAI) return; // RAI readding roles
         const reason = entry.reason;
         const match = reason?.match(REGEX_RAW_ID); // Role update reason must contain the user ID of the issuer
         if (match) executorId = match[0];
@@ -86,7 +87,7 @@ async function notifyLanguageRoleChange(
     await channel.send(
       makeEmbed({
         color: '#fca503',
-        description: `${newMember}'s language role${pluralize(
+        description: `${newMember.displayName}'s language role${pluralize(
           '',
           's have',
           sortedNewRoleIds.length,
@@ -94,26 +95,41 @@ async function notifyLanguageRoleChange(
         )} been set to ${sortedNewRoleIds
           .map((r) => `<@&${r}>`)
           .join(' ')} by ${executors.join(', ')}`,
-        footer: `${newMember.user.tag} language role update`,
+        footer: `${newMember.user.tag} (${newMember.id}) language role update`,
       })
     );
   } else {
-    await channel.send(
-      makeEmbed({
-        color: '#fca503',
-        description: `${newMember}'s language role${pluralize(
-          '',
-          's have',
-          sortedNewRoleIds.length,
-          ' has'
-        )} been set to ${sortedNewRoleIds
-          .map((r) => `<@&${r}>`)
-          .join(' ')} instead of ${oldRoles
-          .map((r) => `\`${r.name}\``)
-          .join(', ')} by ${executors.join(', ')}`,
-        footer: `${newMember.user.tag} language role update`,
-      })
-    );
+    if (newRoles.size === 0) {
+      await channel.send(
+        makeEmbed({
+          color: '#fca503',
+          description: `${newMember}'s language role${pluralize(
+            '',
+            's have',
+            sortedNewRoleIds.length,
+            ' has'
+          )} been removed by ${executors.join(', ')}`,
+          footer: `${newMember.user.tag} (${newMember.id}) language role update`,
+        })
+      );
+    } else {
+      await channel.send(
+        makeEmbed({
+          color: '#fca503',
+          description: `${newMember}'s language role${pluralize(
+            '',
+            's have',
+            sortedNewRoleIds.length,
+            ' has'
+          )} been set to ${sortedNewRoleIds
+            .map((r) => `<@&${r}>`)
+            .join(' ')} instead of ${oldRoles
+            .map((r) => `\`${r.name}\``)
+            .join(', ')} by ${executors.join(', ')}`,
+          footer: `${newMember.user.tag} (${newMember.id}) language role update`,
+        })
+      );
+    }
   }
 }
 

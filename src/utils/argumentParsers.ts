@@ -1,6 +1,8 @@
 import { Guild, GuildMember, Message } from 'discord.js';
 import Server from '@classes/Server';
 import { REGEX_RAW_ID, REGEX_RAW_ID_ONLY, REGEX_USER } from './regex';
+import { Bot } from '@/types';
+import { MemberNotFoundError } from '@/errors';
 
 /**
  *
@@ -80,8 +82,104 @@ export function parseMembers(
   };
 }
 
-export function parseChannels(
-  message: Message,
+// Doesn't need to care about multiple users
+export function parseUserId(
+  bot: Bot,
+  guild: Guild,
+  content: string
+): string | null {
+  const idMatch = content.match(REGEX_RAW_ID);
+  if (idMatch) {
+    return idMatch[0];
+  } else if (content) {
+  }
+  return null;
+}
+
+export const getMemberId = (bot: Bot, server: Server, content: string) =>
+  getUserId(bot, server, content, true);
+
+/**
+ *
+ * If snowflake ID, return the ID.
+ * If name,
+ * @param bot
+ * @param server
+ * @param content
+ * @param forceMember
+ * @returns
+ */
+export const getUserId = (
+  bot: Bot,
+  server: Server,
   content: string,
-  server: Server
-) {}
+  forceMember?: boolean
+) => {
+  const idMatch = content.match(REGEX_RAW_ID);
+  if (idMatch) {
+    // Snowflake ID
+    const userId = idMatch[0];
+    if (forceMember) {
+      if (server.guild.members.cache.get(userId)) {
+        return userId;
+      } else {
+        throw new MemberNotFoundError();
+      }
+    }
+    return userId;
+  } else if (content) {
+    const exactMatches = [];
+    const startsWith = [];
+    const includes = [];
+    // search by name
+    const useRegex =
+      content.length > 3 &&
+      content.startsWith('/') &&
+      (content.endsWith('/') || content.endsWith('/i'));
+    const regex = useRegex
+      ? new RegExp(
+          content.slice(1, content.length - 1),
+          content.endsWith('/i') ? 'i' : ''
+        )
+      : null;
+
+    const members = server.guild.members.cache.values();
+    for (const member of members) {
+      if (regex) {
+        if (
+          regex.test(member.displayName) ||
+          regex.test(member.user.username)
+        ) {
+          exactMatches.push(member);
+        }
+      } else {
+        const nickname = member.nickname?.toLowerCase() || '';
+        const username = member.user.username.toLowerCase();
+        const userTag = member.user.tag.toLowerCase();
+        if (userTag === content) return member.id; // Exact tag match
+        if (username === content || nickname === content) {
+          exactMatches.push(member);
+        } else if (
+          userTag.startsWith(content) ||
+          nickname.startsWith(content)
+        ) {
+          startsWith.push(member);
+        } else if (userTag.includes(content) || nickname.includes(content)) {
+          includes.push(member);
+        }
+      }
+    }
+    if (exactMatches.length) {
+      return exactMatches[0].id;
+    } else if (startsWith.length) {
+      return startsWith[0].id;
+    } else if (includes.length) {
+      return includes[0].id;
+    } else {
+      // Something in content but no user found
+      throw new MemberNotFoundError();
+    }
+  }
+  // content is empty
+  return null;
+};

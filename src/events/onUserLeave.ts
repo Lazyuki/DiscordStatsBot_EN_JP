@@ -5,8 +5,7 @@ import {
   Util,
 } from 'discord.js';
 
-import { dbInsertVoiceSeconds } from '@database/statements';
-import { getToday } from '@utils/formatStats';
+import { insertVoiceSeconds } from '@database/statements';
 import { makeEmbed } from '@utils/embed';
 import { EJLX, EWBF, RAI } from '@utils/constants';
 import { BotEvent } from '@/types';
@@ -41,11 +40,11 @@ const event: BotEvent<'guildMemberRemove'> = {
         new Date().getTime(),
         server.temp.vc[member.id]
       );
-      dbInsertVoiceSeconds.run({
+      insertVoiceSeconds({
         guildId: member.guild.id,
         userId: member.id,
         secondCount,
-        date: getToday(),
+        date: bot.utcDay,
       });
       delete server.temp.vc[member.id];
     }

@@ -3,6 +3,7 @@ import fs from 'fs';
 import { Bot } from '@/types';
 import db from '@db';
 import { clearOldRecords } from '@database/statements';
+import { getTodayISO } from '@utils/datetime';
 
 const DATABASE_BACKUP_DAYS = 3;
 
@@ -11,6 +12,8 @@ function getBackupFilePath(date: Date) {
 }
 
 function dailyTask(bot: Bot) {
+  bot.utcDay = getTodayISO();
+
   const today = new Date();
   for (const server of Object.values(bot.servers)) {
     server.backup();

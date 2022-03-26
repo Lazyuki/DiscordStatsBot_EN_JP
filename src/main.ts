@@ -6,8 +6,7 @@ import { DEBUG, OWNER_ID, DISCORD_TOKEN } from '@/envs';
 import logger from '@/logger';
 import { Bot, BotCommand, BotEvent, ParsedBotCommand } from '@/types';
 import parseCommand from '@utils/parseCommand';
-import hourlyTask from '@tasks/hourlyTask';
-import dailyTask from '@tasks/dailyTask';
+import initialTask from '@tasks/initialTask';
 import exitTask from '@tasks/exitTask';
 
 // import deploySlashCommands from './deploySlashCommands';
@@ -37,6 +36,7 @@ client.commandInits = [];
 client.botInits = [];
 client.botExits = [];
 client.servers = {};
+client.botConfig = {};
 
 // Gather commands
 const dirs = fs
@@ -128,6 +128,8 @@ process.on('SIGTERM', () => {
   exitTask(client);
   process.exit(0);
 });
+
+initialTask(client);
 
 client.login(DISCORD_TOKEN);
 // if (!DEBUG) deploySlashCommands();

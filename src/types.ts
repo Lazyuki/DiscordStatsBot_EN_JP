@@ -25,6 +25,8 @@ export interface Bot extends Client {
   botInits: OnBotInit[];
   botExits: OnBotExit[];
   botConfig: BotConfig;
+  utcHour: string; // ISO
+  utcDay: string; // ISO
 }
 
 export type LangType = 'JP' | 'EN' | 'OL';
@@ -78,7 +80,7 @@ export interface BotCommand {
     server: Server;
     bot: Bot;
     prefix: string;
-    options: ResolvedCommandOptions | null;
+    options: ResolvedCommandOptions;
     send: (options: string | MessageOptions) => Promise<Message | undefined>;
     reply: (options: string | MessageOptions) => Promise<Message | undefined>;
   }) => void | Promise<void>;

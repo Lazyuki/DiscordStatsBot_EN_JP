@@ -1,6 +1,7 @@
 import { BotCommand } from '@/types';
 import { EJLX } from '@utils/constants';
 import { makeEmbed } from '@utils/embed';
+import { safeDelete } from '@utils/safeDelete';
 
 const command: BotCommand = {
   name: 'yonde',
@@ -10,7 +11,7 @@ const command: BotCommand = {
   rateLimitSeconds: 10,
   normalCommand: async ({ message }) => {
     const mentioned = message.mentions.members?.first();
-    await message.delete();
+    safeDelete(message);
     await message.channel.send(
       makeEmbed({
         color: 'LUMINOUS_VIVID_PINK',

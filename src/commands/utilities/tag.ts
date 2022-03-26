@@ -1,6 +1,7 @@
 import { BotCommand, ServerTemp } from '@/types';
 import { EJLX } from '@utils/constants';
 import { successEmbed } from '@utils/embed';
+import { safeDelete } from '@utils/safeDelete';
 import {
   Collection,
   GuildMember,
@@ -23,7 +24,7 @@ const command: BotCommand = {
     server.temp.newUsers = [];
   },
   normalCommand: async ({ message, bot }) => {
-    await message.delete();
+    safeDelete(message);
     await message.channel.send(
       successEmbed({
         description: `has been tagged as by`,

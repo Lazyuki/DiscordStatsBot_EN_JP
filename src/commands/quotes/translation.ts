@@ -2,6 +2,7 @@ import { BotCommand } from '@/types';
 import { EJLX } from '@utils/constants';
 import { makeEmbed } from '@utils/embed';
 import { stripIndent } from 'common-tags';
+import { safeDelete } from '@utils/safeDelete';
 
 const command: BotCommand = {
   name: 'translation',
@@ -10,7 +11,7 @@ const command: BotCommand = {
   description: 'Explain why translation requests are not allowed',
   rateLimitSeconds: 10,
   normalCommand: async ({ message }) => {
-    await message.delete();
+    safeDelete(message);
     await message.channel.send(
       makeEmbed({
         color: '#FF5500',

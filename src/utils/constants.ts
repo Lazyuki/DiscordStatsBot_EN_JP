@@ -43,6 +43,7 @@ export const LANG_SWITCH = '376574779316109313';
 export const SENSITIVE_TOPICS = '193966083886153729';
 export const JP_CHAT = '189629338142900224';
 export const BEG_JPN = '208118574974238721';
+export const BOT_CHANNEL = '225828894765350913';
 export const MOD_LOG = '366692441442615306';
 export const AGT = '755269708579733626';
 export const WP_CHAT = '918758304560328734';
@@ -71,7 +72,7 @@ export const OL_COLOR = '#f48622';
 
 // Other Colors
 export const EMBED_BG_COLOR = '#2f3136';
-export const INFO_COLOR = '#84a332';
+export const INFO_COLOR = '#3A8EDB';
 export const SUCCESS_COLOR = '#84a332';
 export const ERROR_COLOR = '#ff1259';
 export const WARNING_COLOR = '#e0a419';

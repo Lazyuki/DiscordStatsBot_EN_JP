@@ -3,7 +3,7 @@ import fs from 'fs';
 import { BotEvent } from '@/types';
 import logger from '@/logger';
 import Server from '@classes/Server';
-import { dbInsertServer } from '@database/statements';
+import { insertServer } from '@database/statements';
 import { RESTART_TMP_FILE } from '@tasks/exitTask';
 
 const event: BotEvent<'ready'> = {
@@ -13,7 +13,7 @@ const event: BotEvent<'ready'> = {
   processEvent: async (bot) => {
     for (const guild of bot.guilds.cache.values()) {
       bot.servers[guild.id] = new Server(guild, bot);
-      dbInsertServer.run({ guildId: guild.id });
+      insertServer({ guildId: guild.id });
     }
     logger.info(`===========================================`);
     logger.info(`READY! Logged in as ${bot.user?.tag}`);

@@ -2,11 +2,10 @@ import { TextChannel, NewsChannel, ThreadChannel } from 'discord.js';
 
 import { BotEvent } from '@/types';
 import {
-  dbInsertEmojis,
-  dbInsertMessages,
-  dbInsertStickers,
+  insertEmojis,
+  insertMessages,
+  insertStickers,
 } from '@database/statements';
-import { getToday } from '@utils/formatStats';
 import checkLang from '@utils/checkLang';
 import { getParentChannelId, isMessageInChannels } from '@utils/guildUtils';
 import checkSafeMessage from '@utils/checkSafeMessage';
@@ -26,10 +25,10 @@ const event: BotEvent<'messageCreate'> = {
     if (isMessageInChannels(message, server.config.ignoredChannels)) return;
 
     const userId = message.member.id;
-    const date = getToday();
+    const date = bot.utcDay;
     const { lang } = checkLang(message.content);
 
-    dbInsertMessages.run({
+    insertMessages({
       guildId,
       userId,
       channelId,
@@ -61,7 +60,7 @@ const event: BotEvent<'messageCreate'> = {
       }
     }
     Object.entries(emojis).forEach(([emoji, emojiCount]) => {
-      dbInsertEmojis.run({
+      insertEmojis({
         guildId,
         userId,
         date,
@@ -72,7 +71,7 @@ const event: BotEvent<'messageCreate'> = {
 
     if (message.stickers?.size) {
       message.stickers.forEach((sticker) => {
-        dbInsertStickers.run({
+        insertStickers({
           guildId,
           userId,
           date,

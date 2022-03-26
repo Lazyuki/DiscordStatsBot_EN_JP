@@ -24,3 +24,7 @@ export function camelCaseToNormal(str: string) {
   const splitCapital = str.replace(/([A-Z])/g, ' $1');
   return splitCapital[0].toUpperCase() + splitCapital.slice(1);
 }
+
+export function formatPercent(fractional: number, decimals = 2) {
+  return `${(fractional * 100).toFixed(decimals)}%`;
+}

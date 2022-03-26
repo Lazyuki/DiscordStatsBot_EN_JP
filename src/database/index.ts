@@ -18,6 +18,8 @@ export function initTables() {
     db.exec(b);
   });
 }
+// BitInts should be returned as BigInts
+db.defaultSafeIntegers(true);
 
 initTables();
 

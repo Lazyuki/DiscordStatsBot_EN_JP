@@ -1,4 +1,4 @@
-import { formatDuration, intervalToDuration } from 'date-fns';
+import { format, formatDuration, intervalToDuration } from 'date-fns';
 import { GuildMember } from 'discord.js';
 import pluralize from './pluralize';
 
@@ -8,6 +8,16 @@ const DAY_IN_MILLIS = 24 * HOUR_IN_MILLIS;
 
 export function millisToDuration(millis?: number | null) {
   return formatDuration(intervalToDuration({ start: 0, end: millis || 0 }));
+}
+
+export function secondsToVcTime(seconds: number) {
+  if (seconds === 0) {
+    return 'Never';
+  }
+  const millis = seconds * 1000;
+  const hours = Math.floor(millis / HOUR_IN_MILLIS);
+  const minutes = Math.floor((millis % HOUR_IN_MILLIS) / MINUTE_IN_MILLIS);
+  return `${hours ? `${hours}hr ` : ''}${minutes}min`;
 }
 
 export function memberJoinAge(member: GuildMember, maxDays: number = 3) {
@@ -29,4 +39,49 @@ export function memberJoinAge(member: GuildMember, maxDays: number = 3) {
     }
   }
   return '';
+}
+
+export function getDaysAgo(days: number) {
+  const daysAgo = getStartDateTime(true);
+  daysAgo.setDate(daysAgo.getUTCDate() - days);
+  return daysAgo;
+}
+
+export function dateStringForActivity(d: Date) {
+  return format(d, 'MMM dd (EEE)');
+}
+
+export function pastDays(days: number) {
+  return Array(days + 1)
+    .fill(0)
+    .map((_, index) => getDaysAgo(days - index));
+}
+
+function getStartDateTime(ignoreHour: boolean) {
+  const now = new Date();
+  if (ignoreHour) {
+    now.setUTCHours(0);
+  }
+  now.setUTCMinutes(0);
+  now.setUTCSeconds(0);
+  now.setUTCMilliseconds(0);
+  return now;
+}
+
+/**
+ *
+ * Return
+ * @returns an ISO string of now, with just the date, and optionally the hour as well. e.g. 2022-01-15T00:00:00.000Z
+ */
+export function getTodayISO(): string {
+  return getStartDateTime(true).toISOString();
+}
+
+/**
+ *
+ * Return
+ * @returns an ISO string of start of this hour, with just the date and the hour. e.g. 2022-01-15T11:00:00.000Z
+ */
+export function getStartHourISO(): string {
+  return getStartDateTime(false).toISOString();
 }

@@ -1,6 +1,5 @@
 import { exec as execPromise, spawn, ChildProcess } from 'child_process';
 import util from 'util';
-import env from 'env-var';
 
 import { cleanEmbed, errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
 import { BotCommand } from '@/types';

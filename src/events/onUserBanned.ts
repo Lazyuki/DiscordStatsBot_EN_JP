@@ -6,8 +6,7 @@ import {
   Util,
 } from 'discord.js';
 
-import { dbInsertVoiceSeconds } from '@database/statements';
-import { getToday } from '@utils/formatStats';
+import { insertVoiceSeconds } from '@database/statements';
 import { makeEmbed } from '@utils/embed';
 import {
   EJLX,

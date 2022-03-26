@@ -1,11 +1,16 @@
-import { CommandArgumentError, UserNotFoundError } from '@/errors';
+import { CommandArgumentError, MemberNotFoundError } from '@/errors';
 import { BotCommand } from '@/types';
 import {
   getWatched,
   deleteWatched,
-  dbInsertWatchedUser,
+  insertWatchedUser,
 } from '@database/statements';
-import { errorEmbed, successEmbed, warningEmbed } from '@utils/embed';
+import {
+  errorEmbed,
+  infoEmbed,
+  successEmbed,
+  warningEmbed,
+} from '@utils/embed';
 import pluralize from '@utils/pluralize';
 import { REGEX_RAW_ID } from '@utils/regex';
 import { User } from 'discord.js';
@@ -39,7 +44,7 @@ const watch: BotCommand = {
     } else {
       const member = server.guild.members.cache.get(content);
       if (!member) {
-        throw new UserNotFoundError(content);
+        throw new MemberNotFoundError(content);
       }
       user = member.user;
     }
@@ -49,11 +54,9 @@ const watch: BotCommand = {
     }
 
     if (server.temp.watched.includes(user.id)) {
-      await send(
-        warningEmbed(`${user} (${user.tag}) is already being watched`)
-      );
+      await send(infoEmbed(`${user} (${user.tag}) is already being watched`));
     } else {
-      dbInsertWatchedUser.run({ guildId: server.guild.id, userId: user.id });
+      insertWatchedUser({ guildId: server.guild.id, userId: user.id });
       server.temp.watched.push(user.id);
       await send(
         successEmbed(
@@ -88,14 +91,14 @@ const unwatch: BotCommand = {
       if (server.temp.watched.includes(id)) {
         if (successIDs.includes(id)) continue;
         successIDs.push(id);
-        deleteWatched.run({ guildId: server.guild.id, userId: id });
+        deleteWatched({ guildId: server.guild.id, userId: id });
       } else {
         failIDs.push(id);
       }
     }
 
-    const res = getWatched.all({ guildId: server.guild.id });
-    server.temp.watched = res as string[];
+    const res = getWatched({ guildId: server.guild.id });
+    server.temp.watched = res.map((row) => row.userId);
 
     if (successIDs.length) {
       await message.channel.send(
@@ -146,7 +149,7 @@ const watchClean: BotCommand = {
     server.temp.watched = server.temp.watched.filter((userId) => {
       if (!server.guild.members.cache.has(userId)) {
         removed.push(userId);
-        deleteWatched.run({ guildId: server.guild.id, userId });
+        deleteWatched({ guildId: server.guild.id, userId });
         return false;
       }
       return true;
@@ -154,7 +157,7 @@ const watchClean: BotCommand = {
     if (removed.length) {
       await send(successEmbed(removed.map((r) => `<@${r}>`).join(' ')));
     } else {
-      await send('All watched users are still in the server.');
+      await send(infoEmbed('All watched users are still in the server.'));
     }
   },
 };

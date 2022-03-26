@@ -1,7 +1,6 @@
 import { BotEvent } from '@/types';
-import { dbInsertEmojis } from '@database/statements';
+import { insertEmojis } from '@database/statements';
 import checkSafeMessage from '@utils/checkSafeMessage';
-import { getToday } from '@utils/formatStats';
 
 const reactionAdd: BotEvent<'messageReactionAdd'> = {
   eventName: 'messageReactionAdd',
@@ -12,12 +11,12 @@ const reactionAdd: BotEvent<'messageReactionAdd'> = {
     const server = bot.servers[message.guild.id];
 
     const reactionString = reaction.emoji.toString();
-    dbInsertEmojis.run({
+    insertEmojis({
       guildId: server.guild.id,
       userId: user.id,
       emoji: reactionString,
       emojiCount: 1,
-      date: getToday(),
+      date: bot.utcHour,
     });
   },
 };
@@ -31,12 +30,12 @@ const reactionRemove: BotEvent<'messageReactionRemove'> = {
     const server = bot.servers[message.guild.id];
 
     const reactionString = reaction.emoji.toString();
-    dbInsertEmojis.run({
+    insertEmojis({
       guildId: server.guild.id,
       userId: user.id,
       emoji: reactionString,
       emojiCount: -1,
-      date: getToday(),
+      date: bot.utcDay,
     });
   },
 };

@@ -11,7 +11,7 @@ const event: BotEvent<'guildBanAdd'> = {
     let index = server.temp.watched.indexOf(user.id);
     if (index === -1) return;
     server.temp.watched.splice(index, 1);
-    deleteWatched.run({ guildId: server.guild.id, userId: user.id });
+    deleteWatched({ guildId: server.guild.id, userId: user.id });
   },
 };
 

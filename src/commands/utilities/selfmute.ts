@@ -16,7 +16,8 @@ declare module '@/types' {
   }
 }
 
-const TIME_REGEX = /([0-9]+d\s*)?([0-9]+h\s*)?([0-9]+m\s*)?([0-9]+s\s*)?/i;
+const TIME_REGEX =
+  /([0-9]+\s?d\s*)?([0-9]+\s?h\s*)?([0-9]+\s?m\s*)?([0-9]+\s?s\s*)?/i;
 const DAY_MILLIS = 86_400_000;
 
 async function getMemberOrRepeat(
@@ -115,9 +116,12 @@ function strToTime(str: string) {
 const command: BotCommand = {
   name: 'selfmute',
   aliases: ['sm'],
-  description: 'Mute self for some amount of time',
+  description:
+    'Mute yourself for some amount of time. The time can be specified with `d` for days, `h` for hours, `m` for minutes, and `s` for seconds. Use the `in` keyword to delay the selfmute by some amount of time.',
   requiredServerConfigs: ['selfMuteRoles'],
   requiredBotPermissions: ['MANAGE_ROLES'],
+  arguments: '<mute duration> [in delay duration]',
+  examples: ['sm 3h', 'sm 1d6h30m', 'sm 1d40m in 2h'],
   onCommandInit: (server) => {
     server.data.schedules.scheduledSelfMutes ||= {};
     server.data.schedules.selfMutes ||= {};
@@ -141,9 +145,10 @@ const command: BotCommand = {
         )}`
       );
     }
-    const [muteDuration, muteDelay] = content.split('in');
-    const totalMillis = strToTime(muteDuration);
-    const delayMillis = muteDelay !== undefined ? strToTime(muteDelay) : null;
+    const [muteDuration, muteDelay] = content.split(' in ');
+    const totalMillis = strToTime(muteDuration.trim());
+    const delayMillis =
+      muteDelay !== undefined ? strToTime(muteDelay.trim()) : null;
     if (!totalMillis) {
       throw new CommandArgumentError(
         `Specify the amount of time in the format \`1d2h3m4s\` Where d is days, h is hours, m is minutes, and s is seconds.`

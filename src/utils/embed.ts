@@ -2,6 +2,7 @@ import { ColorResolvable, MessageEmbed, Util } from 'discord.js';
 import {
   EMBED_BG_COLOR,
   ERROR_COLOR,
+  INFO_COLOR,
   SUCCESS_COLOR,
   WARNING_COLOR,
 } from './constants';
@@ -26,7 +27,7 @@ interface EmbedOptions {
   thumbnailIcon?: string; // Top right
   mainImage?: string; // Content image in the middle
   timestamp?: boolean | Date | number;
-  fields?: EmbedField[]; // Max 25
+  fields?: (EmbedField | null)[]; // Max 25
 }
 
 export const makeEmbed = ({
@@ -76,23 +77,18 @@ export const makeEmbed = ({
     if (typeof timestamp === 'boolean') embed.setTimestamp();
     else embed.setTimestamp(new Date(timestamp));
   }
-  if (fields && fields.length) embed.addFields(...fields);
+  if (fields && fields.filter(Boolean).length)
+    embed.addFields(...(fields.filter(Boolean) as EmbedField[]));
 
   return { content, embeds: [embed, ...additionalEmbeds] };
 };
 
 export const cleanEmbed = (options: EmbedOptions | string) => {
-  const description = `✅  ${
-    typeof options === 'string' ? options : options.description
-  }`;
-  if (typeof options === 'string') {
-    return makeEmbed({ description });
-  }
   return makeEmbed({
-    ...options,
-    description,
+    description: typeof options === 'string' ? options : options.description,
   });
 };
+
 export const successEmbed = (options: EmbedOptions | string) => {
   const description = `✅  ${
     typeof options === 'string' ? options : options.description
@@ -132,5 +128,15 @@ export const warningEmbed = (options: EmbedOptions | string) => {
     ...options,
     description,
     color: WARNING_COLOR,
+  });
+};
+
+export const infoEmbed = (options: EmbedOptions | string) => {
+  if (typeof options === 'string') {
+    return makeEmbed({ description: options, color: INFO_COLOR });
+  }
+  return makeEmbed({
+    ...options,
+    color: INFO_COLOR,
   });
 };

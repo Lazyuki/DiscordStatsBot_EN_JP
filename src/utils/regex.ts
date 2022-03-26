@@ -15,7 +15,7 @@ export const REGEX_ROLE = /<@&[0-9]+>/g;
 export const REGEX_TIMESTAMP = /<t:[0-9]+:[a-zA-Z]>/g;
 export const REGEX_ID = /<(@!?|#|@&|a?:[\S]+:|t:)[0-9]+(:.)?>/g;
 export const REGEX_DISCORD_OBJECT = /<(@!?|#|@&|a?:[\S]+:|t:)[0-9]+(:.)?>/g;
-export const REGEX_RAW_ID = /([0-9]{17,22})/g;
-export const REGEX_RAW_ID_ONLY = /^([0-9]{17,22})$/;
+export const REGEX_RAW_ID = /([0-9]{17,20})/g;
+export const REGEX_RAW_ID_ONLY = /^([0-9]{17,20})$/;
 export const REGEX_MESSAGE_ID =
-  /(?:[0-9]{17,22}\/)?([0-9]{17,22}(?:[-/][0-9]{17,22})?)/g; // guildId/channelId/messageId or channelId-messageId. channelId can be a threadChannel instead
+  /(?:[0-9]{17,20}\/)?([0-9]{17,20}(?:[-/][0-9]{17,20})?)/g; // guildId/channelId/messageId or channelId-messageId. channelId can be a threadChannel instead

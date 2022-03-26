@@ -3,6 +3,7 @@ import { stripIndents } from 'common-tags';
 import { BotCommand } from '@/types';
 import { EJLX, FE_COLOR } from '@utils/constants';
 import { makeEmbed } from '@utils/embed';
+import { safeDelete } from '@utils/safeDelete';
 
 const command: BotCommand = {
   name: 'fe',
@@ -10,6 +11,7 @@ const command: BotCommand = {
   description: 'Explanation of the FE (Fluent English) role',
   rateLimitSeconds: 10,
   normalCommand: async ({ message }) => {
+    safeDelete(message);
     await message.channel.send(
       makeEmbed({
         color: FE_COLOR,
@@ -19,7 +21,6 @@ const command: BotCommand = {
           `,
       })
     );
-    await message.delete();
   },
 };
 

@@ -1,6 +1,5 @@
 import { BotEvent } from '@/types';
-import { dbInsertDeletes, dbInsertMessages } from '@database/statements';
-import { getToday } from '@utils/formatStats';
+import { insertDeletes, insertMessages } from '@database/statements';
 import { DELETE_COLOR, EJLX, MAINICHI, MOD_LOG } from '@utils/constants';
 import {
   getParentChannelId,
@@ -24,10 +23,10 @@ const event: BotEvent<'messageDelete'> = {
     const channelId = getParentChannelId(message.channel);
     const userId = message.author.id;
     if (!isMessageInChannels(message, server.config.ignoredChannels)) {
-      dbInsertDeletes.run({
+      insertDeletes({
         guildId,
         userId,
-        date: getToday(),
+        date: bot.utcDay,
         deleteCount: 1,
       });
     }
