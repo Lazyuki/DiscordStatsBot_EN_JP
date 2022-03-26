@@ -19,11 +19,11 @@ export function optionParser(
     let selectedOption: CommandOption | null = null;
     if (word.startsWith('--')) {
       const name = word.slice(2);
-      const nameIndex = names.indexOf(name);
       if (name.length === 0) continue;
+      const nameIndex = names.indexOf(name);
       if (nameIndex !== -1) {
         selectedOption = options[nameIndex];
-        content.replace(word, '');
+        content = content.replace(word, '');
       } else {
         throw new InvalidOptionError(`The option \`${word}\` does not exist.`);
       }
@@ -33,7 +33,7 @@ export function optionParser(
         const shortIndex = shorts.indexOf(short as CommandOption['short']);
         if (shortIndex !== -1) {
           selectedOption = options[shortIndex];
-          content.replace(word, '');
+          content = content.replace(word, '');
         }
       } else if (short.length > 1) {
         const boolOptions: CommandOption[] = [];
@@ -50,7 +50,7 @@ export function optionParser(
           }
         }
         if (boolOptions.length === short.length) {
-          content.replace(word, '');
+          content = content.replace(word, '');
           boolOptions.forEach((o) => (resolvedOptions[o.name] = true));
         }
       }
@@ -67,10 +67,11 @@ export function optionParser(
         }
         const value = valueIt.value;
         resolvedOptions[selectedOption.name] = value;
-        content.replace(value, '');
+        content = content.replace(value, '');
       }
     }
   }
+
   return {
     restContent: content.trim(),
     resolvedOptions,

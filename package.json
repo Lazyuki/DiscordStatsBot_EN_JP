@@ -11,6 +11,7 @@
     "build:watch": "pm2 start npm --watch -- run build",
     "start": "npm run build && pm2 start build/main.js --name ciri --node-args='--es-module-specifier-resolution=node --enable-source-maps'",
     "kill": "pm2 stop ciri",
+    "restart": "npm run build && pm2 restart ciri",
     "pm2": "pm2",
     "pm2ls": "pm2 ls",
     "pm2logs": "pm2 logs",

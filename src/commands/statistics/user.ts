@@ -87,7 +87,7 @@ const command: BotCommand = {
         : japaneseUsage / totalLanguageMessages;
 
       // Top Channels
-      channels.sort((a, b) => a.count - b.count);
+      channels.sort((a, b) => b.count - a.count);
       const top3Channels = channels
         .slice(0, 3)
         .map(({ channelId, count }) => {
@@ -99,7 +99,6 @@ const command: BotCommand = {
         .join('\n');
 
       // Top Emojis
-      emojis.sort((a, b) => a.count - b.count);
       const top3Emojis = emojis
         .slice(0, 3)
         .map(({ emoji, count }) => {
