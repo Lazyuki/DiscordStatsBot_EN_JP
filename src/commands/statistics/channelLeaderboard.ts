@@ -1,9 +1,10 @@
 import { parseChannels, parseSnowflakeIds } from '@utils/argumentParsers';
 import { BotCommand } from '@/types';
 import { getChannelLeaderboard } from '@database/statements';
-import { idToChannel } from '@utils/guildUtils';
+import { getMessageTextChannel, idToChannel } from '@utils/guildUtils';
 import { fieldsPaginator } from '@utils/paginate';
 import { joinNaturally } from '@utils/formatString';
+import { CommandArgumentError } from '@/errors';
 
 const command: BotCommand = {
   name: 'channelLeaderboard',
@@ -14,6 +15,13 @@ const command: BotCommand = {
   requiredServerConfigs: ['statistics'],
   normalCommand: async ({ message, bot, server, content }) => {
     const { channels, nonChannelIds } = parseChannels(content, server.guild);
+    if (channels.length === 0) {
+      const thisChannel = getMessageTextChannel(message);
+      thisChannel && channels.push(thisChannel);
+    }
+    if (channels.length === 0) {
+      throw new CommandArgumentError('Please specify a channel');
+    }
     const users = getChannelLeaderboard(
       {
         guildId: server.guild.id,
@@ -44,7 +52,7 @@ const command: BotCommand = {
     await fieldsPaginator(
       message.channel,
       `Channel Leaderboard for ${joinNaturally(
-        channels.map((c) => c.toString())
+        channels.map((c) => `#${c.name}`)
       )}`,
       'Total messages in the last 30 days',
       fields,

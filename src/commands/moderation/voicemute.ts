@@ -3,7 +3,7 @@ import { REGEX_USER } from '@/utils/regex';
 
 const command: BotCommand = {
   name: 'voicemute',
-  isAllowed: 'MUTE_MEMBERS',
+  isAllowed: ['MUTE_MEMBERS'],
   aliases: ['vm'],
   description: 'Voice mutes people',
   arguments: '<@user> [reason]',

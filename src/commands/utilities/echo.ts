@@ -8,7 +8,6 @@ const command: BotCommand = {
   description: 'Repeat your message inside a code block',
   normalCommand: async ({ message }) => {
     await message.channel.send(cleanEmbed(codeBlock(message.content)));
-    safeDelete(message);
   },
 };
 

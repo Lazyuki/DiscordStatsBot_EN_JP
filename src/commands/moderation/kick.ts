@@ -8,7 +8,7 @@ import { GuildMember } from 'discord.js';
 
 const command: BotCommand = {
   name: 'kick',
-  isAllowed: 'SERVER_MODERATOR',
+  isAllowed: ['SERVER_MODERATOR'],
   description: 'Kick people off this server.',
   requiredBotPermissions: ['KICK_MEMBERS'],
   arguments: '<@user> [@user2...] [reason]',

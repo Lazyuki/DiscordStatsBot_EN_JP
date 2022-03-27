@@ -24,7 +24,7 @@ declare module '@/types' {
 
 const watch: BotCommand = {
   name: 'watch',
-  isAllowed: 'ADMIN',
+  isAllowed: ['SERVER_MODERATOR'],
   onCommandInit: (server) => {
     server.temp.watched ||= [];
   },
@@ -70,7 +70,7 @@ const watch: BotCommand = {
 
 const unwatch: BotCommand = {
   name: 'unwatch',
-  isAllowed: 'ADMIN',
+  isAllowed: ['SERVER_MODERATOR'],
   description: 'Unwatch a userr',
   arguments: '<@user> <@user2>',
   parentCommand: 'watch',
@@ -127,7 +127,7 @@ const unwatch: BotCommand = {
 
 const watched: BotCommand = {
   name: 'watched',
-  isAllowed: 'ADMIN',
+  isAllowed: ['SERVER_MODERATOR'],
   description: 'List watched users',
   parentCommand: 'watch',
   hidden: true,
@@ -138,7 +138,7 @@ const watched: BotCommand = {
 
 const watchClean: BotCommand = {
   name: 'watchclean',
-  isAllowed: 'ADMIN',
+  isAllowed: ['SERVER_MODERATOR'],
   description:
     'Clean the list of watched users by removing users who are no longer in the server',
   parentCommand: 'watch',

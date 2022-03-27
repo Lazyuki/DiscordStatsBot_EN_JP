@@ -257,7 +257,7 @@ export const getChannelLeaderboard = makeGetAllWithArray<GuildId, UserCount>(
 export const getJapaneseLeaderboard = makeGetAllRows<
   {
     guildId: string;
-    lowerLimit: number;
+    threshold: number;
   },
   {
     userId: string;
@@ -269,7 +269,7 @@ export const getJapaneseLeaderboard = makeGetAllRows<
         FROM messages
         WHERE guild_id = $guildId AND lang IN ('EN', 'JP')
         GROUP BY user_id
-        HAVING SUM(message_count) > $lowerLimit
+        HAVING SUM(message_count) > $threshold
     )
         SELECT user_id, 100.0 * jp_count / total AS jp_ratio
         FROM lang_usage
@@ -279,7 +279,7 @@ export const getJapaneseLeaderboard = makeGetAllRows<
 export const getEnglishLeaderboard = makeGetAllRows<
   {
     guildId: string;
-    lowerLimit: number;
+    threshold: number;
   },
   { userId: string; enRatio: number }
 >(`
@@ -288,7 +288,7 @@ export const getEnglishLeaderboard = makeGetAllRows<
         FROM messages
         WHERE guild_id = $guildId AND lang IN ('EN', 'JP')
         GROUP BY user_id
-        HAVING SUM(message_count) > $lowerLimit
+        HAVING SUM(message_count) > $threshold
     )
         SELECT user_id, 100.0 * en_count / total AS en_ratio
         FROM lang_usage

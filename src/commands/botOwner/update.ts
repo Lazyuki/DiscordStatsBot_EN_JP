@@ -7,7 +7,7 @@ import { appendCodeBlock, codeBlock } from '@utils/formatString';
 
 const command: BotCommand = {
   name: 'update',
-  isAllowed: 'BOT_OWNER',
+  isAllowed: ['BOT_OWNER'],
   description: 'Pull from git and restart the bot',
   normalCommand: async ({ bot, message, ...rest }) => {
     const exec = util.promisify(execPromise);

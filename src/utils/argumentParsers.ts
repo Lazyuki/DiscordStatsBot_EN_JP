@@ -248,7 +248,7 @@ export const getUserId = (
       return includes[0].id;
     } else {
       // Something in content but no user found
-      throw new MemberNotFoundError();
+      throw new MemberNotFoundError(content);
     }
   }
   // content is empty

@@ -1,3 +1,5 @@
+import { Bot } from '@/types';
+
 export function codeBlock(str: string, lang: string = '') {
   const lines = str.split('\n');
   if (lines[0].startsWith('```')) {
@@ -36,4 +38,9 @@ export function joinNaturally(array: string[]) {
     array[array.length - 1] = 'and ' + array[array.length - 1];
     return array.join(', ');
   }
+}
+
+export function resolveEmoji(emoji: string, bot: Bot) {
+  const isEmojiResolvable = !emoji.startsWith('<') || bot.emojis.resolve(emoji);
+  return isEmojiResolvable ? emoji : `:${emoji.split(':')[1]}:`;
 }

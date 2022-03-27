@@ -2,7 +2,7 @@ import { BotCommand } from '@/types';
 
 const command: BotCommand = {
   name: 'log',
-  isAllowed: 'SERVER_MODERATOR',
+  isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE'],
   description: 'Warn people silently. Same as `{PREFIX}warn -s`',
   arguments: '<@user> [@user2...] [reason]',
   examples: [

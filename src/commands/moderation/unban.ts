@@ -5,7 +5,7 @@ import { successEmbed } from '@utils/embed';
 
 const unban: BotCommand = {
   name: 'unban',
-  isAllowed: 'SERVER_MODERATOR',
+  isAllowed: ['SERVER_MODERATOR'],
   requiredBotPermissions: ['BAN_MEMBERS'],
   description: 'Unban users',
   arguments: '<user ID> [user2 ID...] [reason]',

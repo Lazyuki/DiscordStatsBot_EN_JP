@@ -1,8 +1,9 @@
 import { Message, PermissionString } from 'discord.js';
 
 import Server from '../classes/Server';
-import { Bot, CommandPermissionLevel } from '../types';
-import { EJLX, MINIMO, STAFF, WP } from './constants';
+import { Bot, CommandPermissionLevel, GuildMessage } from '../types';
+import { COMMITTEE, EJLX, MINIMO, STAFF, WP } from './constants';
+import { getMessageTextChannel, getParentChannelId } from './guildUtils';
 
 export function checkEjlx(server: Server) {
   return server.guild.id === EJLX;
@@ -43,6 +44,11 @@ export function checkServerMod(message: Message) {
   return false;
 }
 
+export function checkMainichiCommittee(message: GuildMessage<Message>) {
+  const channelId = getParentChannelId(message.channel);
+  return channelId === COMMITTEE;
+}
+
 export function checkSpecificPerm(
   message: Message,
   permission: PermissionString
@@ -54,7 +60,7 @@ export function checkMuteMembers(message: Message) {}
 
 export const PERMISSIONS: Record<
   CommandPermissionLevel,
-  (message: Message, server: Server, bot: Bot) => boolean
+  (message: GuildMessage<Message>, server: Server, bot: Bot) => boolean
 > = {
   ADMIN: checkAdmin,
   BOT_OWNER: checkBotOwner,
@@ -62,6 +68,7 @@ export const PERMISSIONS: Record<
   MINIMO: checkMinimo,
   WP: checkWP,
   SERVER_MODERATOR: checkServerMod,
+  MAINICHI_COMMITTEE: checkMainichiCommittee,
   MUTE_MEMBERS: (message: Message) =>
     checkSpecificPerm(message, 'MUTE_MEMBERS'),
   BAN_MEMBERS: (message: Message) => checkSpecificPerm(message, 'BAN_MEMBERS'),

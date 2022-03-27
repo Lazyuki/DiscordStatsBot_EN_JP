@@ -18,6 +18,7 @@ export default function parseCommand(
     category: camelCaseToNormal(categoryName),
   } as ParsedBotCommand;
   const allowFunctions: typeof parsedCommand.isAllowed[] = [];
+
   if (allowedServers) {
     allowFunctions.push((_, server) =>
       allowedServers.includes(server.guild.id)
@@ -33,8 +34,10 @@ export default function parseCommand(
       })
     );
   }
-  if (typeof isAllowed === 'string') {
-    allowFunctions.push(PERMISSIONS[isAllowed]);
+  if (Array.isArray(isAllowed)) {
+    allowFunctions.push((m, s, b) =>
+      isAllowed.some((perm) => PERMISSIONS[perm](m, s, b))
+    );
   } else if (typeof isAllowed === 'function') {
     allowFunctions.push(isAllowed);
   }

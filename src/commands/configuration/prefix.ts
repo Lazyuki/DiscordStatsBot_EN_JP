@@ -6,7 +6,7 @@ export const VALID_PREFIX = /^\S{1,5}$/;
 
 const command: BotCommand = {
   name: 'prefix',
-  isAllowed: 'ADMIN',
+  isAllowed: ['ADMIN'],
   description:
     'Change the command prefix. Leave blank to restore the default prefix',
   examples: ['prefix c!', 'prefix'],

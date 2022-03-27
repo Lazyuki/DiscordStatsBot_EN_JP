@@ -29,7 +29,7 @@ export function addModLog(entry: ModLogEntry) {
 
 const warn: BotCommand = {
   name: 'warn',
-  isAllowed: 'SERVER_MODERATOR',
+  isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE'],
   description:
     'Warn people and add it to the warnlog entries. Use `{PREFIX}log` instead to silently log the warning without messaging, or use `{PREFIX}message` to send a DM without making it a warning',
   arguments: '<@user> [@user2...] [reason]',
@@ -142,7 +142,7 @@ const warn: BotCommand = {
 
 const warnlog: BotCommand = {
   name: 'warnlog',
-  isAllowed: 'SERVER_MODERATOR',
+  isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE'],
   description: 'List mod logs',
   arguments: '[@user]',
   aliases: ['wl', 'modlog', 'ml'],
@@ -188,7 +188,7 @@ const warnlog: BotCommand = {
 
 const warnclear: BotCommand = {
   name: 'warnclear',
-  isAllowed: 'SERVER_MODERATOR',
+  isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE'],
   description:
     'Clear a warning or all warnings for a user. Unless it was a silent warning, the user will be notified.',
   arguments: '<@user> <all | warning number in warnlog>',

@@ -29,7 +29,6 @@ const command: BotCommand = {
           `,
       })
     );
-    safeDelete(message);
   },
 };
 

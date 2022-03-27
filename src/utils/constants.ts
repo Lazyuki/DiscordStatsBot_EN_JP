@@ -48,6 +48,7 @@ export const MOD_LOG = '366692441442615306';
 export const AGT = '755269708579733626';
 export const WP_CHAT = '918758304560328734';
 export const EWBF = '277384105245802497';
+export const COMMITTEE = '395638820525047808';
 
 // Category IDs
 export const CLOCK = '360571611021180929';

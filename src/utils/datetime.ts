@@ -1,3 +1,4 @@
+import { TimestampFlag } from '@/types';
 import { format, formatDuration, intervalToDuration } from 'date-fns';
 import { GuildMember } from 'discord.js';
 import { pluralize } from './pluralize';
@@ -84,4 +85,8 @@ export function getTodayISO(): string {
  */
 export function getStartHourISO(): string {
   return getStartDateTime(false).toISOString();
+}
+
+export function getDiscordTimestamp(date: Date, option: TimestampFlag) {
+  return `<t:${Math.floor(date.getTime() / 1000)}:${option || 'F'}>`;
 }

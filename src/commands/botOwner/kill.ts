@@ -7,7 +7,7 @@ import util from 'util';
 
 const command: BotCommand = {
   name: 'kill',
-  isAllowed: 'BOT_OWNER',
+  isAllowed: ['BOT_OWNER'],
   description: 'Kill the bot',
   normalCommand: async ({ bot, message }) => {
     await message.channel.send('Good bye...');

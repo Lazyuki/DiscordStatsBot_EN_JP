@@ -8,6 +8,7 @@ import { camelCaseToNormal } from '@utils/formatString';
 import { CategoryChannel, Guild } from 'discord.js';
 import { DEFAULT_PREFIX } from '@/envs';
 import { REGEX_MESSAGE_ID } from '@utils/regex';
+import { idToChannel } from '@utils/guildUtils';
 
 type ConfigType = 'channel' | 'boolean' | 'string';
 
@@ -84,7 +85,7 @@ const CONFIG_KEYS = CONFIGURABLE_BOT_CONFIG.map((c) => c.key) as Readonly<
 
 function formatStringType(type: ConfigType, value: string) {
   if (!value) return '`None`';
-  if (type === 'channel') return `<#${value}>`;
+  if (type === 'channel') return idToChannel(value);
   return `\`${value}\``;
 }
 
@@ -196,7 +197,7 @@ function getAvailableValues(type: ConfigType, isArray?: boolean) {
 
 const command: BotCommand = {
   name: 'botConfig',
-  isAllowed: 'BOT_OWNER',
+  isAllowed: ['BOT_OWNER'],
   aliases: ['bc'],
   description: 'View or update configuration for the bot',
   arguments: '[number] [add/remove | enable/disable | set/reset] [value]',

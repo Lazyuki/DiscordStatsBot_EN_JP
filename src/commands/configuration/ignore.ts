@@ -8,7 +8,7 @@ import { isOrAre } from '@utils/pluralize';
 
 const ignore: BotCommand = {
   name: 'ignore',
-  isAllowed: 'ADMIN',
+  isAllowed: ['ADMIN'],
   onCommandInit: (server) => {
     server.config.ignoredChannels ||= [];
   },
@@ -43,7 +43,7 @@ const ignore: BotCommand = {
 
 const ignored: BotCommand = {
   name: 'ignored',
-  isAllowed: 'SERVER_MODERATOR',
+  isAllowed: ['ADMIN'],
   description: 'Show ignored channels',
   parentCommand: 'ignore',
   normalCommand: async ({ message, server }) => {
@@ -58,7 +58,7 @@ const ignored: BotCommand = {
 
 const unignore: BotCommand = {
   name: 'unignore',
-  isAllowed: 'SERVER_MODERATOR',
+  isAllowed: ['ADMIN'],
   description: 'Un-ignore channels',
   parentCommand: 'ignore',
   normalCommand: async ({ message, server, content }) => {

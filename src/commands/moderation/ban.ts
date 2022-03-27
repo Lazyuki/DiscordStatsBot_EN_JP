@@ -16,7 +16,7 @@ import { getTextChannel, idToUser } from '@utils/guildUtils';
 
 const command: BotCommand = {
   name: 'ban',
-  isAllowed: 'BAN_MEMBERS',
+  isAllowed: ['BAN_MEMBERS'],
   requiredBotPermissions: ['BAN_MEMBERS'],
   description:
     'Ban! You can specify multiple users. Or use `raidban` for banning the entire raid party. ',
@@ -45,11 +45,11 @@ const command: BotCommand = {
       content,
       server.guild
     );
-    if (message.reference?.messageId) {
-      const reference = await message.channel.messages.fetch(
-        message.reference.messageId
+    if (message.mentions.repliedUser) {
+      const member = server.guild.members.cache.get(
+        message.mentions.repliedUser.id
       );
-      reference.member && members.push(reference.member);
+      member && members.push(member);
     }
     if (restContent) reason = restContent;
 

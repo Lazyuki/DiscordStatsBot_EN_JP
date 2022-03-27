@@ -5,6 +5,7 @@ import { EmbedField } from 'discord.js';
 
 const command: BotCommand = {
   name: 'help',
+  aliases: ['h'],
   description: 'You need help with help?',
   normalCommand: async ({ message, bot, content, server }) => {
     const commandName = content.trim().toLowerCase();

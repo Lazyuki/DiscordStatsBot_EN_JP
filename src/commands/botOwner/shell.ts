@@ -10,7 +10,7 @@ let openShell: ChildProcess | null = null;
 
 const command: BotCommand = {
   name: 'shell',
-  isAllowed: 'BOT_OWNER',
+  isAllowed: ['BOT_OWNER'],
   description: 'Run shell commands',
   options: [
     {

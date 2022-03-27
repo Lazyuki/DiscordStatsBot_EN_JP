@@ -8,7 +8,7 @@ import { isOrAre } from '@utils/pluralize';
 
 const hide: BotCommand = {
   name: 'hide',
-  isAllowed: 'ADMIN',
+  isAllowed: ['ADMIN'],
   onCommandInit: (server) => {
     server.config.hiddenChannels ||= [];
   },
@@ -39,7 +39,7 @@ const hide: BotCommand = {
 
 const hidden: BotCommand = {
   name: 'hidden',
-  isAllowed: 'ADMIN',
+  isAllowed: ['ADMIN'],
   description: 'Show hidden channels',
   parentCommand: 'hide',
   normalCommand: async ({ message, server }) => {
@@ -54,7 +54,7 @@ const hidden: BotCommand = {
 
 const unhide: BotCommand = {
   name: 'unhide',
-  isAllowed: 'ADMIN',
+  isAllowed: ['ADMIN'],
   description: 'Un-hide channels',
   parentCommand: 'hide',
   normalCommand: async ({ message, server, content }) => {

@@ -51,7 +51,7 @@ const command: BotCommand = {
   name: 'tag',
   aliases: ['t'],
   allowedServers: [EJLX],
-  isAllowed: 'WP',
+  isAllowed: ['WP'],
   description: `Assign language roles. You can reply to a message using this command and it will get the message author. Also see the pin in <#${EWBF}>`,
   options: [
     {
@@ -81,14 +81,10 @@ const command: BotCommand = {
     const searchChannel = Boolean(options['newUser']);
     content = content.replace(TAG_ROLE_REGEX, '').trim();
     let member: GuildMember | undefined;
-    if (message.reference?.messageId) {
-      const reference = await message.channel.messages.fetch(
-        message.reference.messageId
-      );
-      if (reference.member) {
-        member = reference.member;
-      } else {
-        throw new CommandArgumentError('Please specify a user to tag');
+    if (message.mentions.repliedUser) {
+      member = server.guild.members.cache.get(message.mentions.repliedUser.id);
+      if (!member) {
+        throw new CommandArgumentError('The user has already left the server');
       }
     } else if (searchChannel) {
       const recentMessages = await message.channel.messages.fetch({

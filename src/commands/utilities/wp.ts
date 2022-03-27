@@ -9,7 +9,7 @@ const command: BotCommand = {
   name: 'welcomingParty',
   aliases: ['wp'],
   allowedServers: [EJLX],
-  isAllowed: 'WP',
+  isAllowed: ['WP'],
   description: 'Show Welcoming Party stats',
   normalCommand: async ({ message, server }) => {
     const wps = server.guild.members.cache.filter((m) => {

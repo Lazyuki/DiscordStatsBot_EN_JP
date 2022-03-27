@@ -1,6 +1,6 @@
-import { TextChannel, MessageEmbed, User } from "discord.js";
-import { Bot } from "../types";
-import paginate from "./paginate";
+import { TextChannel, MessageEmbed, User } from 'discord.js';
+import { Bot } from '../types';
+import { fieldsPaginator } from './paginate';
 
 export const userLeaderboard = async (
   channel: TextChannel,
@@ -29,7 +29,7 @@ export const userLeaderboard = async (
       if (!user) continue;
       list[i][2] = user.username;
       if (key === searchUser.id) foundRank = rank;
-      embed.addField(rank + ") " + user.username, format(val), true);
+      embed.addField(rank + ') ' + user.username, format(val), true);
     }
   }
   if (foundRank)

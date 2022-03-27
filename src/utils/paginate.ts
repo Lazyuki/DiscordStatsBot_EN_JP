@@ -82,26 +82,27 @@ export async function fieldsPaginator(
   let currPage = 0;
   const userPage = Math.floor(userIndex / MAX_FIELDS);
 
-  function getEmbed() {
-    const beginIndex = currPage * MAX_FIELDS;
+  function getEmbed(page: number) {
+    const beginIndex = page * MAX_FIELDS;
     return makeEmbed({
       title,
       description,
       fields: fields
         .slice(beginIndex, beginIndex + 25)
         .map((f) => ({ ...f, inline })),
-      footer: `Page: ${currPage + 1}/${maxPageNum + 1}`,
+      footer: `Page: ${page + 1}/${maxPageNum + 1}`,
       color: INFO_COLOR,
     });
   }
 
-  const message = await channel.send(getEmbed());
+  const message = await channel.send(getEmbed(currPage));
 
   if (maxPageNum > 0) {
-    await message.react('◀');
-    await message.react('▶');
+    // Don't await to speed it up
+    message.react('◀');
+    message.react('▶');
     if (userIndex >= 0) {
-      await message.react('📍');
+      message.react('📍');
     }
 
     const filter = (reaction: MessageReaction, user: User) =>
@@ -116,7 +117,7 @@ export async function fieldsPaginator(
         case '▶':
           if (currPage < maxPageNum) {
             ++currPage;
-            message.edit(getEmbed());
+            message.edit(getEmbed(currPage));
           }
           r.users.remove(authorID);
           collector.empty();
@@ -124,7 +125,7 @@ export async function fieldsPaginator(
         case '◀':
           if (currPage > 0) {
             --currPage;
-            message.edit(getEmbed());
+            message.edit(getEmbed(currPage));
           }
           r.users.remove(authorID);
           collector.empty();
@@ -132,7 +133,7 @@ export async function fieldsPaginator(
         case '📍':
           if (currPage !== userPage) {
             currPage = userPage;
-            message.edit(getEmbed());
+            message.edit(getEmbed(currPage));
           }
           r.users.remove(authorID);
           collector.empty();

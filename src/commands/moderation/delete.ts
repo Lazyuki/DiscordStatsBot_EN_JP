@@ -4,13 +4,19 @@ import { successEmbed } from '@utils/embed';
 import { REGEX_RAW_ID } from '@utils/regex';
 
 const prune: BotCommand = {
-  name: 'prune',
-  isAllowed: ['SERVER_MODERATOR'],
+  name: 'delete',
+  isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE'],
   requiredBotPermissions: ['MANAGE_MESSAGES'],
   description:
-    'Deletes messages sent by specified users in the channel in the past 24 hours. Use their IDs. Useful if you forget to delete messages when banning users.',
-  arguments: '<user ID> [user2 ID...]',
-  examples: ['prune 123454323454 2345432345643 4543246543234'],
+    'Delete messages either by specifying the message IDs or by searching. When using message IDs, it will only fetch the messages in the channel the command is invoked in. To delete messages in other channels, copy the full ID by holding the SHIFT key when copying IDs, or use the message links.',
+  arguments:
+    '[message IDs ...] [@mention users] [number of messages to delete (max=25)]',
+  examples: [
+    'del 543252928496926722 542576315115634688',
+    'del 12345689123456789-542576315115634688',
+    'del https://discord.com/channels/12345689123456789/12345689123456789/542576315115634688',
+    'del @geralt 3',
+  ],
   normalCommand: async ({ content, message }) => {
     const ids = content.match(REGEX_RAW_ID);
     if (!ids) {

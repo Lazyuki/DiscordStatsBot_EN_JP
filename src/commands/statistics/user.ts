@@ -9,7 +9,7 @@ import {
   getUserMessages,
   getVoiceSecondsForUser,
 } from '@database/statements';
-import { formatPercent } from '@utils/formatString';
+import { formatPercent, resolveEmoji } from '@utils/formatString';
 import { REGEX_CUSTOM_EMOTES } from '@utils/regex';
 import { pluralCount } from '@utils/pluralize';
 import { isInChannelsOrCategories } from '@utils/guildUtils';
@@ -108,14 +108,11 @@ const command: BotCommand = {
       const top3Emojis = emojis
         .slice(0, 3)
         .map(({ emoji, count }) => {
-          let emojiName = emoji;
-          if (REGEX_CUSTOM_EMOTES.test(emoji)) {
-            const emojiId = bot.emojis.resolveId(emoji);
-            if (!bot.emojis.cache.has(emojiId)) {
-              emojiName = `:${emoji.split(':')[1]}:`;
-            }
-          }
-          return `${emoji} ${pluralCount('time', 's', count)}`;
+          return `${resolveEmoji(emoji, bot)} ${pluralCount(
+            'time',
+            's',
+            count
+          )}`;
         })
         .join('\n');
 

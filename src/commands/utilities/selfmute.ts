@@ -66,6 +66,12 @@ async function mute(
   try {
     await member.roles.add(server.config.selfMuteRoles);
     server.data.schedules.selfMutes[member.id] = unmuteAtMillis;
+    if (
+      member.voice.channel &&
+      server.guild.me?.permissions.has('MOVE_MEMBERS')
+    ) {
+      await member.voice.disconnect();
+    }
     runAt(
       new Date(unmuteAtMillis),
       async () =>

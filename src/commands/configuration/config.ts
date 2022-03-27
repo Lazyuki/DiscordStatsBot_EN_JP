@@ -422,7 +422,7 @@ function getAvailableValues(type: ConfigType, isArray?: boolean) {
 
 const command: BotCommand = {
   name: 'config',
-  isAllowed: 'ADMIN',
+  isAllowed: ['ADMIN'],
   onCommandInit: (server) => {
     server.config = { ...DEFAULT_CONFIG, ...server.config };
   },

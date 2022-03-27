@@ -38,6 +38,7 @@ export type CommandPermissionLevel =
   | 'EJLX_STAFF'
   | 'MINIMO'
   | 'WP'
+  | 'MAINICHI_COMMITTEE'
   | 'MUTE_MEMBERS'
   | 'BAN_MEMBERS'
   | 'KICK_MEMBERS';
@@ -65,9 +66,12 @@ export interface BotCommand {
   allowedServers?: string[];
   requiredServerConfigs?: (keyof ServerConfig)[];
   requiredBotPermissions?: PermissionString[];
+  /**
+   * If array of permission levels, then it will be "true" if any of the permissions returns true
+   */
   isAllowed?:
-    | CommandPermissionLevel
-    | ((message: Message, server: Server, bot: Bot) => boolean);
+    | CommandPermissionLevel[]
+    | ((message: GuildMessage<Message>, server: Server, bot: Bot) => boolean);
   hidden?: boolean;
   rateLimitSeconds?: number;
   description: string;
@@ -127,12 +131,27 @@ export interface CommandOption {
   description: string;
 }
 
+/**
+ * "F" Saturday, July 31, 2021 3:45 PM (default)
+ * "d" 07/31/2021
+ * "f" July 31, 2021 3:45 PM
+ * "t" 3:45 PM
+ * "D" July 31, 2021
+ * "R" 10 minutes ago
+ * "T" 3:45:12 PM
+ */
+export type TimestampFlag = 'F' | 'd' | 'f' | 't' | 'D' | 'R' | 'T';
+
 export type ResolvedCommandOptions = Record<string, boolean | string>;
 
 export interface ParsedBotCommand extends BotCommand {
   name: string;
   category: string;
-  isAllowed: (message: Message, server: Server, bot: Bot) => boolean;
+  isAllowed: (
+    message: GuildMessage<Message>,
+    server: Server,
+    bot: Bot
+  ) => boolean;
 }
 
 export interface BotEvent<E extends keyof ClientEvents> {
