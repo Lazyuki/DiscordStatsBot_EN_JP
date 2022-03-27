@@ -43,6 +43,7 @@ const command: BotCommand = {
         );
       }
     }
+    server.save();
   },
 };
 

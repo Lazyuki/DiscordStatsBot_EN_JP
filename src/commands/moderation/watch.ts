@@ -11,7 +11,8 @@ import {
   successEmbed,
   warningEmbed,
 } from '@utils/embed';
-import pluralize from '@utils/pluralize';
+import { idToUser } from '@utils/guildUtils';
+import { pluralize } from '@utils/pluralize';
 import { REGEX_RAW_ID } from '@utils/regex';
 import { User } from 'discord.js';
 
@@ -103,9 +104,7 @@ const unwatch: BotCommand = {
     if (successIDs.length) {
       await message.channel.send(
         successEmbed(
-          `Successfully unwatched ${successIDs
-            .map((id) => `<@${id}>`)
-            .join(' ')}`
+          `Successfully unwatched ${successIDs.map(idToUser).join(' ')}`
         )
       );
     }
@@ -113,7 +112,7 @@ const unwatch: BotCommand = {
       await message.channel.send(
         errorEmbed(
           `${pluralize('User', 's', failIDs.length)} ${failIDs
-            .map((id) => `<@${id}>`)
+            .map(idToUser)
             .join(' ')} ${pluralize(
             '',
             'were',
@@ -133,7 +132,7 @@ const watched: BotCommand = {
   parentCommand: 'watch',
   hidden: true,
   normalCommand: async ({ send, server }) => {
-    await send(server.temp.watched.map((w) => `<@${w}>`).join(' '));
+    await send(server.temp.watched.map(idToUser).join(' '));
   },
 };
 
@@ -155,7 +154,7 @@ const watchClean: BotCommand = {
       return true;
     });
     if (removed.length) {
-      await send(successEmbed(removed.map((r) => `<@${r}>`).join(' ')));
+      await send(successEmbed(`Cleared ${removed.length} users`));
     } else {
       await send(infoEmbed('All watched users are still in the server.'));
     }

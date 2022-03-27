@@ -1,8 +1,10 @@
 import { InvalidSubCommandError } from '@/errors';
 import { BotCommand } from '@/types';
 import { EJLX, MAINICHI } from '@utils/constants';
-import { errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
-import pluralize from '@utils/pluralize';
+import { errorEmbed, infoEmbed, makeEmbed, successEmbed } from '@utils/embed';
+import { joinNaturally } from '@utils/formatString';
+import { idToChannel } from '@utils/guildUtils';
+import { pluralize } from '@utils/pluralize';
 import { stripIndent } from 'common-tags';
 
 const hardcore: BotCommand = {
@@ -11,7 +13,8 @@ const hardcore: BotCommand = {
   requiredServerConfigs: ['japaneseRoles', 'hardcoreRole'],
   requiredBotPermissions: ['MANAGE_MESSAGES'],
   aliases: ['hc'],
-  description: `Enable/disable hardcore. Use \`{PREFIX}}config\` to manage hardcore related configs.`,
+  description:
+    'Enable/disable hardcore. Use `{PREFIX}config` to manage hardcore related configs.',
   arguments: '[enable | disable]',
   examples: ['hardcore', 'hc enable'],
   normalCommand: async ({ content, message, server }) => {
@@ -31,9 +34,9 @@ const hardcore: BotCommand = {
           } on this server
           ${
             hardcoreIgnoredChannels?.length
-              ? ` except in ${hardcoreIgnoredChannels
-                  .map((c) => `<#${hardcoreIgnoredChannels}>`)
-                  .join(' ')}`
+              ? ` except in ${joinNaturally(
+                  hardcoreIgnoredChannels.map(idToChannel)
+                )}`
               : ''
           }. 
           `,
@@ -49,9 +52,9 @@ const hardcore: BotCommand = {
             } on this server
           ${
             hardcoreIgnoredChannels?.length
-              ? ` except in ${hardcoreIgnoredChannels
-                  .map((c) => `<#${hardcoreIgnoredChannels}>`)
-                  .join(' ')}`
+              ? ` except in ${joinNaturally(
+                  hardcoreIgnoredChannels.map(idToChannel)
+                )}`
               : ''
           }. 
           `,
@@ -69,21 +72,21 @@ const hardcore: BotCommand = {
       if (subCommand === 'enable') {
         if (!isEnabled) {
           await message.channel.send(
-            successEmbed('Successfully enabled hardcore mode')
+            successEmbed('Successfully **enabled** hardcore mode')
           );
         } else {
           await message.channel.send(
-            errorEmbed('You already have hardcore mode enabled')
+            infoEmbed('You already have hardcore mode enabled')
           );
         }
       } else {
         if (isEnabled) {
           await message.channel.send(
-            successEmbed('Successfully disabled hardcore mode')
+            successEmbed('Successfully **disabled** hardcore mode')
           );
         } else {
           await message.channel.send(
-            errorEmbed('You do not have hardcore mode enabled.')
+            infoEmbed('You do not have hardcore mode enabled.')
           );
         }
       }

@@ -217,38 +217,40 @@ export const getUserChannels = makeGetAllWithArray<
 `
 );
 
-export const getLeaderboard = makeGetAllRows<GuildUser, UserCount>(`
-    WITH ranked AS (
-        SELECT *, RANK() OVER(ORDER BY count DESC)
-        FROM (
-            SELECT user_id, SUM(message_count) AS count
-            FROM messages
-            WHERE guild_id = $guildId
-            GROUP BY user_id
-        ) AS lb
-    )
-        SELECT * FROM ranked
-    UNION ALL
-        SELECT * FROM ranked WHERE user_id = $userId
+export const getChannels = makeGetAllWithArray<
+  GuildId,
+  { count: number; channelId: string }
+>(
+  'getChannels',
+  `
+    SELECT channel_id, SUM(message_count) as count
+    FROM messages
+    WHERE guild_id = $guildId AND channel_id NOT IN (ARRAY_VALUES)
+    GROUP BY channel_id
+    ORDER BY count DESC
+`
+);
+
+export const getLeaderboard = makeGetAllRows<GuildId, UserCount>(`
+    SELECT *, RANK() OVER(ORDER BY count DESC)
+    FROM (
+        SELECT user_id, SUM(message_count) AS count
+        FROM messages
+        WHERE guild_id = $guildId
+        GROUP BY user_id
+    ) AS lb
 `);
 
-export const getChannelLeaderboard = makeGetAllWithArray<GuildUser, UserCount>(
+export const getChannelLeaderboard = makeGetAllWithArray<GuildId, UserCount>(
   'getChannelLeaderboard',
   `
-    WITH ranked AS (
-        SELECT *, RANK() OVER (ORDER BY count DESC)
-        FROM (
-            SELECT user_id, SUM(message_count) as count
-            FROM messages
-            WHERE guild_id = $guildId AND channel_id IN (ARRAY_VALUES)
-            GROUP BY user_id
-            ORDER BY count DESC
-        ) AS cl
-    )
-        SELECT * FROM ranked
-    UNION ALL
-        SELECT * FROM ranked WHERE user_id = $userId
-        
+    SELECT *, RANK() OVER (ORDER BY count DESC)
+    FROM (
+        SELECT user_id, SUM(message_count) as count
+        FROM messages
+        WHERE guild_id = $guildId AND channel_id IN (ARRAY_VALUES)
+        GROUP BY user_id
+    ) AS cl
 `
 );
 
@@ -325,38 +327,28 @@ export const getEmojiLeaderboard = makeGetAllRows<
 `);
 
 export const getSingleEmojiLeaderboard = makeGetAllRows<
-  GuildUser & { emojiName: string },
+  GuildId & { emojiName: string },
   UserCount
 >(`
-    WITH ranked AS (
-        SELECT *, RANK() OVER (ORDER BY count DESC)
-        FROM (
-            SELECT user_id, SUM(emoji_count) as count
-            FROM emojis
-            WHERE guild_id = $guildId AND emoji = $emojiName
-            GROUP BY user_id
-            ORDER BY count DESC
-        ) AS el
-    )
-        SELECT * FROM ranked
-    UNION ALL
-        SELECT * FROM ranked WHERE user_id = $userId
+    SELECT *, RANK() OVER (ORDER BY count DESC)
+    FROM (
+        SELECT user_id, SUM(emoji_count) as count
+        FROM emojis
+        WHERE guild_id = $guildId AND emoji = $emojiName
+        GROUP BY user_id
+        ORDER BY count DESC
+    ) AS el
 `);
 
-export const getVoiceLeaderboard = makeGetAllRows<GuildUser, UserCount>(`
-    WITH ranked AS (
-        SELECT *, RANK() OVER (ORDER BY count DESC)
-        FROM (
-            SELECT user_id, SUM(second_count) as count
-            FROM voice
-            WHERE guild_id = $guildId
-            GROUP BY user_id
-            ORDER BY count DESC
-        ) AS vl
-    )
-        SELECT * FROM ranked
-    UNION ALL
-        SELECT * FROM ranked WHERE user_id = $userId
+export const getVoiceLeaderboard = makeGetAllRows<GuildId, UserCount>(`
+    SELECT *, RANK() OVER (ORDER BY count DESC)
+    FROM (
+        SELECT user_id, SUM(second_count) as count
+        FROM voice
+        WHERE guild_id = $guildId
+        GROUP BY user_id
+        ORDER BY count DESC
+    ) AS vl
 `);
 
 export const getUserActivity = makeGetAllRows<GuildUser, DateCount>(`

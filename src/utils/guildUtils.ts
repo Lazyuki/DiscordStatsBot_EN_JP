@@ -7,6 +7,7 @@ import {
   PartialMessage,
   Message,
   GuildMember,
+  GuildBasedChannel,
 } from 'discord.js';
 
 export function isNotDM<M extends Message | PartialMessage>(
@@ -15,6 +16,14 @@ export function isNotDM<M extends Message | PartialMessage>(
   return Boolean(
     message.channel.type !== 'DM' && message.guild && message.member
   );
+}
+
+export function getMessageTextChannel(message: GuildMessage<Message>) {
+  if (message.channel.isThread()) {
+    return message.channel.parent;
+  } else {
+    return message.channel;
+  }
 }
 
 export function getParentChannelId(
@@ -35,6 +44,12 @@ export function getCategoryId(
   } else {
     return channel.parentId;
   }
+}
+
+export function isTextChannel(
+  channel: GuildBasedChannel
+): channel is TextChannel | NewsChannel {
+  return channel.isText() && !channel.isThread();
 }
 
 export function isInChannelOrCategory(
@@ -69,4 +84,14 @@ export function getTextChannel(guild: Guild, channelId?: string) {
   if (!channelId) return null;
   const channel = guild.channels.cache.get(channelId);
   return channel?.isText() ? channel : null;
+}
+
+export function idToChannel(id: string) {
+  return `<#${id}>`;
+}
+export function idToUser(id: string) {
+  return `<@${id}>`;
+}
+export function idToRole(id: string) {
+  return `<@&${id}>`;
 }

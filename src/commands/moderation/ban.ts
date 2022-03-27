@@ -11,8 +11,8 @@ import { Message } from 'discord.js';
 import { AGT, BLACK, EJLX } from '@utils/constants';
 import { stripIndent } from 'common-tags';
 import { memberJoinAge } from '@utils/datetime';
-import pluralize from '@utils/pluralize';
-import { getTextChannel } from '@utils/guildUtils';
+import { pluralize } from '@utils/pluralize';
+import { getTextChannel, idToUser } from '@utils/guildUtils';
 
 const command: BotCommand = {
   name: 'ban',
@@ -93,7 +93,7 @@ const command: BotCommand = {
               `${member}: ${member.user.tag} ${memberJoinAge(member, 7)}`
           )
           .join('\n')}
-        ${allIds.map((id) => `<@${id}>`).join('\n')}
+        ${allIds.map(idToUser).join('\n')}
 
         __Reason__: ${reason}
 
@@ -207,9 +207,7 @@ const command: BotCommand = {
                   name: 'Banned Users',
                   value: `${bannedMembers
                     .map((m) => `${m}: ${m.user.tag}`)
-                    .join('\n')}\n${bannedIds
-                    .map((id) => `<@${id}>`)
-                    .join('\n')}`.trim(),
+                    .join('\n')}\n${bannedIds.map(idToUser).join('\n')}`.trim(),
                   inline: false,
                 },
                 { name: 'Reason', value: reason, inline: false },

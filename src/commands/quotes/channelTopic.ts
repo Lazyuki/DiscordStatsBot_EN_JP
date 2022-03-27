@@ -1,17 +1,16 @@
 import { BotCommand } from '@/types';
 import { makeEmbed } from '@utils/embed';
+import { getMessageTextChannel } from '@utils/guildUtils';
 import { safeDelete } from '@utils/safeDelete';
 
 const command: BotCommand = {
   name: 'channelTopic',
   aliases: ['ct'],
-  description: 'Channel topic',
+  description: 'Show the channel topic',
   rateLimitSeconds: 10,
   normalCommand: async ({ message }) => {
-    const channel = message.channel.isThread()
-      ? message.channel.parent
-      : message.channel;
-    if (!channel) return; // Not a channel?
+    const channel = getMessageTextChannel(message);
+    if (!channel) return; // Not a channel??
     safeDelete(message);
     await message.channel.send(
       makeEmbed({

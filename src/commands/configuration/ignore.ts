@@ -1,4 +1,10 @@
+import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
+import { parseChannels, parseSnowflakeIds } from '@utils/argumentParsers';
+import { errorEmbed, successEmbed } from '@utils/embed';
+import { joinNaturally } from '@utils/formatString';
+import { idToChannel } from '@utils/guildUtils';
+import { isOrAre } from '@utils/pluralize';
 
 const ignore: BotCommand = {
   name: 'ignore',
@@ -7,21 +13,30 @@ const ignore: BotCommand = {
     server.config.ignoredChannels ||= [];
   },
   description:
-    'Ignore a channel from statistics. Bot commands will still work there. Useful for ignoring noisy channels such as quiz or bot-spam channels.',
-  arguments: '<#channel> [#channel2 ... ]',
+    'Ignore channels/categories from statistics. Bot commands will still work there. Useful for ignoring noisy channels such as quiz or bot-spam channels.',
+  arguments: '<#channel> [#channel2 ... ] [#category ...]',
   childCommands: ['ignored', 'unignore'],
   normalCommand: async ({ content, message, server }) => {
-    const chan = server.guild.channels.cache.get(content);
-    if (chan) {
-      if (server.config.ignoredChannels.includes(chan.id)) return;
-      server.config.ignoredChannels.push(chan.id);
-      await message.channel.send(`<#${chan.id}> is ignored now.`);
-    } else if (message.mentions.channels.size !== 0) {
-      for (const [id, ch] of message.mentions.channels) {
-        if (server.config.ignoredChannels.includes(id)) return;
-        server.config.ignoredChannels.push(id);
-        await message.channel.send(`<#${ch.id}> is ignored now.`);
+    const { channelsAndCategories } = parseChannels(content, server.guild);
+    if (channelsAndCategories.length > 0) {
+      for (const channel of channelsAndCategories) {
+        if (server.config.ignoredChannels.includes(channel.id)) continue;
+        server.config.ignoredChannels.push(channel.id);
       }
+      server.save();
+      await message.channel.send(
+        successEmbed(
+          `${joinNaturally(
+            channelsAndCategories.map((c) => c.toString())
+          )} ${isOrAre(
+            channelsAndCategories.length
+          )} ignored from statistics now.`
+        )
+      );
+    } else {
+      await message.channel.send(
+        errorEmbed(`Please specify existing channels`)
+      );
     }
   },
 };
@@ -47,25 +62,24 @@ const unignore: BotCommand = {
   description: 'Un-ignore channels',
   parentCommand: 'ignore',
   normalCommand: async ({ message, server, content }) => {
-    const chan = server.guild.channels.cache.get(content);
-    if (chan) {
-      const index = server.config.ignoredChannels.indexOf(chan.id);
-      if (index === -1) {
-        await message.channel.send(`<#${chan.id}> was not being ignored.`);
-        return;
-      }
-      server.config.ignoredChannels.splice(index, 1);
-      await message.channel.send(`<#${chan.id}> is un-ignored now.`);
-    } else if (message.mentions.channels.size !== 0) {
-      for (const [id, ch] of message.mentions.channels) {
-        const index = server.config.ignoredChannels.indexOf(id);
-        if (index === -1) {
-          await message.channel.send(`<#${id}> was not being ignored.`);
-          continue;
-        }
-        server.config.ignoredChannels.splice(index, 1);
-        await message.channel.send(`<#${ch.id}> is un-ignored now.`);
-      }
+    const { ids } = parseSnowflakeIds(content);
+    if (
+      ids.length > 0 &&
+      ids.some((id) => server.config.ignoredChannels.includes(id))
+    ) {
+      server.config.ignoredChannels = server.config.ignoredChannels.filter(
+        (id) => !ids.includes(id)
+      );
+      server.save();
+      await message.channel.send(
+        `${joinNaturally(ids.map(idToChannel))} ${isOrAre(
+          ids.length
+        )} un-ignored from statistics now.`
+      );
+    } else {
+      throw new CommandArgumentError(
+        'Please specify channels that are currently ignored'
+      );
     }
   },
 };

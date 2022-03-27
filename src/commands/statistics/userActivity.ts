@@ -4,7 +4,8 @@ import { getUserId } from '@utils/argumentParsers';
 import { pastDays, dateStringForActivity } from '@utils/datetime';
 import { makeEmbed } from '@utils/embed';
 import { codeBlock } from '@utils/formatString';
-import pluralize from '@utils/pluralize';
+import { idToUser } from '@utils/guildUtils';
+import { pluralCount } from '@utils/pluralize';
 
 declare module '@/types' {
   interface ServerTemp {
@@ -41,7 +42,7 @@ const command: BotCommand = {
     }
 
     const userStr =
-      server.guild.members.cache.get(userId)?.displayName || `<@${userId}>`;
+      server.guild.members.cache.get(userId)?.displayName || idToUser(userId);
 
     const maxBars = '---------------';
     let maxMessages = 0;
@@ -76,7 +77,7 @@ const command: BotCommand = {
         title: `User activity for ${userStr}`,
         description: codeBlock(chart),
         footer: !showNumbers
-          ? `Bar unit: ${unit} ${pluralize('message', 's', unit)}`
+          ? `Bar unit: ${pluralCount('message', 's', unit)}`
           : undefined,
       })
     );

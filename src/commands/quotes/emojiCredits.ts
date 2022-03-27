@@ -7,10 +7,9 @@ const command: BotCommand = {
   name: 'emojiCredits',
   aliases: ['ec'],
   allowedServers: [EJLX],
-  description: 'EJLX Emoji credits',
+  description: 'Show EJLX emoji credits',
   rateLimitSeconds: 10,
   normalCommand: async ({ message }) => {
-    safeDelete(message);
     await message.channel.send(
       stripIndent`
       We use some amazing emojis from other servers. For more emojis, check out:

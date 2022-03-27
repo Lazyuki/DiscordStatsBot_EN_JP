@@ -1,8 +1,17 @@
-import { Guild, GuildMember, Message } from 'discord.js';
+import {
+  CategoryChannel,
+  Guild,
+  GuildBasedChannel,
+  GuildMember,
+  Message,
+  NewsChannel,
+  TextChannel,
+} from 'discord.js';
 import Server from '@classes/Server';
 import { REGEX_RAW_ID, REGEX_RAW_ID_ONLY, REGEX_USER } from './regex';
 import { Bot } from '@/types';
 import { MemberNotFoundError } from '@/errors';
+import { isTextChannel } from './guildUtils';
 
 /**
  *
@@ -29,6 +38,53 @@ export function parseSnowflakeIds(str: string, greedy = false) {
   }
 
   return { ids, rest: nonIds.join(' ') };
+}
+
+type GuildTextChannel = TextChannel | NewsChannel;
+
+export function parseChannels(
+  content: string,
+  guild: Guild
+): {
+  channels: GuildTextChannel[];
+  categories: CategoryChannel[];
+  channelsAndCategories: (GuildTextChannel | CategoryChannel)[];
+  nonChannelIds: string[];
+  allIds: string[];
+  restContent: string;
+} {
+  const words = content.split(/\s+/);
+  const channels: GuildTextChannel[] = [];
+  const categories: CategoryChannel[] = [];
+  const nonChannelIds: string[] = [];
+  const allIds: string[] = [];
+
+  for (const word of words) {
+    const idMatch = word.match(REGEX_RAW_ID);
+    if (idMatch && idMatch.length === 1) {
+      const id = idMatch[0];
+      allIds.push(id);
+      const channel = guild.channels.cache.get(id);
+      if (channel && isTextChannel(channel)) {
+        channels.push(channel);
+      } else if (channel && channel instanceof CategoryChannel) {
+        categories.push(channel);
+      } else {
+        nonChannelIds.push(id);
+      }
+    } else {
+      break;
+    }
+  }
+
+  return {
+    channels,
+    categories,
+    channelsAndCategories: [...channels, ...categories],
+    nonChannelIds,
+    allIds,
+    restContent: words.slice(allIds.length).join(' '),
+  };
 }
 
 /**

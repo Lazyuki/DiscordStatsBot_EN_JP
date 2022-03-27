@@ -17,6 +17,7 @@ import {
 } from '@utils/constants';
 import { cleanEmbed, makeEmbed, warningEmbed } from '@utils/embed';
 import { joinNaturally } from '@utils/formatString';
+import { idToRole } from '@utils/guildUtils';
 import { safeDelete } from '@utils/safeDelete';
 import { GuildMember } from 'discord.js';
 
@@ -163,7 +164,7 @@ const command: BotCommand = {
 
     const memberColor = member.displayHexColor;
     const sortedNewRoles = ROLE_IDS.filter((id) => roleIds.includes(id)).map(
-      (id) => `<@&${id}>`
+      idToRole
     );
     let description = '';
     if (

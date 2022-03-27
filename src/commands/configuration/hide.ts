@@ -1,4 +1,10 @@
+import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
+import { parseChannels, parseSnowflakeIds } from '@utils/argumentParsers';
+import { errorEmbed, infoEmbed, successEmbed } from '@utils/embed';
+import { joinNaturally } from '@utils/formatString';
+import { idToChannel } from '@utils/guildUtils';
+import { isOrAre } from '@utils/pluralize';
 
 const hide: BotCommand = {
   name: 'hide',
@@ -11,17 +17,22 @@ const hide: BotCommand = {
   arguments: '<#channel> [#channel2 ... ]',
   childCommands: ['hidden', 'unhide'],
   normalCommand: async ({ content, message, server }) => {
-    const chan = server.guild.channels.cache.get(content);
-    if (chan) {
-      if (server.config.hiddenChannels.includes(chan.id)) return;
-      server.config.hiddenChannels.push(chan.id);
-      await message.channel.send(`<#${chan.id}> is hidden now.`);
-    } else if (message.mentions.channels.size !== 0) {
-      for (const [id, ch] of message.mentions.channels) {
-        if (server.config.hiddenChannels.includes(id)) return;
-        server.config.hiddenChannels.push(id);
-        await message.channel.send(`<#${ch.id}> is hidden now.`);
+    const { channels } = parseChannels(content, server.guild);
+    if (channels.length > 0) {
+      for (const channel of channels) {
+        if (server.config.hiddenChannels.includes(channel.id)) continue;
+        server.config.hiddenChannels.push(channel.id);
       }
+      server.save();
+      await message.channel.send(
+        successEmbed(
+          `${joinNaturally(channels.map((c) => c.toString()))} ${isOrAre(
+            channels.length
+          )} hidden now.`
+        )
+      );
+    } else {
+      throw new CommandArgumentError(`Please specify existing channels`);
     }
   },
 };
@@ -35,9 +46,9 @@ const hidden: BotCommand = {
     const channels = server.config.hiddenChannels;
     let s = '';
     for (const channelId of channels) {
-      s += `<#${channelId}>\n`;
+      s += `${idToChannel(channelId)}\n`;
     }
-    await message.channel.send(s);
+    await message.channel.send(infoEmbed(s));
   },
 };
 
@@ -47,25 +58,24 @@ const unhide: BotCommand = {
   description: 'Un-hide channels',
   parentCommand: 'hide',
   normalCommand: async ({ message, server, content }) => {
-    const chan = server.guild.channels.cache.get(content);
-    if (chan) {
-      const index = server.config.hiddenChannels.indexOf(chan.id);
-      if (index === -1) {
-        await message.channel.send(`<#${chan.id}> was not hidden.`);
-        return;
-      }
-      server.config.hiddenChannels.splice(index, 1);
-      message.channel.send(`<#${chan.id}> is un-hidden now.`);
-    } else if (message.mentions.channels.size !== 0) {
-      for (const [id, ch] of message.mentions.channels) {
-        const index = server.config.hiddenChannels.indexOf(id);
-        if (index === -1) {
-          await message.channel.send(`<#${id}> was not hidden.`);
-          continue;
-        }
-        server.config.hiddenChannels.splice(index, 1);
-        await message.channel.send(`<#${ch.id}> is un-hidden now.`);
-      }
+    const { ids } = parseSnowflakeIds(content);
+    if (
+      ids.length > 0 &&
+      ids.some((id) => server.config.hiddenChannels.includes(id))
+    ) {
+      server.config.hiddenChannels = server.config.hiddenChannels.filter(
+        (id) => !ids.includes(id)
+      );
+      server.save();
+      await message.channel.send(
+        `${joinNaturally(ids.map(idToChannel))} ${isOrAre(
+          ids.length
+        )} un-hidden now.`
+      );
+    } else {
+      throw new CommandArgumentError(
+        'Please specify channels that are currently hidden'
+      );
     }
   },
 };

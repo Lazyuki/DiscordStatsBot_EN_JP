@@ -1,12 +1,21 @@
-export default function pluralize(
+export function pluralize(
   word: string,
   pluralSuffix: string,
   length: number = 0,
   singularSuffix: string = ''
 ) {
-  if (length === 1) {
-    return `${word}${singularSuffix}`;
-  } else {
-    return `${word}${pluralSuffix}`;
-  }
+  return `${word}${length === 1 ? singularSuffix : pluralSuffix}`;
+}
+
+export function isOrAre(length: number = 0) {
+  return length === 1 ? 'is' : 'are';
+}
+
+export function pluralCount(
+  word: string,
+  pluralSuffix: string,
+  length: number = 0,
+  singularSuffix: string = ''
+) {
+  return `${length} ${word}${length === 1 ? singularSuffix : pluralSuffix}`;
 }

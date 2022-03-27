@@ -11,7 +11,7 @@ import {
 } from '@database/statements';
 import { formatPercent } from '@utils/formatString';
 import { REGEX_CUSTOM_EMOTES } from '@utils/regex';
-import pluralize from '@utils/pluralize';
+import { pluralCount } from '@utils/pluralize';
 import { isInChannelsOrCategories } from '@utils/guildUtils';
 
 const command: BotCommand = {
@@ -115,7 +115,7 @@ const command: BotCommand = {
               emojiName = `:${emoji.split(':')[1]}:`;
             }
           }
-          return `${emoji} ${count} ${pluralize('time', 's', count)}`;
+          return `${emoji} ${pluralCount('time', 's', count)}`;
         })
         .join('\n');
 

@@ -2,7 +2,8 @@ import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
 import { errorEmbed, successEmbed, warningEmbed } from '@utils/embed';
-import pluralize from '@utils/pluralize';
+import { idToUser } from '@utils/guildUtils';
+import { isOrAre } from '@utils/pluralize';
 import { GuildMember } from 'discord.js';
 
 const command: BotCommand = {
@@ -27,11 +28,8 @@ const command: BotCommand = {
     }
     if (nonMemberIds.length) {
       throw new CommandArgumentError(
-        `${nonMemberIds.map((id) => `<@${id}>`).join(' ')} ${pluralize(
-          '',
-          'is',
-          nonMemberIds.length,
-          'are'
+        `${nonMemberIds.map(idToUser).join(' ')} ${isOrAre(
+          nonMemberIds.length
         )} not in this server`
       );
     }

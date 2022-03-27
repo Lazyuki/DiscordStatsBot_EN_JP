@@ -8,9 +8,9 @@ import {
 import { makeEmbed } from '@utils/embed';
 import { EJLX, EJLX_LANG_ROLE_IDS, EWBF, RAI } from '@utils/constants';
 import { BotEvent } from '@/types';
-import { getTextChannel } from '@utils/guildUtils';
+import { getTextChannel, idToRole } from '@utils/guildUtils';
 import { REGEX_RAW_ID } from '@utils/regex';
-import pluralize from '@utils/pluralize';
+import { pluralize } from '@utils/pluralize';
 import { joinNaturally } from '@utils/formatString';
 
 type Member = PartialGuildMember | GuildMember;
@@ -94,7 +94,7 @@ async function notifyLanguageRoleChange(
           sortedNewRoleIds.length,
           ' has'
         )} been set to ${sortedNewRoleIds
-          .map((r) => `<@&${r}>`)
+          .map(idToRole)
           .join(' ')} by ${joinNaturally(executors)}`,
         footer: `${newMember.user.tag} (${newMember.id}) language role update`,
       })
@@ -123,7 +123,7 @@ async function notifyLanguageRoleChange(
             sortedNewRoleIds.length,
             ' has'
           )} been set to ${sortedNewRoleIds
-            .map((r) => `<@&${r}>`)
+            .map(idToRole)
             .join(' ')} instead of ${joinNaturally(
             oldRoles.map((r) => `\`${r.name}\``)
           )} by ${joinNaturally(executors)}`,

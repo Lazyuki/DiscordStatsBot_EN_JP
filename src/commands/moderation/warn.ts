@@ -19,8 +19,8 @@ import {
   warningEmbed,
 } from '@utils/embed';
 import { getTextChannel } from '@utils/guildUtils';
-import paginate from '@utils/paginate';
-import pluralize from '@utils/pluralize';
+import { descriptionPaginator } from '@utils/paginate';
+import { pluralize } from '@utils/pluralize';
 import { GuildMember } from 'discord.js';
 
 export function addModLog(entry: ModLogEntry) {
@@ -164,7 +164,7 @@ const warnlog: BotCommand = {
       if (userModLogs.length === 0) {
         await message.channel.send(successEmbed('No mod log entries found.'));
       } else {
-        await paginate(
+        await descriptionPaginator(
           message.channel,
           'Mod Logs for ',
           userModLogs.map((ml) => `${ml.userId}: ${ml.content}`),
@@ -175,7 +175,7 @@ const warnlog: BotCommand = {
     } else {
       // Paginated warn logs
       const allModLogs = getModLogForGuild({ guildId: server.guild.id });
-      await paginate(
+      await descriptionPaginator(
         message.channel,
         'Mod Logs',
         allModLogs.map((ml) => `${ml.userId}: ${ml.count}`),

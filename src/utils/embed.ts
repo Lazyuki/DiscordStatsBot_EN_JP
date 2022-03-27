@@ -10,7 +10,7 @@ import {
 interface EmbedField {
   name: string; // Max 256
   value: string; // Max 1024
-  inline: boolean;
+  inline?: boolean;
 }
 
 interface EmbedOptions {

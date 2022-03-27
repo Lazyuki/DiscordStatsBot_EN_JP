@@ -1,6 +1,6 @@
 import { BotCommand } from '@/types';
 import { errorEmbed, makeEmbed } from '@utils/embed';
-import pluralize from '@utils/pluralize';
+import { pluralize } from '@utils/pluralize';
 import { EmbedField } from 'discord.js';
 
 const command: BotCommand = {
@@ -84,7 +84,7 @@ const command: BotCommand = {
           makeEmbed({
             title,
             description,
-            fields: [args, examples].filter(Boolean) as EmbedField[],
+            fields: [args, options, examples].filter(Boolean) as EmbedField[],
             footer,
           })
         );

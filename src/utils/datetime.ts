@@ -1,6 +1,6 @@
 import { format, formatDuration, intervalToDuration } from 'date-fns';
 import { GuildMember } from 'discord.js';
-import pluralize from './pluralize';
+import { pluralize } from './pluralize';
 
 const MINUTE_IN_MILLIS = 60 * 1000;
 const HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;

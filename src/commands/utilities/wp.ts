@@ -2,6 +2,8 @@ import { BotCommand } from '@/types';
 import { getMessagesForUsers } from '@database/statements';
 import { EJLX, WP } from '@utils/constants';
 import { infoEmbed } from '@utils/embed';
+import { idToUser } from '@utils/guildUtils';
+import { pluralCount } from '@utils/pluralize';
 
 const command: BotCommand = {
   name: 'welcomingParty',
@@ -16,25 +18,24 @@ const command: BotCommand = {
     const wpIds = [...wps.keys()];
     const wpRanks = getMessagesForUsers({ guildId: server.guild.id }, wpIds);
     const hasRecord = wpRanks.map((wp) => wp.userId);
-    let list = wpRanks
+    let list =
+      wpRanks
+        .map(
+          (wp) =>
+            `${idToUser(wp.userId)}> (${
+              server.guild.members.cache.get(wp.userId)?.user.tag
+            }): ${pluralCount('message', 's', wp.count)}`
+        )
+        .join('\n') + '\n';
+    const zeroMessages = wpIds.filter((id) => !hasRecord.includes(id));
+    list += zeroMessages
       .map(
-        (wp) =>
-          `<@${wp.userId}> (${
-            server.guild.members.cache.get(wp.userId)?.user.tag
-          }): ${wp.count} messages`
+        (id) =>
+          `${idToUser(id)} (${
+            server.guild.members.cache.get(id)?.user.tag
+          }): 0 messages`
       )
       .join('\n');
-    const zeroMessages = wpIds.filter((id) => !hasRecord.includes(id));
-    list +=
-      +'\n' +
-      zeroMessages
-        .map(
-          (id) =>
-            `<@${id}> (${
-              server.guild.members.cache.get(id)?.user.tag
-            }): 0 messages`
-        )
-        .join('\n');
     await message.channel.send(
       infoEmbed({
         title: 'Welcoming Party Stats',

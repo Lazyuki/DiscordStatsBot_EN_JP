@@ -9,6 +9,7 @@ import { CategoryChannel, Guild } from 'discord.js';
 import { DEFAULT_PREFIX } from '@/envs';
 import { REGEX_MESSAGE_ID } from '@utils/regex';
 import { id } from 'date-fns/locale';
+import { idToChannel, idToRole } from '@utils/guildUtils';
 
 declare module '@/types' {
   interface ServerConfig {
@@ -245,8 +246,9 @@ const CONFIG_KEYS = CONFIGURABLE_SERVER_CONFIG.map((c) => c.key) as Readonly<
 
 function formatStringType(type: ConfigType, value: string) {
   if (!value) return '`None`';
-  if (type === 'channel' || type === 'channelOrCategory') return `<#${value}>`;
-  if (type === 'role') return `<@&${value}>`;
+  if (type === 'channel' || type === 'channelOrCategory')
+    return idToChannel(value);
+  if (type === 'role') return idToRole(value);
   return `\`${value}\``;
 }
 
@@ -292,16 +294,21 @@ function validateIds(configType: ConfigType, ids: string[], guild: Guild) {
           `You can only specify text channels from this server`
         );
       }
+      return true;
     case 'channelOrCategory':
       if (!ids.every((id) => isValidCategoryOrChannel(id, guild))) {
         throw new CommandArgumentError(
           `You can only specify text channels or category channels from this server`
         );
       }
+      return true;
     case 'role':
       if (!ids.every((id) => isValidRole(id, guild))) {
-        throw new CommandArgumentError(`You can only add roles in this server`);
+        throw new CommandArgumentError(
+          `You can only specify roles in this server`
+        );
       }
+      return true;
     default:
       return true;
   }
@@ -533,6 +540,7 @@ const command: BotCommand = {
           configValue,
           server.config[configKey] as never
         );
+        server.save();
         await message.channel.send(
           successEmbed(
             `Config for **${camelCaseToNormal(configKey)}** has been updated.`

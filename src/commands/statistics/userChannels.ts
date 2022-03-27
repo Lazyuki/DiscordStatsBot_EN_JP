@@ -4,7 +4,7 @@ import { BotCommand } from '@/types';
 import { infoEmbed } from '@utils/embed';
 import { getUserChannels } from '@database/statements';
 import { isInChannelsOrCategories } from '@utils/guildUtils';
-import pluralize from '@utils/pluralize';
+import { pluralCount } from '@utils/pluralize';
 
 const command: BotCommand = {
   name: 'userChannel',
@@ -43,8 +43,8 @@ const command: BotCommand = {
       .map(({ channelId, count }) => {
         const channel = server.guild.channels.cache.get(channelId);
         return `**#${
-          channel?.name || `deleted (${channelId})`
-        }**: ${count} ${pluralize('message', 's', count)}`;
+          channel?.name || `*deleted (${channelId})*`
+        }**: ${pluralCount('message', 's', count)}`;
       })
       .join('\n');
 
