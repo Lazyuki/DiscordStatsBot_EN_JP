@@ -4,7 +4,13 @@ import fs from 'fs';
 
 import { DEBUG, OWNER_ID, DISCORD_TOKEN } from '@/envs';
 import logger from '@/logger';
-import { Bot, BotCommand, BotEvent, ParsedBotCommand } from '@/types';
+import {
+  Bot,
+  BotCommand,
+  BotConfig,
+  BotEvent,
+  ParsedBotCommand,
+} from '@/types';
 import parseCommand from '@utils/parseCommand';
 import initialTask from '@tasks/initialTask';
 import exitTask from '@tasks/exitTask';
@@ -36,7 +42,7 @@ client.commandInits = [];
 client.botInits = [];
 client.botExits = [];
 client.servers = {};
-client.botConfig = {};
+client.botConfig = {} as BotConfig;
 
 // Gather commands
 const dirs = fs

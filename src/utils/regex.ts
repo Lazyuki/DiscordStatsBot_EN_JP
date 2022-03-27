@@ -21,4 +21,4 @@ export const REGEX_MESSAGE_FULL_ID = /(?:([0-9]{17,20})-)?([0-9]{17,20})/; // me
 export const REGEX_MESSAGE_LINK =
   /\/channels\/[0-9]{17,20}\/([0-9]{17,20})\/([0-9]{17,20})/g; // guildId/channelId/messageId
 export const REGEX_MESSAGE_ID =
-  /(?:\/[0-9]{17,20}\/)?(?:([0-9]{17,20})[-/])?([0-9]{17,20})/;
+  /(?:\/[0-9]{17,20}\/)?(?:([0-9]{17,20})[-/])?([0-9]{17,20})/; // link or channelId-messageId

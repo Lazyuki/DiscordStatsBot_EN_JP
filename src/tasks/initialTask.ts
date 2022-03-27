@@ -1,7 +1,7 @@
 import { startOfHour } from 'date-fns';
 
 import { clearOldRecords } from '@database/statements';
-import { Bot } from '@/types';
+import { Bot, BotConfig } from '@/types';
 
 import dailyTask from './dailyTask';
 import hourlyTask from './hourlyTask';
@@ -13,9 +13,19 @@ declare module '@/types' {
   interface ServerTemp {
     sortedActiveMemberIds: string[]; // Members who have been active in the past 30 days, sorted by their message/voice count
   }
+  interface BotConfig {
+    beginnerKanjis: string[];
+  }
 }
 
+const DEFAULT_CONFIG: BotConfig = {
+  beginnerKanjis: [],
+};
+
 function initialTask(bot: Bot) {
+  // TODO: Read from file
+  bot.botConfig = { ...DEFAULT_CONFIG };
+
   const now = new Date();
   const startOfThisHour = startOfHour(now);
   const millisUntilNextHour =
