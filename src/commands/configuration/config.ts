@@ -162,7 +162,7 @@ const CONFIGURABLE_SERVER_CONFIG = [
   }),
   getConfigInfo({
     key: 'hiddenChannels',
-    type: 'channelOrCategory',
+    type: 'channel',
     isArray: true,
     description:
       'Channels or categories that are hidden from general server statistics. Messages will still be counted, but these channels will only show up on user stats if the command is invoked from one of the hidden channels. Useful for mod channels.',
@@ -286,13 +286,13 @@ function validateIds(configType: ConfigType, ids: string[], guild: Guild) {
     case 'channel':
       if (!ids.every((id) => isValidChannel(id, guild))) {
         throw new CommandArgumentError(
-          `You can only add text channels from this server`
+          `You can only specify text channels from this server`
         );
       }
     case 'channelOrCategory':
       if (!ids.every((id) => isValidCategoryOrChannel(id, guild))) {
         throw new CommandArgumentError(
-          `You can only add text channels or category channels from this server`
+          `You can only specify text channels or category channels from this server`
         );
       }
     case 'role':
@@ -331,21 +331,22 @@ function sanitizeValue(type: ConfigType, value: string, guild: Guild): string {
     throw new CommandArgumentError(`Invalid message ID`);
   } else if (['channel', 'channelOrCategory', 'role'].includes(type)) {
     const { ids } = parseSnowflakeIds(value, true);
+    const typeString = `\`${camelCaseToNormal(type)}\``;
     if (ids.length === 0) {
       if (!value) {
-        throw new CommandArgumentError(`You must specify ${type}s`);
+        throw new CommandArgumentError(`You must specify a ${typeString}`);
       }
       const nameMatch = getByName(type, value, guild);
       if (!nameMatch) {
-        throw new CommandArgumentError(`Could not find the ${type}`);
+        throw new CommandArgumentError(`Could not find the ${typeString}`);
       }
       if (nameMatch.size === 0) {
-        throw new CommandArgumentError(`Could not find the ${type}`);
+        throw new CommandArgumentError(`Could not find the ${typeString}`);
       } else if (nameMatch.size === 1) {
         return nameMatch.first()!.id;
       } else {
         throw new CommandArgumentError(
-          `The name \`${value}\` matched multiple ${type}s`
+          `The name \`${value}\` matched multiple ${typeString}`
         );
       }
     } else {
@@ -356,6 +357,8 @@ function sanitizeValue(type: ConfigType, value: string, guild: Guild): string {
     return value;
   }
 }
+
+const SUB_COMMANDS_TO_VERIFY = ['add', 'set'];
 
 function getAvailableSubCommands(type: ConfigType, isArray?: boolean) {
   if (isArray) {
@@ -454,9 +457,9 @@ const command: BotCommand = {
             description: stripIndent`
             **Description**: ${configInfo.description}
             **Current Value**: ${formatValue(configInfo.type, currentConfig)}
-            **Value Type**: ${configInfo.isArray ? 'Array of ' : ''}\`${
-              configInfo.type
-            }\`${configInfo.isArray ? 's' : ''}
+            **Value Type**: ${
+              configInfo.isArray ? 'Array of ' : ''
+            }\`${camelCaseToNormal(configInfo.type)}\`
             **How to Update**: ${
               configInfo.restricted
                 ? `Contact the bot owner <@${bot.ownerId}> to update this value`
@@ -476,11 +479,11 @@ const command: BotCommand = {
           );
           return;
         }
-        const configValue = sanitizeValue(
-          configInfo.type,
-          restCommand.join(' '),
-          server.guild
-        );
+        const configValue = SUB_COMMANDS_TO_VERIFY.includes(subCommand)
+          ? sanitizeValue(configInfo.type, restCommand.join(' '), server.guild)
+          : subCommand === 'reset'
+          ? parseSnowflakeIds(restCommand.join(' ')).ids.join(' ')
+          : '';
         if (configInfo.key === 'prefix') {
           await bot.commands['prefix'].normalCommand?.({
             content: subCommand === 'set' ? configValue : '',

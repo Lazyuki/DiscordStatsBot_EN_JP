@@ -7,6 +7,7 @@ const command: BotCommand = {
   name: 'changeName',
   aliases: ['cn', 'cyn'],
   isAllowed: 'SERVER_MODERATOR',
+  requiredBotPermissions: ['MANAGE_NICKNAMES'],
   description: 'Set the nickname to "Please change your name"',
   arguments: '<@user> [@user2...]',
   examples: ['cyn @badNameUser'],

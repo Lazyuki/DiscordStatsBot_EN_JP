@@ -3,7 +3,7 @@ import { getUserId } from '@utils/argumentParsers';
 import { BotCommand } from '@/types';
 import { infoEmbed } from '@utils/embed';
 import { getUserChannels } from '@database/statements';
-
+import { isInChannelsOrCategories } from '@utils/guildUtils';
 import pluralize from '@utils/pluralize';
 
 const command: BotCommand = {
@@ -15,13 +15,18 @@ const command: BotCommand = {
     const userId = getUserId(bot, server, content) || message.author.id;
     const member = server.guild.members.cache.get(userId);
 
-    const ignoredChannels = server.config.hiddenChannels;
+    const hiddenChannels = isInChannelsOrCategories(
+      message,
+      server.config.hiddenChannels
+    )
+      ? []
+      : server.config.hiddenChannels;
     const channels = getUserChannels(
       {
         guildId: server.guild.id,
         userId: userId,
       },
-      ignoredChannels
+      hiddenChannels
     );
 
     // Title

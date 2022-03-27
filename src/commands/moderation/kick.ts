@@ -9,6 +9,7 @@ const command: BotCommand = {
   name: 'kick',
   isAllowed: 'SERVER_MODERATOR',
   description: 'Kick people off this server.',
+  requiredBotPermissions: ['KICK_MEMBERS'],
   arguments: '<@user> [@user2...] [reason]',
   examples: [
     'kick @Geralt being too good at Japanese',

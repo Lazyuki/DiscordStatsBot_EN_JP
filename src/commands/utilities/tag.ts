@@ -159,8 +159,7 @@ const command: BotCommand = {
     }
     const reason = `Issued by: ${message.author.tag} (${message.author.id})`;
     await member.roles.remove(removeRoles, reason);
-    await member.roles.add(addRoleIds, reason);
-    member = server.guild.members.cache.get(member.id)!;
+    member = await member.roles.add(addRoleIds, reason);
 
     const memberColor = member.displayHexColor;
     const sortedNewRoles = ROLE_IDS.filter((id) => roleIds.includes(id)).map(

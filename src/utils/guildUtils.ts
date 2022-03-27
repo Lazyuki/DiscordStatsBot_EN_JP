@@ -49,6 +49,13 @@ export function isInChannelOrCategory(
   );
 }
 
+export function isInChannelsOrCategories(
+  message: GuildMessage<Message>,
+  channelIds: string[]
+) {
+  return channelIds.some((id) => isInChannelOrCategory(message, id));
+}
+
 export function isMessageInChannels(
   message: GuildMessage<Message>,
   channelIds: string[]

@@ -12,6 +12,7 @@ import {
 import { formatPercent } from '@utils/formatString';
 import { REGEX_CUSTOM_EMOTES } from '@utils/regex';
 import pluralize from '@utils/pluralize';
+import { isInChannelsOrCategories } from '@utils/guildUtils';
 
 const command: BotCommand = {
   name: 'user',
@@ -22,12 +23,18 @@ const command: BotCommand = {
     const userId = getUserId(bot, server, content) || message.author.id;
     const member = server.guild.members.cache.get(userId);
 
-    const ignoredChannels = server.config.hiddenChannels;
+    const hiddenChannels = isInChannelsOrCategories(
+      message,
+      server.config.hiddenChannels
+    )
+      ? []
+      : server.config.hiddenChannels;
+
     const guildUser = {
       guildId: server.guild.id,
       userId: userId,
     };
-    const userRows = getUserMessages(guildUser, ignoredChannels);
+    const userRows = getUserMessages(guildUser, hiddenChannels);
     let totalMessages = 0;
     let weekMessages = 0;
     let englishUsage = 0;

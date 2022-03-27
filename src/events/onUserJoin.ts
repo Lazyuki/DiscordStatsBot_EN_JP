@@ -60,9 +60,9 @@ const event: BotEvent<'guildMemberAdd'> = {
   skipOnDebug: true,
   processEvent: async (bot, member) => {
     const server = bot.servers[member.guild.id];
-    server.temp.newUsers.push(member.id);
+    server.temp.newUsers.unshift(member.id);
     if (server.temp.newUsers.length > 5) {
-      server.temp.newUsers.shift();
+      server.temp.newUsers.pop();
     }
     const userLogChannelId = server.config.userLogChannel;
     const userLogChannel = getTextChannel(server.guild, userLogChannelId);

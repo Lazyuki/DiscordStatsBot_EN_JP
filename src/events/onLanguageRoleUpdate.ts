@@ -88,7 +88,7 @@ async function notifyLanguageRoleChange(
     await channel.send(
       makeEmbed({
         color: '#fca503',
-        description: `${newMember.displayName}'s language role${pluralize(
+        description: `**${newMember.displayName}**'s language role${pluralize(
           '',
           's have',
           sortedNewRoleIds.length,
@@ -104,7 +104,7 @@ async function notifyLanguageRoleChange(
       await channel.send(
         makeEmbed({
           color: '#fca503',
-          description: `${newMember}'s language role${pluralize(
+          description: `**${newMember.displayName}**'s language role${pluralize(
             '',
             's have',
             sortedNewRoleIds.length,
@@ -117,7 +117,7 @@ async function notifyLanguageRoleChange(
       await channel.send(
         makeEmbed({
           color: '#fca503',
-          description: `${newMember}'s language role${pluralize(
+          description: `**${newMember.displayName}**'s language role${pluralize(
             '',
             's have',
             sortedNewRoleIds.length,
