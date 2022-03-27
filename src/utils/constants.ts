@@ -33,7 +33,7 @@ export const FE2 = '820133363700596756';
 export const OL = '248982130246418433';
 export const NU = '249695630606336000';
 
-export const EJLX_LANG_ROLE_IDS = [NJ, FJ, AJ, HJ, NE, FE, FE2, OL];
+export const EJLX_LANG_ROLE_IDS = [FE2, NJ, FJ, AJ, HJ, NE, FE, OL];
 
 // Channel IDs
 export const SERVER_RULES = '189585230972190720';
@@ -80,3 +80,6 @@ export const DELETE_COLOR = '#b80028';
 export const EDIT_COLOR = '#e68405';
 export const WHITE = '#ffffff';
 export const BLACK = '#000000';
+
+// Emoji
+export const EXTERNAL_LINK_EMOJI = '<:externallink:438354612379189268>';

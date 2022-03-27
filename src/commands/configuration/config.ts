@@ -1,12 +1,13 @@
 import { stripIndent } from 'common-tags';
 
-import { CommandArgumentError, InvalidSubCommandError } from '@/errors';
+import { CommandArgumentError } from '@/errors';
 import { BotCommand, ServerConfig } from '@/types';
 import { parseSnowflakeIds } from '@utils/argumentParsers';
 import { errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
 import { camelCaseToNormal } from '@utils/formatString';
-import { Guild } from 'discord.js';
+import { CategoryChannel, Guild } from 'discord.js';
 import { DEFAULT_PREFIX } from '@/envs';
+import { REGEX_MESSAGE_ID } from '@utils/regex';
 
 declare module '@/types' {
   interface ServerConfig {
@@ -22,6 +23,7 @@ declare module '@/types' {
     focusRoles: string[];
     selfMuteRoles: string[];
     userLogChannel: string;
+    logUserJoinLeaves: boolean;
     logNameChanges: boolean;
     modLogChannel: string;
     ignoredBotPrefixes: string[];
@@ -41,12 +43,19 @@ const DEFAULT_CONFIG: ServerConfig = {
   focusRoles: [],
   selfMuteRoles: [],
   userLogChannel: '',
+  logUserJoinLeaves: false,
   logNameChanges: false,
   modLogChannel: '',
   ignoredBotPrefixes: [],
 };
 
-type ConfigType = 'channel' | 'boolean' | 'role' | 'string' | 'message';
+type ConfigType =
+  | 'channel'
+  | 'channelOrCategory'
+  | 'boolean'
+  | 'role'
+  | 'string'
+  | 'message';
 
 function getStringConfig(subCommand: string, values: string): string {
   if (subCommand === 'reset') return '';
@@ -65,17 +74,14 @@ function getBooleanConfig(subCommand: string): boolean {
 function getStringArrayConfig(
   subCommand: string,
   values: string,
-  currentSettings: string[],
-  filter: (id: string) => boolean
+  currentSettings: string[]
 ): string[] {
+  const ids = values.split(' ');
   if (subCommand === 'reset') return [];
   if (subCommand === 'add') {
-    const { ids } = parseSnowflakeIds(values);
-    const filtered = ids.filter(filter);
-    return [...currentSettings, ...filtered];
+    return [...currentSettings, ...ids];
   }
   if (subCommand === 'remove') {
-    const { ids } = parseSnowflakeIds(values);
     const filtered = currentSettings.filter((s) => !ids.includes(s));
     if (filtered.length === currentSettings.length) {
       throw new CommandArgumentError(
@@ -98,8 +104,7 @@ type ConfigInfo<Key extends keyof ServerConfig> = {
   parser: (
     subCommand: string,
     values: string,
-    currentSettings: ServerConfig[Key],
-    filter: (id: string) => boolean
+    currentSettings: ServerConfig[Key]
   ) => ServerConfig[Key];
 };
 
@@ -142,14 +147,14 @@ const CONFIGURABLE_SERVER_CONFIG = [
   }),
   getConfigInfo({
     key: 'hardcoreIgnoredChannels',
-    type: 'channel',
+    type: 'channelOrCategory',
     isArray: true,
     description: 'Channels or categories that are ignored from hardcore mode.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({
     key: 'ignoredChannels',
-    type: 'channel',
+    type: 'channelOrCategory',
     isArray: true,
     description:
       'Channels or categories that are ignored from server statistics. Bot commands will still work. Useful for channels like bot-spam or quiz.',
@@ -157,7 +162,7 @@ const CONFIGURABLE_SERVER_CONFIG = [
   }),
   getConfigInfo({
     key: 'hiddenChannels',
-    type: 'channel',
+    type: 'channelOrCategory',
     isArray: true,
     description:
       'Channels or categories that are hidden from general server statistics. Messages will still be counted, but these channels will only show up on user stats if the command is invoked from one of the hidden channels. Useful for mod channels.',
@@ -200,11 +205,18 @@ const CONFIGURABLE_SERVER_CONFIG = [
     parser: getStringConfig,
   }),
   getConfigInfo({
+    key: 'logUserJoinLeaves',
+    type: 'boolean',
+    isArray: false,
+    description: 'Enable logging user joins/leaves in the "User Log Channel".',
+    parser: getBooleanConfig,
+  }),
+  getConfigInfo({
     key: 'logNameChanges',
     type: 'boolean',
     isArray: false,
     description:
-      'Enables logging user nickname/username changes in the "User Log Channel".',
+      'Enable logging user nickname/username changes in the "User Log Channel".',
     parser: getBooleanConfig,
   }),
   getConfigInfo({
@@ -230,7 +242,7 @@ const CONFIG_KEYS = CONFIGURABLE_SERVER_CONFIG.map((c) => c.key) as Readonly<
 
 function formatStringType(type: ConfigType, value: string) {
   if (!value) return '`None`';
-  if (type === 'channel') return `<#${value}>`;
+  if (type === 'channel' || type === 'channelOrCategory') return `<#${value}>`;
   if (type === 'role') return `<@&${value}>`;
   return `\`${value}\``;
 }
@@ -253,6 +265,98 @@ function formatValue(
   }
 }
 
+function isValidRole(id: string, guild: Guild) {
+  return guild.roles.cache.has(id);
+}
+function isValidChannel(id: string, guild: Guild) {
+  const channel = guild.channels.cache.get(id);
+  return Boolean(channel && channel.isText() && !channel.isThread());
+}
+function isValidCategoryOrChannel(id: string, guild: Guild) {
+  const channel = guild.channels.cache.get(id);
+  if (!channel) return false;
+  return (
+    Boolean(channel.isText() && !channel.isThread()) ||
+    channel instanceof CategoryChannel
+  );
+}
+
+function validateIds(configType: ConfigType, ids: string[], guild: Guild) {
+  switch (configType) {
+    case 'channel':
+      if (!ids.every((id) => isValidChannel(id, guild))) {
+        throw new CommandArgumentError(
+          `You can only add text channels from this server`
+        );
+      }
+    case 'channelOrCategory':
+      if (!ids.every((id) => isValidCategoryOrChannel(id, guild))) {
+        throw new CommandArgumentError(
+          `You can only add text channels or category channels from this server`
+        );
+      }
+    case 'role':
+      if (!ids.every((id) => isValidRole(id, guild))) {
+        throw new CommandArgumentError(`You can only add roles in this server`);
+      }
+    default:
+      return true;
+  }
+}
+
+function getByName(type: ConfigType, name: string, guild: Guild) {
+  switch (type) {
+    case 'channel':
+      return guild.channels.cache.filter(
+        (ch) => isValidChannel(ch.id, guild) && ch.name.includes(name)
+      );
+    case 'channelOrCategory':
+      return guild.channels.cache.filter(
+        (ch) => isValidCategoryOrChannel(ch.id, guild) && ch.name.includes(name)
+      );
+    case 'role':
+      return guild.roles.cache.filter((role) =>
+        role.name.toLowerCase().includes(name.toLowerCase())
+      );
+  }
+}
+
+function sanitizeValue(type: ConfigType, value: string, guild: Guild): string {
+  if (type === 'message') {
+    const messageMatch = value.match(REGEX_MESSAGE_ID);
+    if (messageMatch) {
+      const [_, channelId, messageId] = messageMatch;
+      return `${channelId}-${messageId}`;
+    }
+    throw new CommandArgumentError(`Invalid message ID`);
+  } else if (['channel', 'channelOrCategory', 'role'].includes(type)) {
+    const { ids } = parseSnowflakeIds(value, true);
+    if (ids.length === 0) {
+      if (!value) {
+        throw new CommandArgumentError(`You must specify ${type}s`);
+      }
+      const nameMatch = getByName(type, value, guild);
+      if (!nameMatch) {
+        throw new CommandArgumentError(`Could not find the ${type}`);
+      }
+      if (nameMatch.size === 0) {
+        throw new CommandArgumentError(`Could not find the ${type}`);
+      } else if (nameMatch.size === 1) {
+        return nameMatch.first()!.id;
+      } else {
+        throw new CommandArgumentError(
+          `The name \`${value}\` matched multiple ${type}s`
+        );
+      }
+    } else {
+      validateIds(type, ids, guild);
+      return ids.join(' ');
+    }
+  } else {
+    return value;
+  }
+}
+
 function getAvailableSubCommands(type: ConfigType, isArray?: boolean) {
   if (isArray) {
     return ['add', 'remove', 'reset'];
@@ -269,23 +373,14 @@ function getAvailableValues(type: ConfigType, isArray?: boolean) {
       return '';
     case 'channel':
       return isArray ? '#channel1 #channel2...' : '#channel';
+    case 'channelOrCategory':
+      return isArray ? '#channel1 #category...' : '#channel';
     case 'role':
       return isArray ? '@role1 @role2...' : '@role';
     case 'string':
       return 'value';
     case 'message':
-      return 'https://discord.com/channels/189571157446492161/941928326258384897/941928326258384897';
-  }
-}
-
-function getFilter(configType: ConfigType, guild: Guild) {
-  switch (configType) {
-    case 'channel':
-      return (id: string) => Boolean(guild.channels.cache.get(id));
-    case 'role':
-      return (id: string) => Boolean(guild.roles.cache.get(id));
-    default:
-      return () => true;
+      return 'https://discord.com/channels/123456789123456789/123456789123456789/123456789123456789';
   }
 }
 
@@ -295,7 +390,7 @@ const command: BotCommand = {
   onCommandInit: (server) => {
     server.config = { ...DEFAULT_CONFIG, ...server.config };
   },
-  description: 'View or update bot config for this server',
+  description: 'View or update configuration for this server',
   arguments: '[number] [add/remove | enable/disable | set/reset] [value]',
   examples: [
     'config',
@@ -322,9 +417,15 @@ const command: BotCommand = {
         })
       );
     } else {
-      const [configNumStr, subCommand, ...restCommand] = content
+      let [configNumStr, subCommand, ...restCommand] = content
         .toLowerCase()
         .split(/\s+/);
+      if (!isNaN(parseInt(subCommand))) {
+        // Maybe switched subcommand and config num
+        const temp = configNumStr;
+        configNumStr = subCommand;
+        subCommand = temp;
+      }
       const configNum = parseInt(configNumStr);
       if (
         isNaN(configNum) ||
@@ -337,7 +438,6 @@ const command: BotCommand = {
       }
       const configInfo = CONFIGURABLE_SERVER_CONFIG[configNum - 1];
       const configKey = configInfo.key;
-      const configValue = restCommand.join(' ');
       const currentConfig = server.config[configKey];
       if (!subCommand || subCommand === 'help') {
         const availableSubCommands = getAvailableSubCommands(
@@ -376,6 +476,11 @@ const command: BotCommand = {
           );
           return;
         }
+        const configValue = sanitizeValue(
+          configInfo.type,
+          restCommand.join(' '),
+          server.guild
+        );
         if (configInfo.key === 'prefix') {
           await bot.commands['prefix'].normalCommand?.({
             content: subCommand === 'set' ? configValue : '',
@@ -390,8 +495,7 @@ const command: BotCommand = {
         (server.config[configKey] as any) = configInfo.parser(
           subCommand,
           configValue,
-          server.config[configKey] as never,
-          getFilter(configInfo.type, server.guild)
+          server.config[configKey] as never
         );
         await message.channel.send(
           successEmbed(

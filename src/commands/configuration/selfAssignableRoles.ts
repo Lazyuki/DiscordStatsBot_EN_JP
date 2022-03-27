@@ -1,7 +1,7 @@
 import { BotCommand } from '@/types';
 
 const sar: BotCommand = {
-  name: 'selfroles',
+  name: 'selfRoles',
   aliases: ['sar'],
   isAllowed: 'ADMIN',
   description: 'Configure reaction based self assignable roles.',

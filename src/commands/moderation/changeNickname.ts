@@ -4,7 +4,7 @@ import { parseMembers } from '@utils/argumentParsers';
 import { successEmbed } from '@utils/embed';
 
 const command: BotCommand = {
-  name: 'changenick',
+  name: 'changeName',
   aliases: ['cn', 'cyn'],
   isAllowed: 'SERVER_MODERATOR',
   description: 'Set the nickname to "Please change your name"',
@@ -21,7 +21,9 @@ const command: BotCommand = {
         `Issued by ${message.author.tag} (${message.author.id})`
       );
     }
-    await message.channel.send(successEmbed(`Successfully changed nickname`));
+    await message.channel.send(
+      successEmbed(`Successfully changed their nickname`)
+    );
   },
 };
 

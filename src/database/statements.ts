@@ -189,6 +189,34 @@ export const getUserMessages = makeGetAllWithArray<
 `
 );
 
+export const getMessagesForUsers = makeGetAllWithArray<
+  GuildId,
+  { count: number; userId: string }
+>(
+  'getMessagesForUsers',
+  `
+    SELECT user_id, SUM(message_count)
+    FROM messages
+    WHERE guild_id = $guildId AND user_id IN (ARRAY_VALUES)
+    GROUP BY user_id
+    ORDER BY count DESC
+`
+);
+
+export const getUserChannels = makeGetAllWithArray<
+  GuildUser,
+  { count: number; channelId: string }
+>(
+  'getUserChannels',
+  `
+    SELECT channel_id, SUM(message_count) as count
+    FROM messages
+    WHERE guild_id = $guildId AND user_id = $userId AND channel_id NOT IN (ARRAY_VALUES)
+    GROUP BY channel_id
+    ORDER BY count DESC
+`
+);
+
 export const getLeaderboard = makeGetAllRows<GuildUser, UserCount>(`
     WITH ranked AS (
         SELECT *, RANK() OVER(ORDER BY count DESC)
@@ -204,18 +232,15 @@ export const getLeaderboard = makeGetAllRows<GuildUser, UserCount>(`
         SELECT * FROM ranked WHERE user_id = $userId
 `);
 
-export const getChannelLeaderboard = makeGetAllRows<
-  GuildUser & {
-    channelIds: string[];
-  },
-  UserCount
->(`
+export const getChannelLeaderboard = makeGetAllWithArray<GuildUser, UserCount>(
+  'getChannelLeaderboard',
+  `
     WITH ranked AS (
         SELECT *, RANK() OVER (ORDER BY count DESC)
         FROM (
             SELECT user_id, SUM(message_count) as count
             FROM messages
-            WHERE guild_id = $guildId AND channel_id IN ($channelIds)
+            WHERE guild_id = $guildId AND channel_id IN (ARRAY_VALUES)
             GROUP BY user_id
             ORDER BY count DESC
         ) AS cl
@@ -224,7 +249,8 @@ export const getChannelLeaderboard = makeGetAllRows<
     UNION ALL
         SELECT * FROM ranked WHERE user_id = $userId
         
-`);
+`
+);
 
 export const getJapaneseLeaderboard = makeGetAllRows<
   {
@@ -341,19 +367,16 @@ export const getUserActivity = makeGetAllRows<GuildUser, DateCount>(`
     ORDER BY utc_date ASC
 `);
 
-export const getChannelActivity = makeGetAllRows<
-  {
-    guildId: string;
-    channelIds: string;
-  },
-  DateCount
->(`
+export const getChannelActivity = makeGetAllWithArray<GuildId, DateCount>(
+  'getChannelActivity',
+  `
     SELECT SUM(message_count) as count, utc_date
     FROM messages
-    WHERE guild_id = $guildId AND channel_id IN ($channelIds)
+    WHERE guild_id = $guildId AND channel_id IN (ARRAY_VALUES)
     GROUP BY utc_date
     ORDER BY utc_date ASC
-`);
+`
+);
 
 export const getServerActivity = makeGetAllRows<GuildId, DateCount>(`
     SELECT SUM(message_count) as count, utc_date

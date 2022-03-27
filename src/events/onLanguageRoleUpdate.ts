@@ -11,6 +11,7 @@ import { BotEvent } from '@/types';
 import { getTextChannel } from '@utils/guildUtils';
 import { REGEX_RAW_ID } from '@utils/regex';
 import pluralize from '@utils/pluralize';
+import { joinNaturally } from '@utils/formatString';
 
 type Member = PartialGuildMember | GuildMember;
 
@@ -94,7 +95,7 @@ async function notifyLanguageRoleChange(
           ' has'
         )} been set to ${sortedNewRoleIds
           .map((r) => `<@&${r}>`)
-          .join(' ')} by ${executors.join(', ')}`,
+          .join(' ')} by ${joinNaturally(executors)}`,
         footer: `${newMember.user.tag} (${newMember.id}) language role update`,
       })
     );
@@ -108,7 +109,7 @@ async function notifyLanguageRoleChange(
             's have',
             sortedNewRoleIds.length,
             ' has'
-          )} been removed by ${executors.join(', ')}`,
+          )} been removed by ${joinNaturally(executors)}`,
           footer: `${newMember.user.tag} (${newMember.id}) language role update`,
         })
       );
@@ -123,9 +124,9 @@ async function notifyLanguageRoleChange(
             ' has'
           )} been set to ${sortedNewRoleIds
             .map((r) => `<@&${r}>`)
-            .join(' ')} instead of ${oldRoles
-            .map((r) => `\`${r.name}\``)
-            .join(', ')} by ${executors.join(', ')}`,
+            .join(' ')} instead of ${joinNaturally(
+            oldRoles.map((r) => `\`${r.name}\``)
+          )} by ${joinNaturally(executors)}`,
           footer: `${newMember.user.tag} (${newMember.id}) language role update`,
         })
       );
@@ -142,13 +143,13 @@ const event: BotEvent<'guildMemberUpdate'> = {
   processEvent: async (bot, oldMember, newMember) => {
     if (newMember.guild.id !== EJLX) return;
     const roleDiff = oldMember.roles.cache.difference(newMember.roles.cache);
+    const ewbf = getTextChannel(newMember.guild, EWBF);
+    if (!ewbf) return;
     if (roleDiff.size && EJLX_LANG_ROLE_IDS.some((r) => roleDiff.has(r))) {
       // EJLX language role update
       if (newMember.id in bulkUpdator) {
         bulkUpdator[newMember.id]['newMember'] = newMember;
       } else {
-        const ewbf = getTextChannel(newMember.guild, EWBF);
-        if (!ewbf) return;
         bulkUpdator[newMember.id] = {
           oldMember,
           newMember,

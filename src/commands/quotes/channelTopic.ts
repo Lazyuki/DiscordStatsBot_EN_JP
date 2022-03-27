@@ -3,7 +3,7 @@ import { makeEmbed } from '@utils/embed';
 import { safeDelete } from '@utils/safeDelete';
 
 const command: BotCommand = {
-  name: 'channeltopic',
+  name: 'channelTopic',
   aliases: ['ct'],
   description: 'Channel topic',
   rateLimitSeconds: 10,

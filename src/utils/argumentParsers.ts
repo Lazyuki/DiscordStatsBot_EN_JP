@@ -102,7 +102,7 @@ export const getMemberId = (bot: Bot, server: Server, content: string) =>
 /**
  *
  * If snowflake ID, return the ID.
- * If name,
+ * If name, search a member with the name and return
  * @param bot
  * @param server
  * @param content
@@ -153,22 +153,37 @@ export const getUserId = (
           exactMatches.push(member);
         }
       } else {
-        const nickname = member.nickname?.toLowerCase() || '';
-        const username = member.user.username.toLowerCase();
-        const userTag = member.user.tag.toLowerCase();
-        if (userTag === content) return member.id; // Exact tag match
-        if (username === content || nickname === content) {
+        const nickname = member.nickname || '';
+        const username = member.user.username;
+        const nicknameLower = nickname.toLowerCase();
+        const usernameLower = username.toLowerCase();
+        const userTag = member.user.tag;
+        if (userTag === content || `@${userTag}` === content) return member.id; // Exact tag match
+        if (
+          username === content ||
+          nickname === content ||
+          usernameLower === content ||
+          nicknameLower === content
+        ) {
           exactMatches.push(member);
         } else if (
           userTag.startsWith(content) ||
-          nickname.startsWith(content)
+          nickname.startsWith(content) ||
+          usernameLower.startsWith(content) ||
+          nicknameLower.startsWith(content)
         ) {
           startsWith.push(member);
-        } else if (userTag.includes(content) || nickname.includes(content)) {
+        } else if (
+          userTag.includes(content) ||
+          nickname.includes(content) ||
+          usernameLower.includes(content) ||
+          nicknameLower.includes(content)
+        ) {
           includes.push(member);
         }
       }
     }
+    // TODO: Sort by number of messages?
     if (exactMatches.length) {
       return exactMatches[0].id;
     } else if (startsWith.length) {

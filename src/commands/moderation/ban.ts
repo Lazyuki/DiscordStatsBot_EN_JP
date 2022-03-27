@@ -45,6 +45,12 @@ const command: BotCommand = {
       content,
       server.guild
     );
+    if (message.reference?.messageId) {
+      const reference = await message.channel.messages.fetch(
+        message.reference.messageId
+      );
+      reference.member && members.push(reference.member);
+    }
     if (restContent) reason = restContent;
 
     const unbannables = members.filter((mem) => !mem.bannable);

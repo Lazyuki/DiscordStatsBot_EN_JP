@@ -56,7 +56,7 @@ for (const dir of dirs) {
     }
     commands.forEach((command) => {
       const parsedCommand = parseCommand(command, dir);
-      const commandName = parsedCommand.name;
+      const commandName = parsedCommand.name.toLowerCase();
       client.commands[commandName] = parsedCommand;
       if (parsedCommand.onCommandInit)
         client.commandInits.push(parsedCommand.onCommandInit);

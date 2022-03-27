@@ -91,7 +91,6 @@ const command: BotCommand = {
       const top3Channels = channels
         .slice(0, 3)
         .map(({ channelId, count }) => {
-          console.log(channelId);
           const channel = server.guild.channels.cache.get(channelId);
           const percentage = formatPercent(count / totalMessages, 1);
           return `**#${channel?.name || 'deleted-channel'}**: ${percentage}`;

@@ -28,3 +28,12 @@ export function camelCaseToNormal(str: string) {
 export function formatPercent(fractional: number, decimals = 2) {
   return `${(fractional * 100).toFixed(decimals)}%`;
 }
+
+export function joinNaturally(array: string[]) {
+  if (array.length <= 2) {
+    return array.join(' and ');
+  } else {
+    array[array.length - 1] = 'and ' + array[array.length - 1];
+    return array.join(', ');
+  }
+}

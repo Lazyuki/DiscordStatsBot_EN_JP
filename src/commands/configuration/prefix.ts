@@ -1,5 +1,5 @@
 import { BotCommand } from '@/types';
-import { errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
+import { cleanEmbed, errorEmbed, successEmbed } from '@utils/embed';
 import { DEFAULT_PREFIX } from '@/envs';
 
 export const VALID_PREFIX = /^\S{1,5}$/;
@@ -15,9 +15,9 @@ const command: BotCommand = {
     if (!content) {
       if (currentPrefix === DEFAULT_PREFIX) {
         await send(
-          makeEmbed({
-            description: `The command prefix in this server is using the default prefix, \`${DEFAULT_PREFIX}\``,
-          })
+          cleanEmbed(
+            `The command prefix in this server is using the default prefix, \`${DEFAULT_PREFIX}\``
+          )
         );
       } else {
         server.config.prefix = DEFAULT_PREFIX;

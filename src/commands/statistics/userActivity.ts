@@ -26,7 +26,7 @@ const command: BotCommand = {
     },
   ],
   description: 'User activity for the past 30 days',
-  examples: ['ac', 'ac -n', 'ac -n @geralt'],
+  examples: ['ac', 'ac -n', 'ac @geralt'],
   normalCommand: async ({ message, bot, server, options, content }) => {
     const showNumbers = Boolean(options['number']);
     const userId = getUserId(bot, server, content) || message.author.id;
