@@ -1,13 +1,14 @@
 import { stripIndent } from 'common-tags';
 
-import { CommandArgumentError } from '@/errors';
+import { CommandArgumentError, UserPermissionError } from '@/errors';
 import { BotCommand, ServerConfig } from '@/types';
 import { parseSnowflakeIds } from '@utils/argumentParsers';
 import { errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
-import { camelCaseToNormal } from '@utils/formatString';
+import { camelCaseToNormal, joinNaturally } from '@utils/formatString';
 import { CategoryChannel, Guild } from 'discord.js';
 import { DEFAULT_PREFIX } from '@/envs';
 import { REGEX_MESSAGE_ID } from '@utils/regex';
+import { id } from 'date-fns/locale';
 
 declare module '@/types' {
   interface ServerConfig {
@@ -57,13 +58,15 @@ type ConfigType =
   | 'string'
   | 'message';
 
-function getStringConfig(subCommand: string, values: string): string {
+type SubCommand = 'set' | 'reset' | 'add' | 'remove' | 'enable' | 'disable';
+
+function getStringConfig(subCommand: SubCommand, values: string): string {
   if (subCommand === 'reset') return '';
   if (subCommand === 'set') return values;
   throw new CommandArgumentError('You can only `set` or `reset` this config');
 }
 
-function getBooleanConfig(subCommand: string): boolean {
+function getBooleanConfig(subCommand: SubCommand): boolean {
   if (subCommand === 'enable') return true;
   if (subCommand === 'disable') return false;
   throw new CommandArgumentError(
@@ -72,7 +75,7 @@ function getBooleanConfig(subCommand: string): boolean {
 }
 
 function getStringArrayConfig(
-  subCommand: string,
+  subCommand: SubCommand,
   values: string,
   currentSettings: string[]
 ): string[] {
@@ -102,7 +105,7 @@ type ConfigInfo<Key extends keyof ServerConfig> = {
   isArray: ServerConfig[Key] extends any[] ? true : false;
   restricted?: boolean;
   parser: (
-    subCommand: string,
+    subCommand: SubCommand,
     values: string,
     currentSettings: ServerConfig[Key]
   ) => ServerConfig[Key];
@@ -321,7 +324,22 @@ function getByName(type: ConfigType, name: string, guild: Guild) {
   }
 }
 
-function sanitizeValue(type: ConfigType, value: string, guild: Guild): string {
+const SUB_COMMANDS_TO_VERIFY = ['add', 'remove', 'set'];
+
+function sanitizeValue(
+  subCommand: SubCommand,
+  type: ConfigType,
+  value: string,
+  guild: Guild
+): string {
+  // No need to check
+  if (!SUB_COMMANDS_TO_VERIFY.includes(subCommand)) return value;
+  if (subCommand === 'remove') {
+    if (type === 'string') return value;
+    const { ids } = parseSnowflakeIds(value, true);
+    return ids.join(' ');
+  }
+
   if (type === 'message') {
     const messageMatch = value.match(REGEX_MESSAGE_ID);
     if (messageMatch) {
@@ -358,9 +376,10 @@ function sanitizeValue(type: ConfigType, value: string, guild: Guild): string {
   }
 }
 
-const SUB_COMMANDS_TO_VERIFY = ['add', 'set'];
-
-function getAvailableSubCommands(type: ConfigType, isArray?: boolean) {
+function getAvailableSubCommands(
+  type: ConfigType,
+  isArray?: boolean
+): SubCommand[] {
   if (isArray) {
     return ['add', 'remove', 'reset'];
   } else if (type === 'boolean') {
@@ -368,6 +387,13 @@ function getAvailableSubCommands(type: ConfigType, isArray?: boolean) {
   } else {
     return ['set', 'reset'];
   }
+}
+
+function isSubCommand(
+  subCommand: any,
+  availableSubCommands: SubCommand[]
+): subCommand is SubCommand {
+  return availableSubCommands.includes(subCommand);
 }
 
 function getAvailableValues(type: ConfigType, isArray?: boolean) {
@@ -442,11 +468,11 @@ const command: BotCommand = {
       const configInfo = CONFIGURABLE_SERVER_CONFIG[configNum - 1];
       const configKey = configInfo.key;
       const currentConfig = server.config[configKey];
+      const availableSubCommands = getAvailableSubCommands(
+        configInfo.type,
+        configInfo.isArray
+      );
       if (!subCommand || subCommand === 'help') {
-        const availableSubCommands = getAvailableSubCommands(
-          configInfo.type,
-          configInfo.isArray
-        );
         const possibleValues = getAvailableValues(
           configInfo.type,
           configInfo.isArray
@@ -474,16 +500,23 @@ const command: BotCommand = {
         );
       } else {
         if (configInfo.restricted && message.author.id !== bot.ownerId) {
-          await message.channel.send(
-            errorEmbed(`Only the bot owner can update this config.`)
+          throw new UserPermissionError(
+            `Only the bot owner can update this config.`
           );
-          return;
         }
-        const configValue = SUB_COMMANDS_TO_VERIFY.includes(subCommand)
-          ? sanitizeValue(configInfo.type, restCommand.join(' '), server.guild)
-          : subCommand === 'reset'
-          ? parseSnowflakeIds(restCommand.join(' ')).ids.join(' ')
-          : '';
+        if (!isSubCommand(subCommand, availableSubCommands)) {
+          throw new CommandArgumentError(
+            `The available sub commands are ${joinNaturally(
+              availableSubCommands
+            )}.`
+          );
+        }
+        const configValue = sanitizeValue(
+          subCommand,
+          configInfo.type,
+          restCommand.join(' '),
+          server.guild
+        );
         if (configInfo.key === 'prefix') {
           await bot.commands['prefix'].normalCommand?.({
             content: subCommand === 'set' ? configValue : '',
