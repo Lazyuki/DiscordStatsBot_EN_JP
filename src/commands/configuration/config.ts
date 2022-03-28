@@ -3,12 +3,11 @@ import { stripIndent } from 'common-tags';
 import { CommandArgumentError, UserPermissionError } from '@/errors';
 import { BotCommand, ServerConfig } from '@/types';
 import { parseSnowflakeIds } from '@utils/argumentParsers';
-import { errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
+import { makeEmbed, successEmbed } from '@utils/embed';
 import { camelCaseToNormal, joinNaturally } from '@utils/formatString';
 import { CategoryChannel, Guild } from 'discord.js';
 import { DEFAULT_PREFIX } from '@/envs';
 import { REGEX_MESSAGE_ID } from '@utils/regex';
-import { id } from 'date-fns/locale';
 import { idToChannel, idToRole } from '@utils/guildUtils';
 
 declare module '@/types' {
@@ -27,6 +26,7 @@ declare module '@/types' {
     userLogChannel: string;
     logUserJoinLeaves: boolean;
     logNameChanges: boolean;
+    modActionLogChannel: string;
     modLogChannel: string;
     ignoredBotPrefixes: string[];
   }
@@ -47,6 +47,7 @@ const DEFAULT_CONFIG: ServerConfig = {
   userLogChannel: '',
   logUserJoinLeaves: false,
   logNameChanges: false,
+  modActionLogChannel: '',
   modLogChannel: '',
   ignoredBotPrefixes: [],
 };
@@ -82,8 +83,15 @@ function getStringArrayConfig(
 ): string[] {
   const ids = values.split(' ');
   if (subCommand === 'reset') return [];
+  if (subCommand === 'set') return ids;
   if (subCommand === 'add') {
-    return [...currentSettings, ...ids];
+    const filtered = ids.filter((s) => !currentSettings.includes(s));
+    if (filtered.length === 0) {
+      throw new CommandArgumentError(
+        `All of "${values}" already exist in the current config`
+      );
+    }
+    return [...currentSettings, ...filtered];
   }
   if (subCommand === 'remove') {
     const filtered = currentSettings.filter((s) => !ids.includes(s));
@@ -224,10 +232,19 @@ const CONFIGURABLE_SERVER_CONFIG = [
     parser: getBooleanConfig,
   }),
   getConfigInfo({
+    key: 'modActionLogChannel',
+    type: 'channel',
+    isArray: false,
+    description:
+      'Channel used for logging mod actions (such as bans, message deletes) using Ciri commands. Note that if Ciri was NOT used to perform these actions they will NOT be logged.',
+    parser: getStringConfig,
+  }),
+  getConfigInfo({
     key: 'modLogChannel',
     type: 'channel',
     isArray: false,
-    description: 'Channel used for logging mod related information.',
+    description:
+      'Channel used for logging verbose mod related information such as watched user actions.',
     parser: getStringConfig,
   }),
   getConfigInfo({
@@ -388,7 +405,7 @@ function getAvailableSubCommands(
   isArray?: boolean
 ): SubCommand[] {
   if (isArray) {
-    return ['add', 'remove', 'reset'];
+    return ['add', 'remove', 'set', 'reset'];
   } else if (type === 'boolean') {
     return ['enable', 'disable'];
   } else {

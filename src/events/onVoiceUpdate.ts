@@ -32,6 +32,7 @@ const event: BotEvent<'guildMemberUpdate'> = {
     if (oldMember.user.bot) return;
     const now = new Date().getTime();
     const server = bot.servers[oldMember.guild.id];
+    if (!server.config.statistics) return; // No statistics for this server
     const userId = oldMember.id;
     if (!isVoiceActive(oldMember) && isVoiceActive(newMember)) {
       // Started voice

@@ -54,7 +54,7 @@ export type BotCommandCategory =
 export type OnCommandInit = (server: Server) => void;
 export type OnBotInit = (bot: Bot) => void;
 export type OnBotExit = (bot: Bot) => void;
-export type GuildMessage<M extends Message | PartialMessage> = M & {
+export type GuildMessage<M extends Message | PartialMessage = Message> = M & {
   guild: Guild;
   member: GuildMember;
   channel: NewsChannel | TextChannel | ThreadChannel;
@@ -71,7 +71,7 @@ export interface BotCommand {
    */
   isAllowed?:
     | CommandPermissionLevel[]
-    | ((message: GuildMessage<Message>, server: Server, bot: Bot) => boolean);
+    | ((message: GuildMessage, server: Server, bot: Bot) => boolean);
   hidden?: boolean;
   rateLimitSeconds?: number;
   description: string;
@@ -80,7 +80,7 @@ export interface BotCommand {
   options?: CommandOption[];
   normalCommand?: (commandInfo: {
     content: string;
-    message: GuildMessage<Message>;
+    message: GuildMessage;
     server: Server;
     bot: Bot;
     prefix: string;
@@ -147,11 +147,7 @@ export type ResolvedCommandOptions = Record<string, boolean | string>;
 export interface ParsedBotCommand extends BotCommand {
   name: string;
   category: string;
-  isAllowed: (
-    message: GuildMessage<Message>,
-    server: Server,
-    bot: Bot
-  ) => boolean;
+  isAllowed: (message: GuildMessage, server: Server, bot: Bot) => boolean;
 }
 
 export interface BotEvent<E extends keyof ClientEvents> {

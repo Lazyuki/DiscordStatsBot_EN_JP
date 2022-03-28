@@ -5,8 +5,6 @@ import { BotCommand } from '@/types';
 import { makeEmbed } from '@utils/embed';
 import { millisToDuration } from '@utils/datetime';
 import { getDatabaseFileSize } from '@database/statements';
-import { safeDelete } from '@utils/safeDelete';
-import os from 'os';
 
 const command: BotCommand = {
   name: 'info',
@@ -23,7 +21,6 @@ const command: BotCommand = {
 
           ==== Technical =====
           **Discord.js Version**: ${version}
-          **OS**: ${os.platform()} ${os.release()}
           **Node Version**: ${process.versions['node']}
           **Database Size**: ${getDatabaseFileSize() || 'Unknown'}
           `,

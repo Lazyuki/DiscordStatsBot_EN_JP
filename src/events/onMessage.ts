@@ -20,6 +20,7 @@ const event: BotEvent<'messageCreate'> = {
     }
 
     const server = bot.servers[message.guild.id];
+    if (!server.config.statistics) return; // No statistics for this server
     const guildId = message.guild.id;
     const channelId = getParentChannelId(message.channel);
     if (isMessageInChannels(message, server.config.ignoredChannels)) return;

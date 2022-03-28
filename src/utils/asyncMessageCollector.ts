@@ -24,7 +24,7 @@ async function asyncMessageCollector(
 }
 
 export function waitForConfirmOrCancel(
-  message: GuildMessage<Message>,
+  message: GuildMessage,
   waitForSeconds: number = 15
 ): Promise<boolean> {
   const filter = (m: Message) =>
@@ -50,7 +50,7 @@ const NO = ['no', 'false', 'cancel', 'nah', 'n', 'いいえ'];
 
 // Like waitForConfirmOrCancel but can accept more natural responses. Do not use for risky operations like memebr bans.
 export function waitForYesOrNo(
-  message: GuildMessage<Message>,
+  message: GuildMessage,
   waitForSeconds: number = 15
 ): Promise<boolean> {
   const filter = (m: Message) =>

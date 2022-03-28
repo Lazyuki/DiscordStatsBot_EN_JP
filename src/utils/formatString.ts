@@ -40,6 +40,10 @@ export function joinNaturally(array: string[]) {
   }
 }
 
+export function escapeRegex(regex: string) {
+  return regex.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+
 export function resolveEmoji(emoji: string, bot: Bot) {
   const isEmojiResolvable = !emoji.startsWith('<') || bot.emojis.resolve(emoji);
   return isEmojiResolvable ? emoji : `:${emoji.split(':')[1]}:`;

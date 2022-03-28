@@ -1,4 +1,4 @@
-import { parseMembers } from '@utils/argumentParsers';
+import { getUserId, parseMembers } from '@utils/argumentParsers';
 import { BotCommand } from '@/types';
 import { getEnglishLeaderboard } from '@database/statements';
 import { fieldsPaginator } from '@utils/paginate';
@@ -20,12 +20,8 @@ const command: BotCommand = {
   requiredServerConfigs: ['japaneseRoles', 'statistics'],
   examples: ['enl', 'enl -n 1000', 'enl @Geralt'],
   normalCommand: async ({ message, bot, server, content, options }) => {
-    const { allIds } = parseMembers(content, server.guild);
     const japaneseRoles = server.config.japaneseRoles;
-    let searchUserId = message.author.id;
-    if (allIds.length > 0) {
-      searchUserId = allIds[0];
-    }
+    const searchUserId = getUserId(bot, server, content) || message.author.id;
 
     let threshold = 500;
     if (options['threshold']) {

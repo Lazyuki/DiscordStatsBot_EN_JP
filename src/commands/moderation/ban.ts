@@ -16,7 +16,7 @@ import { getTextChannel, idToUser } from '@utils/guildUtils';
 
 const command: BotCommand = {
   name: 'ban',
-  isAllowed: ['BAN_MEMBERS'],
+  isAllowed: ['BAN_MEMBERS', 'MAINICHI_COMMITTEE'],
   requiredBotPermissions: ['BAN_MEMBERS'],
   description:
     'Ban! You can specify multiple users. Or use `raidban` for banning the entire raid party. ',
@@ -194,9 +194,12 @@ const command: BotCommand = {
         await message.channel.send(
           successEmbed(`Banned ${allIds.length - failedBans.length} users`)
         );
-        if (server.guild.id === EJLX) {
-          const agt = getTextChannel(server.guild, AGT);
-          await agt?.send(
+        if (server.config.modActionLogChannel) {
+          const modActionLogChannel = getTextChannel(
+            server.guild,
+            server.config.modActionLogChannel
+          );
+          await modActionLogChannel?.send(
             makeEmbed({
               authorName: message.author.tag,
               title: 'Ban',

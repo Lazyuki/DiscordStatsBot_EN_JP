@@ -1,5 +1,6 @@
 import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
+import { DAY_IN_MILLIS } from '@utils/datetime';
 import { successEmbed } from '@utils/embed';
 import { REGEX_RAW_ID } from '@utils/regex';
 
@@ -14,10 +15,9 @@ const prune: BotCommand = {
   normalCommand: async ({ content, message }) => {
     const ids = content.match(REGEX_RAW_ID);
     if (!ids) {
-      throw new CommandArgumentError('Please specify the user IDs');
+      throw new CommandArgumentError('Please specify user IDs');
     }
     const now = new Date().getTime();
-    const day = 24 * 60 * 60 * 1000;
 
     let lastMessageID = message.id;
     let done = false;
@@ -34,7 +34,7 @@ const prune: BotCommand = {
       for (const message of messages.values()) {
         count++;
         if (++num === 100) {
-          if (now - message.createdAt.getTime() > day) {
+          if (now - message.createdAt.getTime() > DAY_IN_MILLIS) {
             done = true;
             break;
           } else {

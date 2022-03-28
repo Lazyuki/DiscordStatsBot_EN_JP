@@ -44,7 +44,7 @@ export function checkServerMod(message: Message) {
   return false;
 }
 
-export function checkMainichiCommittee(message: GuildMessage<Message>) {
+export function checkMainichiCommittee(message: GuildMessage) {
   const channelId = getParentChannelId(message.channel);
   return channelId === COMMITTEE;
 }
@@ -60,7 +60,7 @@ export function checkMuteMembers(message: Message) {}
 
 export const PERMISSIONS: Record<
   CommandPermissionLevel,
-  (message: GuildMessage<Message>, server: Server, bot: Bot) => boolean
+  (message: GuildMessage, server: Server, bot: Bot) => boolean
 > = {
   ADMIN: checkAdmin,
   BOT_OWNER: checkBotOwner,

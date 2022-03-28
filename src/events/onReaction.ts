@@ -9,6 +9,7 @@ const reactionAdd: BotEvent<'messageReactionAdd'> = {
     const message = reaction.message;
     if (!checkSafeMessage(bot, message)) return;
     const server = bot.servers[message.guild.id];
+    if (!server.config.statistics) return; // No statistics for this server
 
     const reactionString = reaction.emoji.toString();
     insertEmojis({
@@ -28,6 +29,7 @@ const reactionRemove: BotEvent<'messageReactionRemove'> = {
     const message = reaction.message;
     if (!checkSafeMessage(bot, message)) return;
     const server = bot.servers[message.guild.id];
+    if (!server.config.statistics) return; // No statistics for this server
 
     const reactionString = reaction.emoji.toString();
     insertEmojis({

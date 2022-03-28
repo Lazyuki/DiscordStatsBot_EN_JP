@@ -45,7 +45,7 @@ const command: BotCommand = {
     } else {
       const exec = util.promisify(execPromise);
       await message.channel.sendTyping();
-      const { stdout, stderr } = await exec(`cd ~/Ciri && ${content}`);
+      const { stdout, stderr } = await exec(content);
       if (stdout) {
         await send(codeBlock(stdout));
       }

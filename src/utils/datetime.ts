@@ -3,9 +3,12 @@ import { format, formatDuration, intervalToDuration } from 'date-fns';
 import { GuildMember } from 'discord.js';
 import { pluralize } from './pluralize';
 
-const MINUTE_IN_MILLIS = 60 * 1000;
-const HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
-const DAY_IN_MILLIS = 24 * HOUR_IN_MILLIS;
+export const MINUTE_IN_MILLIS = 60 * 1000;
+export const HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
+export const DAY_IN_MILLIS = 24 * HOUR_IN_MILLIS;
+
+const TIME_REGEX =
+  /([0-9]+\s?d\s*)?([0-9]+\s?h\s*)?([0-9]+\s?m\s*)?([0-9]+\s?s\s*)?/i;
 
 export function millisToDuration(millis?: number | null) {
   return formatDuration(intervalToDuration({ start: 0, end: millis || 0 }));
@@ -40,6 +43,12 @@ export function memberJoinAge(member: GuildMember, maxDays: number = 3) {
     }
   }
   return '';
+}
+
+export function getExactDaysAgo(days: number) {
+  const daysAgo = new Date();
+  daysAgo.setDate(daysAgo.getDate() - days);
+  return daysAgo;
 }
 
 export function getDaysAgo(days: number) {
@@ -89,4 +98,16 @@ export function getStartHourISO(): string {
 
 export function getDiscordTimestamp(date: Date, option: TimestampFlag) {
   return `<t:${Math.floor(date.getTime() / 1000)}:${option || 'F'}>`;
+}
+
+export function strToTime(str: string) {
+  const match = str.match(TIME_REGEX);
+  if (!match) {
+    return 0;
+  }
+  const [days, hours, minutes, seconds] = match.map((s) => parseInt(s || '0'));
+  const totalMillis =
+    (seconds + minutes * 60 + hours * 3600 + days * 86400) * 1000;
+
+  return totalMillis;
 }

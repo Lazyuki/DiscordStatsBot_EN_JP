@@ -9,6 +9,13 @@ import {
   ServerSchedules,
   ServerData,
 } from '@/types';
+import { escapeRegex } from '@utils/formatString';
+
+declare module '@/types' {
+  interface ServerTemp {
+    ignoredBotPrefixRegex: RegExp | null;
+  }
+}
 
 function safeCreateDir(dir: string) {
   if (!fs.existsSync(dir)) {
@@ -29,6 +36,14 @@ function getConfigFilePath(guildId: string) {
 function getDataFilePath(guildId: string) {
   safeCreateDir('./data');
   return `./data/${guildId}_data.json`;
+}
+
+function getIgnoredBotPrefixRegex(prefixes: string[]) {
+  if (!prefixes || prefixes.length === 0) return null;
+  return new RegExp(
+    `^(?:${prefixes.map((p) => escapeRegex(p)).join('|')})`,
+    'i'
+  );
 }
 
 class Server {
@@ -91,6 +106,9 @@ class Server {
   }
 
   save() {
+    this.temp.ignoredBotPrefixRegex = getIgnoredBotPrefixRegex(
+      this.config.ignoredBotPrefixes
+    );
     try {
       const configFileName = getConfigFilePath(this.guild.id);
       fs.writeFileSync(configFileName, JSON.stringify(this.config), 'utf8');

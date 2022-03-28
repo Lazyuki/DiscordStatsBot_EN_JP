@@ -3,6 +3,7 @@ import { TextChannel, NewsChannel, ThreadChannel } from 'discord.js';
 import { BotEvent } from '@/types';
 import { isNotDM } from '@utils/guildUtils';
 import logger from '@/logger';
+import checkSafeMessage from '@utils/checkSafeMessage';
 
 async function storeMediaTemporarily(id: string, mediaLink: string) {}
 
@@ -10,9 +11,9 @@ const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
   skipOnDebug: false,
   processEvent: async (bot, message) => {
-    if (!isNotDM(message)) return; // DM
-    if (message.author.bot || message.system) return;
-    if (/^(,,?,?|[.>\[$=+%&]|[tk]!|-h)[a-zA-Z]/.test(message.content)) return; // Bot commands
+    if (!checkSafeMessage(bot, message)) {
+      return;
+    }
     const server = bot.servers[message.guild.id];
     const userId = message.member.id;
     if (!server.temp.watched.includes(userId)) return;

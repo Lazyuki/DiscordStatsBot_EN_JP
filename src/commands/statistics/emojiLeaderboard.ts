@@ -125,7 +125,7 @@ const command: BotCommand = {
 };
 
 async function singleEmojiLeaderboard(
-  message: GuildMessage<Message>,
+  message: GuildMessage,
   bot: Bot,
   server: Server,
   content: string

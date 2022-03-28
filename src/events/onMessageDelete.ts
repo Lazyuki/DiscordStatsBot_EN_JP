@@ -1,6 +1,7 @@
 import { BotEvent } from '@/types';
 import { insertDeletes, insertMessages } from '@database/statements';
 import { DELETE_COLOR, EJLX, MAINICHI, MOD_LOG } from '@utils/constants';
+import checkSafeMessage from '@utils/checkSafeMessage';
 import {
   getParentChannelId,
   getTextChannel,
@@ -14,11 +15,11 @@ const event: BotEvent<'messageDelete'> = {
   eventName: 'messageDelete',
   skipOnDebug: true,
   processEvent: async (bot, message) => {
-    if (!isNotDM(message)) return; // DM
-    if (message.partial) return; // Partial message does not have author
-    if (message.author.bot || message.system) return;
-    if (/^(,,?,?|[.>\[$=+%&]|[tk]!|-h)[a-zA-Z]/.test(message.content)) return; // Bot commands
+    if (!checkSafeMessage(bot, message)) {
+      return;
+    }
     const server = bot.servers[message.guild.id];
+    if (!server.config.statistics) return; // No statistics for this server
     const guildId = message.guild.id;
     const channelId = getParentChannelId(message.channel);
     const userId = message.author.id;

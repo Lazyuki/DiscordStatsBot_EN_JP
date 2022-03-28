@@ -18,7 +18,7 @@ export function isNotDM<M extends Message | PartialMessage>(
   );
 }
 
-export function getMessageTextChannel(message: GuildMessage<Message>) {
+export function getMessageTextChannel(message: GuildMessage) {
   if (message.channel.isThread()) {
     return message.channel.parent;
   } else {
@@ -53,7 +53,7 @@ export function isTextChannel(
 }
 
 export function isInChannelOrCategory(
-  message: GuildMessage<Message>,
+  message: GuildMessage,
   channelOrCategoryId: string
 ) {
   const parentChannelId = getParentChannelId(message.channel);
@@ -65,14 +65,14 @@ export function isInChannelOrCategory(
 }
 
 export function isInChannelsOrCategories(
-  message: GuildMessage<Message>,
+  message: GuildMessage,
   channelIds: string[]
 ) {
   return channelIds.some((id) => isInChannelOrCategory(message, id));
 }
 
 export function isMessageInChannels(
-  message: GuildMessage<Message>,
+  message: GuildMessage,
   channelIds: string[]
 ) {
   return channelIds.some((channelId) =>

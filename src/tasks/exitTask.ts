@@ -11,7 +11,7 @@ export const RESTART_TMP_FILE = '.restart.tmp';
  * Clean things up and destroy the bot
  * @param bot Bot
  */
-function exitTask(bot: Bot, message?: GuildMessage<Message>) {
+function exitTask(bot: Bot, message?: GuildMessage) {
   bot.botExits.forEach((fn) => fn(bot));
   for (const server of Object.values(bot.servers)) {
     server.save();

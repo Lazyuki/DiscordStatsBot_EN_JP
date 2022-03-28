@@ -23,18 +23,16 @@ const event: BotEvent<'messageCreate'> = {
     if (message.author.bot || message.system) return;
 
     let server = bot.servers[message.guild.id];
-    let serverOverride = false;
-    const match = message.content.match(/^!!(\d+)/);
+    const match = message.content.match(/^!!([0-9]+)/);
     if (match && message.author.id === bot.ownerId) {
       server = bot.servers[match[1]];
       if (!server) {
-        throw new NotFoundError(`Server with ID: ${match[1]} not found.`);
+        throw new NotFoundError(`Server with ID: \`${match[1]}\` not found.`);
       }
-      message.content = message.content.replace(/^!!\d+/, '');
-      serverOverride = true;
+      message.content = message.content.replace(/^!![0-9]+/, '');
     }
 
-    // Is it not a command?
+    // Is it not my command?
     if (!message.content.toLowerCase().startsWith(server.config.prefix)) {
       return;
     }
@@ -131,6 +129,18 @@ const event: BotEvent<'messageCreate'> = {
               `${error.name}: ${error.message}\n${
                 error.stack || 'no stack trace'
               }`
+            );
+          } else if (error.name === 'DiscordAPIError') {
+            // Not caught above with instanceof?
+            await safeChannelSend(
+              errorEmbed(
+                `Discord API Error: ${error.message}\n\n<@${bot.ownerId}> will look into this`
+              )
+            );
+            logger.error(
+              `${error.name}: ${error.message}\nStatus Code: ${
+                (error as any).status || 'none'
+              }\n${error.stack || 'no stack trace'}`
             );
           } else {
             await safeChannelSend(

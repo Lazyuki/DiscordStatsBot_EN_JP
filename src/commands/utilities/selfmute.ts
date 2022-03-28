@@ -3,7 +3,7 @@ import { DiscordAPIError } from '@discordjs/rest';
 
 import { BotCommand } from '@/types';
 import Server from '@classes/Server';
-import { millisToDuration } from '@utils/datetime';
+import { DAY_IN_MILLIS, millisToDuration, strToTime } from '@utils/datetime';
 import { successEmbed } from '@utils/embed';
 import runAt from '@utils/runAt';
 import { CommandArgumentError, ConflictError } from '@/errors';
@@ -15,10 +15,6 @@ declare module '@/types' {
     scheduledSelfMutes: Record<string, { muteAt: number; unmuteAt: number }>;
   }
 }
-
-const TIME_REGEX =
-  /([0-9]+\s?d\s*)?([0-9]+\s?h\s*)?([0-9]+\s?m\s*)?([0-9]+\s?s\s*)?/i;
-const DAY_MILLIS = 86_400_000;
 
 async function getMemberOrRepeat(
   userId: string,
@@ -107,18 +103,6 @@ function scheduleMute(
   });
 }
 
-function strToTime(str: string) {
-  const match = str.match(TIME_REGEX);
-  if (!match) {
-    return 0;
-  }
-  const [days, hours, minutes, seconds] = match.map((s) => parseInt(s || '0'));
-  const totalMillis =
-    (seconds + minutes * 60 + hours * 3600 + days * 86400) * 1000;
-
-  return totalMillis;
-}
-
 const command: BotCommand = {
   name: 'selfmute',
   aliases: ['sm'],
@@ -160,7 +144,7 @@ const command: BotCommand = {
         `Specify the amount of time in the format \`1d2h3m4s\` Where d is days, h is hours, m is minutes, and s is seconds.`
       );
     }
-    if (totalMillis > 3 * DAY_MILLIS) {
+    if (totalMillis > 3 * DAY_IN_MILLIS) {
       throw new CommandArgumentError(
         `You cannot mute yourself for more than 3 days`
       );
@@ -173,7 +157,7 @@ const command: BotCommand = {
       throw new CommandArgumentError(
         `Specify the amount of delay in the format \`1d2h3m4s\` Where d is days, h is hours, m is minutes, and s is seconds.`
       );
-    } else if (delayMillis && delayMillis > DAY_MILLIS) {
+    } else if (delayMillis && delayMillis > DAY_IN_MILLIS) {
       throw new CommandArgumentError(`You cannot delay for more than a day`);
     }
 
