@@ -1,48 +1,155 @@
 import { BotCommand } from '@/types';
-import { REGEX_USER } from '@/utils/regex';
+import { parseMembers } from '@utils/argumentParsers';
+import { makeEmbed, successEmbed } from '@utils/embed';
+import { joinNaturally, userToMentionAndTag } from '@utils/formatString';
+import { getTextChannel } from '@utils/guildUtils';
+import { GuildMember } from 'discord.js';
 
-const command: BotCommand = {
-  name: 'voicemute',
-  isAllowed: ['MUTE_MEMBERS'],
+const voicemute: BotCommand = {
+  name: 'voiceMute',
   aliases: ['vm'],
-  description: 'Voice mutes people',
-  arguments: '<@user> [reason]',
+  isAllowed: ['MUTE_MEMBERS'],
+  requiredServerConfigs: ['voiceMuteRoles'],
+  requiredBotPermissions: ['MUTE_MEMBERS', 'MANAGE_ROLES'],
+  description: 'Voice mute people',
+  arguments: '<@user> [@user2...] [reason]',
+  childCommands: ['voiceUnmute'],
   examples: [
     'vm @Geralt being too good at Japanese',
     'vm 284840842026549259 299335689558949888 shut up',
   ],
-  normalCommand: async ({ content, message }) => {
-    let targets = message.mentions.members;
-    let reason = content.replace(REGEX_USER, '').trim();
-    if (reason == '') {
-      reason = 'unspecified';
+  normalCommand: async ({ content, message, server }) => {
+    const { members, restContent } = parseMembers(content, server.guild);
+    const reason = restContent || 'Unspecified';
+    const noDMs: GuildMember[] = [];
+
+    for (const member of members) {
+      if (member.voice.channel) {
+        await member.voice.setMute(
+          true,
+          `By ${message.author.tag} (${message.author.id}). Reason: ${reason}`
+        );
+      }
+      await member.roles.add(server.config.voiceMuteRoles); // Voice mute role
+      try {
+        await member.send(
+          makeEmbed({
+            color: 'RED',
+            title: `You have been voice muted in the "${server.guild.name}" server`,
+            description: `Reason: ${reason}`,
+            footer:
+              'Contact one of the mods if you need to discuss this issue.',
+          })
+        );
+      } catch (e) {
+        noDMs.push(member);
+      }
     }
-    // don't mute bots
-    // for (let [, member] of targets) {
-    //   await member.setMute(true, `by ${message.author.tag} Reason: ${reason}`);
-    //   await member.roles.add('357687893566947329'); // Voice mute role
-    //   let embed = new Discord.MessageEmbed();
-    //   embed.title = `You have been voice muted in the English-Japanese Language Exchange server by ${message.author.tag}`;
-    //   embed.description = `Reason: ${reason}`;
-    //   embed.color = Number('0xEC891D');
-    //   embed.setFooter(
-    //     'Contact one of the mods if you need to discuss this issue.',
-    //     message.author.avatarURL
-    //   );
-    //   embed.timestamp = new Date();
-    //   await member.send({ embed });
-    //   embed = new Discord.MessageEmbed();
-    //   embed.setAuthor(
-    //     `${member.user.tag} has been muted in voice chat`,
-    //     member.user.avatarURL
-    //   );
-    //   embed.description = `Reason: ${reason}`;
-    //   embed.color = Number('0xEC891D');
-    //   embed.setFooter(`by ${message.author.tag}`, message.author.avatarURL);
-    //   embed.timestamp = new Date();
-    //   message.channel.send({ embed });
-    // }
+
+    const failedAllDMs = noDMs.length === members.length;
+    const dmInfo = failedAllDMs
+      ? 'but failed to DM the reason to them'
+      : noDMs.length
+      ? `and DMed them except for ${joinNaturally(
+          noDMs.map((m) => m.toString())
+        )}`
+      : 'and DMed them';
+    await message.channel.send(
+      successEmbed(
+        `Successfully muted ${joinNaturally(
+          members.map((m) => m.toString())
+        )} ${dmInfo}`
+      )
+    );
+    if (server.config.modActionLogChannel) {
+      const modChannel = getTextChannel(
+        server.guild,
+        server.config.modActionLogChannel
+      );
+      await modChannel?.send(
+        makeEmbed({
+          title: `Voice Mute`,
+          fields: [
+            {
+              name: 'Muted Users',
+              value: members
+                .map((m) => `${userToMentionAndTag(m.user)}`)
+                .join('\n'),
+              inline: false,
+            },
+            {
+              name: 'Reason',
+              value: reason,
+              inline: false,
+            },
+          ],
+          footer: `By ${message.author.tag} in #${message.channel.name}`,
+          footerIcon: message.member.displayAvatarURL(),
+          timestamp: true,
+        })
+      );
+    }
   },
 };
 
-export default command;
+const voiceunmute: BotCommand = {
+  name: 'voiceUnmute',
+  isAllowed: ['MUTE_MEMBERS'],
+  requiredBotPermissions: ['MUTE_MEMBERS', 'MANAGE_ROLES'],
+  aliases: ['uvm', 'vum', 'unvoicemute'],
+  description: 'Remove voice mutes from people',
+  arguments: '<@user> [reason]',
+  examples: [
+    'uvm @Geralt being too good at Japanese',
+    'uvm 284840842026549259 299335689558949888 shut up',
+  ],
+  parentCommand: 'voiceMute',
+  normalCommand: async ({ content, message, server }) => {
+    const { members, restContent } = parseMembers(content, server.guild);
+    const reason = restContent || 'Unspecified';
+    for (const member of members) {
+      await member.voice.setMute(
+        false,
+        `By ${message.author.tag} (${message.author.id}). Reason: ${reason}`
+      );
+      await member.roles.remove(server.config.voiceMuteRoles); // Voice mute role
+    }
+    await message.channel.send(
+      successEmbed(
+        `Successfully unmuted ${joinNaturally(
+          members.map((m) => m.toString())
+        )} in VC`
+      )
+    );
+    if (server.config.modActionLogChannel) {
+      const modChannel = getTextChannel(
+        server.guild,
+        server.config.modActionLogChannel
+      );
+      await modChannel?.send(
+        makeEmbed({
+          title: `Voice Unmute`,
+          fields: [
+            {
+              name: 'Unmuted Users',
+              value: members
+                .map((m) => `${userToMentionAndTag(m.user)}`)
+                .join('\n'),
+              inline: false,
+            },
+            {
+              name: 'Reason',
+              value: reason,
+              inline: false,
+            },
+          ],
+          footer: `By ${message.author.tag} in #${message.channel.name}`,
+          footerIcon: message.member.displayAvatarURL(),
+          timestamp: true,
+        })
+      );
+    }
+  },
+};
+
+export default [voicemute, voiceunmute];

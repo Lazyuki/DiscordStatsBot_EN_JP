@@ -120,7 +120,7 @@ export function parseMembers(
       const id = idMatch[0];
       allIds.push(id);
       const member = guild.members.cache.get(id);
-      if (member) {
+      if (member && !member.user.bot) {
         members.push(member);
       } else {
         nonMemberIds.push(id);
@@ -136,20 +136,6 @@ export function parseMembers(
     allIds,
     restContent: words.slice(allIds.length).join(' '),
   };
-}
-
-// Doesn't need to care about multiple users
-export function parseUserId(
-  bot: Bot,
-  guild: Guild,
-  content: string
-): string | null {
-  const idMatch = content.match(REGEX_RAW_ID);
-  if (idMatch) {
-    return idMatch[0];
-  } else if (content) {
-  }
-  return null;
 }
 
 export const getMemberId = (bot: Bot, server: Server, content: string) =>
@@ -201,6 +187,7 @@ export const getUserId = (
 
     const members = server.guild.members.cache.values();
     for (const member of members) {
+      if (member.user.bot) continue;
       if (regex) {
         if (
           regex.test(member.displayName) ||

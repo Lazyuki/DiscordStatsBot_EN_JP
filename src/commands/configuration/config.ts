@@ -20,14 +20,15 @@ declare module '@/types' {
     ignoredChannels: string[];
     hiddenChannels: string[];
     voiceMuteRoles: string[];
-    chatMuteRoles: string[];
+    tempMuteRoles: string[];
     focusRoles: string[];
-    selfMuteRoles: string[];
+    timeoutIndicatorRole: string;
     userLogChannel: string;
     logUserJoinLeaves: boolean;
     logNameChanges: boolean;
     modActionLogChannel: string;
     modLogChannel: string;
+    userDMFallbackChannel: string;
     ignoredBotPrefixes: string[];
   }
 }
@@ -41,13 +42,14 @@ const DEFAULT_CONFIG: ServerConfig = {
   ignoredChannels: [],
   hiddenChannels: [],
   voiceMuteRoles: [],
-  chatMuteRoles: [],
+  tempMuteRoles: [],
   focusRoles: [],
-  selfMuteRoles: [],
+  timeoutIndicatorRole: '',
   userLogChannel: '',
   logUserJoinLeaves: false,
   logNameChanges: false,
   modActionLogChannel: '',
+  userDMFallbackChannel: '',
   modLogChannel: '',
   ignoredBotPrefixes: [],
 };
@@ -188,25 +190,26 @@ const CONFIGURABLE_SERVER_CONFIG = [
     parser: getStringArrayConfig,
   }),
   getConfigInfo({
-    key: 'chatMuteRoles',
+    key: 'tempMuteRoles',
     type: 'role',
     isArray: true,
-    description: 'Roles that mute users in text channels.',
+    description: 'Roles used when users are muted for more than 7 days.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({
     key: 'focusRoles',
     type: 'role',
     isArray: true,
-    description: 'Roles that make users to not see/read channels.',
+    description: 'Roles that make users not see/read channels.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({
-    key: 'selfMuteRoles',
+    key: 'timeoutIndicatorRole',
     type: 'role',
-    isArray: true,
-    description: 'Roles used when users want to mute themselves.',
-    parser: getStringArrayConfig,
+    isArray: false,
+    description:
+      'Role that indicates users on timeout, either by selfmute or muted by mods. Useful with role icons',
+    parser: getStringConfig,
   }),
   getConfigInfo({
     key: 'userLogChannel',
@@ -245,6 +248,14 @@ const CONFIGURABLE_SERVER_CONFIG = [
     isArray: false,
     description:
       'Channel used for logging verbose mod related information such as watched user actions.',
+    parser: getStringConfig,
+  }),
+  getConfigInfo({
+    key: 'userDMFallbackChannel',
+    type: 'channel',
+    isArray: false,
+    description:
+      'Channel used when the bot fails to DM the person for mod actions, such as the `warn` command or `mute` command.',
     parser: getStringConfig,
   }),
   getConfigInfo({

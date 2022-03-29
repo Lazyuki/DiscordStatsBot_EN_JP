@@ -8,7 +8,7 @@ export const HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
 export const DAY_IN_MILLIS = 24 * HOUR_IN_MILLIS;
 
 const TIME_REGEX =
-  /([0-9]+\s?d\s*)?([0-9]+\s?h\s*)?([0-9]+\s?m\s*)?([0-9]+\s?s\s*)?/i;
+  /([0-9]+\s?d\s*)?([0-9]+\s?h\s*)?([0-9]+\s?m\s*)?([0-9]+\s?s)?/i;
 
 export function millisToDuration(millis?: number | null) {
   return formatDuration(intervalToDuration({ start: 0, end: millis || 0 }));
@@ -100,14 +100,22 @@ export function getDiscordTimestamp(date: Date, option: TimestampFlag) {
   return `<t:${Math.floor(date.getTime() / 1000)}:${option || 'F'}>`;
 }
 
-export function strToTime(str: string) {
-  const match = str.match(TIME_REGEX);
-  if (!match) {
-    return 0;
+export function strToMillis(content: string): {
+  millis: number;
+  restContent: string;
+} {
+  const match = content.match(TIME_REGEX);
+  if (!match || !match[0]) {
+    return { millis: 0, restContent: content };
   }
-  const [days, hours, minutes, seconds] = match.map((s) => parseInt(s || '0'));
+  const [_, days, hours, minutes, seconds] = match.map((s) =>
+    parseInt(s || '0')
+  );
   const totalMillis =
-    (seconds + minutes * 60 + hours * 3600 + days * 86400) * 1000;
+    days * DAY_IN_MILLIS +
+    hours * HOUR_IN_MILLIS +
+    minutes * MINUTE_IN_MILLIS +
+    seconds * 1000;
 
-  return totalMillis;
+  return { millis: totalMillis, restContent: content.replace(TIME_REGEX, '') };
 }

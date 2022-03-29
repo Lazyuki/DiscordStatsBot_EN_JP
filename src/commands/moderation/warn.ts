@@ -9,7 +9,10 @@ import {
   getModLogForUser,
 } from '@database/statements';
 import { parseMembers } from '@utils/argumentParsers';
-import { waitForYesOrNo } from '@utils/asyncMessageCollector';
+import {
+  waitForYesOrNo,
+  getFallbackChannel,
+} from '@utils/asyncMessageCollector';
 import { BOT_CHANNEL, DM_MOD_BOT, EJLX } from '@utils/constants';
 import {
   errorEmbed,
@@ -103,33 +106,29 @@ const warn: BotCommand = {
           )
         );
       }
-      let sendInChannel = null;
-      if (server.guild.id === EJLX) {
-        sendInChannel = `\nWould you like me to send the warning in <#${BOT_CHANNEL}> and ping them?`;
-      }
+
       await message.channel.send(
         warningEmbed(
           `Failed to DM ${unreachableMembers.join(
             ', '
-          )}. They could not receive the warning.${sendInChannel}`
+          )}. They could not receive the warning.\n\n⚠️Would you like me to send the warning ${
+            server.config.userDMFallbackChannel
+              ? `in <#${server.config.userDMFallbackChannel}> `
+              : 'in a public channel '
+          }and ping them?`
         )
       );
-      if (sendInChannel) {
-        const confirmed = await waitForYesOrNo(message);
-        if (confirmed) {
-          const botChannel = getTextChannel(server.guild, BOT_CHANNEL);
-          await botChannel?.send(
-            makeEmbed({
-              content: `${unreachableMembers.join(
-                ' '
-              )} We could not send this warning as a DM because of your privacy settings. Contact <@${DM_MOD_BOT}> if you think this is a mistake.`,
-              title: `You have been officially warned on ${server.guild.name}`,
-              description: restContent,
-              color: '#DB3C3C',
-            })
-          );
-        }
-      }
+      const fallbackChannel = await getFallbackChannel(message, server);
+      await fallbackChannel?.send(
+        makeEmbed({
+          content: `${unreachableMembers.join(
+            ' '
+          )} We could not send this warning as a DM because of your privacy settings. Contact the mods if you think this is a mistake.`,
+          title: `You have been officially warned on ${server.guild.name}`,
+          description: restContent,
+          color: '#DB3C3C',
+        })
+      );
     } else {
       await message.channel.send(
         successEmbed(

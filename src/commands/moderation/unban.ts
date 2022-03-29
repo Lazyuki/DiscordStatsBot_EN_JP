@@ -5,11 +5,12 @@ import { successEmbed } from '@utils/embed';
 
 const unban: BotCommand = {
   name: 'unban',
-  isAllowed: ['SERVER_MODERATOR'],
+  isAllowed: ['BAN_MEMBERS', 'MAINICHI_COMMITTEE'],
   requiredBotPermissions: ['BAN_MEMBERS'],
   description: 'Unban users',
   arguments: '<user ID> [user2 ID...] [reason]',
   examples: ['prune 123454323454 2345432345643 4543246543234'],
+  parentCommand: 'ban',
   normalCommand: async ({ content, message, server }) => {
     const { members, nonMemberIds, restContent } = parseMembers(
       content,

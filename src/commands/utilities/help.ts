@@ -94,11 +94,19 @@ const command: BotCommand = {
       const commandSet = new Set(Object.values(bot.commands));
       const allowedCommands: Record<string, string[]> = {};
       for (const command of commandSet) {
-        if (command.normalCommand && command.isAllowed(message, server, bot)) {
+        if (
+          command.normalCommand &&
+          command.isAllowed(message, server, bot) &&
+          !command.parentCommand
+        ) {
+          let name = command.name;
+          if (command.childCommands?.length) {
+            name += ', ' + command.childCommands.join(', ');
+          }
           if (allowedCommands[command.category]) {
-            allowedCommands[command.category].push(command.name);
+            allowedCommands[command.category].push(name);
           } else {
-            allowedCommands[command.category] = [command.name];
+            allowedCommands[command.category] = [name];
           }
         }
       }

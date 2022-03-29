@@ -10,7 +10,6 @@ import {
   getVoiceSecondsForUser,
 } from '@database/statements';
 import { formatPercent, resolveEmoji } from '@utils/formatString';
-import { REGEX_CUSTOM_EMOTES } from '@utils/regex';
 import { pluralCount } from '@utils/pluralize';
 import { isInChannelsOrCategories } from '@utils/guildUtils';
 
@@ -118,7 +117,9 @@ const command: BotCommand = {
 
       await message.channel.send(
         infoEmbed({
+          authorIcon: member?.displayAvatarURL() || user?.displayAvatarURL(),
           title: `Stats for ${titleName}`,
+          thumbnailIcon: member?.roles.icon?.iconURL() || undefined,
           description: 'For the last 30 days',
           fields: [
             {

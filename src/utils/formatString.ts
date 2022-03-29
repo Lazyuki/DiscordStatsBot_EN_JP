@@ -1,4 +1,5 @@
 import { Bot } from '@/types';
+import { User, Util } from 'discord.js';
 
 export function codeBlock(str: string, lang: string = '') {
   const lines = str.split('\n');
@@ -47,4 +48,12 @@ export function escapeRegex(regex: string) {
 export function resolveEmoji(emoji: string, bot: Bot) {
   const isEmojiResolvable = !emoji.startsWith('<') || bot.emojis.resolve(emoji);
   return isEmojiResolvable ? emoji : `:${emoji.split(':')[1]}:`;
+}
+
+export function userToMentionAndTag(user: User) {
+  return `${user.toString()} (${Util.escapeMarkdown(user.tag)})`;
+}
+
+export function userToTagAndId(user: User) {
+  return `${Util.escapeMarkdown(user.tag)} (${user.id})`;
 }

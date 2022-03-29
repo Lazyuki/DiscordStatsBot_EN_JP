@@ -1,5 +1,16 @@
 import { GuildMessage } from '@/types';
-import { GuildMember, Message, TextBasedChannel } from 'discord.js';
+import Server from '@classes/Server';
+import {
+  GuildMember,
+  Message,
+  NewsChannel,
+  TextBasedChannel,
+  TextChannel,
+} from 'discord.js';
+import { parseChannels } from './argumentParsers';
+import { infoEmbed, makeEmbed } from './embed';
+import { getTextChannel } from './guildUtils';
+import { REGEX_CHAN } from './regex';
 
 async function asyncMessageCollector(
   channel: TextBasedChannel,
@@ -66,6 +77,42 @@ export function waitForYesOrNo(
     });
     collector.on('end', () => {
       resolve(false);
+    });
+  });
+  return promise;
+}
+
+export async function getFallbackChannel(
+  message: GuildMessage,
+  server: Server,
+  waitForSeconds: number = 30
+) {
+  const yes = await waitForYesOrNo(message, waitForSeconds);
+  if (!yes) return null;
+  if (server.config.userDMFallbackChannel) {
+    return getTextChannel(server.guild, server.config.userDMFallbackChannel);
+  }
+  await message.channel.send(
+    makeEmbed({
+      color: 'PURPLE',
+      description: `Please type the channel. Make sure they have access to the channel.`,
+    })
+  );
+  const filter = (m: Message) =>
+    m.author.id === message.author.id && m.mentions.channels.size > 0;
+  const collector = message.channel.createMessageCollector({
+    filter,
+    time: waitForSeconds * 1000,
+  });
+  const promise = new Promise<TextChannel | NewsChannel | null>((resolve) => {
+    collector.on('collect', (m) => {
+      const { channels } = parseChannels(m.content, server.guild);
+      if (channels.length) {
+        resolve(channels[0]);
+      }
+    });
+    collector.on('end', () => {
+      resolve(null);
     });
   });
   return promise;

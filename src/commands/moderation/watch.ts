@@ -30,7 +30,7 @@ const watch: BotCommand = {
   },
   description: 'Watch a user for deleted messages',
   arguments: '<@user>',
-  childCommands: ['watched', 'unwatch'],
+  childCommands: ['watched', 'unwatch', 'watchClean'],
   hidden: true,
   normalCommand: async ({ content, message, server, send }) => {
     if (!content) {
@@ -137,7 +137,7 @@ const watched: BotCommand = {
 };
 
 const watchClean: BotCommand = {
-  name: 'watchclean',
+  name: 'watchClean',
   isAllowed: ['SERVER_MODERATOR'],
   description:
     'Clean the list of watched users by removing users who are no longer in the server',
@@ -161,4 +161,4 @@ const watchClean: BotCommand = {
   },
 };
 
-export default [watch, unwatch, watched];
+export default [watch, unwatch, watched, watchClean];

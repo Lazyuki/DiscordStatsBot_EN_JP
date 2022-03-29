@@ -20,14 +20,7 @@ import {
 } from '@utils/regex';
 import { deleteAfter, safeDelete } from '@utils/safeDelete';
 import { stripIndent } from 'common-tags';
-import {
-  Guild,
-  Message,
-  NewsChannel,
-  TextBasedChannel,
-  TextChannel,
-  ThreadChannel,
-} from 'discord.js';
+import { Message, NewsChannel, TextChannel, ThreadChannel } from 'discord.js';
 
 async function proxyPost(message: Message, server: Server) {
   const channel = getTextChannel(
@@ -55,7 +48,7 @@ async function notifyDeletes(
       ? pluralize('See File', 's', hadFiles)
       : '*Empty*';
     return {
-      name: `✉️ by ${message.author.tag} (${message.author.id}) in #${
+      name: `👤 ${message.author.tag} (${message.author.id}) in #${
         (message.channel as TextChannel).name
       }${hadFiles ? ` with ${pluralCount('file', 's', hadFiles)}` : ''}`,
       value: message.content || placeholder,
@@ -184,6 +177,7 @@ const command: BotCommand = {
         let remainingLoop = 5;
         let remainingDelete = numMessages;
         let before = message.id;
+        await message.channel.sendTyping();
         while (remainingLoop > 0 && remainingDelete > 0) {
           remainingLoop--;
           const msgs = await defaultChannel.messages.fetch({

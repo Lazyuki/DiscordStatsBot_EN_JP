@@ -16,6 +16,8 @@ export const REGEX_TIMESTAMP = /<t:[0-9]+:[a-zA-Z]>/g;
 export const REGEX_ID = /<(@!?|#|@&|a?:[\S]+:|t:)[0-9]+(:.)?>/g;
 export const REGEX_DISCORD_OBJECT = /<(@!?|#|@&|a?:[\S]+:|t:)[0-9]+(:.)?>/g;
 export const REGEX_RAW_ID = /([0-9]{17,20})/g;
+export const REGEX_AUDIT_LOG_ID = /\(([0-9]{17,20})\)/;
+export const REGEX_TIMEOUT_UNTIL = /TIMEOUT_UNTIL:([0-9]+)/;
 export const REGEX_RAW_ID_ONLY = /^([0-9]{17,20})$/;
 export const REGEX_MESSAGE_LINK_OR_FULL_ID =
   /(?:\/[0-9]{17,20}\/)?(?:([0-9]{17,20})[-/])([0-9]{17,20})/; // link or channelId-messageId.

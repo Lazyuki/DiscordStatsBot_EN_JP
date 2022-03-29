@@ -1,7 +1,7 @@
 import Server from '@classes/Server';
 import { Message } from 'discord.js';
 import { BotCommand, ParsedBotCommand } from '../types';
-import { PERMISSIONS } from './checkPermissions';
+import { getPermission } from './checkPermissions';
 import { camelCaseToNormal } from './formatString';
 
 export default function parseCommand(
@@ -36,7 +36,7 @@ export default function parseCommand(
   }
   if (Array.isArray(isAllowed)) {
     allowFunctions.push((m, s, b) =>
-      isAllowed.some((perm) => PERMISSIONS[perm](m, s, b))
+      isAllowed.some((perm) => getPermission(perm)(m, s, b))
     );
   } else if (typeof isAllowed === 'function') {
     allowFunctions.push(isAllowed);

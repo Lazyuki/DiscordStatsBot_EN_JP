@@ -40,7 +40,7 @@ export function checkWP(message: Message, server: Server) {
 
 export function checkServerMod(message: Message) {
   if (checkAdmin(message)) return true;
-  if (message.member?.permissions.has('MANAGE_GUILD')) return true;
+  if (message.member?.permissions.has('MODERATE_MEMBERS')) return true;
   return false;
 }
 
@@ -58,20 +58,25 @@ export function checkSpecificPerm(
 
 export function checkMuteMembers(message: Message) {}
 
-export const PERMISSIONS: Record<
-  CommandPermissionLevel,
-  (message: GuildMessage, server: Server, bot: Bot) => boolean
-> = {
-  ADMIN: checkAdmin,
-  BOT_OWNER: checkBotOwner,
-  EJLX_STAFF: checkEjlxStaff,
-  MINIMO: checkMinimo,
-  WP: checkWP,
-  SERVER_MODERATOR: checkServerMod,
-  MAINICHI_COMMITTEE: checkMainichiCommittee,
-  MUTE_MEMBERS: (message: Message) =>
-    checkSpecificPerm(message, 'MUTE_MEMBERS'),
-  BAN_MEMBERS: (message: Message) => checkSpecificPerm(message, 'BAN_MEMBERS'),
-  KICK_MEMBERS: (message: Message) =>
-    checkSpecificPerm(message, 'KICK_MEMBERS'),
-};
+export function getPermission(
+  permission: CommandPermissionLevel
+): (message: GuildMessage, server: Server, bot: Bot) => boolean {
+  switch (permission) {
+    case 'BOT_OWNER':
+      return checkBotOwner;
+    case 'ADMIN':
+      return checkAdmin;
+    case 'EJLX_STAFF':
+      return checkEjlxStaff;
+    case 'MINIMO':
+      return checkMinimo;
+    case 'WP':
+      return checkWP;
+    case 'SERVER_MODERATOR':
+      return checkServerMod;
+    case 'MAINICHI_COMMITTEE':
+      return checkMainichiCommittee;
+    default:
+      return (message: GuildMessage) => checkSpecificPerm(message, permission);
+  }
+}

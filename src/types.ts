@@ -39,9 +39,7 @@ export type CommandPermissionLevel =
   | 'MINIMO'
   | 'WP'
   | 'MAINICHI_COMMITTEE'
-  | 'MUTE_MEMBERS'
-  | 'BAN_MEMBERS'
-  | 'KICK_MEMBERS';
+  | PermissionString;
 
 export type BotCommandCategory =
   | 'Moderation'

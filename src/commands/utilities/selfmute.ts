@@ -1,13 +1,17 @@
 import { GuildMember } from 'discord.js';
-import { DiscordAPIError } from '@discordjs/rest';
 
 import { BotCommand } from '@/types';
 import Server from '@classes/Server';
-import { DAY_IN_MILLIS, millisToDuration, strToTime } from '@utils/datetime';
+import { DAY_IN_MILLIS, millisToDuration, strToMillis } from '@utils/datetime';
 import { successEmbed } from '@utils/embed';
-import runAt from '@utils/runAt';
-import { CommandArgumentError, ConflictError } from '@/errors';
+import runAt, { getMemberOrRepeat } from '@utils/runAt';
+import {
+  CommandArgumentError,
+  ConflictError,
+  UserPermissionError,
+} from '@/errors';
 import logger from '@/logger';
+import { safeDelete } from '@utils/safeDelete';
 
 declare module '@/types' {
   interface ServerSchedules {
@@ -16,42 +20,8 @@ declare module '@/types' {
   }
 }
 
-async function getMemberOrRepeat(
-  userId: string,
-  server: Server,
-  func: (member: GuildMember, server: Server) => Promise<void>
-) {
-  let member = server.guild.members.cache.get(userId);
-  if (!member) {
-    try {
-      member = await server.guild.members.fetch(userId);
-    } catch (e) {
-      const err = e as DiscordAPIError;
-      if (err.code >= 500) {
-        // Discord outage? Try again in 30 minutes
-        runAt(new Date(new Date().getTime() + 30 * 60_000), () =>
-          getMemberOrRepeat(userId, server, func)
-        );
-        return;
-      }
-      // User left? Remove self mutes
-      delete server.data.schedules.selfMutes[userId];
-      return;
-    }
-  }
-  await func(member, server);
-}
-
-async function unmute(member: GuildMember, server: Server) {
-  try {
-    await member.roles.remove(server.config.selfMuteRoles);
-    delete server.data.schedules.selfMutes[member.id];
-  } catch (e) {
-    // User left?
-    logger.error(
-      `Failed to remove self mute roles in ${server.guild.name} for user ${member.id}`
-    );
-  }
+function removeSelfMute(userId: string, server: Server) {
+  delete server.data.schedules.selfMutes[userId];
 }
 
 async function mute(
@@ -60,27 +30,17 @@ async function mute(
   unmuteAtMillis: number
 ) {
   try {
-    await member.roles.add(server.config.selfMuteRoles);
     server.data.schedules.selfMutes[member.id] = unmuteAtMillis;
-    if (
-      member.voice.channel &&
-      server.guild.me?.permissions.has('MOVE_MEMBERS')
-    ) {
-      await member.voice.disconnect();
-    }
-    runAt(
-      new Date(unmuteAtMillis),
-      async () =>
-        await getMemberOrRepeat(
-          member.id,
-          server,
-          async (m, s) => await unmute(m, s)
-        )
+    await member.timeout(
+      unmuteAtMillis - new Date().getTime(),
+      'CIRI_SELFMUTE'
     );
+    runAt(unmuteAtMillis, () => removeSelfMute(member.id, server));
   } catch (e) {
+    delete server.data.schedules.selfMutes[member.id];
     // User left?
     logger.error(
-      `Failed to add self mute roles in ${server.guild.name} for user ${member.id}`
+      `Failed to self timeout in ${server.guild.name} for user ${member.id}`
     );
   }
 }
@@ -88,18 +48,26 @@ async function mute(
 function scheduleMute(
   member: GuildMember,
   server: Server,
-  muteAt: Date,
-  unmuteAt: Date
+  muteAtMillis: number,
+  unmuteAtMillis: number
 ) {
   server.data.schedules.scheduledSelfMutes[member.id] = {
-    muteAt: muteAt.getTime(),
-    unmuteAt: unmuteAt.getTime(),
+    muteAt: muteAtMillis,
+    unmuteAt: unmuteAtMillis,
   };
-  runAt(muteAt, () => {
-    getMemberOrRepeat(member.id, server, async (m, s) => {
-      await mute(m, s, unmuteAt.getTime());
-      delete server.data.schedules.scheduledSelfMutes[member.id];
-    });
+  runAt(muteAtMillis, () => {
+    getMemberOrRepeat(
+      member.id,
+      server,
+      async (m, s) => {
+        delete server.data.schedules.scheduledSelfMutes[member.id];
+        await mute(m, s, unmuteAtMillis);
+      },
+      () => {
+        delete server.data.schedules.scheduledSelfMutes[member.id];
+        delete server.data.schedules.selfMutes[member.id];
+      }
+    );
   });
 }
 
@@ -108,8 +76,6 @@ const command: BotCommand = {
   aliases: ['sm'],
   description:
     'Mute yourself for some amount of time. The time can be specified with `d` for days, `h` for hours, `m` for minutes, and `s` for seconds. Use the `in` keyword to delay the selfmute by some amount of time.',
-  requiredServerConfigs: ['selfMuteRoles'],
-  requiredBotPermissions: ['MANAGE_ROLES'],
   arguments: '<mute duration> [in delay duration]',
   examples: ['sm 3h', 'sm 1d6h30m', 'sm 1d40m in 2h'],
   onCommandInit: (server) => {
@@ -117,14 +83,32 @@ const command: BotCommand = {
     server.data.schedules.selfMutes ||= {};
 
     Object.entries(server.data.schedules.scheduledSelfMutes).map(
-      ([userId, schedule]) => {}
+      ([userId, schedule]) => {
+        runAt(schedule.muteAt, () => {
+          getMemberOrRepeat(
+            userId,
+            server,
+            async (m, s) => {
+              delete server.data.schedules.scheduledSelfMutes[userId];
+              await mute(m, s, schedule.unmuteAt);
+            },
+            () => {
+              delete server.data.schedules.scheduledSelfMutes[userId];
+              delete server.data.schedules.selfMutes[userId];
+            }
+          );
+        });
+      }
     );
     Object.entries(server.data.schedules.selfMutes).map(
-      ([userId, unmuteAtMillis]) => {}
+      ([userId, unmuteAtMillis]) => {
+        runAt(unmuteAtMillis, () => {
+          removeSelfMute(userId, server);
+        });
+      }
     );
   },
   normalCommand: async ({ message, content, server }) => {
-    setTimeout(() => message.delete(), 200);
     const existingSchedule =
       server.data.schedules.scheduledSelfMutes[message.member.id];
     if (existingSchedule) {
@@ -135,18 +119,21 @@ const command: BotCommand = {
         )}`
       );
     }
+    if (!message.member.moderatable) {
+      throw new UserPermissionError('I cannot mute you');
+    }
     const [muteDuration, muteDelay] = content.split(' in ');
-    const totalMillis = strToTime(muteDuration.trim());
+    const totalMillis = strToMillis(muteDuration.trim()).millis;
     const delayMillis =
-      muteDelay !== undefined ? strToTime(muteDelay.trim()) : null;
+      muteDelay !== undefined ? strToMillis(muteDelay.trim()).millis : null;
     if (!totalMillis) {
       throw new CommandArgumentError(
-        `Specify the amount of time in the format \`1d2h3m4s\` Where d is days, h is hours, m is minutes, and s is seconds.`
+        `Specify the amount of time in the format \`1d2h3m4s\` Where \`d\` is days, \`h\` is hours, \`m\` is minutes, and \`s\` is seconds.`
       );
     }
-    if (totalMillis > 3 * DAY_IN_MILLIS) {
+    if (totalMillis > 7 * DAY_IN_MILLIS) {
       throw new CommandArgumentError(
-        `You cannot mute yourself for more than 3 days`
+        `You cannot mute yourself for more than 7 days`
       );
     } else if (totalMillis < 60_000) {
       throw new CommandArgumentError(
@@ -161,22 +148,25 @@ const command: BotCommand = {
       throw new CommandArgumentError(`You cannot delay for more than a day`);
     }
 
-    const muteAt = delayMillis && new Date(new Date().getTime() + delayMillis);
-    if (muteAt) {
-      const unmuteAt = new Date(muteAt.getTime() + totalMillis);
-      scheduleMute(message.member, server, muteAt, unmuteAt);
+    const muteAtMillis = delayMillis
+      ? new Date().getTime() + delayMillis
+      : null;
+
+    safeDelete(message);
+    if (muteAtMillis) {
+      const unmuteAtMillis = muteAtMillis + totalMillis;
+      scheduleMute(message.member, server, muteAtMillis, unmuteAtMillis);
       await message.channel.send(
         successEmbed({
           description: `${
             message.author
-          } scheduled a self-muted of ${millisToDuration(
+          } scheduled a self-mute of ${millisToDuration(
             totalMillis
           )} in ${millisToDuration(delayMillis)}`,
         })
       );
     } else {
-      const unmuteAt = new Date(new Date().getTime() + totalMillis);
-      await mute(message.member, server, unmuteAt.getTime());
+      await mute(message.member, server, new Date().getTime() + totalMillis);
       await message.channel.send(
         successEmbed({
           description: `${message.author} self-muted for ${millisToDuration(

@@ -1,4 +1,4 @@
-import { BotCommand, GuildMessage } from '@/types';
+import { BotCommand } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
 import {
   errorEmbed,
@@ -8,11 +8,12 @@ import {
 } from '@utils/embed';
 import { waitForYesOrNo } from '@utils/asyncMessageCollector';
 import { Message } from 'discord.js';
-import { AGT, BLACK, EJLX } from '@utils/constants';
+import { BLACK } from '@utils/constants';
 import { stripIndent } from 'common-tags';
 import { memberJoinAge } from '@utils/datetime';
 import { pluralize } from '@utils/pluralize';
 import { getTextChannel, idToUser } from '@utils/guildUtils';
+import { userToMentionAndTag } from '@utils/formatString';
 
 const command: BotCommand = {
   name: 'ban',
@@ -33,6 +34,7 @@ const command: BotCommand = {
       description: 'Number of days to delete. Default to 1',
     },
   ],
+  childCommands: ['unban'],
   normalCommand: async ({ content, bot, message, server, options }) => {
     const executor = message.author;
     let deleteDays = options
@@ -201,15 +203,15 @@ const command: BotCommand = {
           );
           await modActionLogChannel?.send(
             makeEmbed({
-              authorName: message.author.tag,
               title: 'Ban',
               color: BLACK,
-              footer: `In #${message.channel.name}`,
+              footer: `By ${message.author.tag} in #${message.channel.name}`,
+              footerIcon: message.member.displayAvatarURL(),
               fields: [
                 {
                   name: 'Banned Users',
                   value: `${bannedMembers
-                    .map((m) => `${m}: ${m.user.tag}`)
+                    .map((m) => userToMentionAndTag(m.user))
                     .join('\n')}\n${bannedIds.map(idToUser).join('\n')}`.trim(),
                   inline: false,
                 },
