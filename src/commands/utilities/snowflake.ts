@@ -29,6 +29,7 @@ const command: BotCommand = {
     if (roleMention) {
       parsedId = roleMention.id;
       title = `Role @${roleMention.name}`;
+      avatarUrl = roleMention.iconURL() || undefined;
     } else if (channelMention) {
       parsedId = channelMention.id;
       title = `Channel #${
@@ -46,7 +47,9 @@ const command: BotCommand = {
       if (ids.length) {
         parsedId = ids[0];
         if (server.guild.roles.cache.has(parsedId)) {
-          title = `Role @${server.guild.roles.cache.get(parsedId)!.name}`;
+          const role = server.guild.roles.cache.get(parsedId)!;
+          title = `Role @${role.name}`;
+          avatarUrl = role.iconURL() || undefined;
         } else if (server.guild.channels.cache.has(parsedId)) {
           title = `Channel #${server.guild.channels.cache.get(parsedId)!.name}`;
         } else if (server.guild.members.cache.has(parsedId)) {
@@ -73,7 +76,7 @@ const command: BotCommand = {
     await message.channel.send(
       infoEmbed({
         content: parsedId,
-        title,
+        authorName: title,
         authorIcon: avatarUrl,
         description: stripIndent`
         Snowflake: \`${parsedId}\`

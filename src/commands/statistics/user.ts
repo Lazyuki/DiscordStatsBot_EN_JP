@@ -118,8 +118,7 @@ const command: BotCommand = {
       await message.channel.send(
         infoEmbed({
           authorIcon: member?.displayAvatarURL() || user?.displayAvatarURL(),
-          title: `Stats for ${titleName}`,
-          thumbnailIcon: member?.roles.icon?.iconURL() || undefined,
+          authorName: `Stats for ${titleName}`,
           description: 'For the last 30 days',
           fields: [
             {

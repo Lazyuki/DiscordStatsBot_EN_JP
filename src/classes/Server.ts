@@ -90,6 +90,18 @@ class Server {
     return false;
   }
 
+  reloadConfig() {
+    const configFileName = getConfigFilePath(this.guild.id);
+    this.config = {} as ServerConfig;
+    if (fs.existsSync(configFileName)) {
+      const json = JSON.parse(fs.readFileSync(configFileName, 'utf8'));
+      this.config = json;
+      this.temp.ignoredBotPrefixRegex = getIgnoredBotPrefixRegex(
+        this.config.ignoredBotPrefixes
+      );
+    }
+  }
+
   backup() {
     const backupFile = getBackupFilePath(this.guild.id, new Date());
     try {
