@@ -19,13 +19,9 @@ const command: BotCommand = {
   normalCommand: async ({ bot, content, server, message }) => {
     const { members, nonMemberIds, restContent } = parseMembers(
       content,
-      server.guild
+      server.guild,
+      'MEMBERS'
     );
-    if (members.length === 0) {
-      throw new CommandArgumentError(
-        `Please specify users that are in the server`
-      );
-    }
     if (nonMemberIds.length) {
       throw new CommandArgumentError(
         `${nonMemberIds.map(idToUser).join(' ')} ${isOrAre(

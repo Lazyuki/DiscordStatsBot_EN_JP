@@ -24,8 +24,25 @@ export function code(str: string) {
 }
 
 export function camelCaseToNormal(str: string) {
-  const splitCapital = str.replace(/([A-Z])/g, ' $1');
-  return splitCapital[0].toUpperCase() + splitCapital.slice(1);
+  const splitCapital = str.replace(/([A-Z])/g, ' $1'); // This splits acronyms as well
+  let acronymSafeStr = '';
+  let lastCapital = false;
+  splitCapital.split(' ').forEach((word) => {
+    if (word.length === 1) {
+      // one letter means continuous capital
+      acronymSafeStr += word;
+      lastCapital = true;
+    } else {
+      if (lastCapital) {
+        acronymSafeStr += ' ' + word + ' ';
+      } else {
+        acronymSafeStr += word + ' ';
+      }
+      lastCapital = false;
+    }
+  });
+  acronymSafeStr = acronymSafeStr.trim();
+  return acronymSafeStr[0].toUpperCase() + acronymSafeStr.slice(1);
 }
 
 export function formatPercent(fractional: number, decimals = 2) {

@@ -80,17 +80,23 @@ async function notifyLanguageRoleChange(
     (executorId) =>
       newMember.guild.members.cache.get(executorId)?.user.tag || 'unknown'
   );
+  if (executors.length === 0) return; // Probably just RAI
   const sortedNewRoleIds = EJLX_LANG_ROLE_IDS.filter((id) => newRoles.has(id));
   const sortedOldRoleNames = EJLX_LANG_ROLE_IDS.filter((id) =>
     oldRoles.has(id)
   ).map((id) => oldRoles.get(id)?.name.split('/')[0]);
+
+  const baseEmbed = {
+    color: '#fca503',
+    footer: `${newMember.user.tag} (${newMember.id})`,
+  } as const;
 
   // only 1 person changed the roles
   if (oldRoles.size === 0) {
     // Only added new roles
     await channel.send(
       makeEmbed({
-        color: '#fca503',
+        ...baseEmbed,
         description: `**${newMember.displayName}**'s language role${pluralize(
           '',
           's have',
@@ -99,27 +105,25 @@ async function notifyLanguageRoleChange(
         )} been set to ${sortedNewRoleIds
           .map(idToRole)
           .join(' ')} by ${joinNaturally(executors)}`,
-        footer: `${newMember.user.tag} (${newMember.id}) language role update`,
       })
     );
   } else {
     if (newRoles.size === 0) {
       await channel.send(
         makeEmbed({
-          color: '#fca503',
+          ...baseEmbed,
           description: `**${newMember.displayName}**'s language role${pluralize(
             '',
             's have',
             sortedNewRoleIds.length,
             ' has'
           )} been removed by ${joinNaturally(executors)}`,
-          footer: `${newMember.user.tag} (${newMember.id}) language role update`,
         })
       );
     } else {
       await channel.send(
         makeEmbed({
-          color: '#fca503',
+          ...baseEmbed,
           description: `**${newMember.displayName}**'s language role${pluralize(
             '',
             's have',
@@ -130,7 +134,6 @@ async function notifyLanguageRoleChange(
             .join(' ')} instead of ${joinNaturally(
             sortedOldRoleNames.map((r) => `\`${r}\``)
           )} by ${joinNaturally(executors)}`,
-          footer: `${newMember.user.tag} (${newMember.id}) language role update`,
         })
       );
     }

@@ -95,7 +95,7 @@ export async function getFallbackChannel(
   await message.channel.send(
     makeEmbed({
       color: 'PURPLE',
-      description: `Please type the channel. Make sure they have access to the channel.`,
+      description: `Please specify the channel. Make sure they have access to the channel.`,
     })
   );
   const filter = (m: Message) =>

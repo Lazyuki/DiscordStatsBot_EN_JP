@@ -10,7 +10,7 @@ import {
 import Server from '@classes/Server';
 import { REGEX_RAW_ID, REGEX_RAW_ID_ONLY, REGEX_USER } from './regex';
 import { Bot } from '@/types';
-import { MemberNotFoundError } from '@/errors';
+import { CommandArgumentError, MemberNotFoundError } from '@/errors';
 import { isTextChannel } from './guildUtils';
 
 /**
@@ -92,6 +92,7 @@ export function parseChannels(
  * Parse Members or IDs from the front of the content. If it sees a non-ID word the parsing stops.
  * @param content string to parse
  * @param server server
+ * @param required "MEMBER" | "ID". if specified, throw an error if member is not found or id is not found
  * @returns {
  *  members: Member[], // Guild Members
  *  nonMemberIds: string[], // Possible IDs that aren't in the guild
@@ -101,7 +102,8 @@ export function parseChannels(
  */
 export function parseMembers(
   content: string,
-  guild: Guild
+  guild: Guild,
+  required?: 'MEMBERS' | 'MEMBER' | 'ID' | 'IDS'
 ): {
   members: GuildMember[];
   nonMemberIds: string[];
@@ -128,6 +130,21 @@ export function parseMembers(
     } else {
       break;
     }
+  }
+
+  if (members.length === 0 && required?.startsWith('MEMBER')) {
+    throw new CommandArgumentError(
+      required === 'MEMBER'
+        ? 'Please mention or specify a member in this server'
+        : 'Please mention or specify members who are in this server'
+    );
+  }
+  if (allIds.length === 0 && required?.startsWith('ID')) {
+    throw new CommandArgumentError(
+      required === 'ID'
+        ? 'Please mention or specify a user ID'
+        : 'Please mention or specify user IDs'
+    );
   }
 
   return {

@@ -12,10 +12,7 @@ const command: BotCommand = {
   arguments: '<@user> [@user2...]',
   examples: ['cyn @badNameUser'],
   normalCommand: async ({ message, content, server }) => {
-    const { members } = parseMembers(content, server.guild);
-    if (members.length === 0) {
-      throw new CommandArgumentError(`Please specify valid users`);
-    }
+    const { members } = parseMembers(content, server.guild, 'MEMBERS');
     for (const member of members) {
       await member.setNickname(
         'Please change your name',

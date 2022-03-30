@@ -52,10 +52,11 @@ const warn: BotCommand = {
   ],
   childCommands: ['warnlog', 'warnclear'],
   normalCommand: async ({ content, message, server, options }) => {
-    const { members, restContent } = parseMembers(content, server.guild);
-    if (members.length === 0) {
-      throw new CommandArgumentError('Please specify users');
-    }
+    const { members, restContent } = parseMembers(
+      content,
+      server.guild,
+      'MEMBERS'
+    );
     if (!restContent) {
       throw new CommandArgumentError('Please specify the warning content');
     }
@@ -142,7 +143,8 @@ const warn: BotCommand = {
 const warnlog: BotCommand = {
   name: 'warnlog',
   isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE'],
-  description: 'List mod logs',
+  description:
+    'List mod logs. To prevent accidentally showing warning details publically, this command is only available in one of `hiddenChannels` defined in the `config` command.',
   arguments: '[@user]',
   aliases: ['wl', 'modlog', 'ml'],
   examples: ['wl', 'wl 284840842026549259'],
@@ -155,13 +157,25 @@ const warnlog: BotCommand = {
           `Please specify a user by either mentioning them or using their ID`
         );
       }
-      const guildBan = server.guild.bans.cache.get(userId);
       const userModLogs = getModLogForUser({
         guildId: server.guild.id,
         userId,
       });
+      const warnLogs = userModLogs.filter((ml) => ml.kind === 'warn');
+      const banned = await server.guild.bans.fetch(userId);
+
       if (userModLogs.length === 0) {
-        await message.channel.send(successEmbed('No mod log entries found.'));
+        await message.channel.send(
+          infoEmbed(
+            `No mod log entries found${
+              banned
+                ? ` but was banned for:\n ${
+                    banned.reason || 'Reason: Unspecified'
+                  }`
+                : ''
+            }.`
+          )
+        );
       } else {
         await descriptionPaginator(
           message.channel,
@@ -195,41 +209,67 @@ const warnclear: BotCommand = {
   examples: ['wc @Geralt all', 'unwarn 284840842026549259 3'],
   parentCommand: 'warn',
   normalCommand: async ({ content, message, server }) => {
-    const [userId, whichLog] = content.toLowerCase().split(' ');
-    if (!userId || !REGEX_RAW_ID.test(userId)) {
+    const { allIds, restContent } = parseMembers(content, server.guild);
+    if (allIds.length !== 1) {
       throw new CommandArgumentError(
         `Please specify a user by either mentioning them or using their ID`
       );
     }
-    const clearAll = whichLog === 'all';
-    const logNumber = parseInt(whichLog, 10);
+    const clearAll = restContent === 'all';
+    const logNumber = parseInt(restContent, 10);
     if (!clearAll && isNaN(logNumber)) {
       throw new CommandArgumentError(
         `Please specify which logs to clear, either by using the log number in \`${server.config.prefix}modlog\` or \`all\` to clear all.`
       );
     }
-    const userModLogs = getModLogForUser({
-      guildId: server.guild.id,
-      userId: userId,
-    });
+    const userId = allIds[0];
+    const userModLogs =
+      getModLogForUser({
+        guildId: server.guild.id,
+        userId: userId,
+      }) || [];
+
     if (userModLogs.length === 0) {
       await message.channel.send(
-        infoEmbed(`User <@${userId}> does not have any mod log entries.`)
+        infoEmbed(`User <@${userId}> does not have any mod log entries`)
       );
       return;
     }
+    const member = server.guild.members.cache.get(userId);
     const clearedWarnings: ModLogEntry[] = [];
     if (clearAll) {
       // All warn logs
-      const res = clearModLogForUser({
+      clearModLogForUser({
         guildId: server.guild.id,
         userId,
       });
-      await message.channel.send(
-        successEmbed(
-          `Cleared ${pluralize('warning', 's', userModLogs.length)}.`
-        )
-      );
+      const clearMessage = `Cleared ${pluralize(
+        'warning',
+        's',
+        userModLogs.length
+      )}`;
+      if (
+        member &&
+        userModLogs.some((ml) => ml.kind === 'warn' && !ml.silent)
+      ) {
+        // If it contains actual warnings
+        try {
+          await member.send(
+            infoEmbed(
+              `Your warnings on "${server.guild.name}" have been cleared.`
+            )
+          );
+          await message.channel.send(
+            successEmbed(`${clearMessage} and they have been notified`)
+          );
+        } catch (e) {
+          await message.channel.send(
+            warningEmbed(`${clearMessage} but failed to notify them.`)
+          );
+        }
+      } else {
+        await message.channel.send(successEmbed(clearMessage));
+      }
     } else {
       if (logNumber < 1 || logNumber > userModLogs.length) {
         throw new CommandArgumentError(

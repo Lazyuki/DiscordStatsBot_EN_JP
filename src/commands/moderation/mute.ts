@@ -53,7 +53,10 @@ function repeatTimeoutEveryDay(userId: string, server: Server) {
         // This will be the last timeout
         delete server.data.schedules.multiTimeout[userId];
       }
-      await mem.timeout(newTimeoutMillis, `TIMEOUT_UNTIL:${unmuteAtMillis}`);
+      await mem.timeout(
+        newTimeoutMillis,
+        `CIRI_TIMEOUT_EXTENSION TIMEOUT_UNTIL:${unmuteAtMillis}`
+      );
       repeatTimeoutEveryDay(userId, server);
     });
   });
@@ -68,7 +71,7 @@ const mute: BotCommand = {
     "Mute (timeout) people from chats and VC using Discord's timeout feature",
   arguments:
     '<@user> [@user2...] [time in the format 1d2h3m4s. Default: 5m. Max: 7d] [reason]',
-  childCommands: ['unTimeout'],
+  childCommands: ['unmute'],
   examples: [
     'timeout @Geralt being too good at Japanese',
     'timeout 284840842026549259 299335689558949888 shut up',
