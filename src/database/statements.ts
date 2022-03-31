@@ -161,6 +161,28 @@ export const getDeletesForUser = makeGetAllRows<GuildUser, Count>(`
     WHERE guild_id = $guildId AND user_id = $userId
 `);
 
+export const getActiveUserMessages = makeGetAllRows<
+  GuildId & { threshold: number },
+  UserCount
+>(`
+    SELECT user_id, SUM(message_count) as count
+    FROM messages
+    WHERE guild_id = $guildId 
+    GROUP BY user_id
+    HAVING SUM(message_count) > $threshold 
+`);
+
+export const getActiveUserVoice = makeGetAllRows<
+  GuildId & { threshold: number },
+  UserCount
+>(`
+    SELECT user_id, SUM(second_count) as count
+    FROM voice
+    WHERE guild_id = $guildId 
+    GROUP BY user_id
+    HAVING SUM(second_count) > $threshold 
+`);
+
 export const getUserMessages = makeGetAllWithArray<
   GuildUser,
   { count: number; channelId?: string; lang?: LangType }

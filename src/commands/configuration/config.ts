@@ -4,7 +4,11 @@ import { CommandArgumentError, UserPermissionError } from '@/errors';
 import { BotCommand, ServerConfig } from '@/types';
 import { parseSnowflakeIds } from '@utils/argumentParsers';
 import { makeEmbed, successEmbed } from '@utils/embed';
-import { camelCaseToNormal, joinNaturally } from '@utils/formatString';
+import {
+  camelCaseToNormal,
+  escapeRegex,
+  joinNaturally,
+} from '@utils/formatString';
 import { CategoryChannel, Guild } from 'discord.js';
 import { DEFAULT_PREFIX } from '@/envs';
 import { REGEX_MESSAGE_ID } from '@utils/regex';
@@ -453,6 +457,9 @@ const command: BotCommand = {
   isAllowed: ['ADMIN'],
   onCommandInit: (server) => {
     server.config = { ...DEFAULT_CONFIG, ...server.config };
+    server.temp.ignoredBotPrefixRegex = getIgnoredBotPrefixRegex(
+      server.config.ignoredBotPrefixes
+    );
   },
   description: 'View or update configuration for this server',
   arguments: '[number] [add/remove | enable/disable | set/reset] [value]',
@@ -568,6 +575,11 @@ const command: BotCommand = {
           configValue,
           server.config[configKey] as never
         );
+        if (configKey === 'ignoredBotPrefixes') {
+          server.temp.ignoredBotPrefixRegex = getIgnoredBotPrefixRegex(
+            server.config.ignoredBotPrefixes
+          );
+        }
         server.save();
         await message.channel.send(
           successEmbed(
@@ -579,5 +591,13 @@ const command: BotCommand = {
     }
   },
 };
+
+export function getIgnoredBotPrefixRegex(prefixes: string[]) {
+  if (!prefixes || prefixes.length === 0) return null;
+  return new RegExp(
+    `^(?:${prefixes.map((p) => escapeRegex(p)).join('|')})`,
+    'i'
+  );
+}
 
 export default command;

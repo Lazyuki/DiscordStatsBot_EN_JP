@@ -96,8 +96,8 @@ export function getStartHourISO(): string {
   return getStartDateTime(false).toISOString();
 }
 
-export function getDiscordTimestamp(date: Date, option: TimestampFlag) {
-  return `<t:${Math.floor(date.getTime() / 1000)}:${option || 'F'}>`;
+export function getDiscordTimestamp(date: Date, option: TimestampFlag = 'F') {
+  return `<t:${Math.floor(date.getTime() / 1000)}:${option}>`;
 }
 
 export function strToMillis(content: string): {
@@ -118,4 +118,27 @@ export function strToMillis(content: string): {
     seconds * 1000;
 
   return { millis: totalMillis, restContent: content.replace(TIME_REGEX, '') };
+}
+
+const TIMEZONE_REGEX = /\{([^}]+)\}/;
+export function formatCategoryClock(timeString: string, zeroPad: boolean) {
+  const date = new Date();
+  return timeString.replace(
+    TIMEZONE_REGEX,
+    (allMatch: string, timezone: string) => {
+      try {
+        const hour = date.toLocaleString('en-US', {
+          hour: 'numeric',
+          hour12: false,
+          timeZone: timezone,
+        });
+        if (!zeroPad && hour[0] === '0') {
+          return hour[1];
+        }
+        return hour;
+      } catch (e) {
+        return allMatch;
+      }
+    }
+  );
 }

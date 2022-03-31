@@ -7,12 +7,6 @@ import { codeBlock } from '@utils/formatString';
 import { idToUser } from '@utils/guildUtils';
 import { pluralCount } from '@utils/pluralize';
 
-declare module '@/types' {
-  interface ServerTemp {
-    newUsers: string[];
-  }
-}
-
 const command: BotCommand = {
   name: 'activity',
   aliases: ['ac'],

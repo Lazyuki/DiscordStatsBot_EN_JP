@@ -35,18 +35,14 @@ function initialTask(bot: Bot) {
   const millisUntilTomorrow = startOfThisHour.getTime() - now.getTime();
 
   clearOldRecords();
-  bot.utcHour = getStartHourISO();
-  bot.utcDay = getTodayISO();
 
   setTimeout(() => {
-    hourlyTask(bot);
     setInterval(() => {
       hourlyTask(bot);
     }, HOUR_MILLIS);
   }, millisUntilNextHour);
 
   setTimeout(() => {
-    dailyTask(bot);
     setInterval(() => {
       dailyTask(bot);
     }, HOUR_MILLIS * 24);

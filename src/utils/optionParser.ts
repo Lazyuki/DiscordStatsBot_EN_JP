@@ -24,8 +24,6 @@ export function optionParser(
       if (nameIndex !== -1) {
         selectedOption = options[nameIndex];
         content = content.replace(word, '');
-      } else {
-        throw new InvalidOptionError(`The option \`${word}\` does not exist.`);
       }
     } else if (word.startsWith('-')) {
       const short = word.slice(1);
@@ -66,7 +64,11 @@ export function optionParser(
           );
         }
         const value = valueIt.value;
-        resolvedOptions[selectedOption.name] = value;
+        if (selectedOption.name in resolvedOptions) {
+          resolvedOptions[selectedOption.name] += ',' + value;
+        } else {
+          resolvedOptions[selectedOption.name] = value;
+        }
         content = content.replace(value, '');
       }
     }

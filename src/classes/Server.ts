@@ -10,6 +10,7 @@ import {
   ServerData,
 } from '@/types';
 import { escapeRegex } from '@utils/formatString';
+import { getIgnoredBotPrefixRegex } from '@commands/configuration/config';
 
 declare module '@/types' {
   interface ServerTemp {
@@ -38,14 +39,6 @@ function getDataFilePath(guildId: string) {
   return `./data/${guildId}_data.json`;
 }
 
-function getIgnoredBotPrefixRegex(prefixes: string[]) {
-  if (!prefixes || prefixes.length === 0) return null;
-  return new RegExp(
-    `^(?:${prefixes.map((p) => escapeRegex(p)).join('|')})`,
-    'i'
-  );
-}
-
 class Server {
   guild: Guild;
   config: ServerConfig; // config for each server
@@ -55,9 +48,6 @@ class Server {
   constructor(guild: Guild, bot: Bot) {
     this.guild = guild;
     this.temp = {} as ServerTemp;
-    this.data = {
-      schedules: {} as ServerSchedules,
-    } as ServerData;
 
     const configFileName = getConfigFilePath(guild.id);
     this.config = {} as ServerConfig;
@@ -66,6 +56,9 @@ class Server {
       this.config = json;
     }
 
+    this.data = {
+      schedules: {} as ServerSchedules,
+    } as ServerData;
     const dataFileName = getDataFilePath(guild.id);
     if (fs.existsSync(dataFileName)) {
       const json = JSON.parse(fs.readFileSync(dataFileName, 'utf8'));
@@ -90,15 +83,22 @@ class Server {
     return false;
   }
 
-  reloadConfig() {
+  reloadConfig(bot: Bot) {
     const configFileName = getConfigFilePath(this.guild.id);
-    this.config = {} as ServerConfig;
     if (fs.existsSync(configFileName)) {
       const json = JSON.parse(fs.readFileSync(configFileName, 'utf8'));
       this.config = json;
       this.temp.ignoredBotPrefixRegex = getIgnoredBotPrefixRegex(
         this.config.ignoredBotPrefixes
       );
+    }
+  }
+
+  reloadData(bot: Bot) {
+    const dataFileName = getDataFilePath(this.guild.id);
+    if (fs.existsSync(dataFileName)) {
+      const json = JSON.parse(fs.readFileSync(dataFileName, 'utf8'));
+      this.data = json;
     }
   }
 
@@ -118,9 +118,6 @@ class Server {
   }
 
   save() {
-    this.temp.ignoredBotPrefixRegex = getIgnoredBotPrefixRegex(
-      this.config.ignoredBotPrefixes
-    );
     try {
       const configFileName = getConfigFilePath(this.guild.id);
       fs.writeFileSync(configFileName, JSON.stringify(this.config), 'utf8');

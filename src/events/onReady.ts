@@ -5,6 +5,7 @@ import logger from '@/logger';
 import Server from '@classes/Server';
 import { insertServer } from '@database/statements';
 import { RESTART_TMP_FILE } from '@tasks/exitTask';
+import hourlyTask from '@tasks/hourlyTask';
 
 const event: BotEvent<'ready'> = {
   eventName: 'ready',
@@ -18,6 +19,7 @@ const event: BotEvent<'ready'> = {
     logger.info(`===========================================`);
     logger.info(`READY! Logged in as ${bot.user?.tag}`);
     bot.botInits.forEach((init) => init(bot));
+    hourlyTask(bot);
     if (fs.existsSync(RESTART_TMP_FILE)) {
       const killedChannel = fs.readFileSync(RESTART_TMP_FILE, 'utf8');
       fs.unlinkSync(RESTART_TMP_FILE);

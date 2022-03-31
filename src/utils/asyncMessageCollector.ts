@@ -40,7 +40,7 @@ export function waitForConfirmOrCancel(
 ): Promise<boolean> {
   const filter = (m: Message) =>
     m.author.id === message.author.id &&
-    ['confirm', 'cancel'].includes(m.content.toLowerCase());
+    ['confirm', 'cancel'].includes(m.content.trim().toLowerCase());
   const collector = message.channel.createMessageCollector({
     filter,
     time: waitForSeconds * 1000,

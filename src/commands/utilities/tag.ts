@@ -23,7 +23,7 @@ import { GuildMember } from 'discord.js';
 
 declare module '@/types' {
   interface ServerTemp {
-    newUsers: string[];
+    newUsers: { id: string; joinMillis: number; link?: string }[];
   }
 }
 
@@ -111,7 +111,7 @@ const command: BotCommand = {
         if (isNaN(newMemberIndex) || newMemberIndex < 1 || newMemberIndex > 3) {
           throw new CommandArgumentError('Please specify a user to tag');
         } else {
-          const userId = server.temp.newUsers[newMemberIndex - 1];
+          const userId = server.temp.newUsers[newMemberIndex - 1]?.id;
           member = server.guild.members.cache.get(userId);
           if (!member) {
             // New user already left

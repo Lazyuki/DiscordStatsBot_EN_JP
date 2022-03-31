@@ -16,10 +16,10 @@ const command: BotCommand = {
   normalCommand: async ({ bot, message, options, server }) => {
     if (options['all']) {
       for (const s of Object.values(bot.servers)) {
-        s.reloadConfig();
+        s.reloadConfig(bot);
       }
     } else {
-      server.reloadConfig();
+      server.reloadConfig(bot);
     }
     await message.channel.send(successEmbed(`Reloaded server config`));
   },

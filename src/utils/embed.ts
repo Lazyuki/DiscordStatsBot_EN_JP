@@ -6,8 +6,9 @@ import {
   SUCCESS_COLOR,
   WARNING_COLOR,
 } from './constants';
+import { splitMessage } from './safeSend';
 
-interface EmbedField {
+export interface EmbedField {
   name: string; // Max 256
   value: string; // Max 1024
   inline?: boolean;
@@ -52,11 +53,7 @@ export const makeEmbed = ({
   if (titleUrl) embed.setURL(titleUrl);
   if (description) {
     if (description.length > 4096) {
-      const [firstChunk, ...restChunk] = Util.splitMessage(description, {
-        maxLength: 4096,
-        append: '\n(continued)',
-        char: ['\n', ' ', '。'],
-      });
+      const [firstChunk, ...restChunk] = splitMessage(description, 4096);
       embed.setDescription(firstChunk);
       restChunk.forEach((chunk) => {
         const extraEmbed = new MessageEmbed()

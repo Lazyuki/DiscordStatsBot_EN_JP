@@ -132,6 +132,15 @@ export function parseMembers(
     }
   }
 
+  if (allIds.length === 0 && /^.+#[0-9]{4}$/.test(words[0])) {
+    // using user tag?
+    const tagMember = guild.members.cache.find((v) => v.user.tag === words[0]);
+    if (tagMember) {
+      members.push(tagMember);
+      allIds.push(tagMember.id);
+    }
+  }
+
   if (members.length === 0 && required?.startsWith('MEMBER')) {
     throw new CommandArgumentError(
       required === 'MEMBER'
