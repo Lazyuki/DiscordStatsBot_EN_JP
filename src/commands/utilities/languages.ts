@@ -37,6 +37,7 @@ const command: BotCommand = {
   ],
   arguments: '[ -a all users ] [ -m minimum message ] [ -v minimum voice ]',
   normalCommand: async ({ message, server, options }) => {
+    await message.channel.sendTyping();
     const all = Boolean(options['all']);
     let members: GuildMember[] = [...server.guild.members.cache.values()];
     let minMessages = 100;
@@ -82,7 +83,7 @@ const command: BotCommand = {
       members = members.filter((m) => userIds.includes(m.id));
     }
 
-    const count = (n: number) => `${n} ${isOrAre(n)}`;
+    const count = (n: number) => `**${n}** ${isOrAre(n)}`;
     const langs: Record<string, number> = {
       [NJ]: 0,
       [NE]: 0,
@@ -95,8 +96,8 @@ const command: BotCommand = {
       [NJ + FE]: 0,
       [NJ + OL]: 0,
       [NE + OL]: 0,
+      [FJ + NE]: 0,
       [FJ + FE]: 0,
-      [FJ + OL]: 0,
     };
     for (const member of members) {
       const roles = member.roles.cache;
@@ -111,8 +112,8 @@ const command: BotCommand = {
       if (roles.has(NJ) && roles.hasAny(FE, FE2)) langs[NJ + FE]++;
       if (roles.hasAll(NJ, OL)) langs[NJ + OL]++;
       if (roles.hasAll(NE, OL)) langs[NE + OL]++;
-      if (roles.hasAny(FJ, AJ) && roles.hasAny(FE, FE2)) langs[FJ + FE]++;
       if (roles.hasAny(FJ, AJ) && roles.has(NE)) langs[FJ + NE]++;
+      if (roles.hasAny(FJ, AJ) && roles.hasAny(FE, FE2)) langs[FJ + FE]++;
     }
     await message.channel.send(
       infoEmbed({
