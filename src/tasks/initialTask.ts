@@ -35,6 +35,8 @@ function initialTask(bot: Bot) {
   const millisUntilTomorrow = startOfThisHour.getTime() - now.getTime();
 
   clearOldRecords();
+  bot.utcHour = getStartHourISO();
+  bot.utcDay = getTodayISO();
 
   setTimeout(() => {
     setInterval(() => {

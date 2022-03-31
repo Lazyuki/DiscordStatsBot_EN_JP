@@ -146,7 +146,7 @@ const warnlog: BotCommand = {
   description:
     'List mod logs. To prevent accidentally showing warning details publically, this command is only available in one of `hiddenChannels` defined in the `config` command.',
   arguments: '[@user]',
-  aliases: ['wl', 'modlog', 'ml'],
+  aliases: ['wl'],
   examples: ['wl', 'wl 284840842026549259'],
   parentCommand: 'warn',
   normalCommand: async ({ bot, content, message, server }) => {
