@@ -1,11 +1,14 @@
 import { GuildMessage } from '@/types';
 import Server from '@classes/Server';
 import {
+  Emoji,
   GuildMember,
   Message,
+  MessageReaction,
   NewsChannel,
   TextBasedChannel,
   TextChannel,
+  User,
 } from 'discord.js';
 import { parseChannels } from './argumentParsers';
 import { infoEmbed, makeEmbed } from './embed';
@@ -115,5 +118,50 @@ export async function getFallbackChannel(
       resolve(null);
     });
   });
+  return promise;
+}
+
+export async function waitForReactions(
+  message: Message,
+  reactions: { emojiOrId: string; count: number }[],
+  waitForSeconds = 60
+) {
+  const emojiOrIds = reactions.map((r) => r.emojiOrId);
+  const filter = (reaction: MessageReaction) =>
+    reaction.emoji.id
+      ? emojiOrIds.includes(reaction.emoji.id)
+      : emojiOrIds.includes(reaction.emoji.name || '');
+
+  const counts: Record<string, number> = {};
+  const collector = message.createReactionCollector({
+    filter,
+    time: waitForSeconds * 1000,
+  });
+  const promise = new Promise<{ emojiOrId: string; user: User } | null>(
+    (resolve) => {
+      collector.on('collect', async (r, u) => {
+        const collectedReaction = reactions.find((reaction) =>
+          r.emoji.id
+            ? reaction.emojiOrId === r.emoji.id
+            : reaction.emojiOrId === r.emoji.name
+        );
+        if (!collectedReaction) return; // shouldn't be possible
+        const requiredCount = collectedReaction.count;
+        if (requiredCount === 1) {
+          resolve({ emojiOrId: collectedReaction.emojiOrId, user: u });
+        } else {
+          const key = `${collectedReaction.emojiOrId}${u.id}`;
+          key in counts ? counts[key]++ : (counts[key] = 1);
+          if (counts[key] >= requiredCount) {
+            resolve({ emojiOrId: collectedReaction.emojiOrId, user: u });
+          }
+        }
+      });
+      collector.on('end', () => {
+        message.reactions.removeAll();
+        resolve(null);
+      });
+    }
+  );
   return promise;
 }

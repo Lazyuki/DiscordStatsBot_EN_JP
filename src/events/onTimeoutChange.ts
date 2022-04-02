@@ -12,27 +12,14 @@ const event: BotEvent<'guildMemberUpdate'> = {
   skipOnDebug: true,
   processEvent: async (bot, oldMember, newMember) => {
     if (
-      oldMember.communicationDisabledUntil?.getTime() ===
-      newMember.communicationDisabledUntil?.getTime()
+      oldMember.communicationDisabledUntilTimestamp ===
+      newMember.communicationDisabledUntilTimestamp
     ) {
-      return;
+      return; // no timeout change
     }
 
-    if (!newMember.guild.me?.permissions.has('VIEW_AUDIT_LOG')) {
-      // can't view audit log then I can't do anything
-      return;
-    }
-
-    // Check if I should log
     const server = bot.servers[newMember.guild.id];
-    if (!server.config.modActionLogChannel) return;
-    const modActionLogChannelId = server.config.modActionLogChannel;
-    const modActionLogChannel = getTextChannel(
-      server.guild,
-      modActionLogChannelId
-    );
-
-    if (!modActionLogChannel) return; // no need to log
+    const timeoutIndicatorRoleId = server.config.timeoutIndicatorRole;
 
     let mode: 'ADD' | 'REMOVE' | 'UPDATE';
     let titleSuffix = '';
@@ -45,6 +32,9 @@ const event: BotEvent<'guildMemberUpdate'> = {
       durationStr = `Timeout had ${millisToDuration(
         oldMember.communicationDisabledUntil!.getTime() - now
       )} remaining.`;
+      if (timeoutIndicatorRoleId) {
+        await newMember.roles.remove(timeoutIndicatorRoleId);
+      }
     } else if (!oldMember.communicationDisabledUntil) {
       // Timeout added
       mode = 'ADD';
@@ -57,6 +47,9 @@ const event: BotEvent<'guildMemberUpdate'> = {
         newMember.communicationDisabledUntil,
         'R'
       )})`;
+      if (timeoutIndicatorRoleId) {
+        await newMember.roles.add(timeoutIndicatorRoleId);
+      }
     } else {
       // Timeout updated
       const milliDiff =
@@ -75,8 +68,24 @@ const event: BotEvent<'guildMemberUpdate'> = {
       
       `;
     }
-    const { member, delegateBotId, reason } =
-      await getTimeoutIssuerFromAuditLogs(server.guild, newMember.id, mode);
+
+    // Check if I should log
+    if (!server.config.modActionLogChannel) return;
+    const modActionLogChannelId = server.config.modActionLogChannel;
+    const modActionLogChannel = getTextChannel(
+      server.guild,
+      modActionLogChannelId
+    );
+    if (!modActionLogChannel) return; // no need to log
+
+    const auditLogInfo = await getTimeoutIssuerFromAuditLogs(
+      server.guild,
+      newMember.id,
+      mode
+    );
+    if (!auditLogInfo) return;
+    const { member, delegateBotId, reason } = auditLogInfo;
+
     // TODO: Still log if timed out through another bot?
     if (member && !delegateBotId) {
       await modActionLogChannel.send(
@@ -116,6 +125,10 @@ async function getTimeoutIssuerFromAuditLogs(
   userId: string,
   mode: 'ADD' | 'REMOVE' | 'UPDATE'
 ) {
+  if (!guild.me?.permissions.has('VIEW_AUDIT_LOG')) {
+    // can't view audit log then I can't do anything
+    return;
+  }
   const auditLogs = await guild.fetchAuditLogs({
     limit: 20,
     type: 'MEMBER_UPDATE',
@@ -146,18 +159,22 @@ async function getTimeoutIssuerFromAuditLogs(
         }
       }
       entry.changes?.forEach((change) => {
-        change = change as TimeoutChangeAuditLogEntry;
         if (change.key !== 'communication_disabled_until') return; // not about timeout
+        const timeoutChange = change as TimeoutChangeAuditLogEntry;
         if (timeoutIssuerId) return; // already found
-        if (mode === 'REMOVE' && !change.new) {
+        if (mode === 'REMOVE' && !timeoutChange.new) {
           timeoutIssuerId = executorId;
           delegateBotId = entryThroughBot;
           timeoutReason = entryReason;
-        } else if (mode === 'ADD' && !change.old) {
+        } else if (mode === 'ADD' && !timeoutChange.old) {
           timeoutIssuerId = executorId;
           delegateBotId = entryThroughBot;
           timeoutReason = entryReason;
-        } else if (mode === 'UPDATE' && change.old && change.new) {
+        } else if (
+          mode === 'UPDATE' &&
+          timeoutChange.old &&
+          timeoutChange.new
+        ) {
           timeoutIssuerId = executorId;
           delegateBotId = entryThroughBot;
           timeoutReason = entryReason;

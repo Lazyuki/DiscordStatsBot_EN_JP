@@ -84,3 +84,4 @@ export const BLACK = '#000000';
 
 // Emoji
 export const EXTERNAL_LINK_EMOJI = '<:externallink:438354612379189268>';
+export const EJLX_BAN_EMOJI = `<:ban:959511391172173906>`;

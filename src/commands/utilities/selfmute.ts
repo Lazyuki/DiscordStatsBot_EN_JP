@@ -120,7 +120,9 @@ const command: BotCommand = {
       );
     }
     if (!message.member.moderatable) {
-      throw new UserPermissionError('I cannot mute you');
+      throw new UserPermissionError(
+        'I cannot mute you since your roles are higher than mine'
+      );
     }
     const [muteDuration, muteDelay] = content.split(' in ');
     const totalMillis = strToMillis(muteDuration.trim()).millis;

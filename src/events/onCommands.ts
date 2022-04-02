@@ -1,6 +1,6 @@
 import { Util, DiscordAPIError } from 'discord.js';
 import { BotEvent } from '@/types';
-import logger from '@/logger';
+import logger, { discordLogError } from '@/logger';
 import {
   BotError,
   NotFoundError,
@@ -13,7 +13,7 @@ import safeSend from '@utils/safeSend';
 import { isNotDM } from '@utils/guildUtils';
 import isRateLimited from '@utils/rateLimit';
 import { optionParser } from '@utils/optionParser';
-import { code } from '@utils/formatString';
+import { code, userToTagAndId } from '@utils/formatString';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -116,6 +116,15 @@ const event: BotEvent<'messageCreate'> = {
               await safeChannelSend(
                 errorEmbed(`${error.name}: ${error.message}`)
               );
+              await discordLogError(
+                bot,
+                error,
+                `Command: \`${command.name}\` by ${userToTagAndId(
+                  message.author
+                )} in #${message.channel.name} in \`${message.guild.name}\` (${
+                  message.guildId
+                }). Content: \`${Util.escapeCodeBlock(message.content)}\``
+              );
             }
             logger.warn(`${error.httpStatus} ${error.name}: ${error.message}`);
           } else if (error instanceof UserError) {
@@ -147,6 +156,15 @@ const event: BotEvent<'messageCreate'> = {
                 error.stack || 'no stack trace'
               }`
             );
+            await discordLogError(
+              bot,
+              error,
+              `Command: \`${command.name}\` by ${userToTagAndId(
+                message.author
+              )} in #${message.channel.name} in \`${message.guild.name}\` (${
+                message.guildId
+              }). Content: \`${Util.escapeCodeBlock(message.content)}\``
+            );
           } else {
             await safeChannelSend(
               errorEmbed({
@@ -158,6 +176,17 @@ const event: BotEvent<'messageCreate'> = {
               `${error.name}: ${error.message}\n${
                 error.stack || 'no stack trace'
               }`
+            );
+            await discordLogError(
+              bot,
+              error,
+              `Unexpected Error Command: \`${
+                command.name
+              }\` by ${userToTagAndId(message.author)} in #${
+                message.channel.name
+              } in \`${message.guild.name}\` (${
+                message.guildId
+              }). Content: \`${Util.escapeCodeBlock(message.content)}\``
             );
           }
         }

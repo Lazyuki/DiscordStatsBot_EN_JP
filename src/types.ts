@@ -24,7 +24,10 @@ export interface Bot extends Client {
   commandInits: OnCommandInit[];
   botInits: OnBotInit[];
   botExits: OnBotExit[];
-  botConfig: BotConfig;
+  serverInits: OnCommandInit[];
+  serverConfigInits: OnCommandInit[];
+  config: BotConfig;
+  bogLogChannel?: TextChannel;
   utcHour: string; // ISO
   utcDay: string; // ISO
 }
@@ -153,6 +156,7 @@ export interface BotEvent<E extends keyof ClientEvents> {
   once?: boolean;
   skipOnDebug: boolean;
   processEvent: (bot: Bot, ...args: ClientEvents[E]) => void | Promise<void>;
+  onServerInit?: OnCommandInit;
   onBotInit?: OnBotInit;
   onBotExit?: OnBotExit;
 }
@@ -168,6 +172,24 @@ export interface ModLogEntry {
   kind: ModLogType;
   silent: boolean;
   content: string;
+}
+
+export interface QuickBanConfig {
+  time: number;
+  link: string;
+  regexStr: string;
+  ignoreCase: boolean;
+}
+
+export type PartialInvite = { code: string; inviter: string };
+export type MemberJoinInvites = PartialInvite[];
+
+export type NotifyType = 'OFFLINE' | 'ALWAYS' | 'NEVER';
+export type RoleNotifyType = NotifyType | 'OFFLINE_NOROLE';
+export interface LineNotifyConfig {
+  userMention: NotifyType;
+  activeStaff: NotifyType | 'OFFLINE_NOROLE';
+  lineNotifyToken: string;
 }
 
 // Extend the type from each command file

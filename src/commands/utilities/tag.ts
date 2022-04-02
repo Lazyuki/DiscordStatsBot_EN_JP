@@ -1,5 +1,7 @@
+import { GuildMember, Invite, Vanity } from 'discord.js';
+
 import { CommandArgumentError } from '@/errors';
-import { BotCommand } from '@/types';
+import { BotCommand, ServerTemp, MemberJoinInvites } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
 import {
   AJ,
@@ -19,11 +21,10 @@ import { cleanEmbed, makeEmbed, warningEmbed } from '@utils/embed';
 import { joinNaturally } from '@utils/formatString';
 import { idToRole } from '@utils/guildUtils';
 import { safeDelete } from '@utils/safeDelete';
-import { GuildMember } from 'discord.js';
 
 declare module '@/types' {
   interface ServerTemp {
-    newUsers: { id: string; joinMillis: number; link?: string }[];
+    newUsers: { id: string; joinMillis: number; invites: MemberJoinInvites }[];
   }
 }
 

@@ -1,4 +1,4 @@
-import { ColorResolvable, MessageEmbed, Util } from 'discord.js';
+import { ColorResolvable, Message, MessageEmbed, Util } from 'discord.js';
 import {
   EMBED_BG_COLOR,
   ERROR_COLOR,
@@ -14,6 +14,7 @@ export interface EmbedField {
   inline?: boolean;
 }
 
+// Total embed characters limit 6000
 interface EmbedOptions {
   content?: string; // Message content outside of Embeds
   color?: ColorResolvable;
@@ -31,23 +32,26 @@ interface EmbedOptions {
   fields?: (EmbedField | null)[]; // Max 25
 }
 
-export const makeEmbed = ({
-  content,
-  color = EMBED_BG_COLOR,
-  title,
-  titleUrl,
-  description,
-  authorName,
-  authorUrl,
-  authorIcon,
-  footer,
-  footerIcon,
-  thumbnailIcon,
-  mainImage,
-  timestamp,
-  fields,
-}: EmbedOptions) => {
-  const embed = new MessageEmbed().setColor(color);
+export const makeEmbed = (
+  {
+    content,
+    color = EMBED_BG_COLOR,
+    title,
+    titleUrl,
+    description,
+    authorName,
+    authorUrl,
+    authorIcon,
+    footer,
+    footerIcon,
+    thumbnailIcon,
+    mainImage,
+    timestamp,
+    fields,
+  }: EmbedOptions,
+  baseEmbed?: MessageEmbed
+) => {
+  const embed = baseEmbed || new MessageEmbed().setColor(color);
   const additionalEmbeds: MessageEmbed[] = [];
   if (title) embed.setTitle(title);
   if (titleUrl) embed.setURL(titleUrl);
@@ -137,3 +141,20 @@ export const infoEmbed = (options: EmbedOptions | string) => {
     color: INFO_COLOR,
   });
 };
+
+export const questionEmbed = (options: EmbedOptions | string) => {
+  if (typeof options === 'string') {
+    return makeEmbed({ description: options, color: 'PURPLE' });
+  }
+  return makeEmbed({
+    ...options,
+    color: 'PURPLE',
+  });
+};
+
+export async function editEmbed(message: Message, newOptions: EmbedOptions) {
+  const currentEmbed = message.embeds[0];
+  if (!currentEmbed) return;
+
+  await message.edit(makeEmbed(newOptions, currentEmbed));
+}

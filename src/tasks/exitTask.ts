@@ -3,6 +3,7 @@ import { Message } from 'discord.js';
 
 import { Bot, GuildMessage } from '@/types';
 import db from '@db';
+import { getConfigFilePath, saveConfig } from '@utils/disk';
 
 export const RESTART_TMP_FILE = '.restart.tmp';
 
@@ -13,6 +14,8 @@ export const RESTART_TMP_FILE = '.restart.tmp';
  */
 function exitTask(bot: Bot, message?: GuildMessage) {
   bot.botExits.forEach((fn) => fn(bot));
+  saveConfig('bot', bot.config);
+
   for (const server of Object.values(bot.servers)) {
     server.save();
   }

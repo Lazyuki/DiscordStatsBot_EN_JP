@@ -1,5 +1,5 @@
 import { Bot } from '@/types';
-import { User, Util } from 'discord.js';
+import { Guild, User, Util } from 'discord.js';
 
 export function codeBlock(str: string, lang: string = '') {
   const lines = str.split('\n');
@@ -63,8 +63,34 @@ export function escapeRegex(regex: string) {
 }
 
 export function resolveEmoji(emoji: string, bot: Bot) {
-  const isEmojiResolvable = !emoji.startsWith('<') || bot.emojis.resolve(emoji);
-  return isEmojiResolvable ? emoji : `:${emoji.split(':')[1]}:`;
+  const discordEmoji = emoji.startsWith('<');
+  if (discordEmoji) {
+    const [animated, name, id] = emoji.slice(1, emoji.length - 1).split(':');
+    const isEmojiResolvable = bot.emojis.resolve(id);
+    return isEmojiResolvable ? emoji : `${animated}:${name}:`;
+  } else {
+    return emoji;
+  }
+}
+
+export function checkServerEmoji(emoji: string, guild: Guild) {
+  const discordEmoji = emoji.startsWith('<');
+  if (discordEmoji) {
+    const [animated, name, id] = emoji.slice(1, emoji.length - 1).split(':');
+    return Boolean(guild.emojis.resolve(id));
+  } else {
+    return false;
+  }
+}
+
+export function getServerEmoji(emoji: string, guild: Guild) {
+  const discordEmoji = emoji.startsWith('<');
+  if (discordEmoji) {
+    const [animated, name, id] = emoji.slice(1, emoji.length - 1).split(':');
+    return guild.emojis.resolve(id);
+  } else {
+    return null;
+  }
 }
 
 export function userToMentionAndTag(user: User) {

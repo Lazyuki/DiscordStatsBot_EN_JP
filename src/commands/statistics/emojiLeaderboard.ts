@@ -8,9 +8,10 @@ import {
 import { fieldsPaginator } from '@utils/paginate';
 import { Message } from 'discord.js';
 import Server from '@classes/Server';
-import { infoEmbed, warningEmbed } from '@utils/embed';
-import { resolveEmoji } from '@utils/formatString';
+import { infoEmbed, warningEmbed, EmbedField } from '@utils/embed';
+import { getServerEmoji, resolveEmoji } from '@utils/formatString';
 import { pluralCount } from '@utils/pluralize';
+import { CommandArgumentError } from '@/errors';
 
 const command: BotCommand = {
   name: 'emojiLeaderboard',
@@ -19,16 +20,22 @@ const command: BotCommand = {
   aliases: ['eml', 'emlb'],
   options: [
     {
-      name: 'all',
-      short: 'a',
+      name: 'global',
+      short: 'g',
       description:
-        'Include Discord emojis outside of this server and unicode emojis as well',
+        'Include Discord emojis outside of this server and unicode emojis as well. By default, the leaderboard only shows server emojis',
       bool: true,
     },
     {
-      name: 'unicode',
-      short: 'u',
-      description: 'Only show unicode emojis',
+      name: 'animated',
+      short: 'a',
+      description: 'Only show animated emojis',
+      bool: true,
+    },
+    {
+      name: 'static',
+      short: 's',
+      description: 'Only show static emojis',
       bool: true,
     },
     {
@@ -37,10 +44,17 @@ const command: BotCommand = {
       description: 'Show least used emojis in the server first',
       bool: true,
     },
+    {
+      name: 'unicode',
+      short: 'u',
+      description:
+        'Only show unicode emojis. Cannot be used with other options.',
+      bool: true,
+    },
   ],
   arguments: '[emoji]',
   requiredServerConfigs: ['statistics'],
-  examples: ['eml', 'eml -l', 'eml :pikaLOL:'],
+  examples: ['eml', 'eml -l', 'eml -ls', 'eml :pikaLOL:'],
   normalCommand: async ({ message, bot, server, content, options }) => {
     // Show user leaderboad for a single emoji
     if (content) {
@@ -48,19 +62,33 @@ const command: BotCommand = {
       return;
     }
 
-    const showAll = Boolean(options['all']);
+    const showAll = Boolean(options['global']);
+    const animatedOnly = Boolean(options['animated']);
+    const staticOnly = Boolean(options['static']);
     const unicodeOnly = Boolean(options['unicode']);
     const leastFirst = Boolean(options['least']);
+    if (animatedOnly && staticOnly) {
+      throw new CommandArgumentError("There's no animated static emoji...");
+    }
+    if (unicodeOnly && (animatedOnly || staticOnly || showAll || leastFirst)) {
+      throw new CommandArgumentError(
+        'The unicode option can only be used by itself'
+      );
+    }
+
+    const filter = (emoji: string) => {
+      if (unicodeOnly) return !emoji.startsWith('<');
+      if (animatedOnly && !emoji.startsWith('<a')) return false;
+      if (staticOnly && emoji.startsWith('<a')) return false;
+      if (!showAll && !getServerEmoji(emoji, server.guild)) return false;
+      return true;
+    };
 
     const emojis = getEmojiLeaderboard({
       guildId: server.guild.id,
     });
 
-    const filteredEmojis = showAll
-      ? emojis
-      : unicodeOnly
-      ? emojis.filter((e) => !e.emoji.startsWith('<'))
-      : emojis.filter((e) => server.guild.emojis.resolve(e.emoji));
+    const filteredEmojis = emojis.filter((e) => filter(e.emoji));
 
     if (leastFirst) {
       if (!showAll && !unicodeOnly) {
@@ -68,10 +96,11 @@ const command: BotCommand = {
         const emojiKeys = filteredEmojis.map((e) => e.emoji);
         const serverEmojis = server.guild.emojis.cache
           .mapValues((e) => e.toString())
+          .filter((e) => filter(e))
           .values();
         for (const serverEmoji of serverEmojis) {
           if (!emojiKeys.includes(serverEmoji)) {
-            filteredEmojis.push({ emoji: serverEmoji, count: 0, rank: 0 });
+            filteredEmojis.push({ emoji: serverEmoji, count: 0 });
           }
         }
       }
@@ -80,22 +109,48 @@ const command: BotCommand = {
       filteredEmojis.forEach(({ emoji, count }) => {
         const countStr = String(count);
         if (countStr in usagesToEmoji) {
-          usagesToEmoji[countStr].push(emoji);
+          usagesToEmoji[countStr].push(resolveEmoji(emoji, bot));
         } else {
-          usagesToEmoji[count] = [emoji];
+          usagesToEmoji[countStr] = [resolveEmoji(emoji, bot)];
         }
       });
-      const fields = Object.entries(usagesToEmoji).map(([countStr, emojis]) => {
-        return {
-          name: pluralCount('time', 's', parseInt(countStr)),
-          value: emojis.map((e) => resolveEmoji(e, bot)).join(' '),
-        };
+      const fields: EmbedField[] = [];
+
+      Object.entries(usagesToEmoji).forEach(([countStr, emojis]) => {
+        const joinedEmojis = emojis.join('');
+        if (joinedEmojis.length > 1024) {
+          // embed value max len
+          const safeEmojiStrings: string[] = [];
+          let buffer = '';
+          emojis.forEach((e) => {
+            if (buffer.length + e.length > 1024) {
+              safeEmojiStrings.push(buffer);
+              buffer = e;
+            } else {
+              buffer += e;
+            }
+          });
+          safeEmojiStrings.push(buffer);
+          safeEmojiStrings.forEach((e) => {
+            fields.push({
+              name: pluralCount('time', 's', parseInt(countStr)),
+              value: e,
+            });
+          });
+        } else {
+          fields.push({
+            name: pluralCount('time', 's', parseInt(countStr)),
+            value: joinedEmojis,
+          });
+        }
       });
       await fieldsPaginator(
         message.channel,
         `${
           showAll ? 'Global' : unicodeOnly ? 'Unicode' : 'Server'
-        } Emoji Least Used Leaderboard`,
+        } Emoji Least Used Leaderboard${staticOnly ? '(Static Only)' : ''}${
+          animatedOnly ? '(Animated Only)' : ''
+        }`,
         `Total messages and reactions in the last 30 days`,
         fields,
         true,
@@ -113,7 +168,9 @@ const command: BotCommand = {
         message.channel,
         `${
           showAll ? 'Global' : unicodeOnly ? 'Unicode' : 'Server'
-        } Emoji Usage Leaderboard`,
+        } Emoji Usage Leaderboard${staticOnly ? '(Static Only)' : ''}${
+          animatedOnly ? '(Animated Only)' : ''
+        }`,
         `Total messages and reactions in the last 30 days`,
         fields,
         true,

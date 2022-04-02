@@ -119,10 +119,10 @@ const command: BotCommand = {
       infoEmbed({
         title: `Language Role Stats`,
         description: stripIndent`
-          Out of ${members.length} people${
+          Out of **${members.length}** people${
           all
             ? ''
-            : ` who have sent than ${minMessages} messages or spent more than ${minVoiceHours} hours in the past 30 days`
+            : ` who have sent more than ${minMessages} messages or spent more than ${minVoiceHours} hours in the past 30 days`
         },
           ${count(langs[NJ])} <@&${NJ}>
           ${count(langs[FJ])} <@&${FJ}>

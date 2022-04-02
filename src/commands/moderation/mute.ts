@@ -14,7 +14,14 @@ import {
   MINUTE_IN_MILLIS,
   strToMillis,
 } from '@utils/datetime';
-import { makeEmbed, successEmbed, warningEmbed } from '@utils/embed';
+import {
+  cleanEmbed,
+  infoEmbed,
+  makeEmbed,
+  questionEmbed,
+  successEmbed,
+  warningEmbed,
+} from '@utils/embed';
 import {
   joinNaturally,
   userToMentionAndTag,
@@ -275,35 +282,72 @@ const unmute: BotCommand = {
   ],
   parentCommand: 'mute',
   normalCommand: async ({ content, message, server }) => {
-    const { members, restContent } = parseMembers(content, server.guild);
+    const { members, restContent } = parseMembers(
+      content,
+      server.guild,
+      'MEMBERS'
+    );
     const reason = restContent || 'Unspecified';
     const noDMs: GuildMember[] = [];
+    const selfmutes: GuildMember[] = [];
     if (!members.every((m) => m.moderatable)) {
       throw new CommandArgumentError(
         'Some members are not `moderatable` by me'
       );
     }
     for (const member of members) {
-      delete server.data.schedules.multiTimeout[member.id];
-      await member.timeout(
-        null,
-        `CIRI_REMOVE_TIMEOUT By ${userToTagAndId(
-          message.author
-        )} Reason: ${reason}`
-      );
-      try {
-        await member.send(
-          makeEmbed({
-            color: 'RED',
-            title: `Your timeout has been removed in the "${server.guild.name}" server`,
-            description: `Reason: ${reason}`,
-          })
+      const selfmute = server.data.schedules.selfMutes[member.id];
+      if (selfmute) {
+        await message.channel.send(
+          questionEmbed(
+            `Remove ${member}'s self mute that ends in ${millisToDuration(
+              selfmute
+            )}?`
+          )
         );
-      } catch (e) {
-        noDMs.push(member);
+        const yes = await waitForYesOrNo(message);
+        if (yes) {
+          await member.timeout(
+            null,
+            `CIRI_REMOVE_SELFMUTE By ${userToTagAndId(
+              message.author
+            )} Reason: ${reason}`
+          );
+          delete server.data.schedules.selfMutes[member.id];
+          await message.channel.send(
+            successEmbed(`Removed ${member}'s selfmute`)
+          );
+        } else {
+          await message.channel.send(infoEmbed(`Skipped ${member}`));
+        }
+        selfmutes.push(member);
+      } else {
+        delete server.data.schedules.multiTimeout[member.id];
+        await member.timeout(
+          null,
+          `CIRI_REMOVE_TIMEOUT By ${userToTagAndId(
+            message.author
+          )} Reason: ${reason}`
+        );
+        try {
+          await member.send(
+            makeEmbed({
+              color: 'RED',
+              title: `Your timeout has been removed in the "${server.guild.name}" server`,
+              description: `Reason: ${reason}`,
+            })
+          );
+        } catch (e) {
+          noDMs.push(member);
+        }
       }
     }
-    const failedAllDMs = noDMs.length === members.length;
+    if (selfmutes.length === members.length) {
+      return;
+    }
+
+    const untimeoutMembers = members.filter((m) => !selfmutes.includes(m));
+    const failedAllDMs = noDMs.length === untimeoutMembers.length;
     const dmInfo = failedAllDMs
       ? 'but failed to notify them'
       : noDMs.length
@@ -314,7 +358,7 @@ const unmute: BotCommand = {
     await message.channel.send(
       successEmbed(
         `Successfully removed the timeout for ${joinNaturally(
-          members.map((m) => m.toString())
+          untimeoutMembers.map((m) => m.toString())
         )} ${dmInfo}`
       )
     );
@@ -329,7 +373,7 @@ const unmute: BotCommand = {
           fields: [
             {
               name: 'Unmuted Users',
-              value: members
+              value: untimeoutMembers
                 .map((m) => `${userToMentionAndTag(m.user)}`)
                 .join('\n'),
               inline: false,

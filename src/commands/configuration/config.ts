@@ -18,9 +18,6 @@ declare module '@/types' {
   interface ServerConfig {
     prefix: string;
     statistics: boolean;
-    japaneseRoles: string[];
-    hardcoreRole: string;
-    hardcoreIgnoredChannels: string[];
     ignoredChannels: string[];
     hiddenChannels: string[];
     voiceMuteRoles: string[];
@@ -34,15 +31,18 @@ declare module '@/types' {
     modLogChannel: string;
     userDMFallbackChannel: string;
     ignoredBotPrefixes: string[];
+    japaneseRoles: string[];
+    hardcoreRole: string;
+    hardcoreIgnoredChannels: string[];
+    japaneseOnlyChannels: string[];
+    beginnerJapaneseChannels: string[];
+    langExChannels: string[];
   }
 }
 
 const DEFAULT_CONFIG: ServerConfig = {
   prefix: DEFAULT_PREFIX,
   statistics: false,
-  japaneseRoles: [],
-  hardcoreRole: '',
-  hardcoreIgnoredChannels: [],
   ignoredChannels: [],
   hiddenChannels: [],
   voiceMuteRoles: [],
@@ -56,6 +56,12 @@ const DEFAULT_CONFIG: ServerConfig = {
   userDMFallbackChannel: '',
   modLogChannel: '',
   ignoredBotPrefixes: [],
+  japaneseRoles: [],
+  hardcoreRole: '',
+  hardcoreIgnoredChannels: [],
+  japaneseOnlyChannels: [],
+  beginnerJapaneseChannels: [],
+  langExChannels: [],
 };
 
 type ConfigType =
@@ -154,6 +160,30 @@ const CONFIGURABLE_SERVER_CONFIG = [
     isArray: true,
     description:
       'Roles for native Japanese speakers. This will affect hardcore mode and user statistics',
+    parser: getStringArrayConfig,
+  }),
+  getConfigInfo({
+    key: 'japaneseOnlyChannels',
+    type: 'channel',
+    isArray: true,
+    description:
+      'Channels where only Japanese is allowed.  Must have `japaneseRoles` defined.',
+    parser: getStringArrayConfig,
+  }),
+  getConfigInfo({
+    key: 'beginnerJapaneseChannels',
+    type: 'channel',
+    isArray: true,
+    description:
+      'Channels where beginner kanji are allowed.  Must have `japaneseRoles` defined.',
+    parser: getStringArrayConfig,
+  }),
+  getConfigInfo({
+    key: 'langExChannels',
+    type: 'channel',
+    isArray: true,
+    description:
+      'Channels where you need to talk in your target language. Must have `japaneseRoles` defined.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({

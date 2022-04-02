@@ -254,25 +254,21 @@ export const getChannels = makeGetAllWithArray<
 );
 
 export const getLeaderboard = makeGetAllRows<GuildId, UserCount>(`
-    SELECT *, RANK() OVER(ORDER BY count DESC)
-    FROM (
-        SELECT user_id, SUM(message_count) AS count
-        FROM messages
-        WHERE guild_id = $guildId
-        GROUP BY user_id
-    ) AS lb
+  SELECT user_id, SUM(message_count) AS count
+  FROM messages
+  WHERE guild_id = $guildId
+  GROUP BY user_id
+  ORDER BY count DESC
 `);
 
 export const getChannelLeaderboard = makeGetAllWithArray<GuildId, UserCount>(
   'getChannelLeaderboard',
   `
-    SELECT *, RANK() OVER (ORDER BY count DESC)
-    FROM (
-        SELECT user_id, SUM(message_count) as count
-        FROM messages
-        WHERE guild_id = $guildId AND channel_id IN (ARRAY_VALUES)
-        GROUP BY user_id
-    ) AS cl
+  SELECT user_id, SUM(message_count) as count
+  FROM messages
+  WHERE guild_id = $guildId AND channel_id IN (ARRAY_VALUES)
+  GROUP BY user_id
+  ORDER BY count DESC
 `
 );
 
@@ -319,7 +315,7 @@ export const getEnglishLeaderboard = makeGetAllRows<
 
 export const getEmojiLeaderboarByNumUsers = makeGetAllRows<
   GuildId,
-  UserCount & { emoji: string; rank: number }
+  UserCount & { emoji: string }
 >(`
     WITH emoji_counts AS (
         SELECT emoji, SUM(count) as count, COUNT(user_id) AS spread
@@ -332,45 +328,38 @@ export const getEmojiLeaderboarByNumUsers = makeGetAllRows<
         ) AS el
         GROUP BY emoji
     )
-        SELECT *, RANK() OVER (ORDER BY spread DESC) from emoji_counts
+        SELECT * from emoji_counts
+        ORDER BY spread DESC
 `);
 
 export const getEmojiLeaderboard = makeGetAllRows<
   GuildId,
-  { emoji: string; count: number; rank: number }
+  { emoji: string; count: number }
 >(`
-    SELECT *, RANK() OVER (ORDER BY count DESC)
-    FROM (
-        SELECT emoji, SUM(emoji_count) as count
-        FROM emojis
-        WHERE guild_id = $guildId
-        GROUP BY emoji
-    ) AS el
+  SELECT emoji, SUM(emoji_count) as count
+  FROM emojis
+  WHERE guild_id = $guildId
+  GROUP BY emoji
+  ORDER BY count DESC
 `);
 
 export const getSingleEmojiLeaderboard = makeGetAllRows<
   GuildId & { emojiName: string },
   UserCount
 >(`
-    SELECT *, RANK() OVER (ORDER BY count DESC)
-    FROM (
-        SELECT user_id, SUM(emoji_count) as count
-        FROM emojis
-        WHERE guild_id = $guildId AND emoji = $emojiName
-        GROUP BY user_id
-        ORDER BY count DESC
-    ) AS el
+  SELECT user_id, SUM(emoji_count) as count
+  FROM emojis
+  WHERE guild_id = $guildId AND emoji = $emojiName
+  GROUP BY user_id
+  ORDER BY count DESC
 `);
 
 export const getVoiceLeaderboard = makeGetAllRows<GuildId, UserCount>(`
-    SELECT *, RANK() OVER (ORDER BY count DESC)
-    FROM (
-        SELECT user_id, SUM(second_count) as count
-        FROM voice
-        WHERE guild_id = $guildId
-        GROUP BY user_id
-        ORDER BY count DESC
-    ) AS vl
+  SELECT user_id, SUM(second_count) as count
+  FROM voice
+  WHERE guild_id = $guildId
+  GROUP BY user_id
+  ORDER BY count DESC
 `);
 
 export const getUserActivity = makeGetAllRows<GuildUser, DateCount>(`

@@ -1,6 +1,6 @@
 import { TextBasedChannel, MessageReaction, User } from 'discord.js';
 import { INFO_COLOR } from './constants';
-import { makeEmbed } from './embed';
+import { EmbedField, makeEmbed } from './embed';
 
 export async function descriptionPaginator(
   channel: TextBasedChannel,
@@ -72,32 +72,32 @@ export async function fieldsPaginator(
   channel: TextBasedChannel,
   title: string,
   description: string,
-  fields: { name: string; value: string }[],
+  fields: EmbedField[],
   inline: boolean,
   userIndex: number,
   authorID: string
 ) {
-  const totalItems = fields.length;
-  const maxPageNum = Math.floor(totalItems / MAX_FIELDS);
+  const pages = splitFieldsIntoPages(
+    fields,
+    title.length + description.length + 'Page: 9999/9999'.length
+  );
+  const maxPageIndex = pages.length - 1;
   let currPage = 0;
-  const userPage = Math.floor(userIndex / MAX_FIELDS);
+  const userPage = Math.floor(userIndex / MAX_FIELDS); // TODO: search pages
 
   function getEmbed(page: number) {
-    const beginIndex = page * MAX_FIELDS;
     return makeEmbed({
       title,
       description,
-      fields: fields
-        .slice(beginIndex, beginIndex + 25)
-        .map((f) => ({ ...f, inline })),
-      footer: `Page: ${page + 1}/${maxPageNum + 1}`,
+      fields: pages[page].fields.map((f) => ({ ...f, inline })),
+      footer: `Page: ${page + 1}/${maxPageIndex + 1}`,
       color: INFO_COLOR,
     });
   }
 
   const message = await channel.send(getEmbed(currPage));
 
-  if (maxPageNum > 0) {
+  if (maxPageIndex > 0) {
     // Don't await to speed it up
     message.react('◀');
     message.react('▶');
@@ -115,7 +115,7 @@ export async function fieldsPaginator(
     collector.on('collect', (r) => {
       switch (r.emoji.name) {
         case '▶':
-          if (currPage < maxPageNum) {
+          if (currPage < maxPageIndex) {
             ++currPage;
             message.edit(getEmbed(currPage));
           }
@@ -144,4 +144,30 @@ export async function fieldsPaginator(
       message.reactions.removeAll();
     });
   }
+}
+
+function splitFieldsIntoPages(fields: EmbedField[], otherLength: number) {
+  const maxFieldChars = 6000 - otherLength;
+  const pages: { fields: EmbedField[] }[] = [];
+  let currFields = 0;
+  let currChars = 0;
+  let safeFields: { fields: EmbedField[] } = { fields: [] };
+
+  fields.forEach((field) => {
+    const length = field.name.length + field.value.length;
+    if (currChars + length > maxFieldChars || currFields === MAX_FIELDS) {
+      pages.push(safeFields);
+      currFields = 1;
+      currChars = length;
+      safeFields = { fields: [field] };
+    } else {
+      currFields++;
+      currChars += length;
+      safeFields.fields.push(field);
+    }
+  });
+  if (safeFields.fields.length) {
+    pages.push(safeFields);
+  }
+  return pages;
 }

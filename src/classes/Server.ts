@@ -11,32 +11,19 @@ import {
 } from '@/types';
 import { escapeRegex } from '@utils/formatString';
 import { getIgnoredBotPrefixRegex } from '@commands/configuration/config';
+import {
+  getConfigFilePath,
+  getDataFilePath,
+  getBackupFilePath,
+  saveConfig,
+  saveData,
+  saveBackup,
+} from '@utils/disk';
 
 declare module '@/types' {
   interface ServerTemp {
     ignoredBotPrefixRegex: RegExp | null;
   }
-}
-
-function safeCreateDir(dir: string) {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
-  }
-}
-
-function getBackupFilePath(guildId: string, date: Date) {
-  const dateStr = date.toISOString().split('T')[0];
-  safeCreateDir('./backups');
-  return `./backups/${dateStr}-${guildId}_config.json`;
-}
-
-function getConfigFilePath(guildId: string) {
-  safeCreateDir('./configs');
-  return `./configs/${guildId}_config.json`;
-}
-function getDataFilePath(guildId: string) {
-  safeCreateDir('./data');
-  return `./data/${guildId}_data.json`;
 }
 
 class Server {
@@ -59,22 +46,27 @@ class Server {
     this.data = {
       schedules: {} as ServerSchedules,
     } as ServerData;
+
     const dataFileName = getDataFilePath(guild.id);
     if (fs.existsSync(dataFileName)) {
       const json = JSON.parse(fs.readFileSync(dataFileName, 'utf8'));
       this.data = json;
+      this.data.schedules ||= {} as ServerSchedules;
     }
+    bot.serverInits.forEach((init) => init(this));
     try {
       bot.commandInits.forEach((init) => init(this));
       this.save();
     } catch (e) {
       const error = e as Error;
-      logger.error(`Server Command Initialization Error: ${error?.message}`);
+      logger.error(
+        `Server Command Initialization Error: ${error?.message}\n${error.stack}`
+      );
     }
   }
 
-  readFromBackup(date: Date) {
-    const backupFile = getBackupFilePath(this.guild.id, date);
+  readConfigFromBackup(date: Date) {
+    const backupFile = getBackupFilePath(this.guild.id, date, 'config');
     if (fs.existsSync(backupFile)) {
       const json = JSON.parse(fs.readFileSync(backupFile, 'utf8'));
       this.config = json;
@@ -103,14 +95,26 @@ class Server {
   }
 
   backup() {
-    const backupFile = getBackupFilePath(this.guild.id, new Date());
     try {
-      fs.writeFileSync(backupFile, JSON.stringify(this.config), 'utf8');
+      saveBackup(this.guild.id, new Date(), 'config', this.config);
+      saveBackup(this.guild.id, new Date(), 'data', this.data);
       const oldDate = new Date();
       oldDate.setDate(oldDate.getDate() - 7);
-      const oldBackupFile = getBackupFilePath(this.guild.id, oldDate);
-      if (fs.existsSync(oldBackupFile)) {
-        fs.unlinkSync(oldBackupFile);
+      const oldConfigBackupFile = getBackupFilePath(
+        this.guild.id,
+        oldDate,
+        'config'
+      );
+      if (fs.existsSync(oldConfigBackupFile)) {
+        fs.unlinkSync(oldConfigBackupFile);
+      }
+      const oldDataBackupFile = getBackupFilePath(
+        this.guild.id,
+        oldDate,
+        'data'
+      );
+      if (fs.existsSync(oldDataBackupFile)) {
+        fs.unlinkSync(oldDataBackupFile);
       }
     } catch (e) {
       logger.error(e);
@@ -119,10 +123,8 @@ class Server {
 
   save() {
     try {
-      const configFileName = getConfigFilePath(this.guild.id);
-      fs.writeFileSync(configFileName, JSON.stringify(this.config), 'utf8');
-      const dataFileName = getDataFilePath(this.guild.id);
-      fs.writeFileSync(dataFileName, JSON.stringify(this.data), 'utf8');
+      saveConfig(this.guild.id, this.config);
+      saveData(this.guild.id, this.data);
     } catch (e) {
       logger.error(e);
     }

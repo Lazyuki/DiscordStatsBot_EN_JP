@@ -3,7 +3,7 @@ import { Client, Collection, Intents } from 'discord.js';
 import fs from 'fs';
 
 import { DEBUG, OWNER_ID, DISCORD_TOKEN } from '@/envs';
-import logger from '@/logger';
+import logger, { discordLogError } from '@/logger';
 import {
   Bot,
   BotCommand,
@@ -41,8 +41,10 @@ client.commands = {};
 client.commandInits = [];
 client.botInits = [];
 client.botExits = [];
+client.serverInits = [];
+client.serverConfigInits = [];
 client.servers = {};
-client.botConfig = {} as BotConfig;
+client.config = {} as BotConfig;
 
 // Gather commands
 const dirs = fs
@@ -91,6 +93,9 @@ for (const fileName of eventFiles) {
   }
 
   events.forEach((event) => {
+    if (event.onServerInit) {
+      client.serverInits.push(event.onServerInit);
+    }
     if (event.once) {
       client.once(event.eventName, async (...args) => {
         await event.processEvent(client, ...args);
@@ -107,6 +112,11 @@ for (const fileName of eventFiles) {
               error.message
             }\n${error.stack || 'no stack trace'}`
           );
+          discordLogError(
+            client,
+            error,
+            `Error processing event ${event.eventName}`
+          );
         }
       });
     }
@@ -116,11 +126,17 @@ for (const fileName of eventFiles) {
 process.on('uncaughtExceptionMonitor', (error, origin) => {
   logger.error(`UNCAUGHT EXCEPTION at ${origin}`);
   logger.error(error);
+  discordLogError(client, error, `UNCAUGHT EXCEPTION at ${origin}`);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
   logger.error(`UNHANDLED PROMISE REJECTION at ${promise}`);
   logger.error(reason);
+  try {
+    throw reason;
+  } catch (e) {
+    discordLogError(client, e as Error, 'UNHANDLED PROMISE REJECTION');
+  }
 });
 
 process.on('SIGINT', () => {
