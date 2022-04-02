@@ -24,7 +24,7 @@ const command: BotCommand = {
   requiredBotPermissions: ['MANAGE_CHANNELS'],
   description:
     'Set up and configure hourly category clocks. Note that it will only show the 24-hour format. Use "TZ Database Name" from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones inside `{TZ_name}` for specifying the timezone.',
-  arguments: '< set | reset > [CATEGORY_ID] [ -p ] ["Time format string"]',
+  arguments: '< set | reset > [CATEGORY_ID] ["Time format string"]',
   options: [
     {
       name: 'padding',
@@ -36,8 +36,14 @@ const command: BotCommand = {
   ],
   examples: [
     'cc',
-    'cc set 537289285129469954 "Time: 🇯🇵{Asia/Tokyo}時 🇺🇸{America/New_York}時"` => `Time: 🇯🇵05時 🇺🇸16時`',
-    'cc set 537289285129469954 -p "日本: {Asia/Tokyo}時 | New York: {America/New_York}ʰ"` => `日本: 5時 | New York: 16h`',
+    [
+      'cc set 537289285129469954 "Time: 🇯🇵{Asia/Tokyo}時 🇺🇸{America/New_York}時"',
+      '=> `Time: 🇯🇵05時 🇺🇸16時`',
+    ],
+    [
+      'cc set 537289285129469954 -p "日本: {Asia/Tokyo}時 | New York: {America/New_York}ʰ"',
+      '=> `日本: 5時 | New York: 16h`',
+    ],
     'cc reset 537289285129469954',
   ],
   onCommandInit: (server) => {

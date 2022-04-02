@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
-  skipOnDebug: false,
+  skipOnDebug: true,
   processEvent: async (bot, message) => {
     if (!checkSafeMessage(bot, message)) {
       if (!message.author.bot) return; // Still listened to bot messages

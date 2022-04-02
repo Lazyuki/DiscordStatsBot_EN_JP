@@ -42,9 +42,9 @@ const command: BotCommand = {
           }**: ${pluralCount('message', 's', count)}`;
         })
         .join('\n') + '\n';
-    channelsString += deadChannels.map(
-      (channel) => `**#${channel.name}**: 0 messages`
-    );
+    channelsString += deadChannels
+      .map((channel) => `**#${channel.name}**: 0 messages`)
+      .join('\n');
 
     await message.channel.send(
       infoEmbed({

@@ -16,14 +16,14 @@ const command: BotCommand = {
       bool: false,
     },
   ],
-  arguments: '[@user (default: command invoker)]',
+  arguments: '[user (default: command invoker)]',
   requiredServerConfigs: ['japaneseRoles', 'statistics'],
   examples: ['enl', 'enl -n 1000', 'enl @Geralt'],
   normalCommand: async ({ message, bot, server, content, options }) => {
     const japaneseRoles = server.config.japaneseRoles;
     const searchUserId = getUserId(bot, server, content) || message.author.id;
 
-    let threshold = 500;
+    let threshold = 200;
     if (options['threshold']) {
       const parsedThreshold = parseInt(options['threshold'] as string);
       if (!isNaN(parsedThreshold)) {

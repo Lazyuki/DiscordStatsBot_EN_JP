@@ -12,6 +12,7 @@ import { REGEX_RAW_ID, REGEX_RAW_ID_ONLY, REGEX_USER } from './regex';
 import { Bot } from '@/types';
 import { CommandArgumentError, MemberNotFoundError } from '@/errors';
 import { isTextChannel } from './guildUtils';
+import { joinNaturally } from './formatString';
 
 /**
  *
@@ -267,3 +268,22 @@ export const getUserId = (
   // content is empty
   return null;
 };
+
+export function parseSubCommand(
+  content: string,
+  availableSubCommands?: string[]
+) {
+  const subCommand = content.split(' ')[0];
+  const restContent = content.replace(subCommand, '').trim();
+  if (availableSubCommands) {
+    if (!availableSubCommands.includes(subCommand.toLowerCase())) {
+      throw new CommandArgumentError(
+        `The available sub commands are: ${joinNaturally(availableSubCommands)}`
+      );
+    }
+  }
+  return {
+    subCommand: subCommand.toLowerCase(),
+    restContent,
+  };
+}

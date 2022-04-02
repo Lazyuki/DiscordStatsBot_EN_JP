@@ -16,7 +16,7 @@ const command: BotCommand = {
       bool: true,
     },
   ],
-  examples: ['pipe u` While replying to a message', 'pipe id'],
+  examples: [['pipe u', '(While replying to a message)'], 'pipe id'],
   normalCommand: async ({
     bot,
     message,

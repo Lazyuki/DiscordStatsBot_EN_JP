@@ -20,8 +20,6 @@ const prune: BotCommand = {
   requiredBotPermissions: ['BAN_MEMBERS'],
   description:
     'Set up "lockdown". All new users will be muted and welcome bots will not work. Leave blank to unset. Lockdown allows Ciri to open up a reaction ban menu for new users that match the criteria. The quickban menu allows WPs and up to ban new users with reactions.',
-  arguments:
-    '[-t discord_id ]  [ -l invite_link_string ] [-r username_regex ] [ -i ignore case for regex ]',
   options: [
     {
       name: 'time',

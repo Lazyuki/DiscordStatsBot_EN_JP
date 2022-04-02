@@ -42,7 +42,7 @@ declare module '@/types' {
 
 const DEFAULT_CONFIG: ServerConfig = {
   prefix: DEFAULT_PREFIX,
-  statistics: false,
+  statistics: true, // TODO: Once the migration is complete, false by default
   ignoredChannels: [],
   hiddenChannels: [],
   voiceMuteRoles: [],
@@ -492,15 +492,16 @@ const command: BotCommand = {
     );
   },
   description: 'View or update configuration for this server',
-  arguments: '[number] [add/remove | enable/disable | set/reset] [value]',
+  arguments:
+    '[add/remove | enable/disable | set/reset | help] [number] [value]',
   examples: [
     'config',
     'config 2',
-    'config 4 set @Native Japanese Speaker',
-    'config 4 reset',
-    'config 3 add #bot-spam',
-    'config 3 remove #bot-spam',
-    'config 14 enable',
+    'config set 4 @Native Japanese Speaker',
+    'config reset 4',
+    'config add 3 #bot-spam',
+    'config remove3 #bot-spam',
+    'config enable 14',
   ],
   normalCommand: async ({ content, message, server, bot, ...rest }) => {
     if (!content) {
@@ -518,7 +519,7 @@ const command: BotCommand = {
         })
       );
     } else {
-      let [configNumStr, subCommand, ...restCommand] = content
+      let [subCommand, configNumStr, ...restCommand] = content
         .toLowerCase()
         .split(/\s+/);
       if (!isNaN(parseInt(subCommand))) {

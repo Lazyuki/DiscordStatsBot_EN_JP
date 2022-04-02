@@ -12,7 +12,7 @@ const command: BotCommand = {
   aliases: ['lang', 'langs'],
   allowedServers: [EJLX],
   description:
-    'Language role stats for the server. Use `,lang all` to include everyone. -m and -v will be treated as OR',
+    'Language role stats for the server. Use `{PREFIX}lang -all` to include everyone. `-m` and `-v` are treated as OR',
   options: [
     {
       name: 'all',
@@ -35,7 +35,6 @@ const command: BotCommand = {
       bool: false,
     },
   ],
-  arguments: '[ -a all users ] [ -m minimum message ] [ -v minimum voice ]',
   normalCommand: async ({ message, server, options }) => {
     await message.channel.sendTyping();
     const all = Boolean(options['all']);

@@ -89,7 +89,7 @@ export async function fieldsPaginator(
     return makeEmbed({
       title,
       description,
-      fields: pages[page].fields.map((f) => ({ ...f, inline })),
+      fields: pages[page]?.fields.map((f) => ({ ...f, inline })),
       footer: `Page: ${page + 1}/${maxPageIndex + 1}`,
       color: INFO_COLOR,
     });

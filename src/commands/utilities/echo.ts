@@ -6,8 +6,8 @@ import { codeBlock } from '@utils/formatString';
 const command: BotCommand = {
   name: 'echo',
   description: 'Repeat your message inside a code block',
-  normalCommand: async ({ message }) => {
-    await message.channel.send(cleanEmbed(codeBlock(message.content)));
+  normalCommand: async ({ message, content }) => {
+    await message.channel.send(cleanEmbed(codeBlock(content)));
   },
 };
 

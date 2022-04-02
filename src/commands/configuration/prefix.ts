@@ -9,7 +9,7 @@ const command: BotCommand = {
   isAllowed: ['ADMIN'],
   description:
     'Change the command prefix. Leave blank to restore the default prefix',
-  examples: ['prefix c!', 'prefix'],
+  examples: ['prefix', 'prefix c!'],
   normalCommand: async ({ content, server, send }) => {
     const currentPrefix = server.config.prefix;
     if (!content) {

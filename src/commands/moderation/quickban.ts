@@ -19,8 +19,6 @@ const prune: BotCommand = {
   requiredBotPermissions: ['BAN_MEMBERS'],
   description:
     'Set up "quickban" with options. Leave blank to unset. Quickban allows Ciri to open up a reaction ban menu for new users that match the criteria. The quickban menu allows WPs to ban new users with reactions.',
-  arguments:
-    '[-t discord_id ]  [ -l invite_link_string ] [-r username_regex ] [ -i ignore case for regex ]',
   options: [
     {
       name: 'time',

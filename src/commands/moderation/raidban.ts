@@ -35,11 +35,14 @@ const command: BotCommand = {
       bool: false,
     },
   ],
-  arguments: '<user or message ID> [--last user or message ID] [--except user]',
+  arguments: '<user or message ID>',
   examples: [
     'raidban @user',
     'raidban 1234567890',
-    'raidban @firstUser --last @lastUser --except @innocent --except @innocent2 ` this will ban @firstUser and anyone after that up to and including @lastUser, except @innocent and @innocent2',
+    [
+      'raidban @firstUser --last @lastUser --except @innocent --except @innocent2',
+      'This will ban @firstUser and anyone after that up to and including @lastUser, except @innocent and @innocent2',
+    ],
   ],
   normalCommand: async ({ bot, content, server, message, options }) => {
     const deleteDays = 1;

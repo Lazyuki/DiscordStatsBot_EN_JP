@@ -11,7 +11,7 @@ const command: BotCommand = {
   name: 'activity',
   aliases: ['ac'],
   requiredServerConfigs: ['statistics'],
-  arguments: '[user name]',
+  arguments: '[user (default: command invoker)]',
   options: [
     {
       name: 'number',

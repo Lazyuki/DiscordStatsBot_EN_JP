@@ -1,11 +1,6 @@
 import { BotEvent } from '@/types';
 import { insertVoiceSeconds } from '@database/statements';
-import {
-  Collection,
-  GuildMember,
-  PartialGuildMember,
-  VoiceBasedChannel,
-} from 'discord.js';
+import { Collection, VoiceBasedChannel, VoiceState } from 'discord.js';
 
 declare module '@/types' {
   interface ServerTemp {
@@ -13,11 +8,11 @@ declare module '@/types' {
   }
 }
 
-export function isVoiceActive(member: PartialGuildMember | GuildMember) {
+export function isVoiceActive(voiceState: VoiceState) {
   return (
-    member.voice.channel &&
-    member.voice.channelId !== member.guild.afkChannelId &&
-    !member.voice.deaf
+    voiceState.channel &&
+    voiceState.channelId !== voiceState.guild.afkChannelId &&
+    !voiceState.deaf
   );
 }
 
@@ -25,23 +20,23 @@ export function getSecondDiff(now: number, then: number) {
   return Math.round((now - then) / 1000);
 }
 
-const event: BotEvent<'guildMemberUpdate'> = {
-  eventName: 'guildMemberUpdate',
+const event: BotEvent<'voiceStateUpdate'> = {
+  eventName: 'voiceStateUpdate',
   skipOnDebug: false,
-  processEvent: async (bot, oldMember, newMember) => {
-    if (oldMember.user.bot) return;
-    const now = new Date().getTime();
-    const server = bot.servers[oldMember.guild.id];
+  processEvent: async (bot, oldVoiceState, newVoiceState) => {
+    if (oldVoiceState.member?.user.bot) return;
+    const server = bot.servers[oldVoiceState.guild.id];
     if (!server.config.statistics) return; // No statistics for this server
-    const userId = oldMember.id;
-    if (!isVoiceActive(oldMember) && isVoiceActive(newMember)) {
+    const userId = oldVoiceState.id;
+    const now = new Date().getTime();
+    if (!isVoiceActive(oldVoiceState) && isVoiceActive(newVoiceState)) {
       // Started voice
       server.temp.vc[userId] = now;
-    } else if (isVoiceActive(oldMember) && !isVoiceActive(newMember)) {
+    } else if (isVoiceActive(oldVoiceState) && !isVoiceActive(newVoiceState)) {
       if (server.temp.vc[userId]) {
         const secondCount = getSecondDiff(now, server.temp.vc[userId]);
         insertVoiceSeconds({
-          guildId: oldMember.guild.id,
+          guildId: oldVoiceState.guild.id,
           userId,
           secondCount,
           date: bot.utcDay,
@@ -60,7 +55,8 @@ const event: BotEvent<'guildMemberUpdate'> = {
       voiceChannelCollection.forEach((channel) => {
         channel.members.forEach((member) => {
           if (member.user.bot) return;
-          if (isVoiceActive(member)) {
+          if (isVoiceActive(member.voice)) {
+            console.log('bot init voice active', member.displayName);
             server.temp.vc[member.id] = now;
           }
         });

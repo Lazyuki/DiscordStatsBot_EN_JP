@@ -68,7 +68,7 @@ const command: BotCommand = {
         const args = command.arguments
           ? {
               name: pluralize('Argument', 's', command.arguments.length),
-              value: command.arguments,
+              value: `\`< >\` means **required** and \`[ ]\` means **optional**\n\n\`${command.arguments}\``,
               inline: false,
             }
           : null;
@@ -76,7 +76,11 @@ const command: BotCommand = {
           ? {
               name: pluralize('Example', 's', command.examples.length),
               value: command.examples
-                .map((example) => `\`${server.config.prefix}${example}\``)
+                .map((example) =>
+                  Array.isArray(example)
+                    ? `\`${server.config.prefix}${example[0]}\` ${example[1]}`
+                    : `\`${server.config.prefix}${example}\``
+                )
                 .join('\n'),
               inline: false,
             }
