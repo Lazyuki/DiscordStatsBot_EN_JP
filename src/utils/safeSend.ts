@@ -14,7 +14,7 @@ function splitAndAppend(chunk: string, delimiter: string) {
   }
 }
 
-function splitString(
+export function splitString(
   text: string,
   {
     maxLength = 2_000,

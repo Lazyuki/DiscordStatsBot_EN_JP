@@ -161,7 +161,7 @@ export interface BotEvent<E extends keyof ClientEvents> {
   onBotExit?: OnBotExit;
 }
 
-export type ModLogType = 'warn' | 'mute' | 'timeout' | 'voicemute' | 'log';
+export type ModLogType = 'warn' | 'mute' | 'voicemute';
 
 export interface ModLogEntry {
   guildId: string;

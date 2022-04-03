@@ -15,8 +15,15 @@ const command: BotCommand = {
         'Append the content of the original message instead of prepending it',
       bool: true,
     },
+    {
+      name: 'startIndex',
+      short: 's',
+      description:
+        'The 1-based index of words where the content should start at. Default: `1` except if piping another Ciri command, which will then use `2` as the default',
+      bool: false,
+    },
   ],
-  examples: [['pipe u', '(While replying to a message)'], 'pipe id'],
+  examples: [['pipe u', '(While replying to a message)'], 'pipe -s 3 id'],
   normalCommand: async ({
     bot,
     message,
@@ -35,9 +42,16 @@ const command: BotCommand = {
         message.reference.messageId
       );
       let sourceContent = sourceMessage.content;
-      if (sourceContent.startsWith(server.config.prefix)) {
-        sourceContent = sourceContent.split(' ').slice(1).join(' ');
+      let startIndex = parseInt((options['startIndex'] as string) || '');
+      if (isNaN(startIndex)) {
+        startIndex = sourceContent.startsWith(server.config.prefix) ? 2 : 1;
       }
+
+      sourceContent = sourceContent
+        .split(/\s+/)
+        .slice(startIndex - 1)
+        .join(' ');
+
       const pipeCommand = bot.commands[content.split(' ')[0]];
       if (pipeCommand) {
         if (pipeCommand.name === 'pipe') {
@@ -71,6 +85,8 @@ const command: BotCommand = {
           // Don't even error out
           return;
         }
+      } else {
+        throw new CommandArgumentError('Not a valid command');
       }
     } else {
       throw new CommandArgumentError('Reply to a message to pipe the content');

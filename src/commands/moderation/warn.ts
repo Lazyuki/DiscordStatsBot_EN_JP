@@ -1,6 +1,5 @@
 import { CommandArgumentError } from '@/errors';
 import { BotCommand, ModLogEntry } from '@/types';
-import { REGEX_RAW_ID, REGEX_USER } from '@/utils/regex';
 import {
   clearModLogForUser,
   insertModLog,
@@ -8,23 +7,14 @@ import {
   getModLogForGuild,
   getModLogForUser,
 } from '@database/statements';
-import { parseMembers } from '@utils/argumentParsers';
-import {
-  waitForYesOrNo,
-  getFallbackChannel,
-} from '@utils/asyncMessageCollector';
-import { BOT_CHANNEL, DM_MOD_BOT, EJLX } from '@utils/constants';
-import {
-  errorEmbed,
-  infoEmbed,
-  makeEmbed,
-  successEmbed,
-  warningEmbed,
-} from '@utils/embed';
-import { getTextChannel } from '@utils/guildUtils';
-import { descriptionPaginator } from '@utils/paginate';
-import { pluralize } from '@utils/pluralize';
-import { GuildMember } from 'discord.js';
+import { parseMembers, strictGetUserId } from '@utils/argumentParsers';
+import { getFallbackChannel } from '@utils/asyncMessageCollector';
+import { getDiscordTimestamp } from '@utils/datetime';
+import { infoEmbed, makeEmbed, successEmbed, warningEmbed } from '@utils/embed';
+import { userToMentionAndTag } from '@utils/formatString';
+import { descriptionPaginator, fieldsPaginator } from '@utils/paginate';
+import { pluralCount, pluralize } from '@utils/pluralize';
+import { GuildBan, GuildMember } from 'discord.js';
 
 export function addModLog(entry: ModLogEntry) {
   insertModLog(entry);
@@ -38,8 +28,8 @@ const warn: BotCommand = {
   arguments: '<@user> [@user2...] [reason]',
   examples: [
     'warn @Geralt being too good at Japanese',
-    'warn 284840842026549259 299335689558949888 shut up',
-    'warn -m 284840842026549259 Friendly reminder that you need to chillax',
+    'warn 1234566789123456789 1234566789123456789 shut up',
+    'log 1234566789123456789 unconfirmed report of being loud',
   ],
   options: [
     {
@@ -146,12 +136,12 @@ const warnlog: BotCommand = {
   description:
     'List mod logs. To prevent accidentally showing warning details publically, this command is only available in one of `hiddenChannels` defined in the `config` command.',
   arguments: '[@user]',
-  aliases: ['wl'],
+  aliases: ['wl', 'ml', 'modlog'],
   examples: ['wl', 'wl 284840842026549259'],
   parentCommand: 'warn',
   normalCommand: async ({ bot, content, message, server }) => {
     if (content) {
-      const userId = content.match(REGEX_RAW_ID)?.[0];
+      const userId = strictGetUserId(content, server.guild);
       if (!userId) {
         throw new CommandArgumentError(
           `Please specify a user by either mentioning them or using their ID`
@@ -161,38 +151,91 @@ const warnlog: BotCommand = {
         guildId: server.guild.id,
         userId,
       });
-      const warnLogs = userModLogs.filter((ml) => ml.kind === 'warn');
-      const banned = await server.guild.bans.fetch(userId);
+      let guildBan: GuildBan | undefined;
+      try {
+        guildBan = await server.guild.bans.fetch(userId);
+      } catch {}
+      const user = bot.users.cache.get(userId);
+      const userMentionTag = user
+        ? userToMentionAndTag(user)
+        : `User: ${userId}`;
+
+      const isWatched = server.temp.watched.includes(userId);
 
       if (userModLogs.length === 0) {
         await message.channel.send(
-          infoEmbed(
-            `No mod log entries found${
-              banned
-                ? ` but was banned for:\n ${
-                    banned.reason || 'Reason: Unspecified'
-                  }`
+          infoEmbed({
+            description: `No mod log entries found for ${userMentionTag}${
+              isWatched
+                ? ' but they are being watched for deleted messages'
                 : ''
-            }.`
-          )
+            }`,
+            fields: guildBan
+              ? [
+                  {
+                    name: 'User Banned',
+                    value: guildBan.reason || 'Reason: Unspecified',
+                  },
+                ]
+              : undefined,
+          })
         );
       } else {
-        await descriptionPaginator(
+        const fields = userModLogs.map((ml) => {
+          const timestamp = getDiscordTimestamp(new Date(ml.date), 'D'); // TODO: 'f' to show time?
+          const issuer = bot.users.cache.get(ml.issuerId);
+          const issuerTag = issuer ? issuer.tag : `User: ${ml.issuerId}`;
+          const jumpLink = ml.messageLink ? `[Jump](${ml.messageLink})\n` : '';
+          const silent = ml.silent ? `(**Silently Logged**)\n` : '';
+
+          return {
+            name: `${timestamp} by ${issuerTag}`,
+            value: `${jumpLink}${silent}${ml.content}`,
+          };
+        });
+
+        // Add ban log
+        if (guildBan) {
+          fields.unshift({
+            name: 'User Banned',
+            value: guildBan.reason || 'Reason: Unspecified',
+          });
+        }
+
+        const officialWarningCount = userModLogs.reduce(
+          (total, modLog) =>
+            modLog.kind === 'warn' && !modLog.silent ? total + 1 : total,
+          0
+        );
+        const userTag = user ? user.tag : `User: ${userId}`;
+
+        await fieldsPaginator(
           message.channel,
-          'Mod Logs for ',
-          userModLogs.map((ml) => `${ml.userId}: ${ml.content}`),
-          15,
-          ''
+          `Mod Logs for ${userTag}${
+            isWatched ? ' (Being watched for deleted messages)' : ''
+          }`,
+          pluralCount('Official Warning', 's', officialWarningCount),
+          fields,
+          false,
+          -1,
+          message.author.id
         );
       }
     } else {
       // Paginated warn logs
       const allModLogs = getModLogForGuild({ guildId: server.guild.id });
+
       await descriptionPaginator(
         message.channel,
-        'Mod Logs',
-        allModLogs.map((ml) => `${ml.userId}: ${ml.count}`),
-        15,
+        `All Warn Logs (${allModLogs.length} users)`,
+        allModLogs.map((ml) => {
+          const user = bot.users.cache.get(ml.userId);
+
+          return `${user ? userToMentionAndTag(user) : `User: ${ml.userId}`}: ${
+            ml.count
+          }`;
+        }),
+        20,
         ''
       );
     }

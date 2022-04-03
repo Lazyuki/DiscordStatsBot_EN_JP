@@ -21,7 +21,6 @@ const command: BotCommand = {
     const users = getVoiceLeaderboard({
       guildId: server.guild.id,
     });
-    console.log(users);
     const authorId = message.author.id;
     let searchUserId = authorId;
     if (ids.length > 0) {

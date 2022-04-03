@@ -16,7 +16,7 @@ const command: BotCommand = {
       bool: false,
     },
   ],
-  arguments: '[@user (default: command invoker)]',
+  arguments: '[user (default: command invoker)]',
   requiredServerConfigs: ['japaneseRoles', 'statistics'],
   examples: ['jpl', 'jpl -n 1000', 'jpl @Geralt'],
   normalCommand: async ({ message, bot, server, content, options }) => {

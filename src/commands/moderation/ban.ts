@@ -1,6 +1,7 @@
 import { BotCommand, GuildMessage } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
 import {
+  editEmbed,
   errorEmbed,
   makeEmbed,
   successEmbed,
@@ -107,7 +108,7 @@ async function banUsers(
       )}\n(type \`confirm keep\` to not delete messages)`
     : `**NOT DELETING** any messages`;
 
-  await message.channel.send(
+  const banConfirmation = await message.channel.send(
     makeEmbed({
       title:
         '<:hypergeralthinkban:443803651325034507> BAN <:hypergeralthinkban:443803651325034507>',
@@ -219,6 +220,7 @@ async function banUsers(
       await message.channel.send(
         successEmbed(`Banned ${allIds.length - failedBans.length} users`)
       );
+      await editEmbed(banConfirmation, { footer: 'Banned' });
       if (server.config.modActionLogChannel) {
         const modActionLogChannel = getTextChannel(
           server.guild,
@@ -243,16 +245,19 @@ async function banUsers(
           })
         );
       }
-    } else if (endReason == 'Cancelled') {
+    } else if (endReason === 'Cancelled') {
       await message.channel.send(errorEmbed('Cancelled'));
-    } else if (endReason == 'Failed') {
+      await editEmbed(banConfirmation, { footer: 'Cancelled' });
+    } else if (endReason === 'Failed') {
       await message.channel.send(
         errorEmbed(
           "Unable to ban them. Make sure the number of days is set appropriately and the ban message isn't too long"
         )
       );
+      await editEmbed(banConfirmation, { footer: 'Failed' });
     } else {
       await message.channel.send(errorEmbed('Failed to confirm'));
+      await editEmbed(banConfirmation, { footer: 'Timed out' });
     }
   });
 }

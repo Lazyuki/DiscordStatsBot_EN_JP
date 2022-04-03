@@ -13,6 +13,7 @@ import {
   REGEX_RAW_ID,
   REGEX_RAW_ID_ONLY,
   REGEX_USER,
+  REGEX_USER_TAG,
 } from './regex';
 import { Bot } from '@/types';
 import { CommandArgumentError, MemberNotFoundError } from '@/errors';
@@ -170,6 +171,34 @@ export function parseMembers(
   };
 }
 
+export function strictGetUserId(content: string, guild: Guild) {
+  const idMatch = content.match(REGEX_RAW_ID);
+  if (idMatch) {
+    // Snowflake ID
+    return idMatch[0];
+  } else {
+    const userTag = content.match(REGEX_USER_TAG)?.[0];
+    if (userTag) {
+      const hasAt = userTag[0] === '@'; // Make sure there are no ambiguity
+      const nonAtUserTag = userTag.substring(1);
+      const matches: string[] = [];
+      for (const member of guild.members.cache.values()) {
+        if (member.user.tag === userTag) {
+          if (hasAt) return member.id;
+          matches.push(member.id);
+        } else if (hasAt && member.user.tag === nonAtUserTag) {
+          matches.push(member.id);
+        }
+      }
+      if (matches.length === 1) {
+        return matches[0];
+      } else if (matches.length > 1) {
+        throw new CommandArgumentError(`The user tag ${userTag} is ambiguous`);
+      }
+    }
+  }
+}
+
 export const getMemberId = (bot: Bot, server: Server, content: string) =>
   getUserId(bot, server, content, true);
 
@@ -301,10 +330,11 @@ export async function parseMessageId(content: string, guild: Guild) {
     );
   }
   const [_, channelId, messageId] = linkMatch;
-  const reactionChannel = getTextChannel(guild, channelId);
-  if (!reactionChannel)
+  const channel = getTextChannel(guild, channelId);
+  if (!channel)
     throw new CommandArgumentError(`Invalid Channel ID ${channelId}`);
-  const reactionMessage = await reactionChannel.messages.fetch(messageId);
-  if (!reactionMessage)
+  const message = await channel.messages.fetch(messageId);
+  if (!message)
     throw new CommandArgumentError(`Invalid Message ID ${messageId}`);
+  return message;
 }

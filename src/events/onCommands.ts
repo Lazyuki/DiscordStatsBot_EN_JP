@@ -14,6 +14,7 @@ import { isNotDM } from '@utils/guildUtils';
 import isRateLimited from '@utils/rateLimit';
 import { optionParser } from '@utils/optionParser';
 import { code, userToTagAndId } from '@utils/formatString';
+import { insertCommands } from '@database/statements';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -72,7 +73,7 @@ const event: BotEvent<'messageCreate'> = {
                   .map(code)
                   .join(
                     ', '
-                  )}]. Contact server moderators to configure my permissions.`
+                  )}].\nContact server moderators to configure my permissions.`
               )
             );
             return;
@@ -91,6 +92,13 @@ const event: BotEvent<'messageCreate'> = {
           content = restContent.trim();
           options = resolvedOptions;
         }
+        insertCommands({
+          guildId: message.guild.id,
+          userId: message.author.id,
+          date: bot.utcDay,
+          command: command.name,
+          commandCount: 1,
+        });
 
         try {
           await command.normalCommand({

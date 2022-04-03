@@ -1,6 +1,7 @@
 import { TextBasedChannel, MessageReaction, User } from 'discord.js';
 import { INFO_COLOR } from './constants';
 import { EmbedField, makeEmbed } from './embed';
+import { splitString } from './safeSend';
 
 export async function descriptionPaginator(
   channel: TextBasedChannel,
@@ -146,28 +147,54 @@ export async function fieldsPaginator(
   }
 }
 
+// Make sure fields + other strings in the embed do NOT exceed the global 6000 character limit in 1 embed.
 function splitFieldsIntoPages(fields: EmbedField[], otherLength: number) {
   const maxFieldChars = 6000 - otherLength;
   const pages: { fields: EmbedField[] }[] = [];
   let currFields = 0;
   let currChars = 0;
-  let safeFields: { fields: EmbedField[] } = { fields: [] };
+  const safeFields = splitFields(fields);
+  let pageBuffer: { fields: EmbedField[] } = { fields: [] };
 
-  fields.forEach((field) => {
+  safeFields.forEach((field) => {
     const length = field.name.length + field.value.length;
     if (currChars + length > maxFieldChars || currFields === MAX_FIELDS) {
-      pages.push(safeFields);
+      pages.push(pageBuffer);
       currFields = 1;
       currChars = length;
-      safeFields = { fields: [field] };
+      pageBuffer = { fields: [field] };
     } else {
       currFields++;
       currChars += length;
-      safeFields.fields.push(field);
+      pageBuffer.fields.push(field);
     }
   });
-  if (safeFields.fields.length) {
-    pages.push(safeFields);
+  if (pageBuffer.fields.length) {
+    pages.push(pageBuffer);
   }
   return pages;
+}
+
+// Make sure all field values are under 1024 characters, otherwise split them into multiple fields.
+function splitFields(fields: EmbedField[]) {
+  const safeFields: EmbedField[] = [];
+  fields.forEach((field) => {
+    if (field.value.length > 1024) {
+      // embed value max len
+      const chunks = splitString(field.value, {
+        maxLength: 1024,
+        char: ['\n', ' ', '。'],
+      });
+      chunks.forEach((chunk, index) => {
+        safeFields.push({
+          name: `(${index + 1}/${chunks.length}) ${field.name}`,
+          value: chunk,
+        });
+      });
+    } else {
+      safeFields.push(field);
+    }
+  });
+
+  return safeFields;
 }
