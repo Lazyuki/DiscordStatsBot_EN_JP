@@ -66,8 +66,15 @@ for (const dir of dirs) {
       const parsedCommand = parseCommand(command, dir);
       const commandName = parsedCommand.name.toLowerCase();
       client.commands[commandName] = parsedCommand;
-      if (parsedCommand.onCommandInit)
+      if (parsedCommand.onCommandInit) {
         client.commandInits.push(parsedCommand.onCommandInit);
+      }
+      if (parsedCommand.onBotInit) {
+        client.botInits.push(parsedCommand.onBotInit);
+      }
+      if (parsedCommand.onBotExit) {
+        client.botExits.push(parsedCommand.onBotExit);
+      }
       parsedCommand.aliases?.forEach((alias) => {
         if (client.commands[alias]) {
           logger.error(`Command alias ${alias} is double assigned!`);
