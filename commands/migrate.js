@@ -15,7 +15,6 @@ module.exports.command = (message, content, bot, server) => {
   if (content) {
     const [subCommand, ...commands] = content.split(' ');
     if (subCommand === 'add' || subCommand === 'remove') {
-      const init = require('./init.json');
       for (const commandName of commands) {
         const command = bot.commands[commandName];
         if (command) {
@@ -31,10 +30,12 @@ module.exports.command = (message, content, bot, server) => {
           message.channel.send(`${commandName} is not a command`);
         }
       }
+      const init = fs.readFileSync('../init.json');
+      const initJson = JSON.parse(init);
       fs.writeFileSync(
-        'init.json',
+        '../init.json',
         JSON.stringify(
-          { ...init, migratedCommands: bot.migratedCommands },
+          { ...initJson, migratedCommands: bot.migratedCommands },
           null,
           4
         ),
