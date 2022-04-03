@@ -16,7 +16,7 @@ const event: BotEvent<'guildDelete'> = {
     // deleteGuild({ guildId: guild.id }); // Delete guild (causes NULL REFERENCE?)
 
     logger.info(
-      `Guild "${guild.name}" (ID: ${guild.id}, Members: ${guild.memberCount}) deleted`
+      `Deleted Guild "${guild.name}" (ID: ${guild.id}, Members: ${guild.memberCount})`
     );
   },
 };

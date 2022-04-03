@@ -8,10 +8,15 @@ import {
   TextChannel,
 } from 'discord.js';
 import Server from '@classes/Server';
-import { REGEX_RAW_ID, REGEX_RAW_ID_ONLY, REGEX_USER } from './regex';
+import {
+  REGEX_MESSAGE_LINK_OR_FULL_ID,
+  REGEX_RAW_ID,
+  REGEX_RAW_ID_ONLY,
+  REGEX_USER,
+} from './regex';
 import { Bot } from '@/types';
 import { CommandArgumentError, MemberNotFoundError } from '@/errors';
-import { isTextChannel } from './guildUtils';
+import { getTextChannel, isTextChannel } from './guildUtils';
 import { joinNaturally } from './formatString';
 
 /**
@@ -286,4 +291,20 @@ export function parseSubCommand(
     subCommand: subCommand.toLowerCase(),
     restContent,
   };
+}
+
+export async function parseMessageId(content: string, guild: Guild) {
+  const linkMatch = content.match(REGEX_MESSAGE_LINK_OR_FULL_ID);
+  if (!linkMatch) {
+    throw new CommandArgumentError(
+      `Please provide a valid message link or a full ID`
+    );
+  }
+  const [_, channelId, messageId] = linkMatch;
+  const reactionChannel = getTextChannel(guild, channelId);
+  if (!reactionChannel)
+    throw new CommandArgumentError(`Invalid Channel ID ${channelId}`);
+  const reactionMessage = await reactionChannel.messages.fetch(messageId);
+  if (!reactionMessage)
+    throw new CommandArgumentError(`Invalid Message ID ${messageId}`);
 }

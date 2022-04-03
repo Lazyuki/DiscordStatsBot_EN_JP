@@ -1,5 +1,3 @@
-import { TextChannel, NewsChannel, ThreadChannel } from 'discord.js';
-
 import { BotEvent } from '@/types';
 import {
   insertEmojis,
@@ -9,7 +7,7 @@ import {
 import checkLang from '@utils/checkLang';
 import { getParentChannelId, isMessageInChannels } from '@utils/guildUtils';
 import checkSafeMessage from '@utils/checkSafeMessage';
-import { REGEX_CUSTOM_EMOTES, REGEX_EMOJIS } from '@utils/regex';
+import { REGEX_CUSTOM_EMOTES, REGEX_UNICODE_EMOJI } from '@utils/regex';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -50,9 +48,10 @@ const event: BotEvent<'messageCreate'> = {
         }
       }
     }
-    const unicodeEmojis = message.content.match(REGEX_EMOJIS);
-    if (unicodeEmojis) {
-      for (const emoji of unicodeEmojis) {
+    const unicodeEmojiMatches = message.content.match(REGEX_UNICODE_EMOJI);
+    if (unicodeEmojiMatches) {
+      for (const emojiMatch of unicodeEmojiMatches) {
+        const emoji = emojiMatch[0];
         if (emoji in emojis) {
           emojis[emoji] += 1;
         } else {

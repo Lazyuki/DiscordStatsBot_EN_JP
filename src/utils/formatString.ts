@@ -73,16 +73,6 @@ export function resolveEmoji(emoji: string, bot: Bot) {
   }
 }
 
-export function checkServerEmoji(emoji: string, guild: Guild) {
-  const discordEmoji = emoji.startsWith('<');
-  if (discordEmoji) {
-    const [animated, name, id] = emoji.slice(1, emoji.length - 1).split(':');
-    return Boolean(guild.emojis.resolve(id));
-  } else {
-    return false;
-  }
-}
-
 export function getServerEmoji(emoji: string, guild: Guild) {
   const discordEmoji = emoji.startsWith('<');
   if (discordEmoji) {
