@@ -17,7 +17,7 @@ module.exports.command = (message, content, bot, server, cmds) => {
   const embed = new Discord.MessageEmbed();
 
   if (cmd && cmd.isAllowed(message, server, bot)) {
-    if (cmd.isCirillaCommand) return;
+    if (bot.migratedCommands.includes(cmd.name)) return;
     embed.title = cmd.name;
     embed.description = cmd.help;
     embed.setFooter(`Aliases: ${cmd.alias.join(', ')}`);

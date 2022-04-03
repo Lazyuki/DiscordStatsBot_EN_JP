@@ -132,7 +132,7 @@ bot.on('message', async (message) => {
   let content = message.content.substr(command.length + 2).trim();
   if (commands[command]) {
     const myCommand = commands[command];
-    if (myCommand.isCirillaCommand) return;
+    if (bot.migratedCommands.includes(myCommand.name)) return;
     // if Ciri's command
     if (myCommand.isAllowed(message, server, bot)) {
       // Check permission

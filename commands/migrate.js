@@ -28,6 +28,7 @@ module.exports.command = (message, content, bot, server) => {
           }
         } else {
           message.channel.send(`${commandName} is not a command`);
+          return;
         }
       }
       const init = fs.readFileSync('../init.json');
