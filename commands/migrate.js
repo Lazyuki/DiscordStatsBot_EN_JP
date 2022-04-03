@@ -31,10 +31,10 @@ module.exports.command = (message, content, bot, server) => {
           return;
         }
       }
-      const init = fs.readFileSync('../init.json');
+      const init = fs.readFileSync('./init.json');
       const initJson = JSON.parse(init);
       fs.writeFileSync(
-        '../init.json',
+        './init.json',
         JSON.stringify(
           { ...initJson, migratedCommands: bot.migratedCommands },
           null,
