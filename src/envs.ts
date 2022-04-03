@@ -16,10 +16,6 @@ export const BOT_LOG_CHANNEL_ID = env
 // Optional env vars
 export const DEBUG = env.get('DEBUG').default('true').asBool();
 export const LINE_USER_ID = env.get('LINE_ID').default('').asString();
-export const LINE_NOTIFY_TOKEN = env
-  .get('LINE_NOTIFY_TOKEN')
-  .default('')
-  .asString();
 export const LINE_CHANNEL_ACCESS_TOKEN = env
   .get('LINE_CHANNEL_ACCESS_TOKEN')
   .default('')

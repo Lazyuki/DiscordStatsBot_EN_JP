@@ -96,6 +96,12 @@ for (const fileName of eventFiles) {
     if (event.onServerInit) {
       client.serverInits.push(event.onServerInit);
     }
+    if (event.onBotInit) {
+      client.botInits.push(event.onBotInit);
+    }
+    if (event.onBotExit) {
+      client.botExits.push(event.onBotExit);
+    }
     if (event.once) {
       client.once(event.eventName, async (...args) => {
         await event.processEvent(client, ...args);
