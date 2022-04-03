@@ -16,6 +16,35 @@ import { optionParser } from '@utils/optionParser';
 import { code, userToTagAndId } from '@utils/formatString';
 import { insertCommands } from '@database/statements';
 
+// TODO: Remove after migration
+const CIRI_COMMAND = /^,([a-zA-Z]+)/;
+const CIRI_HELP_COMMAND = /^,h(?:elp)? ([a-zA-Z]+)/;
+const migrateEvent: BotEvent<'messageCreate'> = {
+  eventName: 'messageCreate',
+  skipOnDebug: false,
+  processEvent: async (bot, message) => {
+    const oldCiriCommand = message.content
+      .toLowerCase()
+      .match(CIRI_COMMAND)?.[1];
+    const oldCiriHelpCommand = message.content
+      .toLowerCase()
+      .match(CIRI_HELP_COMMAND)?.[1];
+    if (oldCiriHelpCommand) {
+      const command = bot.commands[oldCiriHelpCommand];
+      if (bot.config.commandOverrides.includes(command.name)) {
+        message.content = message.content.replace(',', ',,,');
+        await event.processEvent(bot, message);
+      }
+    } else if (oldCiriCommand) {
+      const command = bot.commands[oldCiriCommand];
+      if (bot.config.commandOverrides.includes(command.name)) {
+        message.content = message.content.replace(',', ',,,');
+        await event.processEvent(bot, message);
+      }
+    }
+  },
+};
+
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
   skipOnDebug: false,
@@ -204,4 +233,4 @@ const event: BotEvent<'messageCreate'> = {
   },
 };
 
-export default event;
+export default [event, migrateEvent];

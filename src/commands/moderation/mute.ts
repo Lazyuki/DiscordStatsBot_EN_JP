@@ -1,6 +1,7 @@
 import { CommandArgumentError, UserPermissionError } from '@/errors';
 import { BotCommand } from '@/types';
 import Server from '@classes/Server';
+import { insertModLog } from '@database/statements';
 import { parseMembers } from '@utils/argumentParsers';
 import {
   waitForYesOrNo,
@@ -186,8 +187,22 @@ const mute: BotCommand = {
       ],
       footer: 'Contact one of the mods if you need to discuss this issue.',
     });
+    const date = new Date().toISOString();
+    const addModLog = (userId: string) => {
+      insertModLog({
+        kind: 'mute',
+        guildId: server.guild.id,
+        userId,
+        date,
+        issuerId: message.author.id,
+        messageLink: message.url,
+        silent: false,
+        content: `${millisToDuration(timeoutMillis)}\n**Reason**: ${reason}`,
+      });
+    };
     for (const member of members) {
       await member.timeout(timeoutMillis, auditLogReason);
+      addModLog(member.id);
       if (multiTimeout) {
         server.data.schedules.multiTimeout[member.id] = unmuteAt.getTime();
         repeatTimeoutEveryDay(member.id, server);

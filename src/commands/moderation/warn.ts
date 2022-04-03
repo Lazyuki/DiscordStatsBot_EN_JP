@@ -1,9 +1,9 @@
 import { CommandArgumentError } from '@/errors';
-import { BotCommand, ModLogEntry } from '@/types';
+import { BotCommand } from '@/types';
 import {
   clearModLogForUser,
   insertModLog,
-  deleteModLogEntry,
+  deleteModLogEntries,
   getModLogForGuild,
   getModLogForUser,
 } from '@database/statements';
@@ -11,14 +11,10 @@ import { parseMembers, strictGetUserId } from '@utils/argumentParsers';
 import { getFallbackChannel } from '@utils/asyncMessageCollector';
 import { getDiscordTimestamp } from '@utils/datetime';
 import { infoEmbed, makeEmbed, successEmbed, warningEmbed } from '@utils/embed';
-import { userToMentionAndTag } from '@utils/formatString';
+import { userToMentionAndTag, joinNaturally } from '@utils/formatString';
 import { descriptionPaginator, fieldsPaginator } from '@utils/paginate';
 import { pluralCount, pluralize } from '@utils/pluralize';
 import { GuildBan, GuildMember } from 'discord.js';
-
-export function addModLog(entry: ModLogEntry) {
-  insertModLog(entry);
-}
 
 const warn: BotCommand = {
   name: 'warn',
@@ -53,18 +49,20 @@ const warn: BotCommand = {
     const date = new Date().toISOString();
     const silent = Boolean(options['silent']);
     const unreachableMembers: GuildMember[] = [];
-    for (const member of members) {
-      const warning: ModLogEntry = {
+    const addModLog = (userId: string) => {
+      insertModLog({
         kind: 'warn',
         guildId: server.guild.id,
-        userId: member.id,
+        userId,
         date,
         issuerId: message.author.id,
         messageLink: message.url,
         silent,
         content: restContent,
-      };
-      addModLog(warning);
+      });
+    };
+    for (const member of members) {
+      addModLog(member.id);
       if (!silent) {
         try {
           await member.send(
@@ -82,18 +80,22 @@ const warn: BotCommand = {
     if (silent) {
       await message.channel.send(
         successEmbed(
-          `Logged the warning for ${members.join(', ')} issued by ${
+          `Logged the warning for ${joinNaturally(
+            members.map((m) => m.toString())
+          )} issued by ${
             message.author.tag
-          }. They did not receive the warning.`
+          }. They did **not** receive the warning DM.`
         )
       );
     } else if (unreachableMembers.length) {
       if (unreachableMembers.length !== members.length) {
         await message.channel.send(
           successEmbed(
-            `Successfully warned ${members
-              .filter((m) => !unreachableMembers.includes(m))
-              .join(', ')} by ${message.author.tag}.`
+            `Successfully warned ${joinNaturally(
+              members
+                .filter((m) => !unreachableMembers.includes(m))
+                .map((m) => m.toString())
+            )} by ${message.author.tag}.`
           )
         );
       }
@@ -181,16 +183,28 @@ const warnlog: BotCommand = {
           })
         );
       } else {
-        const fields = userModLogs.map((ml) => {
+        const fields = userModLogs.map((ml, index) => {
           const timestamp = getDiscordTimestamp(new Date(ml.date), 'D'); // TODO: 'f' to show time?
           const issuer = bot.users.cache.get(ml.issuerId);
           const issuerTag = issuer ? issuer.tag : `User: ${ml.issuerId}`;
           const jumpLink = ml.messageLink ? `[Jump](${ml.messageLink})\n` : '';
-          const silent = ml.silent ? `(**Silently Logged**)\n` : '';
+          const silent = ml.silent ? `Silent ` : '';
+          let logTitle = '';
+          switch (ml.kind) {
+            case 'warn':
+              logTitle = `**${silent}Warning**: `;
+              break;
+            case 'mute':
+              logTitle = `**${silent}Timeout** for `;
+              break;
+            case 'voicemute':
+              logTitle = `**${silent}Voice Mute** Reason: `;
+              break;
+          }
 
           return {
-            name: `${timestamp} by ${issuerTag}`,
-            value: `${jumpLink}${silent}${ml.content}`,
+            name: `${index + 1}: ${timestamp} by ${issuerTag}`,
+            value: `${jumpLink}${logTitle}${ml.content}`,
           };
         });
 
@@ -246,10 +260,10 @@ const warnclear: BotCommand = {
   name: 'warnclear',
   isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE'],
   description:
-    'Clear a warning or all warnings for a user. Unless it was a silent warning, the user will be notified.',
-  arguments: '<@user> <all | warning number in warnlog>',
+    'Clear warnings for a user. Unless it was a silent warning, the user will be notified.',
+  arguments: '< @user > < all | warning numbers in the warnlog >',
   aliases: ['wc', 'unwarn'],
-  examples: ['wc @Geralt all', 'unwarn 284840842026549259 3'],
+  examples: ['wc @Geralt all', 'unwarn 284840842026549259 1 3 7'],
   parentCommand: 'warn',
   normalCommand: async ({ content, message, server }) => {
     const { allIds, restContent } = parseMembers(content, server.guild);
@@ -258,19 +272,12 @@ const warnclear: BotCommand = {
         `Please specify a user by either mentioning them or using their ID`
       );
     }
-    const clearAll = restContent === 'all';
-    const logNumber = parseInt(restContent, 10);
-    if (!clearAll && isNaN(logNumber)) {
-      throw new CommandArgumentError(
-        `Please specify which logs to clear, either by using the log number in \`${server.config.prefix}modlog\` or \`all\` to clear all.`
-      );
-    }
+
     const userId = allIds[0];
-    const userModLogs =
-      getModLogForUser({
-        guildId: server.guild.id,
-        userId: userId,
-      }) || [];
+    const userModLogs = getModLogForUser({
+      guildId: server.guild.id,
+      userId: userId,
+    });
 
     if (userModLogs.length === 0) {
       await message.channel.send(
@@ -278,52 +285,76 @@ const warnclear: BotCommand = {
       );
       return;
     }
+
+    const clearAll = restContent === 'all';
+    const warningIndecies = clearAll ? userModLogs.map((_, i) => i + 1) : [];
+    if (!clearAll) {
+      const numbers = restContent.split(/\s+/);
+      numbers.forEach((n) => {
+        const logNumber = parseInt(n, 10);
+        if (
+          isNaN(logNumber) ||
+          logNumber <= 0 ||
+          logNumber > userModLogs.length
+        ) {
+          throw new CommandArgumentError(`Please specify valid log numbers`);
+        }
+        warningIndecies.push(logNumber);
+      });
+    }
+
     const member = server.guild.members.cache.get(userId);
-    const clearedWarnings: ModLogEntry[] = [];
     if (clearAll) {
       // All warn logs
       clearModLogForUser({
         guildId: server.guild.id,
         userId,
       });
-      const clearMessage = `Cleared ${pluralize(
-        'warning',
-        's',
-        userModLogs.length
-      )}`;
-      if (
-        member &&
-        userModLogs.some((ml) => ml.kind === 'warn' && !ml.silent)
-      ) {
-        // If it contains actual warnings
-        try {
-          await member.send(
-            infoEmbed(
-              `Your warnings on "${server.guild.name}" have been cleared.`
-            )
-          );
-          await message.channel.send(
-            successEmbed(`${clearMessage} and they have been notified`)
-          );
-        } catch (e) {
-          await message.channel.send(
-            warningEmbed(`${clearMessage} but failed to notify them.`)
-          );
-        }
-      } else {
-        await message.channel.send(successEmbed(clearMessage));
-      }
     } else {
-      if (logNumber < 1 || logNumber > userModLogs.length) {
-        throw new CommandArgumentError(
-          `The mod log number \`${logNumber}\` does not exist on <@${userId}>`
+      deleteModLogEntries(
+        {
+          guildId: server.guild.id,
+          userId,
+        },
+        warningIndecies.map(String)
+      );
+    }
+
+    const clearMessage = `Cleared ${pluralCount(
+      'warning',
+      's',
+      warningIndecies.length
+    )} for ${member || `User: ${userId}`}`;
+
+    const warningsToNotify = userModLogs.filter(
+      (ml, index) =>
+        ml.kind === 'warn' && !ml.silent && warningIndecies.includes(index + 1)
+    );
+    if (member && warningsToNotify.length > 0) {
+      const warningDates = warningsToNotify.map((w) =>
+        getDiscordTimestamp(new Date(w.date))
+      );
+
+      try {
+        await member.send(
+          infoEmbed(
+            `Your ${pluralize('warning', 's', warningsToNotify.length)} on "${
+              server.guild.name
+            }" from ${joinNaturally(warningDates)} ${
+              (pluralize('', 'has', warningsToNotify.length), 'have')
+            } been cleared.`
+          )
+        );
+        await message.channel.send(
+          successEmbed(`${clearMessage} and they have been notified`)
+        );
+      } catch (e) {
+        await message.channel.send(
+          warningEmbed(`${clearMessage} but failed to notify them.`)
         );
       }
-      deleteModLogEntry({
-        guildId: server.guild.id,
-        userId,
-        index: logNumber - 1,
-      });
+    } else {
+      await message.channel.send(successEmbed(clearMessage));
     }
   },
 };

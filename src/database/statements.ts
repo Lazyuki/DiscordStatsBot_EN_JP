@@ -79,6 +79,13 @@ function makeGetAllWithArray<P, R>(key: string, sql: string) {
   };
 }
 
+function makeStatementWithArray<P>(key: string, sql: string) {
+  return (params: P, array: string[]) => {
+    const statement = getArrayStatement(key, sql, array);
+    return statement.run(...array, jsToSql(params));
+  };
+}
+
 function sqlToJs(rows: any[]) {
   if (Array.isArray(rows)) {
     return rows.map((row) => {
@@ -402,12 +409,18 @@ export const getModLogForUser = makeGetAllRows<GuildUser, ModLogEntry>(`
     ORDER BY utc_date ASC
 `);
 
-export const deleteModLogEntry = makeStatement<GuildUser & { index: number }>(`
-    DELETE FROM modlog
-    WHERE guild_id = $guildId AND user_id = $userId
-    ORDER BY utc_date ASC
-    LIMIT 1 OFFSET $index
-`);
+export const deleteModLogEntries = makeStatementWithArray<GuildUser>(
+  'deleteModLogEntries',
+  `
+    WITH indexed AS (
+      SELECT *, ROW_NUMBER() OVER (ORDER BY utc_date ASC) index FROM modlog
+      WHERE guild_id = $guildId AND user_id = $userId
+      ORDER BY utc_date ASC
+    )
+      DELTE FROM indexed
+      WHERE index IN (ARRAY_VALUES)
+`
+);
 
 export const clearModLogForUser = makeStatement<GuildUser>(`
     DELETE FROM modlog

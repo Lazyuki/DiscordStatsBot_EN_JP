@@ -1,4 +1,5 @@
 import { BotCommand } from '@/types';
+import { insertModLog } from '@database/statements';
 import { parseMembers } from '@utils/argumentParsers';
 import { makeEmbed, successEmbed } from '@utils/embed';
 import { joinNaturally, userToMentionAndTag } from '@utils/formatString';
@@ -23,7 +24,21 @@ const voicemute: BotCommand = {
     const reason = restContent || 'Unspecified';
     const noDMs: GuildMember[] = [];
 
+    const date = new Date().toISOString();
+    const addModLog = (userId: string) => {
+      insertModLog({
+        kind: 'mute',
+        guildId: server.guild.id,
+        userId,
+        date,
+        issuerId: message.author.id,
+        messageLink: message.url,
+        silent: false,
+        content: reason,
+      });
+    };
     for (const member of members) {
+      addModLog(member.id);
       if (member.voice.channel) {
         await member.voice.setMute(
           true,
