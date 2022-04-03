@@ -80,7 +80,7 @@ function makeGetAllWithArray<P, R>(key: string, sql: string) {
 }
 
 function makeStatementWithArray<P>(key: string, sql: string) {
-  return (params: P, array: string[]) => {
+  return (params: P, array: (string | number)[]) => {
     const statement = getArrayStatement(key, sql, array);
     return statement.run(...array, jsToSql(params));
   };
@@ -418,10 +418,10 @@ export const deleteModLogEntries = makeStatementWithArray<GuildUser>(
       ORDER BY utc_date ASC
     )
       DELETE FROM modlog
-      WHERE userId = $userId AND utc_date IN (
+      WHERE user_id = $userId AND utc_date IN (
           SELECT utc_date
           FROM indexed
-          WHERE log_index in (ARRAY_VALUES)
+          WHERE log_index IN (ARRAY_VALUES)
       )
 `
 );
@@ -538,7 +538,7 @@ type DbModLog = GuildUserDate & {
   kind: string;
   silent: boolean;
   content: string;
-  duration?: number;
+  duration: number | null;
 };
 export const insertModLog = makeStatement<DbModLog>(`
     INSERT INTO modlog (guild_id, user_id, utc_date, issuer_id, message_link, kind, silent, content, duration)

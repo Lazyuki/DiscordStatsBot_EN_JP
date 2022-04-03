@@ -59,6 +59,7 @@ const warn: BotCommand = {
         messageLink: message.url,
         silent,
         content: restContent,
+        duration: null,
       });
     };
     for (const member of members) {
@@ -192,15 +193,15 @@ const warnlog: BotCommand = {
           let logTitle = '';
           switch (ml.kind) {
             case 'warn':
-              logTitle = `__${silent ? 'Silent Log' : 'Warning'}__\nReason: `;
+              logTitle = `\`${silent ? 'Silent Log' : 'Warning'}\`\n`;
               break;
             case 'mute':
-              logTitle = `__${silent}Timeout__ for ${
+              logTitle = `\`${silent}Timeout\` for ${
                 ml.duration ? millisToDuration(ml.duration) : 'unknown'
               }\nReason: `;
               break;
             case 'voicemute':
-              logTitle = `__${silent}Voice Mute__\nReason: `;
+              logTitle = `\`${silent}Voice Mute\`\nReason: `;
               break;
           }
 
@@ -230,7 +231,7 @@ const warnlog: BotCommand = {
           `Mod Logs for ${userTag}${
             isWatched ? ' (Being watched for deleted messages)' : ''
           }`,
-          pluralCount('Official Warning', 's', officialWarningCount),
+          `\`${pluralCount('Official Warning', 's', officialWarningCount)}\``,
           fields,
           false,
           -1,
@@ -318,7 +319,7 @@ const warnclear: BotCommand = {
           guildId: server.guild.id,
           userId,
         },
-        warningIndecies.map(String)
+        warningIndecies
       );
     }
 
@@ -343,7 +344,7 @@ const warnclear: BotCommand = {
             `Your ${pluralize('warning', 's', warningsToNotify.length)} on "${
               server.guild.name
             }" from ${joinNaturally(warningDates)} ${
-              (pluralize('', 'has', warningsToNotify.length), 'have')
+              (pluralize('', 'have', warningsToNotify.length), 'has')
             } been cleared.`
           )
         );

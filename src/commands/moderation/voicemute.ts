@@ -35,6 +35,7 @@ const voicemute: BotCommand = {
         messageLink: message.url,
         silent: false,
         content: reason,
+        duration: null,
       });
     };
     for (const member of members) {
