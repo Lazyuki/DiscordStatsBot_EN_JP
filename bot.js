@@ -24,6 +24,7 @@ const bot = new Discord.Client({
 const token = init.token;
 bot.owner_ID = init.owner_ID;
 bot.migratedCommands = init.migratedCommands || [];
+bot.commands = commands;
 
 let time = new Date();
 let h = time.getUTCHours();
