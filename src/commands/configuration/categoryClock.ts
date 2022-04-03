@@ -4,6 +4,7 @@ import { CommandArgumentError } from '@/errors';
 import { parseChannels } from '@utils/argumentParsers';
 import { REGEX_RAW_ID } from '@utils/regex';
 import hourlyTask from '@tasks/hourlyTask';
+import { formatCategoryClock } from '@utils/datetime';
 
 const TIME_STRING_REGEX = /"(.*)"/;
 
@@ -24,7 +25,7 @@ const command: BotCommand = {
   requiredBotPermissions: ['MANAGE_CHANNELS'],
   description:
     'Set up and configure hourly category clocks. Note that it will only show the 24-hour format. Use "TZ Database Name" from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones inside `{TZ_name}` for specifying the timezone.',
-  arguments: '< set | reset > [CATEGORY_ID] ["Time format string"]',
+  arguments: '< set | reset > [category/channel ID] ["Time format string"]',
   options: [
     {
       name: 'padding',
@@ -61,8 +62,8 @@ const command: BotCommand = {
             currentServerClocks
               .map(
                 (cc) =>
-                  `<#${cc.categoryId}> => "${cc.timeString}"${
-                    cc.zeroPad ? 'with zero-padding' : ''
+                  `Category ID: ${cc.categoryId} => "${cc.timeString}"${
+                    cc.zeroPad ? ' with zero-padding' : ''
                   }`
               )
               .join('\n')
@@ -87,17 +88,21 @@ const command: BotCommand = {
             'Time format must be surrounded by double quotes.'
           );
         }
-        const { categories } = parseChannels(channelId, server.guild);
-        if (!categories.length)
+        const { channelsAndCategories } = parseChannels(
+          channelId,
+          server.guild
+        );
+        if (!channelsAndCategories.length)
           throw new CommandArgumentError(
-            'Please provide a valid category channel in this server'
+            'Please provide a valid channel/category in this server'
           );
-        const category = categories[0];
+        const category = channelsAndCategories[0];
+        const zeroPad = Boolean(options['padding']);
         let found;
         for (const categoryClock of currentServerClocks) {
           if (categoryClock.categoryId === category.id) {
             found = true;
-            categoryClock.zeroPad = Boolean(options['padding']);
+            categoryClock.zeroPad = zeroPad;
             categoryClock.timeString = timeString;
             break;
           }
@@ -105,12 +110,12 @@ const command: BotCommand = {
         if (!found) {
           server.data.categoryClocks.push({
             categoryId: category.id,
-            zeroPad: Boolean(options['padding']),
+            zeroPad,
             timeString,
           });
         }
+        await category.setName(formatCategoryClock(timeString, zeroPad));
         await message.channel.send(successEmbed(`Category clock set!`));
-        return;
       }
       case 'reset': {
         const idMatch = channelId.match(REGEX_RAW_ID);
@@ -129,19 +134,14 @@ const command: BotCommand = {
           );
         } else {
           currentServerClocks.splice(foundIndex, 1);
-          const channel = server.guild.channels.cache.get(id);
-          if (channel) {
-            await channel.setName('Category');
-          }
           await message.channel.send(
             successEmbed(
-              `Category clock for <#${id}> has been removed and the name has been set to \`Category\``
+              `Category clock for <#${id}> has been removed. You must reset the name yourself.`
             )
           );
         }
       }
     }
-    hourlyTask(bot);
     server.save();
   },
 };

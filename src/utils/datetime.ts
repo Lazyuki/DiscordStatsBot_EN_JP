@@ -120,7 +120,7 @@ export function strToMillis(content: string): {
   return { millis: totalMillis, restContent: content.replace(TIME_REGEX, '') };
 }
 
-const TIMEZONE_REGEX = /\{([^}]+)\}/;
+const TIMEZONE_REGEX = /\{([^}]+)\}/g;
 export function formatCategoryClock(timeString: string, zeroPad: boolean) {
   const date = new Date();
   return timeString.replace(
