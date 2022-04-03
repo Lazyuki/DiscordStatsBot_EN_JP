@@ -11,7 +11,7 @@ module.exports.isAllowed = (message, server, bot) => {
 module.exports.help =
   'add migrated commands. `,migrate add user leaderboard` or `,migreate remove user`';
 
-module.exports.command = (message, content, bot) => {
+module.exports.command = (message, content, bot, server) => {
   if (content) {
     const [subCommand, ...commands] = content.split(' ');
     if (subCommand === 'add' || subCommand === 'remove') {
@@ -41,8 +41,71 @@ module.exports.command = (message, content, bot) => {
         'utf8'
       );
       message.channel.send(`Done`);
+    } else if (subCommand === 'wl') {
+      if (!server.warnlist) {
+        message.channel.send('no warnlist');
+        return;
+      }
+      const modLogEntries = [];
+      Object.entries(server.warnlist).forEach(([userId, warnlogs]) => {
+        warnlogs.forEach((wl) => {
+          let kind = 'warn';
+          let content = wl.warnMessage;
+          if (content.startsWith('Banned:')) {
+            return;
+          }
+          if (content.startsWith('Kicked:')) {
+            return;
+          }
+          if (content.startsWith('Sent to')) {
+            return;
+          }
+          if (content.startsWith('Chat muted')) {
+            kind = 'mute';
+            content = 'Unspecified';
+          }
+          if (content.startsWith('Temp muted')) {
+            kind = 'mute';
+            if (content.startsWith('Temp muted:')) {
+              const reason = content.replace('Temp muted:', '').trim();
+              content = reason;
+            } else {
+              content = 'Unspecified';
+            }
+          }
+          if (content.startsWith('Voice muted')) {
+            kind = 'voicemute';
+            content = 'Unspecified';
+          }
+          modLogEntries.push({
+            guildId: server.guild.id,
+            userId,
+            kind,
+            silent: wl.silent,
+            date: new Date(wl.issued).toISOString(),
+            issuerId: wl.issuer,
+            messageLink: wl.link,
+            content,
+          });
+        });
+      });
+      fs.writeFileSync(
+        `${server.guild.id}-warnlist.json`,
+        JSON.stringify({ modLogEntries }, null, 4),
+        'utf-8'
+      );
+      message.channel.send('done');
+    } else if (subCommand === 'watched') {
+      fs.writeFileSync(
+        `${server.guild.id}-watched.json`,
+        JSON.stringify({ watched: server.watchedUsers }, null, 4),
+        'utf-8'
+      );
+      message.channel.send('done');
     } else {
-      message.channel.send('Available subcommands are add and remove');
+      message.channel.send(
+        'Available subcommands are add, remove, wl, watched'
+      );
     }
   } else {
     message.channel.send(
