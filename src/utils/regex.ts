@@ -10,6 +10,7 @@ export const REGEX_URL = /https?:\/\/(www\.)?\S{2,256}\.[a-z]{2,6}\S*/g;
 export const REGEX_UNICODE_EMOJI = emojiRegex();
 export const REGEX_CUSTOM_EMOTES = /(<a?:[^:]+:[0-9]+>)/g;
 export const REGEX_USER = /<@!?[0-9]+>/g;
+export const REGEX_USER_TAG = /(\S+#[0-9]{4})/g;
 export const REGEX_CHAN = /<#[0-9]+>/g;
 export const REGEX_ROLE = /<@&[0-9]+>/g;
 export const REGEX_TIMESTAMP = /<t:[0-9]+:[a-zA-Z]>/g;

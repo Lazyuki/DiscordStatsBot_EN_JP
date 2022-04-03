@@ -55,8 +55,21 @@ const command: BotCommand = {
       // view current config
       if (currentServerClocks.length === 0) {
         await message.channel.send(infoEmbed(`No category clocks set`));
-        return;
+      } else {
+        await message.channel.send(
+          infoEmbed(
+            currentServerClocks
+              .map(
+                (cc) =>
+                  `<#${cc.categoryId}> => "${cc.timeString}"${
+                    cc.zeroPad ? 'with zero-padding' : ''
+                  }`
+              )
+              .join('\n')
+          )
+        );
       }
+      return;
     }
 
     const [subCommand, channelId] = content.split(/\s+/);

@@ -3,6 +3,7 @@ import { BotCommand, BotConfig, NotifyType, RoleNotifyType } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
 import { saveConfig } from '@utils/disk';
 import { infoEmbed, successEmbed } from '@utils/embed';
+
 declare module '@/types' {
   interface BotConfig {
     lineNotify: Record<string, LineNotifyConfig>;
