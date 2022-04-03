@@ -3,8 +3,8 @@ const init = require('./init.json');
 
 let commands = {};
 let inits = [];
-let commandNames = {};
-const migratedCommands = init.migratedCommands;
+let commandNames = {}
+const migratedCommands = init.migratedCommands || []
 
 fs.readdir('./commands/', (err, files) => {
   files.forEach((file) => {
