@@ -23,6 +23,7 @@ const bot = new Discord.Client({
 // Load initial configurations.
 const token = init.token;
 bot.owner_ID = init.owner_ID;
+bot.migratedCommands = init.migratedCommands || [];
 
 let time = new Date();
 let h = time.getUTCHours();
@@ -130,10 +131,12 @@ bot.on('message', async (message) => {
   let command = message.content.split(' ')[0].slice(1).toLowerCase();
   let content = message.content.substr(command.length + 2).trim();
   if (commands[command]) {
+    const myCommand = commands[command];
+    if (myCommand.isCirillaCommand) return;
     // if Ciri's command
-    if (commands[command].isAllowed(message, server, bot)) {
+    if (myCommand.isAllowed(message, server, bot)) {
       // Check permission
-      commands[command].command(message, content, bot, server, cmds);
+      myCommand.command(message, content, bot, server, cmds);
       return;
     }
   }
