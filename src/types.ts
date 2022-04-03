@@ -172,6 +172,7 @@ export interface ModLogEntry {
   kind: ModLogType;
   silent: boolean;
   content: string;
+  duration?: number | null; // milliseconds
 }
 
 export interface QuickBanConfig {

@@ -9,7 +9,7 @@ import {
 } from '@database/statements';
 import { parseMembers, strictGetUserId } from '@utils/argumentParsers';
 import { getFallbackChannel } from '@utils/asyncMessageCollector';
-import { getDiscordTimestamp } from '@utils/datetime';
+import { getDiscordTimestamp, millisToDuration } from '@utils/datetime';
 import { infoEmbed, makeEmbed, successEmbed, warningEmbed } from '@utils/embed';
 import { userToMentionAndTag, joinNaturally } from '@utils/formatString';
 import { descriptionPaginator, fieldsPaginator } from '@utils/paginate';
@@ -187,24 +187,26 @@ const warnlog: BotCommand = {
           const timestamp = getDiscordTimestamp(new Date(ml.date), 'D'); // TODO: 'f' to show time?
           const issuer = bot.users.cache.get(ml.issuerId);
           const issuerTag = issuer ? issuer.tag : `User: ${ml.issuerId}`;
-          const jumpLink = ml.messageLink ? `[Jump](${ml.messageLink})\n` : '';
+          const jumpLink = ml.messageLink ? `\n[Jump](${ml.messageLink})` : '';
           const silent = ml.silent ? `Silent ` : '';
           let logTitle = '';
           switch (ml.kind) {
             case 'warn':
-              logTitle = `**${silent}Warning**: `;
+              logTitle = `__${silent ? 'Silent Log' : 'Warning'}__\nReason: `;
               break;
             case 'mute':
-              logTitle = `**${silent}Timeout** for `;
+              logTitle = `__${silent}Timeout__ for ${
+                ml.duration ? millisToDuration(ml.duration) : 'unknown'
+              }\nReason: `;
               break;
             case 'voicemute':
-              logTitle = `**${silent}Voice Mute** Reason: `;
+              logTitle = `__${silent}Voice Mute__\nReason: `;
               break;
           }
 
           return {
             name: `${index + 1}: ${timestamp} by ${issuerTag}`,
-            value: `${jumpLink}${logTitle}${ml.content}`,
+            value: `${logTitle}${ml.content}${jumpLink}`,
           };
         });
 

@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS modlog(
   message_link TEXT NOT NULL,
   kind TEXT NOT NULL,
   silent BOOLEAN NOT NULL,
-  content TEXT NOT NULL
+  content TEXT NOT NULL,
+  duration BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS watched(

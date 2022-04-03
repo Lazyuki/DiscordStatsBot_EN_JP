@@ -56,7 +56,6 @@ const event: BotEvent<'voiceStateUpdate'> = {
         channel.members.forEach((member) => {
           if (member.user.bot) return;
           if (isVoiceActive(member.voice)) {
-            console.log('bot init voice active', member.displayName);
             server.temp.vc[member.id] = now;
           }
         });

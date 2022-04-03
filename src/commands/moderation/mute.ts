@@ -197,7 +197,8 @@ const mute: BotCommand = {
         issuerId: message.author.id,
         messageLink: message.url,
         silent: false,
-        content: `${millisToDuration(timeoutMillis)}\n**Reason**: ${reason}`,
+        content: reason,
+        duration: timeoutMillis,
       });
     };
     for (const member of members) {

@@ -413,12 +413,16 @@ export const deleteModLogEntries = makeStatementWithArray<GuildUser>(
   'deleteModLogEntries',
   `
     WITH indexed AS (
-      SELECT *, ROW_NUMBER() OVER (ORDER BY utc_date ASC) index FROM modlog
+      SELECT *, ROW_NUMBER() OVER (ORDER BY utc_date ASC) as log_index FROM modlog
       WHERE guild_id = $guildId AND user_id = $userId
       ORDER BY utc_date ASC
     )
-      DELTE FROM indexed
-      WHERE index IN (ARRAY_VALUES)
+      DELETE FROM modlog
+      WHERE userId = $userId AND utc_date IN (
+          SELECT utc_date
+          FROM indexed
+          WHERE log_index in (ARRAY_VALUES)
+      )
 `
 );
 
@@ -534,10 +538,11 @@ type DbModLog = GuildUserDate & {
   kind: string;
   silent: boolean;
   content: string;
+  duration?: number;
 };
 export const insertModLog = makeStatement<DbModLog>(`
-    INSERT INTO modlog (guild_id, user_id, utc_date, issuer_id, message_link, kind, silent, content)
-    VALUES($guildId, $userId, $date, $issuerId, $messageLink, $kind, $silent, $content)
+    INSERT INTO modlog (guild_id, user_id, utc_date, issuer_id, message_link, kind, silent, content, duration)
+    VALUES($guildId, $userId, $date, $issuerId, $messageLink, $kind, $silent, $content, $duration)
 `);
 
 export const insertWatchedUser = makeStatement<GuildUser>(`
