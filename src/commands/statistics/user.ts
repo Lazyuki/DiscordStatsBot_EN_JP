@@ -11,7 +11,10 @@ import {
 } from '@database/statements';
 import { formatPercent, resolveEmoji } from '@utils/formatString';
 import { pluralCount } from '@utils/pluralize';
-import { isInChannelsOrCategories } from '@utils/guildUtils';
+import {
+  channelsOrCategoriesToChannels,
+  isInChannelsOrCategories,
+} from '@utils/guildUtils';
 
 const command: BotCommand = {
   name: 'user',
@@ -27,7 +30,10 @@ const command: BotCommand = {
       server.config.hiddenChannels
     )
       ? []
-      : server.config.hiddenChannels;
+      : channelsOrCategoriesToChannels(
+          server.config.hiddenChannels,
+          server.guild
+        );
 
     const guildUser = {
       guildId: server.guild.id,

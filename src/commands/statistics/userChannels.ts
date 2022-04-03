@@ -3,7 +3,10 @@ import { getUserId } from '@utils/argumentParsers';
 import { BotCommand } from '@/types';
 import { infoEmbed } from '@utils/embed';
 import { getUserChannels } from '@database/statements';
-import { isInChannelsOrCategories } from '@utils/guildUtils';
+import {
+  channelsOrCategoriesToChannels,
+  isInChannelsOrCategories,
+} from '@utils/guildUtils';
 import { pluralCount } from '@utils/pluralize';
 
 const command: BotCommand = {
@@ -20,7 +23,11 @@ const command: BotCommand = {
       server.config.hiddenChannels
     )
       ? []
-      : server.config.hiddenChannels;
+      : channelsOrCategoriesToChannels(
+          server.config.hiddenChannels,
+          server.guild
+        );
+
     const channels = getUserChannels(
       {
         guildId: server.guild.id,

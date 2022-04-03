@@ -210,10 +210,10 @@ const CONFIGURABLE_SERVER_CONFIG = [
   }),
   getConfigInfo({
     key: 'hiddenChannels',
-    type: 'channel',
+    type: 'channelOrCategory',
     isArray: true,
     description:
-      'Channels or categories that are hidden from general server statistics. Messages will still be counted, but these channels will only show up on user stats if the command is invoked from one of the hidden channels. Useful for mod channels.',
+      'Channels or categories that are hidden from general server statistics. Messages will still be counted, but these channels will only show up on user stats if the command is invoked from one of the hidden channels. Useful for mod channels as some mod commands only work in hidden channels.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({

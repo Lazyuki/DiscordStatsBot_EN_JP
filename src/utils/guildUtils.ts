@@ -8,6 +8,7 @@ import {
   Message,
   GuildMember,
   GuildBasedChannel,
+  CategoryChannel,
 } from 'discord.js';
 
 export function isNotDM<M extends Message | PartialMessage>(
@@ -69,6 +70,24 @@ export function isInChannelsOrCategories(
   channelIds: string[]
 ) {
   return channelIds.some((id) => isInChannelOrCategory(message, id));
+}
+
+export function channelsOrCategoriesToChannels(
+  channdlOrCategoriIds: string[],
+  guild: Guild
+): string[] {
+  const textChannelIds: string[] = [];
+  channdlOrCategoriIds.forEach((id) => {
+    const channel = guild.channels.cache.get(id);
+    if (!channel) return;
+    if (channel.isText() && !channel.isThread()) {
+      textChannelIds.push(channel.id);
+    } else if (channel instanceof CategoryChannel) {
+      const children = channel.children.keys();
+      textChannelIds.push(...children);
+    }
+  });
+  return textChannelIds;
 }
 
 export function isMessageInChannels(
