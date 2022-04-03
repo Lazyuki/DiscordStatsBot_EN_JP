@@ -31,12 +31,14 @@ const migrateEvent: BotEvent<'messageCreate'> = {
       .match(CIRI_HELP_COMMAND)?.[1];
     if (oldCiriHelpCommand) {
       const command = bot.commands[oldCiriHelpCommand];
+      if (!command) return;
       if (bot.config.commandOverrides.includes(command.name)) {
         message.content = message.content.replace(',', ',,,');
         await event.processEvent(bot, message);
       }
     } else if (oldCiriCommand) {
       const command = bot.commands[oldCiriCommand];
+      if (!command) return;
       if (bot.config.commandOverrides.includes(command.name)) {
         message.content = message.content.replace(',', ',,,');
         await event.processEvent(bot, message);
