@@ -12,6 +12,7 @@ import { getFallbackChannel } from '@utils/asyncMessageCollector';
 import { getDiscordTimestamp, millisToDuration } from '@utils/datetime';
 import { infoEmbed, makeEmbed, successEmbed, warningEmbed } from '@utils/embed';
 import { userToMentionAndTag, joinNaturally } from '@utils/formatString';
+import { isInChannelsOrCategories } from '@utils/guildUtils';
 import { descriptionPaginator, fieldsPaginator } from '@utils/paginate';
 import { pluralCount, pluralize } from '@utils/pluralize';
 import { GuildBan, GuildMember } from 'discord.js';
@@ -143,6 +144,8 @@ const warnlog: BotCommand = {
   examples: ['wl', 'wl 284840842026549259'],
   parentCommand: 'warn',
   normalCommand: async ({ bot, content, message, server }) => {
+    if (!isInChannelsOrCategories(message, server.config.hiddenChannels))
+      return;
     if (content) {
       const userId = strictGetUserId(content, server.guild);
       if (!userId) {
