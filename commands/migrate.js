@@ -20,10 +20,10 @@ module.exports.command = (message, content, bot, server) => {
         if (command) {
           command.isCirillaCommand = subCommand === 'add';
           if (subCommand === 'add') {
-            bot.migratedCommands.push(commandName);
+            bot.migratedCommands.push(command.name);
           } else {
             bot.migratedCommands = bot.migratedCommands.filter(
-              (c) => c !== commandName
+              (c) => c !== command.name
             );
           }
         } else {
