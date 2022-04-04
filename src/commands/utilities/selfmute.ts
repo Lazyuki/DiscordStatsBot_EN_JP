@@ -3,7 +3,7 @@ import { GuildMember } from 'discord.js';
 import { BotCommand } from '@/types';
 import Server from '@classes/Server';
 import { DAY_IN_MILLIS, millisToDuration, strToMillis } from '@utils/datetime';
-import { successEmbed } from '@utils/embed';
+import { infoEmbed, successEmbed } from '@utils/embed';
 import runAt, { getMemberOrRepeat } from '@utils/runAt';
 import {
   CommandArgumentError,
@@ -12,11 +12,15 @@ import {
 } from '@/errors';
 import logger from '@/logger';
 import { safeDelete } from '@utils/safeDelete';
+import { getTextChannel } from '@utils/guildUtils';
 
 declare module '@/types' {
   interface ServerSchedules {
     selfMutes: Record<string, number>;
-    scheduledSelfMutes: Record<string, { muteAt: number; unmuteAt: number }>;
+    scheduledSelfMutes: Record<
+      string,
+      { muteAt: number; unmuteAt: number; channelId: string }
+    >;
   }
 }
 
@@ -48,12 +52,14 @@ async function mute(
 function scheduleMute(
   member: GuildMember,
   server: Server,
+  channelId: string,
   muteAtMillis: number,
   unmuteAtMillis: number
 ) {
   server.data.schedules.scheduledSelfMutes[member.id] = {
     muteAt: muteAtMillis,
     unmuteAt: unmuteAtMillis,
+    channelId,
   };
   runAt(muteAtMillis, () => {
     getMemberOrRepeat(
@@ -62,6 +68,14 @@ function scheduleMute(
       async (m, s) => {
         delete server.data.schedules.scheduledSelfMutes[member.id];
         await mute(m, s, unmuteAtMillis);
+        const channel = getTextChannel(server.guild, channelId);
+        await channel?.send(
+          infoEmbed(
+            `${m} self-muted for **${millisToDuration(
+              unmuteAtMillis - muteAtMillis
+            )}** as scheduled.`
+          )
+        );
       },
       () => {
         delete server.data.schedules.scheduledSelfMutes[member.id];
@@ -91,6 +105,14 @@ const command: BotCommand = {
             async (m, s) => {
               delete server.data.schedules.scheduledSelfMutes[userId];
               await mute(m, s, schedule.unmuteAt);
+              const channel = getTextChannel(server.guild, schedule.channelId);
+              await channel?.send(
+                infoEmbed(
+                  `${m} self-muted for **${millisToDuration(
+                    schedule.unmuteAt - schedule.muteAt
+                  )}** as scheduled.`
+                )
+              );
             },
             () => {
               delete server.data.schedules.scheduledSelfMutes[userId];
@@ -157,7 +179,13 @@ const command: BotCommand = {
     safeDelete(message);
     if (muteAtMillis) {
       const unmuteAtMillis = muteAtMillis + totalMillis;
-      scheduleMute(message.member, server, muteAtMillis, unmuteAtMillis);
+      scheduleMute(
+        message.member,
+        server,
+        message.channel.id,
+        muteAtMillis,
+        unmuteAtMillis
+      );
       await message.channel.send(
         successEmbed({
           description: `${

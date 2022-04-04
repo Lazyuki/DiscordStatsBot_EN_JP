@@ -12,7 +12,7 @@ import { GuildMember, Message, User } from 'discord.js';
 import { BLACK } from '@utils/constants';
 import { stripIndent } from 'common-tags';
 import { memberJoinAge } from '@utils/datetime';
-import { pluralize } from '@utils/pluralize';
+import { pluralCount, pluralize } from '@utils/pluralize';
 import { getTextChannel, idToUser } from '@utils/guildUtils';
 import { userToMentionAndTag } from '@utils/formatString';
 import Server from '@classes/Server';
@@ -218,7 +218,13 @@ async function banUsers(
       const bannedMembers = members.filter((m) => !failedBans.includes(m.id));
       const bannedIds = nonMemberIds.filter((id) => !failedBans.includes(id));
       await message.channel.send(
-        successEmbed(`Banned ${allIds.length - failedBans.length} users`)
+        successEmbed(
+          `Banned ${pluralCount(
+            'user',
+            's',
+            allIds.length - failedBans.length
+          )}`
+        )
       );
       await editEmbed(banConfirmation, { footer: 'Banned' });
       if (server.config.modActionLogChannel) {
@@ -234,7 +240,11 @@ async function banUsers(
             footerIcon: message.member.displayAvatarURL(),
             fields: [
               {
-                name: 'Banned Users',
+                name: pluralize(
+                  'Banned User',
+                  's',
+                  bannedMembers.length + bannedIds.length
+                ),
                 value: `${bannedMembers
                   .map((m) => userToMentionAndTag(m.user))
                   .join('\n')}\n${bannedIds.map(idToUser).join('\n')}`.trim(),

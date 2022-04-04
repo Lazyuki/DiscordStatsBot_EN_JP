@@ -8,8 +8,8 @@ export function safeDelete(message: GuildMessage) {
   }
 }
 
-export function deleteAfter(message: Message, seconds = 5) {
+export function deleteAfter(message?: Message, seconds = 5) {
   setTimeout(() => {
-    message.delete();
+    message?.delete();
   }, seconds * 1000);
 }

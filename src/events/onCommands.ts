@@ -16,6 +16,7 @@ import isRateLimited from '@utils/rateLimit';
 import { optionParser } from '@utils/optionParser';
 import { code, userToTagAndId } from '@utils/formatString';
 import { insertCommands } from '@database/statements';
+import { deleteAfter } from '@utils/safeDelete';
 
 // TODO: Remove after migration
 const CIRI_COMMAND = /^,([a-zA-Z]+)/;
@@ -170,18 +171,21 @@ const event: BotEvent<'messageCreate'> = {
           } else if (error instanceof UserError) {
             if (error instanceof MemberNotFoundError) {
               if (error.message) {
-                await safeChannelSend(
-                  errorEmbed(
-                    `Member not found in the server: \`${Util.escapeInlineCode(
-                      error.message
-                    )}\``
-                  )
+                deleteAfter(
+                  await safeChannelSend(
+                    errorEmbed(
+                      `Member not found in the server: \`${Util.escapeInlineCode(
+                        error.message
+                      )}\``
+                    )
+                  ),
+                  20
                 );
               } else {
                 await message.react('❓');
               }
             } else if (error instanceof CommandArgumentError) {
-              await safeChannelSend(errorEmbed(error.message));
+              deleteAfter(await safeChannelSend(errorEmbed(error.message)), 20);
             } else {
               await safeChannelSend(
                 errorEmbed(`${error.name}: ${error.message}`)
