@@ -9,7 +9,6 @@ import { stripIndent } from 'common-tags';
 
 const hardcore: BotCommand = {
   name: 'hardcore',
-  allowedServers: [EJLX, MAINICHI],
   requiredServerConfigs: ['japaneseRoles', 'hardcoreRole'],
   requiredBotPermissions: ['MANAGE_MESSAGES'],
   aliases: ['hc'],
