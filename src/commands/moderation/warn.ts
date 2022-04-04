@@ -223,7 +223,7 @@ const warnlog: BotCommand = {
                 ? ' but they are being watched for deleted messages'
                 : ''
             }`,
-            fields: guildBan ? [] : undefined,
+            fields,
             footer: member ? `Joined this server` : undefined,
             timestamp: member?.joinedAt ?? undefined,
           })
@@ -388,9 +388,12 @@ const warnclear: BotCommand = {
           infoEmbed(
             `Your ${pluralize('warning', 's', warningsToNotify.length)} on "${
               server.guild.name
-            }" from ${joinNaturally(warningDates)} ${
-              (pluralize('', 'have', warningsToNotify.length), 'has')
-            } been cleared.`
+            }" from ${joinNaturally(warningDates)} ${pluralize(
+              '',
+              'have',
+              warningsToNotify.length,
+              'has'
+            )} been cleared.`
           )
         );
         await message.channel.send(
