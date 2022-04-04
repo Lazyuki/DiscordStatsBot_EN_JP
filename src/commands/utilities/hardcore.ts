@@ -70,6 +70,7 @@ const hardcore: BotCommand = {
       }
       if (subCommand === 'enable') {
         if (!isEnabled) {
+          await message.member.roles.add(hardcoreRole);
           await message.channel.send(
             successEmbed('Successfully **enabled** hardcore mode')
           );
@@ -80,6 +81,7 @@ const hardcore: BotCommand = {
         }
       } else {
         if (isEnabled) {
+          await message.member.roles.remove(hardcoreRole);
           await message.channel.send(
             successEmbed('Successfully **disabled** hardcore mode')
           );
