@@ -147,7 +147,7 @@ const event: BotEvent<'guildMemberUpdate'> = {
             },
             {
               name: 'Reason',
-              value: reason,
+              value: reason || 'Unspecified',
               inline: false,
             },
           ],

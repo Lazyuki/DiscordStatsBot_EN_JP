@@ -121,14 +121,14 @@ for (const fileName of eventFiles) {
         } catch (e) {
           const error = e as Error;
           logger.error(
-            `Error processing event ${event.eventName}. ${error.name}: ${
-              error.message
-            }\n${error.stack || 'no stack trace'}`
+            `Error processing event ${event.eventName} in ${fileName}. ${
+              error.name
+            }: ${error.message}\n${error.stack || 'no stack trace'}`
           );
           discordLogError(
             client,
             error,
-            `Error processing event ${event.eventName}`
+            `Error processing event ${event.eventName} in ${fileName}`
           );
         }
       });
