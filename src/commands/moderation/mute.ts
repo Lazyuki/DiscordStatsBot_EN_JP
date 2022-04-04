@@ -78,7 +78,7 @@ const mute: BotCommand = {
   description:
     "Mute (timeout) people from chats and VC using Discord's timeout feature",
   arguments:
-    '<@user> [@user2...] [time in the format 1d2h3m4s. Default: 5m. Max: 7d] [reason]',
+    '<@user> [@user2...] [time in the format 1d2h3m4s. Default: 5m. Max: 28d] [reason]',
   childCommands: ['unmute'],
   examples: [
     'timeout @Geralt being too good at Japanese',
