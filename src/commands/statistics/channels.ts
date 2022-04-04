@@ -33,14 +33,19 @@ const command: BotCommand = {
       hiddenChannels
     );
 
+    const ignoredChannels = channelsOrCategoriesToChannels(
+      server.config.ignoredChannels,
+      server.guild
+    );
+
     const allChannels = [
       ...server.guild.channels.cache.filter(isTextChannel).values(),
     ];
     const deadChannels = allChannels.filter(
       (ch) =>
-        !channels.some(
-          (row) => row.channelId === ch.id && hiddenChannels.includes(ch.id)
-        )
+        !channels.some((row) => row.channelId === ch.id) &&
+        !hiddenChannels.includes(ch.id) &&
+        !ignoredChannels.includes(ch.id)
     );
 
     let channelsString =

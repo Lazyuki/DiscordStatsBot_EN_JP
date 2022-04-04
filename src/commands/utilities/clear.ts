@@ -1,10 +1,6 @@
-import { version } from 'discord.js';
-import { stripIndent } from 'common-tags';
-
 import { BotCommand } from '@/types';
-import { makeEmbed, warningEmbed } from '@utils/embed';
-import { millisToDuration } from '@utils/datetime';
-import { getDatabaseFileSize } from '@database/statements';
+import { warningEmbed } from '@utils/embed';
+
 import { CommandArgumentError, UserPermissionError } from '@/errors';
 import { isMessageInChannels } from '@utils/guildUtils';
 import { safeDelete } from '@utils/safeDelete';

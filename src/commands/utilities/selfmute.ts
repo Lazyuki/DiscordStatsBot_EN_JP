@@ -88,9 +88,10 @@ function scheduleMute(
 const command: BotCommand = {
   name: 'selfmute',
   aliases: ['sm'],
+  requiredBotPermissions: ['MODERATE_MEMBERS', 'MANAGE_ROLES'],
   description:
-    'Mute yourself for some amount of time. The time can be specified with `d` for days, `h` for hours, `m` for minutes, and `s` for seconds. Use the `in` keyword to delay the selfmute.',
-  arguments: '< mute duration > [ in delay duration ]',
+    'Mute yourself for some amount of time. The time can be specified with `d` for days, `h` for hours, `m` for minutes, and `s` for seconds. Use the `in` keyword to delay the selfmute',
+  arguments: '< mute_duration (Max: 7d)> [ in delay_duration (Max: 1d)]',
   examples: ['sm 3h', 'sm 1d6h30m', 'sm 1d40m in 2h'],
   onCommandInit: (server) => {
     server.data.schedules.scheduledSelfMutes ||= {};
@@ -164,7 +165,10 @@ const command: BotCommand = {
         `You cannot mute yourself for under a minute`
       );
     }
-    if (delayMillis === 0) {
+    if (
+      delayMillis === 0 ||
+      (muteDelay === undefined && content.includes(' in'))
+    ) {
       throw new CommandArgumentError(
         `Specify the amount of delay in the format \`1d2h3m4s\` Where d is days, h is hours, m is minutes, and s is seconds.`
       );

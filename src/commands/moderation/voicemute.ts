@@ -111,8 +111,9 @@ const voicemute: BotCommand = {
 const voiceunmute: BotCommand = {
   name: 'voiceUnmute',
   isAllowed: ['MUTE_MEMBERS'],
+  requiredServerConfigs: ['voiceMuteRoles'],
   requiredBotPermissions: ['MUTE_MEMBERS', 'MANAGE_ROLES'],
-  aliases: ['uvm', 'vum', 'unvoicemute'],
+  aliases: ['unvoicemute', 'uvm', 'vum', 'unvm'],
   description: 'Remove voice mutes from people',
   arguments: '<@user> [reason]',
   examples: [

@@ -143,11 +143,15 @@ export const infoEmbed = (options: EmbedOptions | string) => {
 };
 
 export const questionEmbed = (options: EmbedOptions | string) => {
+  const description = `❓ ${
+    typeof options === 'string' ? options : options.description
+  }`;
   if (typeof options === 'string') {
-    return makeEmbed({ description: options, color: 'PURPLE' });
+    return makeEmbed({ description, color: 'PURPLE' });
   }
   return makeEmbed({
     ...options,
+    description,
     color: 'PURPLE',
   });
 };

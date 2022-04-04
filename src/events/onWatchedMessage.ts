@@ -1,7 +1,5 @@
-import { TextChannel, NewsChannel, ThreadChannel } from 'discord.js';
-
 import { BotEvent } from '@/types';
-import { getTextChannel, isNotDM } from '@utils/guildUtils';
+import { getTextChannel } from '@utils/guildUtils';
 import logger from '@/logger';
 import checkSafeMessage from '@utils/checkSafeMessage';
 import { makeEmbed } from '@utils/embed';

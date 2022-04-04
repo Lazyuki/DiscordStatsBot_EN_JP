@@ -321,6 +321,7 @@ const unmute: BotCommand = {
     const reason = restContent || 'Unspecified';
     const noDMs: GuildMember[] = [];
     const selfmutes: GuildMember[] = [];
+    const now = new Date().getTime();
     if (!members.every((m) => m.moderatable)) {
       throw new CommandArgumentError(
         'Some members are not `moderatable` by me'
@@ -332,7 +333,7 @@ const unmute: BotCommand = {
         await message.channel.send(
           questionEmbed(
             `Remove ${member}'s self mute that ends in ${millisToDuration(
-              selfmute
+              selfmute - now
             )}?`
           )
         );
@@ -340,7 +341,7 @@ const unmute: BotCommand = {
         if (yes) {
           await member.timeout(
             null,
-            `CIRI_REMOVE_SELFMUTE By ${userToTagAndId(
+            `CIRI_SELFMUTE_REMOVE By ${userToTagAndId(
               message.author
             )} Reason: ${reason}`
           );

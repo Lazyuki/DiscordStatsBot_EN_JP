@@ -212,13 +212,14 @@ async function getTimeoutIssuerFromAuditLogs(
           timeoutIssuerId = executorId;
           delegateBotId = entryThroughBot;
           timeoutReason = entryReason;
-        } else if (
-          (mode === 'ADD' || mode === 'UPDATE') &&
-          !timeoutChange.new
-        ) {
+        } else if ((mode === 'ADD' || mode === 'UPDATE') && timeoutChange.new) {
           const oldTime = timeoutChange.old
             ? new Date(timeoutChange.old)
             : null;
+          const newTime = new Date(timeoutChange.new);
+          if (newTime.getTime() < now) {
+            return; // Audit log for the past event.
+          }
           const isAdd = !oldTime || now - oldTime.getTime() > 10_000;
           if (mode === 'ADD' && isAdd) {
             // is ADD
