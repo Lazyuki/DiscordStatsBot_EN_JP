@@ -96,8 +96,12 @@ export function getStartHourISO(): string {
   return getStartDateTime(false).toISOString();
 }
 
-export function getDiscordTimestamp(date: Date, option: TimestampFlag = 'F') {
-  return `<t:${Math.floor(date.getTime() / 1000)}:${option}>`;
+export function getDiscordTimestamp(
+  date: Date | number,
+  option: TimestampFlag = 'F'
+) {
+  const millis = typeof date === 'number' ? date : date.getTime();
+  return `<t:${Math.floor(millis / 1000)}:${option}>`;
 }
 
 export function strToMillis(content: string): {

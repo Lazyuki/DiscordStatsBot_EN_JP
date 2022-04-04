@@ -7,6 +7,11 @@ import { userToMentionAndTag } from '@utils/formatString';
 import { getDiscordTimestamp, millisToDuration } from '@utils/datetime';
 import { stripIndent } from 'common-tags';
 
+function millisToClosestMinuteDuration(millis: number) {
+  const minutes = Math.round(millis / 60_000);
+  return millisToDuration(minutes * 60_000);
+}
+
 const event: BotEvent<'guildMemberUpdate'> = {
   eventName: 'guildMemberUpdate',
   skipOnDebug: true,
@@ -21,52 +26,59 @@ const event: BotEvent<'guildMemberUpdate'> = {
     const server = bot.servers[newMember.guild.id];
     const timeoutIndicatorRoleId = server.config.timeoutIndicatorRole;
 
-    let mode: 'ADD' | 'REMOVE' | 'UPDATE';
+    let mode: 'ADD' | 'REMOVE' | 'UPDATE' | null = null;
     let titleSuffix = '';
     let durationStr = '';
     const now = new Date().getTime();
-    if (!newMember.communicationDisabledUntil) {
+    const oldTimeoutUntil =
+      oldMember.communicationDisabledUntilTimestamp || now;
+    const newTimeoutUntil = newMember.communicationDisabledUntilTimestamp;
+
+    if (now - oldTimeoutUntil > 10_000 && newTimeoutUntil) {
+      // Up to 10 seconds lag
+      // The old timeout has already ran out. This is a new timeout.
+      mode = 'ADD';
+      console.log('add', millisToDuration(newTimeoutUntil - now));
+      durationStr = stripIndent`
+       ${millisToClosestMinuteDuration(newTimeoutUntil - now)}
+       Unmuting at: ${getDiscordTimestamp(
+         newTimeoutUntil,
+         'F'
+       )} (in ${getDiscordTimestamp(newTimeoutUntil, 'R')})`;
+      if (timeoutIndicatorRoleId) {
+        await newMember.roles.add(timeoutIndicatorRoleId);
+      }
+    } else if (newTimeoutUntil) {
+      // Updating old timeout
+      // Timeout updated
+      const milliDiff = newTimeoutUntil - oldTimeoutUntil;
+      mode = 'UPDATE';
+      titleSuffix = ' Update';
+      durationStr = stripIndent`
+      ${
+        milliDiff > 0 ? 'Extended' : 'Shortened'
+      } by ${millisToClosestMinuteDuration(milliDiff)}
+      Now unmuting at ${getDiscordTimestamp(
+        newTimeoutUntil,
+        'F'
+      )} (in ${getDiscordTimestamp(newTimeoutUntil, 'R')})
+      
+      `;
+    } else if (!newTimeoutUntil) {
       // Timeout removed
       mode = 'REMOVE';
       titleSuffix = ' Remove';
-      durationStr = `Timeout had ${millisToDuration(
-        oldMember.communicationDisabledUntil!.getTime() - now
+      durationStr = `Timeout had ${millisToClosestMinuteDuration(
+        oldTimeoutUntil - now
       )} remaining.`;
       if (timeoutIndicatorRoleId) {
         await newMember.roles.remove(timeoutIndicatorRoleId);
       }
-    } else if (!oldMember.communicationDisabledUntil) {
-      // Timeout added
-      mode = 'ADD';
-      durationStr = stripIndent`
-      ${millisToDuration(newMember.communicationDisabledUntil!.getTime() - now)}
-      Unmuting at: ${getDiscordTimestamp(
-        newMember.communicationDisabledUntil,
-        'F'
-      )} (in ${getDiscordTimestamp(
-        newMember.communicationDisabledUntil,
-        'R'
-      )})`;
-      if (timeoutIndicatorRoleId) {
-        await newMember.roles.add(timeoutIndicatorRoleId);
-      }
-    } else {
-      // Timeout updated
-      const milliDiff =
-        newMember.communicationDisabledUntil.getTime() -
-        oldMember.communicationDisabledUntil.getTime();
-      mode = 'UPDATE';
-      titleSuffix = ' Update';
-      durationStr = stripIndent`
-      ${milliDiff > 0 ? 'Extended' : 'Shortened'} by ${millisToDuration(
-        milliDiff
-      )}
-      Now unmuting at ${getDiscordTimestamp(
-        newMember.communicationDisabledUntil,
-        'F'
-      )} (in ${getDiscordTimestamp(newMember.communicationDisabledUntil, 'R')})
-      
-      `;
+    }
+
+    if (!mode) {
+      // Couldn't determine what changed
+      return;
     }
 
     // Check if I should log
@@ -108,6 +120,8 @@ const event: BotEvent<'guildMemberUpdate'> = {
               inline: false,
             },
           ],
+          footer: `by ${member.user.tag}`,
+          footerIcon: member.displayAvatarURL(),
         })
       );
     }
@@ -188,11 +202,7 @@ async function getTimeoutIssuerFromAuditLogs(
       reason: timeoutReason,
     };
   }
-  return {
-    member: null,
-    delegateBotId,
-    reason: '',
-  };
+  return null;
 }
 
 export default event;
