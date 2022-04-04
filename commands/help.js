@@ -24,6 +24,7 @@ module.exports.command = (message, content, bot, server, cmds) => {
     msg = { embed };
   } else {
     if (content) {
+      if (bot.migratedCommands.includes(content)) return;
       chan.send(
         'The command does not exist. Type `,help` to list available commands'
       );
