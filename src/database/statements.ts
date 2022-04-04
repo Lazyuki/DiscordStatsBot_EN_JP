@@ -224,7 +224,7 @@ export const getMessagesForUsers = makeGetAllWithArray<
 >(
   'getMessagesForUsers',
   `
-    SELECT user_id, SUM(message_count)
+    SELECT user_id, SUM(message_count) as count
     FROM messages
     WHERE guild_id = $guildId AND user_id IN (ARRAY_VALUES)
     GROUP BY user_id

@@ -38,7 +38,6 @@ const event: BotEvent<'guildMemberUpdate'> = {
       // Up to 10 seconds lag
       // The old timeout has already ran out. This is a new timeout.
       mode = 'ADD';
-      console.log('add', millisToDuration(newTimeoutUntil - now));
       durationStr = stripIndent`
        ${millisToClosestMinuteDuration(newTimeoutUntil - now)}
        Unmuting at: ${getDiscordTimestamp(
@@ -150,6 +149,7 @@ async function getTimeoutIssuerFromAuditLogs(
   let timeoutIssuerId: string | null = null;
   let delegateBotId: string | null = null;
   let timeoutReason = '';
+  const now = new Date().getTime();
   auditLogs.entries
     .filter((e) => e.target?.id === userId)
     .forEach((entry) => {
@@ -180,18 +180,24 @@ async function getTimeoutIssuerFromAuditLogs(
           timeoutIssuerId = executorId;
           delegateBotId = entryThroughBot;
           timeoutReason = entryReason;
-        } else if (mode === 'ADD' && !timeoutChange.old) {
-          timeoutIssuerId = executorId;
-          delegateBotId = entryThroughBot;
-          timeoutReason = entryReason;
         } else if (
-          mode === 'UPDATE' &&
-          timeoutChange.old &&
-          timeoutChange.new
+          (mode === 'ADD' || mode === 'UPDATE') &&
+          !timeoutChange.new
         ) {
-          timeoutIssuerId = executorId;
-          delegateBotId = entryThroughBot;
-          timeoutReason = entryReason;
+          const oldTime = timeoutChange.old
+            ? new Date(timeoutChange.old)
+            : null;
+          const isAdd = !oldTime || now - oldTime.getTime() > 10_000;
+          if (mode === 'ADD' && isAdd) {
+            // is ADD
+            timeoutIssuerId = executorId;
+            delegateBotId = entryThroughBot;
+            timeoutReason = entryReason;
+          } else if (mode === 'UPDATE' && !isAdd) {
+            timeoutIssuerId = executorId;
+            delegateBotId = entryThroughBot;
+            timeoutReason = entryReason;
+          }
         }
       });
     });
