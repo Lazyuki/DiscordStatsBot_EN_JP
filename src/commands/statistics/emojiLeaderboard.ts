@@ -208,7 +208,7 @@ async function singleEmojiLeaderboard(
 
   await fieldsPaginator(
     message.channel,
-    `Emoji Leaderboard for "${resolveEmoji(content, bot)}"`,
+    `Emoji Leaderboard for ${resolveEmoji(content, bot)}`,
     `Total messages and reactions in the last 30 days`,
     fields,
     true,

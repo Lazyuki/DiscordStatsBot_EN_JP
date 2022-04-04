@@ -21,7 +21,6 @@ declare module '@/types' {
     ignoredChannels: string[];
     hiddenChannels: string[];
     voiceMuteRoles: string[];
-    tempMuteRoles: string[];
     focusRoles: string[];
     timeoutIndicatorRole: string;
     userLogChannel: string;
@@ -46,7 +45,6 @@ const DEFAULT_CONFIG: ServerConfig = {
   ignoredChannels: [],
   hiddenChannels: [],
   voiceMuteRoles: [],
-  tempMuteRoles: [],
   focusRoles: [],
   timeoutIndicatorRole: '',
   userLogChannel: '',
@@ -221,13 +219,6 @@ const CONFIGURABLE_SERVER_CONFIG = [
     type: 'role',
     isArray: true,
     description: 'Role that mutes users in voice channels.',
-    parser: getStringArrayConfig,
-  }),
-  getConfigInfo({
-    key: 'tempMuteRoles',
-    type: 'role',
-    isArray: true,
-    description: 'Roles used when users are muted for more than 7 days.',
     parser: getStringArrayConfig,
   }),
   getConfigInfo({

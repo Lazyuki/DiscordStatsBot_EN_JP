@@ -10,7 +10,13 @@ import {
 import { parseMembers, strictGetUserId } from '@utils/argumentParsers';
 import { getFallbackChannel } from '@utils/asyncMessageCollector';
 import { getDiscordTimestamp, millisToDuration } from '@utils/datetime';
-import { infoEmbed, makeEmbed, successEmbed, warningEmbed } from '@utils/embed';
+import {
+  cleanEmbed,
+  infoEmbed,
+  makeEmbed,
+  successEmbed,
+  warningEmbed,
+} from '@utils/embed';
 import { userToMentionAndTag, joinNaturally } from '@utils/formatString';
 import { isInChannelsOrCategories } from '@utils/guildUtils';
 import { descriptionPaginator, fieldsPaginator } from '@utils/paginate';
@@ -86,7 +92,7 @@ const warn: BotCommand = {
             members.map((m) => m.toString())
           )} issued by ${
             message.author.tag
-          }. They did **not** receive the warning DM.`
+          }.\nThey did **not** receive the warning DM.`
         )
       );
     } else if (unreachableMembers.length) {
@@ -106,24 +112,33 @@ const warn: BotCommand = {
         warningEmbed(
           `Failed to DM ${unreachableMembers.join(
             ', '
-          )}. They could not receive the warning.\n\n⚠️Would you like me to send the warning ${
+          )}. They could not receive the warning.\n\n**Would you like me to send the warning ${
             server.config.userDMFallbackChannel
               ? `in <#${server.config.userDMFallbackChannel}> `
               : 'in a public channel '
-          }and ping them?`
+          }and ping them?**`
         )
       );
       const fallbackChannel = await getFallbackChannel(message, server);
-      await fallbackChannel?.send(
-        makeEmbed({
-          content: `${unreachableMembers.join(
-            ' '
-          )} We could not send this warning as a DM because of your privacy settings. Contact the mods if you think this is a mistake.`,
-          title: `You have been officially warned on ${server.guild.name}`,
-          description: restContent,
-          color: '#DB3C3C',
-        })
-      );
+      if (fallbackChannel) {
+        const fallback = await fallbackChannel.send(
+          makeEmbed({
+            content: `${unreachableMembers.join(
+              ' '
+            )} We could not send this warning as a DM because of your privacy settings. Contact the mods if you think this is a mistake.`,
+            title: `You have been officially warned on ${server.guild.name}`,
+            description: restContent,
+            color: '#DB3C3C',
+          })
+        );
+        await message.channel.send(
+          successEmbed(
+            `Successfully sent the message in ${fallbackChannel}.\n[Jump](${fallback.url})`
+          )
+        );
+      } else {
+        await message.channel.send(cleanEmbed(`Cancelled`));
+      }
     } else {
       await message.channel.send(
         successEmbed(

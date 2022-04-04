@@ -53,7 +53,7 @@ const command: BotCommand = {
   aliases: ['t'],
   allowedServers: [EJLX],
   isAllowed: ['WP'],
-  description: `Assign language roles. You can reply to a message using this command and it will get the message author. Also see the pin in <#${EWBF}>`,
+  description: `Assign language roles. You can reply to a message using this command and Ciri will tag the message author. Also see the pin in <#${EWBF}>`,
   options: [
     {
       name: 'newUser',

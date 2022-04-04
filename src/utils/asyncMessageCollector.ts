@@ -88,7 +88,7 @@ export function waitForYesOrNo(
 export async function getFallbackChannel(
   message: GuildMessage,
   server: Server,
-  waitForSeconds: number = 30
+  waitForSeconds: number = 60
 ) {
   const yes = await waitForYesOrNo(message, waitForSeconds);
   if (!yes) return null;

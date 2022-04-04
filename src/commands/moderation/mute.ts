@@ -243,12 +243,21 @@ const mute: BotCommand = {
         )
       );
       const fallbackChannel = await getFallbackChannel(message, server);
-      await fallbackChannel?.send({
-        ...timeoutDMembed,
-        content: `${noDMs.join(
-          ' '
-        )}\nWe could not send this message as a DM because of your privacy settings. Contact the mods if you think this is a mistake.`,
-      });
+      if (fallbackChannel) {
+        const fallback = await fallbackChannel.send({
+          ...timeoutDMembed,
+          content: `${noDMs.join(
+            ' '
+          )}\nWe could not send this message as a DM because of your privacy settings. Contact the mods if you think this is a mistake.`,
+        });
+        await message.channel.send(
+          successEmbed(
+            `Successfully sent the message in ${fallbackChannel}.\n[Jump](${fallback.url})`
+          )
+        );
+      } else {
+        await message.channel.send(cleanEmbed(`Cancelled`));
+      }
     }
     if (server.config.modActionLogChannel) {
       const modChannel = getTextChannel(

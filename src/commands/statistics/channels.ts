@@ -37,7 +37,10 @@ const command: BotCommand = {
       ...server.guild.channels.cache.filter(isTextChannel).values(),
     ];
     const deadChannels = allChannels.filter(
-      (ch) => !channels.some((row) => row.channelId === ch.id)
+      (ch) =>
+        !channels.some(
+          (row) => row.channelId === ch.id && hiddenChannels.includes(ch.id)
+        )
     );
 
     let channelsString =
