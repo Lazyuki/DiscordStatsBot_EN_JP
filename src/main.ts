@@ -128,7 +128,13 @@ for (const fileName of eventFiles) {
           discordLogError(
             client,
             error,
-            `Error processing event ${event.eventName} in ${fileName}`
+            `Error processing event ${
+              event.eventName
+            } in ${fileName}. Args: (${args
+              .map(
+                (a: any) => `${a?.constructor?.name} with ID ${a?.id || 'None'}`
+              )
+              .join(', ')})`
           );
         }
       });
