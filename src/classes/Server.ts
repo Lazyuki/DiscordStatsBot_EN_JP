@@ -1,7 +1,7 @@
 import { Guild } from 'discord.js';
 import fs from 'fs';
 
-import logger from '@/logger';
+import logger, { discordLogError } from '@/logger';
 import {
   Bot,
   ServerConfig,
@@ -53,13 +53,18 @@ class Server {
       this.data = json;
       this.data.schedules ||= {} as ServerSchedules;
     }
-    bot.serverInits.forEach((init) => init(this));
     try {
       bot.commandInits.forEach((init) => init(this));
+      bot.serverInits.forEach((init) => init(this));
       this.save();
     } catch (e) {
       const error = e as Error;
       logger.error(
+        `Server Command Initialization Error: ${error?.message}\n${error.stack}`
+      );
+      discordLogError(
+        bot,
+        error,
         `Server Command Initialization Error: ${error?.message}\n${error.stack}`
       );
     }

@@ -1,20 +1,47 @@
 import { BotEvent } from '@/types';
 import { getTextChannel } from '@utils/guildUtils';
 import { makeEmbed } from '@utils/embed';
-import { Guild } from 'discord.js';
+import { Guild, GuildMember } from 'discord.js';
 import { REGEX_AUDIT_LOG_ID } from '@utils/regex';
 import { userToMentionAndTag } from '@utils/formatString';
 import { getDiscordTimestamp, millisToDuration } from '@utils/datetime';
 import { stripIndent } from 'common-tags';
+import runAt, { getMemberOrRepeat } from '@utils/runAt';
+import Server from '@classes/Server';
 
 function millisToClosestMinuteDuration(millis: number) {
   const minutes = Math.round(millis / 60_000);
   return millisToDuration(minutes * 60_000);
 }
 
+async function removeTimeoutRole(member: GuildMember, server: Server) {
+  if (server.config.timeoutIndicatorRole) {
+    const unmuteAt = member.communicationDisabledUntilTimestamp;
+    const now = new Date().getTime();
+    if (!unmuteAt || Math.abs(unmuteAt - now) < 5_000) {
+      await member.roles.remove(server.config.timeoutIndicatorRole);
+    }
+  }
+}
+
 const event: BotEvent<'guildMemberUpdate'> = {
   eventName: 'guildMemberUpdate',
   skipOnDebug: true,
+  onServerInit: (server) => {
+    if (server.config.timeoutIndicatorRole) {
+      const now = new Date().getTime();
+      server.guild.members.cache.forEach((member) => {
+        const timeout = member.communicationDisabledUntilTimestamp;
+        if (timeout) {
+          if (timeout - now > 0) {
+            runAt(timeout, () =>
+              getMemberOrRepeat(member.id, server, removeTimeoutRole)
+            );
+          }
+        }
+      });
+    }
+  },
   processEvent: async (bot, oldMember, newMember) => {
     if (
       oldMember.communicationDisabledUntilTimestamp ===
@@ -78,6 +105,11 @@ const event: BotEvent<'guildMemberUpdate'> = {
     if (!mode) {
       // Couldn't determine what changed
       return;
+    }
+    if ((mode === 'ADD' || mode === 'UPDATE') && newTimeoutUntil) {
+      runAt(newTimeoutUntil, () =>
+        getMemberOrRepeat(newMember.id, server, removeTimeoutRole)
+      );
     }
 
     // Check if I should log
