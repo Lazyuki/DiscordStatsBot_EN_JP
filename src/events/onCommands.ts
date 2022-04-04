@@ -6,6 +6,7 @@ import {
   NotFoundError,
   UserError,
   MemberNotFoundError,
+  CommandArgumentError,
 } from '@/errors';
 import { EJLX } from '@utils/constants';
 import { errorEmbed } from '@utils/embed';
@@ -179,6 +180,8 @@ const event: BotEvent<'messageCreate'> = {
               } else {
                 await message.react('❓');
               }
+            } else if (error instanceof CommandArgumentError) {
+              await safeChannelSend(errorEmbed(error.message));
             } else {
               await safeChannelSend(
                 errorEmbed(`${error.name}: ${error.message}`)

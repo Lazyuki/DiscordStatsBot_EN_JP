@@ -75,8 +75,8 @@ const command: BotCommand = {
   name: 'selfmute',
   aliases: ['sm'],
   description:
-    'Mute yourself for some amount of time. The time can be specified with `d` for days, `h` for hours, `m` for minutes, and `s` for seconds. Use the `in` keyword to delay the selfmute by some amount of time.',
-  arguments: '<mute duration> [in delay duration]',
+    'Mute yourself for some amount of time. The time can be specified with `d` for days, `h` for hours, `m` for minutes, and `s` for seconds. Use the `in` keyword to delay the selfmute.',
+  arguments: '< mute duration > [ in delay duration ]',
   examples: ['sm 3h', 'sm 1d6h30m', 'sm 1d40m in 2h'],
   onCommandInit: (server) => {
     server.data.schedules.scheduledSelfMutes ||= {};
@@ -162,18 +162,18 @@ const command: BotCommand = {
         successEmbed({
           description: `${
             message.author
-          } scheduled a self-mute of ${millisToDuration(
+          } scheduled a self-mute of **${millisToDuration(
             totalMillis
-          )} in ${millisToDuration(delayMillis)}`,
+          )}** in ${millisToDuration(delayMillis)}`,
         })
       );
     } else {
       await mute(message.member, server, new Date().getTime() + totalMillis);
       await message.channel.send(
         successEmbed({
-          description: `${message.author} self-muted for ${millisToDuration(
+          description: `${message.author} self-muted for **${millisToDuration(
             totalMillis
-          )}`,
+          )}**`,
         })
       );
     }

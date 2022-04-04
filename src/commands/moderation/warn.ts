@@ -6,12 +6,19 @@ import {
   deleteModLogEntries,
   getModLogForGuild,
   getModLogForUser,
+  getMessagesForUsers,
+  getVoiceSecondsForUser,
 } from '@database/statements';
 import { parseMembers, strictGetUserId } from '@utils/argumentParsers';
 import { getFallbackChannel } from '@utils/asyncMessageCollector';
-import { getDiscordTimestamp, millisToDuration } from '@utils/datetime';
+import {
+  getDiscordTimestamp,
+  millisToDuration,
+  secondsToVcTime,
+} from '@utils/datetime';
 import {
   cleanEmbed,
+  EmbedField,
   infoEmbed,
   makeEmbed,
   successEmbed,
@@ -184,6 +191,31 @@ const warnlog: BotCommand = {
       const isWatched = server.temp.watched.includes(userId);
 
       if (userModLogs.length === 0) {
+        const member = server.guild.members.cache.get(userId);
+        const fields: EmbedField[] = [];
+        if (guildBan) {
+          fields.push({
+            name: 'User Banned',
+            value: guildBan.reason || 'Reason: Unspecified',
+          });
+        }
+        if (member) {
+          const messages = getMessagesForUsers({ guildId: server.guild.id }, [
+            userId,
+          ]);
+          const voice = getVoiceSecondsForUser({
+            guildId: server.guild.id,
+            userId,
+          });
+          fields.push({
+            name: 'Member Stats',
+            value: `Total messages in the past 30 days: ${
+              messages[0]?.count || 0
+            }\nTotal VC time in the past 30 days: ${secondsToVcTime(
+              voice[0]?.count || 0
+            )}`,
+          });
+        }
         await message.channel.send(
           infoEmbed({
             description: `No mod log entries found for ${userMentionTag}${
@@ -191,14 +223,9 @@ const warnlog: BotCommand = {
                 ? ' but they are being watched for deleted messages'
                 : ''
             }`,
-            fields: guildBan
-              ? [
-                  {
-                    name: 'User Banned',
-                    value: guildBan.reason || 'Reason: Unspecified',
-                  },
-                ]
-              : undefined,
+            fields: guildBan ? [] : undefined,
+            footer: member ? `Joined this server` : undefined,
+            timestamp: member?.joinedAt ?? undefined,
           })
         );
       } else {
