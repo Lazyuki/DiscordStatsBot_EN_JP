@@ -138,6 +138,12 @@ const mute: BotCommand = {
       );
     }
 
+    if (!members.every((m) => m.moderatable)) {
+      throw new UserPermissionError(
+        `I cannot mute them as their roles are heigher than mine`
+      );
+    }
+
     // Discord Timeout only allows 28 days max so Ciri has to re-apply the timeout every time it runs out.
     const multiTimeout =
       timeoutMillis > DISCORD_TIMEOUT_MAX_DAYS * DAY_IN_MILLIS;
