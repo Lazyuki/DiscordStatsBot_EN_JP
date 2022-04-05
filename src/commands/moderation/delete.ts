@@ -397,6 +397,7 @@ async function postDeletedMessages(
       });
       index++;
     }
+    await thread.setArchived(true, 'Deleted Message Attachments');
   }
 }
 
