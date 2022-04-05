@@ -1,4 +1,5 @@
 import { CommandArgumentError } from '@/errors';
+import logger, { discordLogError } from '@/logger';
 import { BotCommand, DeletedMessageAttachment, GuildMessage } from '@/types';
 import Server from '@classes/Server';
 import { parseSnowflakeIds } from '@utils/argumentParsers';
@@ -6,6 +7,7 @@ import { getDiscordTimestamp, getExactDaysAgo } from '@utils/datetime';
 import {
   errorEmbed,
   makeEmbed,
+  splitIntoMultipleEmbeds,
   successEmbed,
   warningEmbed,
 } from '@utils/embed';
@@ -370,22 +372,32 @@ async function postDeletedMessages(
     };
   });
 
-  const mainMessage = await channel.send(
-    makeEmbed({
-      color: 'RED',
-      authorIcon: onlyOneUser
-        ? messages[0].author.displayAvatarURL()
-        : undefined,
-      authorName: `${title}${
-        onlyOneUser ? ` from ${userToTagAndId(messages[0].author)}` : ''
-      } Deleted`,
-      description: onlyOneChannel ? `In ${messages[0].channel}` : undefined,
-      fields,
-      footer: `By ${commandMessage.author.tag} in #${commandMessage.channel.name}`,
-      footerIcon: commandMessage.member.displayAvatarURL(),
-      timestamp: true,
-    })
-  );
+  const embeds = splitIntoMultipleEmbeds({
+    color: 'RED',
+    authorIcon: onlyOneUser ? messages[0].author.displayAvatarURL() : undefined,
+    authorName: `${title}${
+      onlyOneUser ? ` from ${userToTagAndId(messages[0].author)}` : ''
+    } Deleted`,
+    description: onlyOneChannel ? `In ${messages[0].channel}` : undefined,
+    fields,
+    footer: `By ${commandMessage.author.tag} in #${commandMessage.channel.name}`,
+    footerIcon: commandMessage.member.displayAvatarURL(),
+    timestamp: true,
+  });
+  const mainMessage = await channel.send(embeds[0]);
+  if (embeds.length > 1) {
+    embeds.slice(1).forEach((embed) => {
+      channel
+        .send(embed)
+        .catch((e) =>
+          logger.error(
+            `Failed to send multi-embeds for the deleted message notification\n${
+              (e as any).name
+            }: ${(e as any).message}`
+          )
+        );
+    });
+  }
   if (Object.keys(attachmentURLs).length || hasEmbedsMessageIDs.length) {
     const thread = await mainMessage.startThread({
       name: 'Deleted Message Attachments',

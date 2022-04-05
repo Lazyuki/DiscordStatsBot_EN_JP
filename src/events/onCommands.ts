@@ -187,7 +187,7 @@ const event: BotEvent<'messageCreate'> = {
                 await message.react('❓');
               }
             } else if (error instanceof CommandArgumentError) {
-              deleteAfter(await safeChannelSend(errorEmbed(error.message)), 20);
+              deleteAfter(await safeChannelSend(errorEmbed(error.message)), 30);
             } else {
               await safeChannelSend(
                 errorEmbed(`${error.name}: ${error.message}`)

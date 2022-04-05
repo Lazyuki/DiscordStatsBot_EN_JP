@@ -6,6 +6,7 @@ import {
   SUCCESS_COLOR,
   WARNING_COLOR,
 } from './constants';
+import { splitFieldsIntoPages } from './paginate';
 import { splitMessage } from './safeSend';
 
 export interface EmbedField {
@@ -161,4 +162,33 @@ export async function editEmbed(message: Message, newOptions: EmbedOptions) {
   if (!currentEmbed) return;
 
   await message.edit(makeEmbed(newOptions, currentEmbed));
+}
+
+// If embed fields together might exceed the 6000 char limit, use this to construct multiple messages with embeds.
+export function splitIntoMultipleEmbeds(options: EmbedOptions) {
+  const fields = options.fields?.filter(Boolean) as EmbedField[];
+  if (fields.length) {
+    const otherLength =
+      (options.authorName?.length || 0) +
+      (options.authorUrl?.length || 0) +
+      (options.title?.length || 0) +
+      (options.description?.length || 0) +
+      (options.footer?.length || 0) +
+      (options.footerIcon?.length || 0) +
+      (options.thumbnailIcon?.length || 0);
+
+    const pages = splitFieldsIntoPages(fields, otherLength);
+    if (pages.length === 1) {
+      return [makeEmbed(options)];
+    } else {
+      const first = makeEmbed({ ...options, fields: pages[0].fields });
+      const rest = pages.slice(1).map((page) => {
+        const { content, ...restEmbed } = options;
+        return makeEmbed({ ...restEmbed, fields: page.fields });
+      });
+      return [first, ...rest];
+    }
+  } else {
+    return [makeEmbed(options)];
+  }
 }

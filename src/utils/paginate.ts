@@ -148,7 +148,10 @@ export async function fieldsPaginator(
 }
 
 // Make sure fields + other strings in the embed do NOT exceed the global 6000 character limit in 1 embed.
-function splitFieldsIntoPages(fields: EmbedField[], otherLength: number) {
+export function splitFieldsIntoPages(
+  fields: EmbedField[],
+  otherLength: number
+) {
   const maxFieldChars = 6000 - otherLength;
   const pages: { fields: EmbedField[] }[] = [];
   let currFields = 0;
