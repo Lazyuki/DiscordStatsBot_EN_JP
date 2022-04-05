@@ -32,7 +32,7 @@ import {
 const command: BotCommand = {
   name: 'delete',
   aliases: ['del'],
-  isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE'],
+  isAllowed: ['SERVER_MODERATOR', 'MINIMO', 'MAINICHI_COMMITTEE'],
   options: [
     {
       name: 'noLog',
