@@ -80,7 +80,11 @@ export const makeEmbed = (
     else embed.setTimestamp(new Date(timestamp));
   }
   if (fields && fields.filter(Boolean).length)
-    embed.addFields(...(fields.filter(Boolean) as EmbedField[]));
+    embed.addFields(
+      ...(fields
+        .filter(Boolean)
+        .map((f) => (f!.value ? f : { ...f, value: '\u200b' })) as EmbedField[])
+    );
 
   return { content, embeds: [embed, ...additionalEmbeds] };
 };
