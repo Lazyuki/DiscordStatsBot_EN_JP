@@ -52,7 +52,7 @@ const command: BotCommand = {
     'del 123456789123456789',
     'del #general 123456789123456789 542576315115634688',
     'del 12345689123456789-542576315115634688',
-    'del https://discord.com/channels/12345689123456789/12345689123456789/542576315115634688',
+    'del https://discord.com/channels/1234568 ... 115634688',
     'del 2',
     'del @geralt 3',
     'del 3 has:image',
@@ -342,7 +342,10 @@ async function postDeletedMessages(
       if (message.id in attachmentURLs) {
         const delAttachments = attachmentURLs[message.id];
         delAttachments.forEach((da) => {
-          if (da.bytes > MAX_BYTES) return null;
+          if (da.bytes > MAX_BYTES) {
+            content += `\n${da.type} size exceeds the limit at ${da.bytes} bytes. SKIPPING`;
+            return null;
+          }
           const proxyAttachment = new MessageAttachment(
             da.url,
             da.name

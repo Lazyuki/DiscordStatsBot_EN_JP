@@ -32,7 +32,7 @@ const sar: BotCommand = {
     'sar remove <:customEmoji:1234567891234567890>',
     'sar remove 📝',
     [
-      'sar link https://discord.com/channels/123456789123456789/123456789123456789/123456789123456789',
+      'sar link https://discord.com/channels/1234568 ... 115634688',
       'Link the message that Ciri should listen to for adding roles based on reactions. You may use the `send` or `edit` command to make Ciri send the message in a desired channel.',
     ],
     [

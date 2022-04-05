@@ -469,7 +469,7 @@ function getAvailableValues(type: ConfigType, isArray?: boolean) {
     case 'string':
       return 'value';
     case 'message':
-      return 'https://discord.com/channels/123456789123456789/123456789123456789/123456789123456789';
+      return 'https://discord.com/channels/123456789123456 ... 23456789123456789';
   }
 }
 
