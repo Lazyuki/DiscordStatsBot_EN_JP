@@ -1,4 +1,4 @@
-import { CommandArgumentError } from '@/errors';
+import { CommandArgumentError, UserPermissionError } from '@/errors';
 import { BotCommand } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
 import { successEmbed } from '@utils/embed';
@@ -13,6 +13,9 @@ const command: BotCommand = {
   examples: ['cyn @badNameUser'],
   normalCommand: async ({ message, content, server }) => {
     const { members } = parseMembers(content, server.guild, 'MEMBERS');
+    if (!members.every((m) => m.manageable)) {
+      throw new UserPermissionError(`Their roles are higher than mine`);
+    }
     for (const member of members) {
       await member.setNickname(
         'Please change your name',

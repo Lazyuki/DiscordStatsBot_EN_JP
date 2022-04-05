@@ -119,11 +119,11 @@ const warn: BotCommand = {
         warningEmbed(
           `Failed to DM ${unreachableMembers.join(
             ', '
-          )}. They could not receive the warning.\n\n**Would you like me to send the warning ${
+          )}. They could not receive the warning.\n\n❓ **Would you like me to send the warning in ${
             server.config.userDMFallbackChannel
-              ? `in <#${server.config.userDMFallbackChannel}> `
-              : 'in a public channel '
-          }and ping them?**`
+              ? `<#${server.config.userDMFallbackChannel}>`
+              : 'a public channel'
+          } and ping them?**`
         )
       );
       const fallbackChannel = await getFallbackChannel(message, server);

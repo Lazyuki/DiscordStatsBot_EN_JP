@@ -9,7 +9,7 @@ const prune: BotCommand = {
   isAllowed: ['SERVER_MODERATOR'],
   requiredBotPermissions: ['MANAGE_MESSAGES'],
   description:
-    'Deletes messages sent by specified users in the channel in the past 24 hours. Use their IDs. Useful if you forget to delete messages when banning users.',
+    'Delete messages sent by specified users in the channel in the past 24 hours. Use their IDs. Useful if you forget to delete messages when banning users.',
   arguments: '<user ID> [user2 ID...]',
   examples: ['prune 123454323454 2345432345643 4543246543234'],
   normalCommand: async ({ content, message }) => {

@@ -1,26 +1,6 @@
-import {
-  GuildMember,
-  Invite,
-  PartialGuildMember,
-  TextBasedChannel,
-  Util,
-} from 'discord.js';
+import { deleteWatched } from '@database/statements';
 
-import { insertVoiceSeconds } from '@database/statements';
-import { makeEmbed } from '@utils/embed';
-import {
-  EJLX,
-  EWBF,
-  JHO,
-  MEE6,
-  PING_PARTY,
-  RAI,
-  SERVER_RULES,
-} from '@utils/constants';
 import { BotEvent } from '@/types';
-import { getSecondDiff } from './onVoiceUpdate';
-import { stripIndents } from 'common-tags';
-import { getTextChannel } from '@utils/guildUtils';
 
 const event: BotEvent<'guildBanAdd'> = {
   eventName: 'guildBanAdd',
@@ -28,6 +8,12 @@ const event: BotEvent<'guildBanAdd'> = {
   processEvent: async (bot, banInfo) => {
     const server = bot.servers[banInfo.guild.id];
     const bannedUserId = banInfo.user.id;
+    if (server.temp.watched.includes(bannedUserId)) {
+      deleteWatched({ guildId: server.guild.id, userId: bannedUserId });
+      server.temp.watched = server.temp.watched.filter(
+        (id) => id !== bannedUserId
+      );
+    }
   },
 };
 

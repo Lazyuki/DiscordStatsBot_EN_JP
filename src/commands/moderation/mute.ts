@@ -29,6 +29,7 @@ import {
   userToTagAndId,
 } from '@utils/formatString';
 import { getTextChannel } from '@utils/guildUtils';
+import { pluralize } from '@utils/pluralize';
 import runAt, { getMemberOrRepeat } from '@utils/runAt';
 import { stripIndent } from 'common-tags';
 import { GuildMember } from 'discord.js';
@@ -81,8 +82,8 @@ const mute: BotCommand = {
     '<@user> [@user2...] [time in the format 1d2h3m4s. Default: 5m. Max: 28d] [reason]',
   childCommands: ['unmute'],
   examples: [
-    'timeout @Geralt being too good at Japanese',
-    'timeout 284840842026549259 299335689558949888 shut up',
+    'mute @Geralt being too good at Japanese',
+    'mute 284840842026549259 299335689558949888 shut up',
   ],
   onCommandInit: (server) => {
     server.data.schedules.multiTimeout ||= {};
@@ -231,11 +232,11 @@ const mute: BotCommand = {
       );
     } else {
       const failedAllDMs = noDMs.length === members.length;
-      const fallbackSuggestion = `\n\n**️Would you like me to send the reason ${
+      const fallbackSuggestion = `\n\n❓ **️Would you like me to send the reason in ${
         server.config.userDMFallbackChannel
-          ? `in <#${server.config.userDMFallbackChannel}> `
-          : 'in a public channel '
-      }and ping them?**`;
+          ? `<#${server.config.userDMFallbackChannel}>`
+          : 'a public channel'
+      } and ping them?**`;
       const dmInfo = failedAllDMs
         ? 'but failed to DM the reason to them.' + fallbackSuggestion
         : `and DMed them except for ${joinNaturally(
@@ -275,7 +276,7 @@ const mute: BotCommand = {
           title: `Timeout`,
           fields: [
             {
-              name: 'Timed Out Users',
+              name: pluralize('Timed Out User', 's', members.length),
               value: members
                 .map((m) => `${userToMentionAndTag(m.user)}`)
                 .join('\n'),
@@ -308,8 +309,8 @@ const unmute: BotCommand = {
   description: 'Remove timeout from people',
   arguments: '<@user> [@user2...] [reason]',
   examples: [
-    'uto @Geralt you are good now',
-    'uto 284840842026549259 299335689558949888 apologized',
+    'unmute @Geralt you are good now',
+    'unmute 284840842026549259 299335689558949888 apologized',
   ],
   parentCommand: 'mute',
   normalCommand: async ({ content, message, server }) => {
@@ -404,7 +405,7 @@ const unmute: BotCommand = {
           title: `Remove Timeout`,
           fields: [
             {
-              name: 'Unmuted Users',
+              name: pluralize('Unmuted User', 's', untimeoutMembers.length),
               value: untimeoutMembers
                 .map((m) => `${userToMentionAndTag(m.user)}`)
                 .join('\n'),

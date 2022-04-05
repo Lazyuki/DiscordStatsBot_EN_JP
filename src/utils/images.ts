@@ -6,7 +6,7 @@ import fs from 'fs';
 import { getStartHourISO } from './datetime';
 import { pluralCount, pluralize } from './pluralize';
 
-const MAX_BYTES = 50_000_000; // 50MB
+export const MAX_BYTES = 50_000_000; // 50MB
 
 function safeCreateDir(dir: string) {
   if (!fs.existsSync(dir)) {

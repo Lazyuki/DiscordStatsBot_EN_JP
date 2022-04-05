@@ -1,5 +1,6 @@
 import { BotCommand } from '@/types';
 import { errorEmbed, makeEmbed } from '@utils/embed';
+import { isMessageInChannels } from '@utils/guildUtils';
 import { pluralize } from '@utils/pluralize';
 import { EmbedField } from 'discord.js';
 
@@ -9,6 +10,10 @@ const command: BotCommand = {
   description: 'You need help with help?',
   normalCommand: async ({ message, bot, content, server }) => {
     const commandName = content.trim().toLowerCase();
+    const isInHiddenChannel = isMessageInChannels(
+      message,
+      server.config.hiddenChannels
+    );
     if (commandName === 'command') {
       await message.channel.send(
         errorEmbed({
@@ -101,7 +106,8 @@ const command: BotCommand = {
         if (
           command.normalCommand &&
           command.isAllowed(message, server, bot) &&
-          !command.parentCommand
+          !command.parentCommand &&
+          (!command.hidden || isInHiddenChannel)
         ) {
           let name = command.name;
           if (command.childCommands?.length) {

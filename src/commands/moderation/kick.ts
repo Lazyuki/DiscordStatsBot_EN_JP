@@ -8,12 +8,12 @@ import { GuildMember } from 'discord.js';
 
 const command: BotCommand = {
   name: 'kick',
-  isAllowed: ['SERVER_MODERATOR'],
+  isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE'],
   description: 'Kick people off this server.',
   requiredBotPermissions: ['KICK_MEMBERS'],
   arguments: '<@user> [@user2...] [reason]',
   examples: [
-    'kick @Geralt being too good at Japanese',
+    'kick @Geralt bye',
     'kick 284840842026549259 299335689558949888 low effort trolls',
   ],
   normalCommand: async ({ bot, content, server, message }) => {

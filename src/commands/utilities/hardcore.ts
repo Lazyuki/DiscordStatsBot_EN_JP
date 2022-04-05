@@ -30,10 +30,10 @@ const hardcore: BotCommand = {
             description: stripIndent`
           You are currently using hardcore mode. You cannot type ${
             isJapanese ? 'Japanese' : 'English'
-          } on this server
+          } on this server unless you escape your message with an asterisk \`*\`.
           ${
             hardcoreIgnoredChannels?.length
-              ? ` except in ${joinNaturally(
+              ? `\nHardcore is disabled in ${joinNaturally(
                   hardcoreIgnoredChannels.map(idToChannel)
                 )}`
               : ''
@@ -48,10 +48,10 @@ const hardcore: BotCommand = {
             description: stripIndent`
             If you enable hardcore mode, you will not be able to type ${
               isJapanese ? 'Japanese' : 'English'
-            } on this server
+            } on this server unless you escape your message with an asterisk \`*\`.
           ${
             hardcoreIgnoredChannels?.length
-              ? ` except in ${joinNaturally(
+              ? `\nHardcore is disabled in ${joinNaturally(
                   hardcoreIgnoredChannels.map(idToChannel)
                 )}`
               : ''

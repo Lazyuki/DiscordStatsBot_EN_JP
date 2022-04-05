@@ -2,6 +2,7 @@ import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
 import {
+  cleanEmbed,
   errorEmbed,
   makeEmbed,
   successEmbed,
@@ -52,7 +53,11 @@ const command: BotCommand = {
     } else if (failedMembers.length === members.length) {
       await message.channel.send(
         errorEmbed(
-          `Failed to messaged them.\n\nWould like me to send this in a public channel and ping them?`
+          `Failed to messaged them.\n\n❓ Would you like me to send this in ${
+            server.config.userDMFallbackChannel
+              ? `<#${server.config.userDMFallbackChannel}>`
+              : 'a public channel'
+          } and ping them?`
         )
       );
     } else {
@@ -60,20 +65,33 @@ const command: BotCommand = {
         warningEmbed(
           `Successfully messaged them except for ${joinNaturally(
             failedMembers.map((m) => m.toString())
-          )}.\n\nWould like me to send this in a public channel and ping them?`
+          )}.\n\n❓ **Would you like me to send this in ${
+            server.config.userDMFallbackChannel
+              ? `<#${server.config.userDMFallbackChannel}>`
+              : 'a public channel'
+          } and ping them?**`
         )
       );
     }
     const fallbackChannel = await getFallbackChannel(message, server);
-    await fallbackChannel?.send(
-      makeEmbed({
-        content: `${failedMembers.join(
-          ' '
-        )} We could not send this warning as a DM because of your privacy settings. Contact the moderators if you think this is a mistake.`,
-        title: `Message from the moderators of "${server.guild.name}"`,
-        description: restContent,
-      })
-    );
+    if (fallbackChannel) {
+      const fallback = await fallbackChannel?.send(
+        makeEmbed({
+          content: `${failedMembers.join(
+            ' '
+          )} We could not send this message as a DM because of your privacy settings. Contact the moderators if you think this is a mistake.`,
+          title: `Message from the moderators of "${server.guild.name}"`,
+          description: restContent,
+        })
+      );
+      await message.channel.send(
+        successEmbed(
+          `Successfully sent the message in ${fallbackChannel}.\n[Jump](${fallback.url})`
+        )
+      );
+    } else {
+      await message.channel.send(cleanEmbed(`Cancelled`));
+    }
   },
 };
 

@@ -1,7 +1,7 @@
 import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
-import { successEmbed } from '@utils/embed';
+import { errorEmbed, successEmbed } from '@utils/embed';
 
 const unban: BotCommand = {
   name: 'unban',
@@ -9,7 +9,7 @@ const unban: BotCommand = {
   requiredBotPermissions: ['BAN_MEMBERS'],
   description: 'Unban users',
   arguments: '<user ID> [user2 ID...] [reason]',
-  examples: ['prune 123454323454 2345432345643 4543246543234'],
+  examples: ['unban 123454323454 2345432345643 4543246543234'],
   parentCommand: 'ban',
   normalCommand: async ({ content, message, server }) => {
     const { members, nonMemberIds, restContent } = parseMembers(
@@ -33,7 +33,9 @@ const unban: BotCommand = {
         await message.channel.send(successEmbed(`User <@${userId}> unbanned.`));
       } catch (e) {
         await message.channel.send(
-          `Unbanning ${userId} failed. Make sure the user ID is correct.`
+          errorEmbed(
+            `Unbanning ${userId} failed. Make sure the user ID is correct.`
+          )
         );
       }
     }

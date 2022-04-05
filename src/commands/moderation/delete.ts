@@ -1,16 +1,17 @@
 import { CommandArgumentError } from '@/errors';
-import { BotCommand, GuildMessage } from '@/types';
+import { BotCommand, DeletedMessageAttachment, GuildMessage } from '@/types';
 import Server from '@classes/Server';
 import { parseSnowflakeIds } from '@utils/argumentParsers';
-import { getExactDaysAgo } from '@utils/datetime';
+import { getDiscordTimestamp, getExactDaysAgo } from '@utils/datetime';
 import {
   errorEmbed,
   makeEmbed,
   successEmbed,
   warningEmbed,
 } from '@utils/embed';
+import { userToTagAndId } from '@utils/formatString';
 import { getTextChannel, idToChannel } from '@utils/guildUtils';
-import { proxyPostAttachments } from '@utils/images';
+import { MAX_BYTES, proxyPostAttachments } from '@utils/images';
 import { pluralCount, pluralize } from '@utils/pluralize';
 import {
   REGEX_MESSAGE_LINK_OR_FULL_ID,
@@ -20,52 +21,13 @@ import {
 } from '@utils/regex';
 import { deleteAfter, safeDelete } from '@utils/safeDelete';
 import { stripIndent } from 'common-tags';
-import { Message, NewsChannel, TextChannel, ThreadChannel } from 'discord.js';
-
-async function proxyPost(message: Message, server: Server) {
-  const channel = getTextChannel(
-    server.guild,
-    server.config.modActionLogChannel
-  );
-  if (!channel) return 0;
-  return await proxyPostAttachments(message, channel);
-}
-
-async function notifyDeletes(
-  messages: Message[],
-  messagedWithImages: Record<string, number>,
-  server: Server,
-  commandMessage: GuildMessage
-) {
-  const channel = getTextChannel(
-    server.guild,
-    server.config.modActionLogChannel
-  );
-  if (!channel) return;
-  const fields = messages.map((message) => {
-    const hadFiles = messagedWithImages[message.id] || 0;
-    let placeholder = hadFiles
-      ? pluralize('See File', 's', hadFiles)
-      : '*Empty*';
-    return {
-      name: `👤 ${message.author.tag} (${message.author.id}) in #${
-        (message.channel as TextChannel).name
-      }${hadFiles ? ` with ${pluralCount('file', 's', hadFiles)}` : ''}`,
-      value: message.content || placeholder,
-      inline: false,
-    };
-  });
-  await channel.send(
-    makeEmbed({
-      color: 'RED',
-      title: `Message Delete`,
-      fields,
-      footer: `By ${commandMessage.author.tag} in #${commandMessage.channel.name}`,
-      footerIcon: commandMessage.member.displayAvatarURL(),
-      timestamp: true,
-    })
-  );
-}
+import {
+  Message,
+  MessageAttachment,
+  NewsChannel,
+  TextChannel,
+  ThreadChannel,
+} from 'discord.js';
 
 const command: BotCommand = {
   name: 'delete',
@@ -98,7 +60,7 @@ const command: BotCommand = {
   ],
   normalCommand: async ({ content, message, server, options }) => {
     const guild = server.guild;
-    const deletingMessages: Message[] = [];
+    const deletingMessages: GuildMessage[] = [];
 
     if (message.reference) {
       // Message reply
@@ -106,9 +68,9 @@ const command: BotCommand = {
       if (!channel || !message.reference.messageId) {
         throw new CommandArgumentError('Impossible message reference');
       }
-      const delMessage = await channel.messages.fetch(
+      const delMessage = (await channel.messages.fetch(
         message.reference.messageId
-      );
+      )) as GuildMessage;
       delMessage && deletingMessages.push(delMessage);
     } else {
       // Search messages
@@ -133,7 +95,7 @@ const command: BotCommand = {
           const [_, channelId, messageId] = fullIdMatch!;
           const channel = getTextChannel(guild, channelId);
           const delMessage = await channel?.messages.fetch(messageId);
-          delMessage && deletingMessages.push(delMessage);
+          delMessage && deletingMessages.push(delMessage as GuildMessage);
         }
         content = content
           .replace(REGEX_MESSAGE_LINK_OR_FULL_ID, '')
@@ -160,7 +122,7 @@ const command: BotCommand = {
       if (messageIds.length > 0) {
         for (const messageId of messageIds) {
           const delMessage = await defaultChannel.messages.fetch(messageId);
-          delMessage && deletingMessages.push(delMessage);
+          delMessage && deletingMessages.push(delMessage as GuildMessage);
         }
       }
       content = rest.trim();
@@ -190,7 +152,7 @@ const command: BotCommand = {
             if (hasLink && !REGEX_URL.test(msg.content)) continue;
             if (hasFile && msg.attachments.size === 0) continue;
             if (hasWord && !msg.content.includes(hasWord)) continue;
-            deletingMessages.push(msg);
+            deletingMessages.push(msg as GuildMessage);
             remainingDelete--;
             if (remainingDelete === 0) break;
           }
@@ -204,55 +166,83 @@ const command: BotCommand = {
         }
       }
     }
-    const notLogging =
-      options['noLogs'] && message.member.permissions.has('ADMINISTRATOR');
-    const messagedWithImages: Record<string, number> = {};
+
+    // Got all messages to delete
 
     if (deletingMessages.length === 0) {
       await message.channel.send(errorEmbed('No messages to delete'));
       return;
-    } else if (deletingMessages.length === 1) {
-      const delMessage = deletingMessages[0];
-      if (delMessage.attachments.size && !notLogging) {
-        await message.channel.sendTyping();
-        messagedWithImages[delMessage.id] = await proxyPost(delMessage, server);
-      }
-      await delMessage.delete();
-    } else {
-      const channelToMessages: Record<
-        string,
-        {
-          channel: TextChannel | ThreadChannel | NewsChannel;
-          messageIds: string[];
-        }
-      > = {};
-      const twoWeeksAgo = getExactDaysAgo(14).getTime(); // Discord can't bulk delete messages older than two weeks
-      for (const delMessage of deletingMessages) {
-        if (delMessage.attachments.size && !notLogging) {
-          await message.channel.sendTyping();
-          messagedWithImages[delMessage.id] = await proxyPost(
-            delMessage,
-            server
-          );
-        }
-        if (delMessage.createdAt.getTime() < twoWeeksAgo) {
-          delMessage.delete();
-          return;
-        }
-        if (delMessage.channel.id in channelToMessages) {
-          channelToMessages[delMessage.channel.id].messageIds.push(
-            delMessage.id
-          );
-        } else {
-          channelToMessages[delMessage.channel.id] = {
-            channel: delMessage.channel as TextChannel,
-            messageIds: [delMessage.id],
-          };
-        }
-      }
+    }
 
-      for (const bulkMsgs of Object.values(channelToMessages)) {
-        await bulkMsgs.channel.bulkDelete(bulkMsgs.messageIds);
+    const notLogging =
+      options['noLogs'] && message.member.permissions.has('ADMINISTRATOR');
+
+    const attachmentURLs: Record<string, DeletedMessageAttachment[]> = {}; // repost images
+    const hasEmbedMessageIds: string[] = []; // Embed with videos/images means there was a URL.
+
+    deletingMessages.forEach((m) => {
+      if (m.attachments.size) {
+        m.attachments.forEach((a) => {
+          const isImage = a.contentType?.includes('image');
+          const isVideo = a.contentType?.includes('video');
+          const format = a.contentType?.split('/')[1] || '';
+          const name = a.name || `${a.id}.${format}`;
+          if (isImage || isVideo) {
+            const delAttachment: DeletedMessageAttachment = {
+              messageId: m.id,
+              url: a.proxyURL,
+              type: isImage ? 'image' : 'video',
+              name,
+              bytes: a.size,
+            };
+            if (m.id in attachmentURLs) {
+              attachmentURLs[m.id].push(delAttachment);
+            } else {
+              attachmentURLs[m.id] = [delAttachment];
+            }
+          }
+        });
+      }
+      if (m.embeds) {
+        m.embeds.forEach((e) => {
+          if (e.url) {
+            hasEmbedMessageIds.push(m.id);
+          } else if (e.video?.proxyURL) {
+            hasEmbedMessageIds.push(m.id);
+          }
+        });
+      }
+    });
+
+    const post = async () =>
+      !notLogging &&
+      (await postDeletedMessages(
+        deletingMessages,
+        attachmentURLs,
+        hasEmbedMessageIds,
+        server,
+        message
+      ));
+
+    await message.channel.sendTyping();
+    if (attachmentURLs.length) {
+      // if there are attachments, post first so that proxyURL doesn't get deleted
+      try {
+        await post();
+      } catch (e) {
+        await message.channel.send(
+          errorEmbed(`Failed to log the deleted messages`)
+        );
+      }
+      await deleteMessages(deletingMessages);
+    } else {
+      await deleteMessages(deletingMessages);
+      try {
+        await post();
+      } catch (e) {
+        await message.channel.send(
+          errorEmbed(`Failed to log the deleted messages`)
+        );
       }
     }
     safeDelete(message);
@@ -263,9 +253,151 @@ const command: BotCommand = {
         )
       )
     );
-
-    await notifyDeletes(deletingMessages, messagedWithImages, server, message);
   },
 };
+
+async function deleteMessages(deletingMessages: Message[]) {
+  if (deletingMessages.length === 1) {
+    await deletingMessages[0].delete();
+    return;
+  }
+  const channelToMessages: Record<
+    string,
+    {
+      channel: TextChannel | ThreadChannel | NewsChannel;
+      messages: Message[];
+    }
+  > = {};
+  const twoWeeksAgo = getExactDaysAgo(14).getTime(); // Discord can't bulk delete messages older than two weeks
+  for (const delMessage of deletingMessages) {
+    if (delMessage.createdAt.getTime() < twoWeeksAgo) {
+      delMessage.delete();
+      continue;
+    }
+    if (delMessage.channel.id in channelToMessages) {
+      channelToMessages[delMessage.channel.id].messages.push(delMessage);
+    } else {
+      channelToMessages[delMessage.channel.id] = {
+        channel: delMessage.channel as TextChannel,
+        messages: [delMessage],
+      };
+    }
+  }
+
+  for (const bulkMsgs of Object.values(channelToMessages)) {
+    if (bulkMsgs.messages.length === 1) {
+      await bulkMsgs.messages[0].delete();
+    } else {
+      await bulkMsgs.channel.bulkDelete(bulkMsgs.messages);
+    }
+  }
+}
+
+async function postDeletedMessages(
+  messages: GuildMessage[],
+  attachmentURLs: Record<string, DeletedMessageAttachment[]>,
+  hasEmbedsMessageIDs: string[],
+  server: Server,
+  commandMessage: GuildMessage
+) {
+  const channel = getTextChannel(
+    server.guild,
+    server.config.modActionLogChannel
+  );
+  if (!channel) return; // invalid config.
+
+  const onlyOneUser = messages.every(
+    (m) => m.author.id === messages[0].author.id
+  );
+  const onlyOneChannel = messages.every(
+    (m) => m.channel.id === messages[0].channel.id
+  );
+  let attachmentNum = 1;
+  const threadAttachments: {
+    content?: string;
+    attachments?: MessageAttachment[];
+  }[] = [];
+
+  const title = pluralize('Message', 's', messages.length);
+  const fields = messages.map((message) => {
+    const name = `${onlyOneUser ? '' : `👤${userToTagAndId(message.author)} `}${
+      onlyOneChannel ? '' : `#${message.channel.name} `
+    }${getDiscordTimestamp(message.createdAt, onlyOneUser ? 'f' : 't')}`;
+
+    const hasAttachment = Boolean(
+      hasEmbedsMessageIDs.includes(message.id) || attachmentURLs[message.id]
+    );
+    const attachmentIndicator = hasAttachment
+      ? `\n__See attachment ${attachmentNum++}__`
+      : '';
+    if (hasAttachment) {
+      let content: undefined | string = undefined;
+      if (hasEmbedsMessageIDs.includes(message.id)) {
+        const allUrls = message.content.match(REGEX_URL);
+        if (allUrls) {
+          content = allUrls.join('\n');
+        }
+      }
+      const attachments: MessageAttachment[] = [];
+      if (message.id in attachmentURLs) {
+        const delAttachments = attachmentURLs[message.id];
+        delAttachments.forEach((da) => {
+          if (da.bytes > MAX_BYTES) return null;
+          const proxyAttachment = new MessageAttachment(
+            da.url,
+            da.name
+          ).setSpoiler(true);
+          attachments.push(proxyAttachment);
+        });
+      }
+      threadAttachments.push({ content, attachments });
+    }
+    const value =
+      message.content.length + attachmentIndicator.length > 1024
+        ? `${message.content.substring(
+            0,
+            1000 - attachmentIndicator.length
+          )}... (truncated)${attachmentIndicator}`
+        : message.content + attachmentIndicator;
+
+    return {
+      name,
+      value,
+      inline: false,
+    };
+  });
+
+  const mainMessage = await channel.send(
+    makeEmbed({
+      color: 'RED',
+      authorIcon: onlyOneUser
+        ? messages[0].author.displayAvatarURL()
+        : undefined,
+      authorName: `${title}${
+        onlyOneUser ? ` from ${userToTagAndId(messages[0].author)}` : ''
+      } Deleted`,
+      description: onlyOneChannel ? `In ${messages[0].channel}` : undefined,
+      fields,
+      footer: `By ${commandMessage.author.tag} in #${commandMessage.channel.name}`,
+      footerIcon: commandMessage.member.displayAvatarURL(),
+      timestamp: true,
+    })
+  );
+  if (Object.keys(attachmentURLs).length || hasEmbedsMessageIDs.length) {
+    const thread = await mainMessage.startThread({
+      name: 'Deleted Message Attachments',
+    });
+    let index = 1;
+    for (const threadAttachment of threadAttachments) {
+      await thread.send({
+        content: `Attachment ${index}\n${threadAttachment.content}`,
+        files: threadAttachment.attachments?.length
+          ? threadAttachment.attachments
+          : undefined,
+      });
+      index++;
+    }
+  }
+}
 
 export default command;

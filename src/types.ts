@@ -193,6 +193,14 @@ export interface LineNotifyConfig {
   lineNotifyToken: string;
 }
 
+export interface DeletedMessageAttachment {
+  messageId: string;
+  url: string;
+  type: 'image' | 'video';
+  name: string;
+  bytes: number; // only for attachments, not for embed
+}
+
 // Extend the type from each command file
 export interface ServerConfig {
   prefix: string;

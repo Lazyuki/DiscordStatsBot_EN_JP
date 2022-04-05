@@ -3,6 +3,7 @@ import checkLang from '@utils/checkLang';
 import { isMessageInChannels } from '@utils/guildUtils';
 import checkSafeMessage from '@utils/checkSafeMessage';
 import { makeEmbed } from '@utils/embed';
+import { safeDelete } from '@utils/safeDelete';
 
 const createEvent: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -27,6 +28,7 @@ const createEvent: BotEvent<'messageCreate'> = {
     const { lang, escaped } = checkLang(message.content);
     if (escaped) return;
     if (isJapanese && lang === 'JP') {
+      safeDelete(message);
       if (message.content.length > 80) {
         try {
           await message.author.send(
@@ -41,12 +43,10 @@ const createEvent: BotEvent<'messageCreate'> = {
           );
         } catch (e) {} // pass, DM disabled
       }
-      setTimeout(() => {
-        message.delete();
-      }, 200); // Wait a little before deleting or Discord sometimes shows the deleted message
       return;
     }
     if (!isJapanese && lang === 'EN') {
+      safeDelete(message);
       // English
       if (message.content.length > 120) {
         try {
@@ -61,9 +61,6 @@ const createEvent: BotEvent<'messageCreate'> = {
             })
           );
         } catch (e) {} // pass, DM disabled
-        setTimeout(() => {
-          message.delete();
-        }, 200); // Wait a little before deleting or Discord sometimes shows the deleted message
         return;
       }
     }
