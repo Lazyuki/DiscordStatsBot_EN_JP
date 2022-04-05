@@ -95,21 +95,23 @@ const event: BotEvent<'messageCreate'> = {
         }
         // Check bot permission
         if (command.requiredBotPermissions) {
-          if (
-            !command.requiredBotPermissions.every((p) =>
-              message.channel.permissionsFor(message.guild.me!.id)?.has(p)
-            )
-          ) {
-            await message.channel.send(
-              errorEmbed(
-                `Missing Bot Permissions: [${command.requiredBotPermissions
-                  .map(code)
-                  .join(
-                    ', '
-                  )}].\nContact server moderators to configure my permissions.`
-              )
-            );
-            return;
+          for (const permission of command.requiredBotPermissions) {
+            if (!message.guild.me?.permissions.has(permission)) {
+              // see if I have the guild wide permission
+              if (
+                !message.channel
+                  .permissionsFor(message.guild.me!.id)
+                  ?.has(permission)
+              ) {
+                // check channel-specific permissions
+                await message.channel.send(
+                  errorEmbed(
+                    `Missing Bot Permission: \`${permission}\`.\nContact server moderators to configure my permissions.`
+                  )
+                );
+                return;
+              }
+            }
           }
         }
         const sendChannel = message.channel.send.bind(message.channel);
