@@ -6,6 +6,7 @@ import Server from '@classes/Server';
 import { insertServer } from '@database/statements';
 import { RESTART_TMP_FILE } from '@tasks/exitTask';
 import hourlyTask from '@tasks/hourlyTask';
+import { successEmbed } from '@utils/embed';
 
 const event: BotEvent<'ready'> = {
   eventName: 'ready',
@@ -29,7 +30,7 @@ const event: BotEvent<'ready'> = {
         if (guild) {
           const channel = guild.channels.cache.get(channelId);
           if (channel?.isText()) {
-            await channel.send("I'm back online");
+            await channel.send(successEmbed("I'm back online"));
           }
         }
       }

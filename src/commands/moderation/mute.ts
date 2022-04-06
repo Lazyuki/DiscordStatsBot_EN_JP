@@ -108,13 +108,11 @@ const mute: BotCommand = {
       content = content.split(' ').slice(1).join(' ');
     }
 
-    const { members, restContent } = parseMembers(content, server.guild);
-
-    if (!members.length) {
-      throw new CommandArgumentError(
-        'Please specify valid members in this server'
-      );
-    }
+    const { members, restContent } = parseMembers(
+      content,
+      server.guild,
+      'MEMBERS'
+    );
 
     let reason = restContent;
     if (!timeoutMillis) {

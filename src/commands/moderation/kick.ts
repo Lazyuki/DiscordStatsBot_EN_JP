@@ -1,9 +1,19 @@
 import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
-import { errorEmbed, successEmbed, warningEmbed } from '@utils/embed';
+import { waitForConfirmOrCancel } from '@utils/asyncMessageCollector';
+import { BLACK } from '@utils/constants';
+import { memberJoinAge } from '@utils/datetime';
+import {
+  editEmbed,
+  errorEmbed,
+  makeEmbed,
+  successEmbed,
+  warningEmbed,
+} from '@utils/embed';
 import { idToUser } from '@utils/guildUtils';
 import { isOrAre } from '@utils/pluralize';
+import { stripIndent } from 'common-tags';
 import { GuildMember } from 'discord.js';
 
 const command: BotCommand = {
@@ -29,9 +39,9 @@ const command: BotCommand = {
         )} not in this server`
       );
     }
-    const auditLogReason = `By ${message.author.username} (${
-      message.author.id
-    }) Reason: ${restContent.replace('\n', ' ') || 'Unspecified'}`;
+    const reason = restContent || 'Unspecified';
+
+    const auditLogReason = `By ${message.author.username} (${message.author.id}) Reason: ${reason}`;
     if (auditLogReason.length > 512) {
       await message.channel.send(
         warningEmbed(
@@ -40,7 +50,35 @@ const command: BotCommand = {
       );
       return;
     }
+
+    const kickConfirmation = await message.channel.send(
+      makeEmbed({
+        title: 'KICK',
+        description: stripIndent`
+        ${members
+          .map(
+            (member) =>
+              `${member}: ${member.user.tag} ${memberJoinAge(member, 7)}`
+          )
+          .join('\n')}
+
+        __Reason__ (They will NOT receive the reason): ${reason}
+
+        Type \`confirm\` or \`cancel\` 
+        `,
+        color: BLACK,
+      })
+    );
+
+    const confirm = waitForConfirmOrCancel(message, 30);
+    if (!confirm) {
+      await editEmbed(kickConfirmation, { footer: 'Cancelled' });
+      await message.channel.send(errorEmbed('Cancelled'));
+      return;
+    }
+
     const kicked: GuildMember[] = [];
+
     for (const member of members) {
       if (member.kickable) {
         await member.kick(auditLogReason);
@@ -50,6 +88,7 @@ const command: BotCommand = {
       }
     }
     if (kicked.length) {
+      await editEmbed(kickConfirmation, { footer: 'Kicked' });
       await message.channel.send(successEmbed(`Kicked ${kicked.join(' ')}`));
     }
   },

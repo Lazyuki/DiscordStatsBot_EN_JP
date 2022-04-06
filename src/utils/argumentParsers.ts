@@ -151,8 +151,8 @@ export function parseMembers(
   if (members.length === 0 && required?.startsWith('MEMBER')) {
     throw new CommandArgumentError(
       required === 'MEMBER'
-        ? 'Please mention or specify a member in this server'
-        : 'Please mention or specify members who are in this server'
+        ? 'Please mention or specify a valid member in this server'
+        : 'Please mention or specify valid members who are in this server'
     );
   }
   if (allIds.length === 0 && required?.startsWith('ID')) {
