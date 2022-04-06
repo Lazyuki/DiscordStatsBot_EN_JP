@@ -1,4 +1,5 @@
-import { TextBasedChannel, MessageReaction, User } from 'discord.js';
+import { TextBasedChannel } from 'discord.js';
+import { getPaginatorButtons } from './buttons';
 import { INFO_COLOR } from './constants';
 import { EmbedField, makeEmbed } from './embed';
 import { splitString } from './safeSend';
@@ -14,56 +15,62 @@ export async function descriptionPaginator(
   const maxPageNum = Math.ceil(totalItems / perPage) - 1;
   let currPage = 0;
 
-  function getEmbed() {
+  function getEmbed(page: number, end?: boolean) {
     let description = '';
     for (let i = 0; i < perPage; i++) {
-      const actualIndex = i + currPage * perPage;
+      const actualIndex = i + page * perPage;
       if (actualIndex >= totalItems) break;
       description += list[actualIndex] + '\n';
     }
-    return makeEmbed({
-      title,
-      description: description || '*empty*',
-      footer: `Page: ${currPage + 1}/${maxPageNum + 1}`,
-      color: '#3a8edb',
-    });
+    return {
+      ...makeEmbed({
+        title,
+        description: description || '*empty*',
+        footer: `Page: ${page + 1}/${maxPageNum + 1}`,
+        color: '#3a8edb',
+      }),
+      components: end ? [] : getPaginatorButtons(maxPageNum, page, false),
+    };
   }
 
-  const message = await channel.send(getEmbed());
+  const message = await channel.send(getEmbed(currPage));
 
   if (maxPageNum > 0) {
-    await message.react('◀');
-    await message.react('▶');
-
-    const filter = (reaction: MessageReaction, user: User) =>
-      reaction.me && user.id === authorID;
-    const collector = message.createReactionCollector({
-      filter,
+    const collector = message.createMessageComponentCollector({
+      filter: (componentOption) => componentOption.user.id === authorID,
       time: 60_000, // 1 mintue
     });
 
-    collector.on('collect', (r) => {
-      switch (r.emoji.name) {
-        case '▶':
-          if (currPage < maxPageNum) {
-            ++currPage;
-            message.edit(getEmbed());
+    collector.on('collect', async (interaction) => {
+      switch (interaction.customId) {
+        case 'FIRST_PAGE':
+          if (currPage !== 0) {
+            currPage = 0;
+            await interaction.update(getEmbed(currPage));
           }
-          r.users.remove(authorID);
-          collector.empty();
           break;
-        case '◀':
+        case 'PREVIOUS_PAGE':
           if (currPage > 0) {
             --currPage;
-            message.edit(getEmbed());
+            await interaction.update(getEmbed(currPage));
           }
-          r.users.remove(authorID);
-          collector.empty();
+          break;
+        case 'NEXT_PAGE':
+          if (currPage < maxPageNum) {
+            ++currPage;
+            await interaction.update(getEmbed(currPage));
+          }
+          break;
+        case 'LAST_PAGE':
+          if (currPage !== maxPageNum) {
+            currPage = maxPageNum;
+            await interaction.update(getEmbed(currPage));
+          }
           break;
       }
     });
     collector.on('end', () => {
-      message.reactions.removeAll();
+      message.edit(getEmbed(currPage, true));
     });
   }
 }
@@ -86,63 +93,66 @@ export async function fieldsPaginator(
   let currPage = 0;
   const userPage = Math.floor(userIndex / MAX_FIELDS); // TODO: search pages
 
-  function getEmbed(page: number) {
-    return makeEmbed({
-      title,
-      description,
-      fields: pages[page]?.fields.map((f) => ({ ...f, inline })),
-      footer: `Page: ${page + 1}/${maxPageIndex + 1}`,
-      color: INFO_COLOR,
-    });
+  function getEmbed(page: number, end?: boolean) {
+    return {
+      ...makeEmbed({
+        title,
+        description,
+        fields: pages[page]?.fields.map((f) => ({ ...f, inline })),
+        footer: `Page: ${page + 1}/${maxPageIndex + 1}`,
+        color: INFO_COLOR,
+      }),
+      components: end
+        ? []
+        : getPaginatorButtons(pages.length, currPage, userIndex >= 0),
+    };
   }
 
   const message = await channel.send(getEmbed(currPage));
 
   if (maxPageIndex > 0) {
     // Don't await to speed it up
-    message.react('◀');
-    message.react('▶');
-    if (userIndex >= 0) {
-      message.react('📍');
-    }
-
-    const filter = (reaction: MessageReaction, user: User) =>
-      reaction.me && user.id === authorID;
-    const collector = message.createReactionCollector({
-      filter,
+    const collector = message.createMessageComponentCollector({
+      filter: (componentOption) => componentOption.user.id === authorID,
       time: 60_000, // 1 mintue
     });
 
-    collector.on('collect', (r) => {
-      switch (r.emoji.name) {
-        case '▶':
-          if (currPage < maxPageIndex) {
-            ++currPage;
-            message.edit(getEmbed(currPage));
+    collector.on('collect', async (interaction) => {
+      switch (interaction.customId) {
+        case 'FIRST_PAGE':
+          if (currPage !== 0) {
+            currPage = 0;
+            await interaction.update(getEmbed(currPage));
           }
-          r.users.remove(authorID);
-          collector.empty();
           break;
-        case '◀':
+        case 'PREVIOUS_PAGE':
           if (currPage > 0) {
             --currPage;
-            message.edit(getEmbed(currPage));
+            await interaction.update(getEmbed(currPage));
           }
-          r.users.remove(authorID);
-          collector.empty();
           break;
-        case '📍':
+        case 'PINNED_PAGE':
           if (currPage !== userPage) {
             currPage = userPage;
-            message.edit(getEmbed(currPage));
+            await interaction.update(getEmbed(currPage));
           }
-          r.users.remove(authorID);
-          collector.empty();
+          break;
+        case 'NEXT_PAGE':
+          if (currPage < maxPageIndex) {
+            ++currPage;
+            await interaction.update(getEmbed(currPage));
+          }
+          break;
+        case 'LAST_PAGE':
+          if (currPage !== maxPageIndex) {
+            currPage = maxPageIndex;
+            await interaction.update(getEmbed(currPage));
+          }
           break;
       }
     });
     collector.on('end', () => {
-      message.reactions.removeAll();
+      message.edit(getEmbed(currPage, true));
     });
   }
 }

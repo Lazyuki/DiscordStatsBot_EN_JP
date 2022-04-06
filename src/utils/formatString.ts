@@ -10,13 +10,18 @@ export function codeBlock(str: string, lang: string = '') {
   return '```' + `${lang}\n` + str + '\n```';
 }
 
-export function appendCodeBlock(str: string, addition: string) {
-  const lines = str.split('\n');
-  if (lines[0].startsWith('```')) {
-    str = lines.slice(1, lines.length - 1).join('\n');
+export function appendCodeBlock(str: string, addition: string, limit?: number) {
+  const [firstLine, ...restLines] = str.split('\n');
+  if (firstLine.startsWith('```')) {
+    str = restLines.slice(0, restLines.length - 1).join('\n');
   }
   str += '\n' + addition;
-  return lines[0] + '\n' + str + '\n```';
+  const otherLength = firstLine.length + 5;
+  if (limit && str.length + otherLength > limit) {
+    const start = str.length + otherLength - limit;
+    str = str.slice(start); // Since we are appending code block, remove from the top
+  }
+  return firstLine + '\n' + str + '\n```';
 }
 
 export function code(str: string) {

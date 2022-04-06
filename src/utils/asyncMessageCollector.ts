@@ -11,7 +11,13 @@ import {
   User,
 } from 'discord.js';
 import { parseChannels } from './argumentParsers';
-import { infoEmbed, makeEmbed } from './embed';
+import {
+  addButtons,
+  getConfirmOrCancelButtons,
+  getYesOrNoButtons,
+  removeButtons,
+} from './buttons';
+import { errorEmbed, infoEmbed, makeEmbed } from './embed';
 import { getTextChannel } from './guildUtils';
 import { REGEX_CHAN } from './regex';
 
@@ -38,21 +44,45 @@ async function asyncMessageCollector(
 }
 
 export function waitForConfirmOrCancel(
-  message: GuildMessage,
+  butonMessage: GuildMessage,
+  authorId: string,
   waitForSeconds: number = 15
 ): Promise<boolean> {
   const filter = (m: Message) =>
-    m.author.id === message.author.id &&
+    m.author.id === authorId &&
     ['confirm', 'cancel'].includes(m.content.trim().toLowerCase());
-  const collector = message.channel.createMessageCollector({
+  const messageCollector = butonMessage.channel.createMessageCollector({
     filter,
     time: waitForSeconds * 1000,
   });
+  if (butonMessage.author.id === butonMessage.guild.me?.id) {
+    if (!butonMessage.components.length) {
+      addButtons(butonMessage, getConfirmOrCancelButtons());
+    }
+  }
+  const buttonCollector = butonMessage.createMessageComponentCollector({
+    filter: (componentOption) => componentOption.user.id === authorId,
+    time: waitForSeconds * 1000,
+  });
   const promise = new Promise<boolean>((resolve) => {
-    collector.on('collect', (message) => {
+    messageCollector.on('collect', (message) => {
+      buttonCollector.stop();
       resolve(message.content === 'confirm');
     });
-    collector.on('end', () => {
+    buttonCollector.on('collect', async (interaction) => {
+      await interaction.update({ components: [] });
+      if (interaction.customId === 'CONFIRM') {
+        resolve(true);
+      } else if (interaction.customId === 'CANCEL') {
+        resolve(false);
+      }
+    });
+    buttonCollector.on('end', () => {
+      removeButtons(butonMessage);
+      messageCollector.stop();
+    });
+    messageCollector.on('end', () => {
+      buttonCollector.stop();
       resolve(false);
     });
   });
@@ -64,21 +94,45 @@ const NO = ['no', 'false', 'cancel', 'nah', 'n', 'いいえ'];
 
 // Like waitForConfirmOrCancel but can accept more natural responses. Do not use for risky operations like memebr bans.
 export function waitForYesOrNo(
-  message: GuildMessage,
+  butonMessage: GuildMessage,
+  authorId: string,
   waitForSeconds: number = 15
 ): Promise<boolean> {
   const filter = (m: Message) =>
-    m.author.id === message.author.id &&
+    m.author.id === authorId &&
     [...YES, ...NO].includes(m.content.toLowerCase());
-  const collector = message.channel.createMessageCollector({
+  const messageCollector = butonMessage.channel.createMessageCollector({
     filter,
     time: waitForSeconds * 1000,
   });
+  if (butonMessage.author.id === butonMessage.guild.me?.id) {
+    if (!butonMessage.components.length) {
+      addButtons(butonMessage, getYesOrNoButtons());
+    }
+  }
+  const buttonCollector = butonMessage.createMessageComponentCollector({
+    filter: (componentOption) => componentOption.user.id === authorId,
+    time: waitForSeconds * 1000,
+  });
   const promise = new Promise<boolean>((resolve) => {
-    collector.on('collect', (message) => {
+    messageCollector.on('collect', (message) => {
+      buttonCollector.stop();
       resolve(YES.includes(message.content));
     });
-    collector.on('end', () => {
+    buttonCollector.on('collect', async (interaction) => {
+      await interaction.update({ components: [] });
+      if (interaction.customId === 'YES') {
+        resolve(true);
+      } else if (interaction.customId === 'NO') {
+        resolve(false);
+      }
+    });
+    buttonCollector.on('end', () => {
+      removeButtons(butonMessage);
+      messageCollector.stop();
+    });
+    messageCollector.on('end', () => {
+      buttonCollector.stop();
       resolve(false);
     });
   });
@@ -90,7 +144,7 @@ export async function getFallbackChannel(
   server: Server,
   waitForSeconds: number = 60
 ) {
-  const yes = await waitForYesOrNo(message, waitForSeconds);
+  const yes = await waitForYesOrNo(message, message.author.id, waitForSeconds);
   if (!yes) return null;
   if (server.config.userDMFallbackChannel) {
     return getTextChannel(server.guild, server.config.userDMFallbackChannel);

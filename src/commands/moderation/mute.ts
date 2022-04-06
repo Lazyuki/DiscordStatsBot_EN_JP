@@ -1,5 +1,5 @@
 import { CommandArgumentError, UserPermissionError } from '@/errors';
-import { BotCommand } from '@/types';
+import { BotCommand, GuildMessage } from '@/types';
 import Server from '@classes/Server';
 import { insertModLog } from '@database/statements';
 import { parseMembers } from '@utils/argumentParsers';
@@ -171,12 +171,15 @@ const mute: BotCommand = {
       multiTimeout ? ` TIMEOUT_UNTIL:${unmuteAt.getTime()}` : ''
     } Reason: ${reason}`;
     if (auditLogReason.length > 512) {
-      await message.channel.send(
+      const questionMessage = await message.channel.send(
         warningEmbed(
           `The timeout reason exceeds the limit of 512 characters: \`${auditLogReason.length}\` characters.\n\nDo you want to send the full reason to the person and let Discord's audit log timeout reason be truncated?`
         )
       );
-      const sendAnyway = await waitForYesOrNo(message);
+      const sendAnyway = await waitForYesOrNo(
+        questionMessage as GuildMessage,
+        message.author.id
+      );
       if (!sendAnyway) return;
       auditLogReason = auditLogReason.slice(0, 512);
     }
@@ -336,14 +339,17 @@ const unmute: BotCommand = {
     for (const member of members) {
       const selfmute = server.data.schedules.selfMutes[member.id];
       if (selfmute) {
-        await message.channel.send(
+        const questionMessage = await message.channel.send(
           questionEmbed(
             `Remove ${member}'s self mute that ends in ${millisToDuration(
               selfmute - now
             )}?`
           )
         );
-        const yes = await waitForYesOrNo(message);
+        const yes = await waitForYesOrNo(
+          questionMessage as GuildMessage,
+          message.author.id
+        );
         if (yes) {
           await member.timeout(
             null,

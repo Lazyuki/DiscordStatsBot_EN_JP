@@ -1,5 +1,5 @@
 import { CommandArgumentError } from '@/errors';
-import { BotCommand } from '@/types';
+import { BotCommand, GuildMessage } from '@/types';
 import { waitForConfirmOrCancel } from '@utils/asyncMessageCollector';
 import { BLACK } from '@utils/constants';
 import { DAY_IN_MILLIS, memberJoinAge } from '@utils/datetime';
@@ -158,7 +158,7 @@ const command: BotCommand = {
       }
     });
 
-    await message.channel.send(
+    const confirmationMessage = await message.channel.send(
       makeEmbed({
         title:
           '<:hypergeralthinkban:443803651325034507> RAID BAN <:hypergeralthinkban:443803651325034507>',
@@ -177,7 +177,11 @@ const command: BotCommand = {
       })
     );
     const auditLogReason = `By ${message.author.tag} (${message.author.id}) Reason: Raid ban.`;
-    const confirm = await waitForConfirmOrCancel(message, 45);
+    const confirm = await waitForConfirmOrCancel(
+      confirmationMessage as GuildMessage,
+      message.author.id,
+      45
+    );
     const failedBanIds: string[] = [];
     if (confirm) {
       let someBanned = false;

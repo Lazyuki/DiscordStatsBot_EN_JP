@@ -1,5 +1,5 @@
 import { CommandArgumentError } from '@/errors';
-import { BotCommand } from '@/types';
+import { BotCommand, GuildMessage } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
 import { waitForConfirmOrCancel } from '@utils/asyncMessageCollector';
 import { BLACK } from '@utils/constants';
@@ -70,7 +70,11 @@ const command: BotCommand = {
       })
     );
 
-    const confirm = waitForConfirmOrCancel(message, 30);
+    const confirm = await waitForConfirmOrCancel(
+      kickConfirmation as GuildMessage,
+      message.author.id,
+      45
+    );
     if (!confirm) {
       await editEmbed(kickConfirmation, { footer: 'Cancelled' });
       await message.channel.send(errorEmbed('Cancelled'));
