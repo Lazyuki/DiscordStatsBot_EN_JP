@@ -11,7 +11,7 @@ import {
 } from '@utils/embed';
 import { idToUser } from '@utils/guildUtils';
 import { REGEX_RAW_ID } from '@utils/regex';
-import { stripIndent } from 'common-tags';
+import { stripIndents } from 'common-tags';
 import { GuildMember, SnowflakeUtil } from 'discord.js';
 
 const command: BotCommand = {
@@ -162,7 +162,7 @@ const command: BotCommand = {
       makeEmbed({
         title:
           '<:hypergeralthinkban:443803651325034507> RAID BAN <:hypergeralthinkban:443803651325034507>',
-        description: stripIndent`
+        description: stripIndents`
         ${members
           .map(
             (member) =>

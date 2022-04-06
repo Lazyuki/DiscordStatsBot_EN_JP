@@ -10,7 +10,7 @@ import {
 import { waitForYesOrNo } from '@utils/asyncMessageCollector';
 import { GuildMember, Message, User } from 'discord.js';
 import { BLACK } from '@utils/constants';
-import { stripIndent } from 'common-tags';
+import { stripIndents } from 'common-tags';
 import { memberJoinAge } from '@utils/datetime';
 import { pluralCount, pluralize } from '@utils/pluralize';
 import { getTextChannel, idToUser } from '@utils/guildUtils';
@@ -101,7 +101,7 @@ const command: BotCommand = {
       ...makeEmbed({
         title:
           '<:hypergeralthinkban:443803651325034507> BAN <:hypergeralthinkban:443803651325034507>',
-        description: stripIndent`
+        description: stripIndents`
         ${members
           .map(
             (member) =>

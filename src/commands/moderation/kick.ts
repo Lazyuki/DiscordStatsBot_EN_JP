@@ -13,7 +13,7 @@ import {
 } from '@utils/embed';
 import { idToUser } from '@utils/guildUtils';
 import { isOrAre } from '@utils/pluralize';
-import { stripIndent } from 'common-tags';
+import { stripIndents } from 'common-tags';
 import { GuildMember } from 'discord.js';
 
 const command: BotCommand = {
@@ -54,7 +54,7 @@ const command: BotCommand = {
     const kickConfirmation = await message.channel.send(
       makeEmbed({
         title: 'KICK',
-        description: stripIndent`
+        description: stripIndents`
         ${members
           .map(
             (member) =>
