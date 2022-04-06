@@ -54,7 +54,7 @@ const command: BotCommand = {
       return;
     }
     const cleanStdout = build.stdout.replace(
-      /tscpaths.+Replaced [0-9]+ paths in [0-9]+ files/,
+      /tscpaths --project.+Replaced [0-9]+ paths in [0-9]+ files/,
       ''
     );
     stdoutMessage = await stdoutMessage.edit(
