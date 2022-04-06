@@ -99,15 +99,12 @@ export function getBanConfirmationButtons(allowDelete: boolean) {
     row.addComponents(
       new MessageButton()
         .setCustomId('DELETE')
-        .setLabel('Confirm DELETE')
+        .setLabel('DELETE')
         .setStyle('DANGER')
     );
   }
   row.addComponents(
-    new MessageButton()
-      .setCustomId('KEEP')
-      .setLabel('Confirm KEEP')
-      .setStyle('DANGER')
+    new MessageButton().setCustomId('KEEP').setLabel('KEEP').setStyle('DANGER')
   );
   row.addComponents(
     new MessageButton()
