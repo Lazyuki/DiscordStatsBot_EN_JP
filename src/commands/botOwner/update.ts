@@ -53,14 +53,14 @@ const command: BotCommand = {
       );
       return;
     }
-    const cleanStdout = build.stdout.replace(
-      /tscpaths --project.+Replaced [0-9]+ paths in [0-9]+ files/,
-      ''
-    );
+    const cleanStdout = build.stdout
+      .split('\n')
+      .filter((line) => !line.endsWith('paths'))
+      .join('\n');
     stdoutMessage = await stdoutMessage.edit(
       appendCodeBlock(stdoutMessage.content, cleanStdout, 2000)
     );
-    if (cleanStdout.includes('error')) {
+    if (cleanStdout.includes('error TS')) {
       // TS error
       await message.channel.send(errorEmbed(`Build failed. Aborting...`));
       return;
