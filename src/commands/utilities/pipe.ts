@@ -19,7 +19,7 @@ const command: BotCommand = {
       name: 'startIndex',
       short: 's',
       description:
-        'The 1-based index of words where the content should start at. Default: `1` except if piping another Ciri command, which will then use `2` as the default',
+        'The 1-based index of words where the content should start at. Default: `1` or if piping another bot command, `2`',
       bool: false,
     },
   ],
@@ -44,7 +44,11 @@ const command: BotCommand = {
       let sourceContent = sourceMessage.content;
       let startIndex = parseInt((options['startIndex'] as string) || '');
       if (isNaN(startIndex)) {
-        startIndex = sourceContent.startsWith(server.config.prefix) ? 2 : 1;
+        startIndex =
+          sourceContent.startsWith(server.config.prefix) ||
+          server.temp.ignoredBotPrefixRegex?.test(sourceContent)
+            ? 2
+            : 1;
       }
 
       sourceContent = sourceContent

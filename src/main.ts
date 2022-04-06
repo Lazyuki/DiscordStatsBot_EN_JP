@@ -34,6 +34,7 @@ const client = new Client({
   intents: Object.values(Intents.FLAGS).filter(
     (flag) => !UNWANTED_INTENTS.includes(flag)
   ),
+  restTimeOffset: 0, // Extra time in milliseconds to wait before continuing to make REST requests (higher values will reduce rate-limiting errors on bad connections). Setting to 0 since adding multiple reactions is too slow
 }) as Bot;
 
 client.ownerId = OWNER_ID;
