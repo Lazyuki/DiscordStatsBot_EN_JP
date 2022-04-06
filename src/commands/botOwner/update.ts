@@ -42,9 +42,8 @@ const command: BotCommand = {
     }
     // Pulled something, so restart the bot
     const buildCommand = `npm run build`;
-    stdoutMessage = await stdoutMessage.edit(
-      appendCodeBlock(stdoutMessage.content, '$ ' + buildCommand)
-    );
+    stdoutMessage = await message.channel.send(codeBlock('$ ' + buildCommand));
+    await message.channel.sendTyping();
     const build = await exec(buildCommand);
     if (build.stderr) {
       await message.channel.send(
@@ -54,10 +53,14 @@ const command: BotCommand = {
       );
       return;
     }
-    stdoutMessage = await stdoutMessage.edit(
-      appendCodeBlock(stdoutMessage.content, build.stdout)
+    const cleanStdout = build.stdout.replace(
+      /tscpaths.+Replaced [0-9]+ paths in [0-9]+ files/,
+      ''
     );
-    if (build.stdout.includes('error')) {
+    stdoutMessage = await stdoutMessage.edit(
+      appendCodeBlock(stdoutMessage.content, cleanStdout)
+    );
+    if (cleanStdout.includes('error')) {
       // TS error
       await message.channel.send(errorEmbed(`Build failed. Aborting...`));
       return;
