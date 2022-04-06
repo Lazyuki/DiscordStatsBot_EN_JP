@@ -107,8 +107,9 @@ const command: BotCommand = {
             (member) =>
               `${member}: ${member.user.tag} ${memberJoinAge(member, 7)}`
           )
+          .join('\n')}${nonMemberIds.length ? '\n' : ''}${nonMemberIds
+          .map(idToUser)
           .join('\n')}
-        ${nonMemberIds.map(idToUser).join('\n')}
 
         __Reason__: ${reason}
 

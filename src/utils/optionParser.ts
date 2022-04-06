@@ -23,7 +23,6 @@ export function optionParser(
       const nameIndex = names.indexOf(name);
       if (nameIndex !== -1) {
         selectedOption = options[nameIndex];
-        content = content.replace(word, '');
       }
     } else if (word.startsWith('-')) {
       const short = word.slice(1);
@@ -31,7 +30,6 @@ export function optionParser(
         const shortIndex = shorts.indexOf(short as CommandOption['short']);
         if (shortIndex !== -1) {
           selectedOption = options[shortIndex];
-          content = content.replace(word, '');
         }
       } else if (short.length > 1) {
         const boolOptions: CommandOption[] = [];
@@ -56,6 +54,7 @@ export function optionParser(
     if (selectedOption) {
       if (selectedOption.bool) {
         resolvedOptions[selectedOption.name] = true;
+        content = content.replace(word, '');
       } else {
         const valueIt = wordsIterator.next();
         if (valueIt.done) {
@@ -69,7 +68,7 @@ export function optionParser(
         } else {
           resolvedOptions[selectedOption.name] = value;
         }
-        content = content.replace(value, '');
+        content = content.replace(new RegExp(`${word}\s+${value}`), '');
       }
     }
   }
