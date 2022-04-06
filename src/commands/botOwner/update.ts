@@ -25,7 +25,7 @@ const command: BotCommand = {
     const gitpull = await exec(gitpullCommand);
     if (gitpull.stdout) {
       stdoutMessage = await stdoutMessage.edit(
-        appendCodeBlock(stdoutMessage.content, gitpull.stdout, 4000)
+        appendCodeBlock(stdoutMessage.content, gitpull.stdout, 2000)
       );
       if (gitpull.stdout === 'Already up to date.\n') {
         await message.channel.send(infoEmbed(`Nothing to update`));
@@ -58,7 +58,7 @@ const command: BotCommand = {
       ''
     );
     stdoutMessage = await stdoutMessage.edit(
-      appendCodeBlock(stdoutMessage.content, cleanStdout, 4000)
+      appendCodeBlock(stdoutMessage.content, cleanStdout, 2000)
     );
     if (cleanStdout.includes('error')) {
       // TS error
