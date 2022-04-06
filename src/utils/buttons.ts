@@ -67,27 +67,27 @@ export function getPaginatorButtons(
 export function getYesOrNoButtons() {
   const row = new MessageActionRow();
   row.addComponents(
-    new MessageButton().setCustomId('YES').setLabel('Yes').setStyle('SUCCESS')
+    new MessageButton().setCustomId('YES').setLabel('Yes').setStyle('PRIMARY')
   );
   row.addComponents(
-    new MessageButton().setCustomId('NO').setLabel('No').setStyle('DANGER')
+    new MessageButton().setCustomId('NO').setLabel('No').setStyle('SECONDARY')
   );
   return [row];
 }
 
-export function getConfirmOrCancelButtons() {
+export function getConfirmOrCancelButtons(isConfirmDestructive?: boolean) {
   const row = new MessageActionRow();
   row.addComponents(
     new MessageButton()
       .setCustomId('CONFIRM')
       .setLabel('Confirm')
-      .setStyle('SUCCESS')
+      .setStyle(isConfirmDestructive ? 'DANGER' : 'PRIMARY')
   );
   row.addComponents(
     new MessageButton()
       .setCustomId('CANCEL')
       .setLabel('Cancel')
-      .setStyle('DANGER')
+      .setStyle('SECONDARY')
   );
   return [row];
 }

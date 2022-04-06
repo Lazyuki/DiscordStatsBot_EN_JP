@@ -73,7 +73,8 @@ const command: BotCommand = {
     const confirm = await waitForConfirmOrCancel(
       kickConfirmation as GuildMessage,
       message.author.id,
-      45
+      45,
+      true
     );
     if (!confirm) {
       await editEmbed(kickConfirmation, { footer: 'Cancelled' });

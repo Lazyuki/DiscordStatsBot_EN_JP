@@ -180,7 +180,8 @@ const command: BotCommand = {
     const confirm = await waitForConfirmOrCancel(
       confirmationMessage as GuildMessage,
       message.author.id,
-      45
+      45,
+      true
     );
     const failedBanIds: string[] = [];
     if (confirm) {

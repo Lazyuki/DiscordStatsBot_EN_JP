@@ -46,7 +46,8 @@ async function asyncMessageCollector(
 export function waitForConfirmOrCancel(
   butonMessage: GuildMessage,
   authorId: string,
-  waitForSeconds: number = 15
+  waitForSeconds: number = 15,
+  isConfirmDestructive?: boolean
 ): Promise<boolean> {
   const filter = (m: Message) =>
     m.author.id === authorId &&
@@ -57,7 +58,7 @@ export function waitForConfirmOrCancel(
   });
   if (butonMessage.author.id === butonMessage.guild.me?.id) {
     if (!butonMessage.components.length) {
-      addButtons(butonMessage, getConfirmOrCancelButtons());
+      addButtons(butonMessage, getConfirmOrCancelButtons(isConfirmDestructive));
     }
   }
   const buttonCollector = butonMessage.createMessageComponentCollector({
