@@ -1,5 +1,6 @@
 import { InvalidOptionError } from '@/errors';
 import { CommandOption, ResolvedCommandOptions } from '@/types';
+import { escapeRegex } from './formatString';
 
 export function optionParser(
   content: string,
@@ -68,7 +69,10 @@ export function optionParser(
         } else {
           resolvedOptions[selectedOption.name] = value;
         }
-        content = content.replace(new RegExp(`${word}\s+${value}`), '');
+        content = content.replace(
+          new RegExp(`${escapeRegex(word)}\\s+${escapeRegex(value)}`),
+          ''
+        );
       }
     }
   }
