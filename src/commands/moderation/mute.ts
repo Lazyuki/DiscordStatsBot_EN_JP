@@ -3,10 +3,7 @@ import { BotCommand, GuildMessage } from '@/types';
 import Server from '@classes/Server';
 import { insertModLog } from '@database/statements';
 import { parseMembers } from '@utils/argumentParsers';
-import {
-  waitForYesOrNo,
-  getFallbackChannel,
-} from '@utils/asyncMessageCollector';
+import { waitForYesOrNo, getFallbackChannel } from '@utils/asyncCollector';
 import {
   DAY_IN_MILLIS,
   getDiscordTimestamp,

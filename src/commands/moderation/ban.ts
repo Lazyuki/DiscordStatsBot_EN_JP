@@ -7,8 +7,8 @@ import {
   successEmbed,
   warningEmbed,
 } from '@utils/embed';
-import { waitForYesOrNo } from '@utils/asyncMessageCollector';
-import { GuildMember, Message, User } from 'discord.js';
+import { waitForBanConfirm, waitForYesOrNo } from '@utils/asyncCollector';
+import { GuildMember } from 'discord.js';
 import { BLACK } from '@utils/constants';
 import { stripIndents } from 'common-tags';
 import { memberJoinAge } from '@utils/datetime';
@@ -16,7 +16,7 @@ import { pluralCount, pluralize } from '@utils/pluralize';
 import { getTextChannel, idToUser } from '@utils/guildUtils';
 import { joinNaturally, userToMentionAndTag } from '@utils/formatString';
 import Server from '@classes/Server';
-import { getBanConfirmationButtons, removeButtons } from '@utils/buttons';
+import { getBanConfirmationButtons } from '@utils/buttons';
 import { CommandArgumentError } from '@/errors';
 
 const command: BotCommand = {
@@ -124,52 +124,16 @@ const command: BotCommand = {
       components: getBanConfirmationButtons(deleteDays > 0),
     });
 
-    const messageCollector = message.channel.createMessageCollector({
-      filter: (m) => m.member?.id == executor.id,
-      time: 45000,
-    });
-    const buttonCollector = banConfirmation.createMessageComponentCollector({
-      filter: (componentOption) => componentOption.user.id === executor.id,
-      time: 45000,
-    });
+    const response = await waitForBanConfirm(
+      banConfirmation as GuildMessage,
+      executor.id,
+      deleteDays !== 0
+    );
 
-    let failedBanIds: string[] = [];
-    let dmFailedMembers: GuildMember[] = [];
-
-    buttonCollector.on('collect', async (interaction) => {
-      switch (interaction.customId) {
-        case 'DELETE':
-        case 'KEEP':
-          if (interaction.customId === 'KEEP') {
-            deleteDays = 0;
-          }
-          const banResult = await banUsers({
-            server,
-            members,
-            nonMemberIds,
-            deleteDays,
-            reason,
-            auditLogReason,
-          });
-          failedBanIds = banResult.failedBanIds;
-          dmFailedMembers = banResult.dmFailedMembers;
-          await interaction.update({ components: [] });
-          messageCollector.stop('BANNED');
-          break;
-        case 'CANCEL':
-          await interaction.update({ components: [] });
-          messageCollector.stop('CANCELLED');
-          break;
-      }
-    });
-    buttonCollector.on('end', (collected) => {
-      removeButtons(banConfirmation);
-    });
-
-    messageCollector.on('collect', async (m) => {
-      const resp = m.content.toLowerCase();
-      if (resp.startsWith('confirm d') || resp.startsWith('confirm k')) {
-        if (resp.startsWith('confirm k')) {
+    switch (response) {
+      case 'DELETE':
+      case 'KEEP':
+        if (response === 'KEEP') {
           deleteDays = 0;
         }
         const banResult = await banUsers({
@@ -180,36 +144,21 @@ const command: BotCommand = {
           reason,
           auditLogReason,
         });
-        failedBanIds = banResult.failedBanIds;
-        dmFailedMembers = banResult.dmFailedMembers;
-        messageCollector.stop('BANNED');
-        return;
-      }
-      if (resp === 'cancel') {
-        messageCollector.stop('CANCELLED');
-        return;
-      }
-      await message.channel.send(
-        errorEmbed(
-          'Invalid response. Type `confirm delete`, `confirm keep` or `cancel`'
-        )
-      );
-    });
+        const { failedBanIds, dmFailedMembers } = banResult;
 
-    messageCollector.on('end', async (collected, endReason) => {
-      buttonCollector.stop();
-      if (endReason === 'BANNED') {
         const bannedMembers = members.filter(
           (m) => !failedBanIds.includes(m.id)
         );
         const bannedIds = nonMemberIds.filter(
           (id) => !failedBanIds.includes(id)
         );
+
         const dmFailString = dmFailedMembers.length
           ? `\n\nBut failed to DM: ${joinNaturally(
               dmFailedMembers.map((m) => m.toString())
             )}`
           : '';
+
         await message.channel.send(
           successEmbed(
             `Banned ${pluralCount(
@@ -248,14 +197,16 @@ const command: BotCommand = {
             })
           );
         }
-      } else if (endReason === 'CANCELLED') {
+        break;
+      case 'CANCEL':
         await message.channel.send(errorEmbed('Cancelled'));
         await editEmbed(banConfirmation, { footer: 'Cancelled' });
-      } else {
+        break;
+      case 'TIMEOUT':
         await message.channel.send(errorEmbed('Failed to confirm'));
         await editEmbed(banConfirmation, { footer: 'Timed out' });
-      }
-    });
+        break;
+    }
   },
 };
 

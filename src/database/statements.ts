@@ -29,6 +29,11 @@ interface UserCount extends Count {
 
 interface DateCount extends Count {
   date: string;
+  /**
+   * Extra time in milliseconds to wait before continuing to make REST requests (higher values will reduce rate-limiting errors on bad connections)
+   * @default 500
+   */
+  restTimeOffset: number;
 }
 
 const BOOLEAN_KEYS = ['silent'];

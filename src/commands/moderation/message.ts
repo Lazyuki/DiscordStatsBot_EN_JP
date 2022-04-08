@@ -10,7 +10,7 @@ import {
 } from '@utils/embed';
 import { joinNaturally } from '@utils/formatString';
 import { GuildMember } from 'discord.js';
-import { getFallbackChannel } from '@utils/asyncMessageCollector';
+import { getFallbackChannel } from '@utils/asyncCollector';
 
 const command: BotCommand = {
   name: 'message',

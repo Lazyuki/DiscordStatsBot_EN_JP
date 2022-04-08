@@ -1,6 +1,6 @@
 import { CommandArgumentError } from '@/errors';
 import { BotCommand, GuildMessage } from '@/types';
-import { waitForConfirmOrCancel } from '@utils/asyncMessageCollector';
+import { waitForConfirmOrCancel } from '@utils/asyncCollector';
 import { BLACK } from '@utils/constants';
 import { DAY_IN_MILLIS, memberJoinAge } from '@utils/datetime';
 import {

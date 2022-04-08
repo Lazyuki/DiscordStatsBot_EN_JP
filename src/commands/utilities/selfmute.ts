@@ -1,4 +1,4 @@
-import { GuildMember } from 'discord.js';
+import { GuildMember, Util } from 'discord.js';
 
 import { BotCommand } from '@/types';
 import Server from '@classes/Server';
@@ -181,6 +181,7 @@ const command: BotCommand = {
       : null;
 
     safeDelete(message);
+    const name = `**${Util.escapeMarkdown(message.member.displayName)}**`;
     if (muteAtMillis) {
       const unmuteAtMillis = muteAtMillis + totalMillis;
       scheduleMute(
@@ -192,9 +193,7 @@ const command: BotCommand = {
       );
       await message.channel.send(
         successEmbed({
-          description: `${
-            message.author
-          } scheduled a self-mute of **${millisToDuration(
+          description: `${name} scheduled a self-mute of **${millisToDuration(
             totalMillis
           )}** in ${millisToDuration(delayMillis)}`,
         })
@@ -203,7 +202,7 @@ const command: BotCommand = {
       await mute(message.member, server, new Date().getTime() + totalMillis);
       await message.channel.send(
         successEmbed({
-          description: `${message.author} self-muted for **${millisToDuration(
+          description: `${name} self-muted for **${millisToDuration(
             totalMillis
           )}**`,
         })

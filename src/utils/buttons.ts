@@ -1,3 +1,4 @@
+import { SimpleButton } from '@/types';
 import {
   Message,
   MessageActionRow,
@@ -75,6 +76,19 @@ export function getYesOrNoButtons() {
   return [row];
 }
 
+export function getButtons(buttons: SimpleButton[]) {
+  const row = new MessageActionRow();
+  buttons.forEach((button) => {
+    row.addComponents(
+      new MessageButton()
+        .setCustomId(button.id)
+        .setLabel(button.label)
+        .setStyle(button.style)
+    );
+  });
+  return [row];
+}
+
 export function getConfirmOrCancelButtons(isConfirmDestructive?: boolean) {
   const row = new MessageActionRow();
   row.addComponents(
@@ -92,23 +106,40 @@ export function getConfirmOrCancelButtons(isConfirmDestructive?: boolean) {
   return [row];
 }
 
+export function getBanOrDismiss() {
+  const row = new MessageActionRow();
+  row.addComponents(
+    new MessageButton().setCustomId('BAN').setLabel('BAN').setStyle('DANGER')
+  );
+  row.addComponents(
+    new MessageButton()
+      .setCustomId('Dismiss')
+      .setLabel('Dismiss')
+      .setStyle('SECONDARY')
+  );
+  return [row];
+}
+
 export function getBanConfirmationButtons(allowDelete: boolean) {
   const row = new MessageActionRow();
 
   if (allowDelete) {
     row.addComponents(
       new MessageButton()
-        .setCustomId('DELETE')
+        .setCustomId('confirm delete')
         .setLabel('DELETE')
         .setStyle('DANGER')
     );
   }
   row.addComponents(
-    new MessageButton().setCustomId('KEEP').setLabel('KEEP').setStyle('DANGER')
+    new MessageButton()
+      .setCustomId('confirm keep')
+      .setLabel('KEEP')
+      .setStyle('DANGER')
   );
   row.addComponents(
     new MessageButton()
-      .setCustomId('CANCEL')
+      .setCustomId('cancel')
       .setLabel('Cancel')
       .setStyle('SECONDARY')
   );
@@ -116,11 +147,13 @@ export function getBanConfirmationButtons(allowDelete: boolean) {
 }
 
 export async function removeButtons(message: Message) {
-  await message.edit({
-    content: message.content || undefined,
-    embeds: message.embeds,
-    components: [],
-  });
+  if (message.components) {
+    await message.edit({
+      content: message.content || undefined,
+      embeds: message.embeds,
+      components: [],
+    });
+  }
 }
 
 export async function addButtons(

@@ -1,7 +1,7 @@
 import { CommandArgumentError } from '@/errors';
 import { BotCommand, GuildMessage } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
-import { waitForConfirmOrCancel } from '@utils/asyncMessageCollector';
+import { waitForKickConfirm } from '@utils/asyncCollector';
 import { BLACK } from '@utils/constants';
 import { memberJoinAge } from '@utils/datetime';
 import {
@@ -11,6 +11,7 @@ import {
   successEmbed,
   warningEmbed,
 } from '@utils/embed';
+import { code } from '@utils/formatString';
 import { idToUser } from '@utils/guildUtils';
 import { isOrAre } from '@utils/pluralize';
 import { stripIndents } from 'common-tags';
@@ -26,7 +27,7 @@ const command: BotCommand = {
     'kick @Geralt bye',
     'kick 284840842026549259 299335689558949888 low effort trolls',
   ],
-  normalCommand: async ({ bot, content, server, message }) => {
+  normalCommand: async ({ content, server, message }) => {
     const { members, nonMemberIds, restContent } = parseMembers(
       content,
       server.guild,
@@ -39,6 +40,12 @@ const command: BotCommand = {
         )} not in this server`
       );
     }
+
+    if (members.some((m) => !m.kickable)) {
+      throw new CommandArgumentError(`They aren't kickable`);
+    }
+
+    const noReason = !restContent;
     const reason = restContent || 'Unspecified';
 
     const auditLogReason = `By ${message.author.username} (${message.author.id}) Reason: ${reason}`;
@@ -51,6 +58,10 @@ const command: BotCommand = {
       return;
     }
 
+    const allowedConfirmMessages = noReason
+      ? ['confirm']
+      : ['confirm dm', 'confirm silent'];
+
     const kickConfirmation = await message.channel.send(
       makeEmbed({
         title: 'KICK',
@@ -62,39 +73,60 @@ const command: BotCommand = {
           )
           .join('\n')}
 
-        __Reason__ (They will NOT receive the reason): ${reason}
+        __Reason__: ${reason}
 
-        Type \`confirm\` or \`cancel\` 
+        Type ${allowedConfirmMessages.map(code).join(', ')} or \`cancel\` 
         `,
         color: BLACK,
       })
     );
 
-    const confirm = await waitForConfirmOrCancel(
+    const response = await waitForKickConfirm(
       kickConfirmation as GuildMessage,
       message.author.id,
-      45,
-      true
+      noReason
     );
-    if (!confirm) {
+    if (response === 'CANCEL') {
       await editEmbed(kickConfirmation, { footer: 'Cancelled' });
       await message.channel.send(errorEmbed('Cancelled'));
       return;
     }
 
     const kicked: GuildMember[] = [];
+    const dmFailed: GuildMember[] = [];
 
     for (const member of members) {
-      if (member.kickable) {
+      if (response === 'DM') {
+        try {
+          await member.send(
+            makeEmbed({
+              title: `You have been kicked from ${server.guild}`,
+              description: `Reason: ${reason}`,
+            })
+          );
+        } catch (e) {
+          await message.channel.send(
+            errorEmbed(`Failed to DM the reason to ${member}`)
+          );
+          dmFailed.push(member);
+        }
+      }
+      try {
         await member.kick(auditLogReason);
         kicked.push(member);
-      } else {
+      } catch (e) {
         await message.channel.send(errorEmbed(`Failed to kick ${member}`));
       }
     }
     if (kicked.length) {
+      const dmString =
+        response === 'DM' && dmFailed.length === 0
+          ? ' and DMed the reason'
+          : '';
       await editEmbed(kickConfirmation, { footer: 'Kicked' });
-      await message.channel.send(successEmbed(`Kicked ${kicked.join(' ')}`));
+      await message.channel.send(
+        successEmbed(`Kicked ${kicked.join(' ')}${dmString}`)
+      );
     }
   },
 };

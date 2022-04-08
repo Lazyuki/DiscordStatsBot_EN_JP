@@ -8,17 +8,24 @@ import {
 
 import { editEmbed, makeEmbed } from '@utils/embed';
 import {
+  ADMIN,
   CHAT_MUTE,
   EJLX,
-  EJLX_BAN_EMOJI,
-  EWBF,
   JHO,
   MEE6,
+  MINIMO,
   PING_PARTY,
   RAI,
   SERVER_RULES,
+  STAFF,
+  WP,
 } from '@utils/constants';
-import { BotEvent, MemberJoinInvites, QuickBanConfig } from '@/types';
+import {
+  BotEvent,
+  GuildMessage,
+  MemberJoinInvites,
+  QuickBanConfig,
+} from '@/types';
 import { stripIndent, stripIndents } from 'common-tags';
 import { getTextChannel } from '@utils/guildUtils';
 import { resolveInviteLink } from '@utils/resolveIntiteLink';
@@ -29,7 +36,7 @@ import {
 } from '@utils/datetime';
 import Server from '@classes/Server';
 import { getServerEmoji, userToTagAndId } from '@utils/formatString';
-import { waitForReactions } from '@utils/asyncMessageCollector';
+import { waitForButton, waitForReactions } from '@utils/asyncCollector';
 
 const event: BotEvent<'guildMemberAdd'> = {
   eventName: 'guildMemberAdd',
@@ -258,7 +265,7 @@ async function handleQuickban(
           ? isLockdown
             ? 'Automatically unmuted them since they are below the minimum threshold'
             : 'Not banning them since they are below the minimum threshold'
-          : `Mods and **WP** can click ✅ if you think this user is not suspicious, or triple click ${EJLX_BAN_EMOJI} to ban.`
+          : `Mods and **WP** can BAN or dismiss if you think this user is not suspicious.`
       }`,
       footer: `User Join (${member.guild.memberCount})\nLink: ${invites
         .map(
@@ -270,50 +277,52 @@ async function handleQuickban(
   );
 
   if (!nonSuspicious) {
-    const banEmoji = getServerEmoji(EJLX_BAN_EMOJI, server.guild);
-    if (!banEmoji) return;
-    banMenu.react(banEmoji);
-    banMenu.react('✅');
-    const result = await waitForReactions(
-      banMenu,
+    const [response, responder] = await waitForButton(
+      banMenu as GuildMessage,
+      (option) => {
+        const mem = server.guild.members.cache.get(option.user.id);
+        if (mem) {
+          return mem.roles.cache.hasAny(ADMIN, STAFF, MINIMO, WP);
+        }
+        return false;
+      },
       [
-        { emojiOrId: '✅', count: 1 },
-        { emojiOrId: banEmoji.id, count: 2 },
+        { id: 'BAN', label: 'BAN', style: 'DANGER' },
+        { id: 'DISMISS', label: 'Dismiss', style: 'SECONDARY' },
       ],
-      300
+      5 * 60 // 5 minutes
     );
-    if (result?.emojiOrId === '✅') {
-      if (isLockdown) {
-        await member.roles.remove(CHAT_MUTE);
-        const jho = getTextChannel(server.guild, JHO);
-        if (!jho) return;
-        await welcomeToEJLX(member, jho);
-      }
-      await editEmbed(banMenu, {
-        footer: `False alarm. ${isLockdown ? 'Unmuted' : 'Dismissed'} by ${
-          result.user.tag
-        }`,
-      });
-    } else if (result?.emojiOrId === banEmoji.id) {
-      await member.ban({
-        days: 1,
-        reason: `Banned by ${userToTagAndId(result.user)} Reason: ${
-          isLockdown ? 'lockdown' : 'quickban'
-        }`,
-      });
-      await editEmbed(banMenu, {
-        footer: `Banned by ${result.user.tag}`,
-      });
-    } else {
-      if (isLockdown) {
-        await member.roles.remove(CHAT_MUTE);
-        const jho = getTextChannel(server.guild, JHO);
-        if (!jho) return;
-        await welcomeToEJLX(member, jho);
-      }
-      await editEmbed(banMenu, {
-        footer: `Timedout${isLockdown ? ' and unmuted' : ''}.`,
-      });
+    switch (response) {
+      case 'BAN':
+        await member.ban({
+          days: 1,
+          reason: `Banned by ${userToTagAndId(responder!)} Reason: ${
+            isLockdown ? 'lockdown' : 'quickban'
+          }`,
+        });
+        await editEmbed(banMenu, {
+          footer: `Banned by ${responder!.tag}`,
+        });
+        return;
+      case 'DISMISS':
+      case 'TIMEOUT':
+        if (isLockdown) {
+          await member.roles.remove(CHAT_MUTE);
+          const jho = getTextChannel(server.guild, JHO);
+          if (!jho) return;
+          await welcomeToEJLX(member, jho);
+        }
+        if (response === 'DISMISS') {
+          await editEmbed(banMenu, {
+            footer: `False alarm. ${isLockdown ? 'Unmuted' : 'Dismissed'} by ${
+              responder!.tag
+            }`,
+          });
+        } else {
+          await editEmbed(banMenu, {
+            footer: `Timedout${isLockdown ? ' and unmuted' : ''}.`,
+          });
+        }
     }
   }
 }

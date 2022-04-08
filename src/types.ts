@@ -6,6 +6,7 @@ import {
   GuildMember,
   Interaction,
   Message,
+  MessageButtonStyleResolvable,
   MessageOptions,
   MessagePayload,
   NewsChannel,
@@ -191,6 +192,13 @@ export interface LineNotifyConfig {
   userMention: NotifyType;
   activeStaff: NotifyType | 'OFFLINE_NOROLE';
   lineNotifyToken: string;
+}
+
+export interface SimpleButton {
+  id: string;
+  label: string;
+  style: MessageButtonStyleResolvable;
+  disabled?: boolean;
 }
 
 export interface DeletedMessageAttachment {

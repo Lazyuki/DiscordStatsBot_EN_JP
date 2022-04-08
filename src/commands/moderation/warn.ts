@@ -10,7 +10,7 @@ import {
   getVoiceSecondsForUser,
 } from '@database/statements';
 import { parseMembers, strictGetUserId } from '@utils/argumentParsers';
-import { getFallbackChannel } from '@utils/asyncMessageCollector';
+import { getFallbackChannel } from '@utils/asyncCollector';
 import {
   getDiscordTimestamp,
   millisToDuration,

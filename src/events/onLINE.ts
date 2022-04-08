@@ -54,13 +54,16 @@ const event: BotEvent<'messageCreate'> = {
 };
 
 async function postLINE(message: GuildMessage, tokens: string[]) {
+  const embedDescription = message.embeds.length
+    ? message.embeds[0].description || message.embeds[0].title || ''
+    : '';
   await Promise.all(
     tokens.map(
       async (token) =>
         await axios.post(
           'https://notify-api.line.me/api/notify',
           {
-            message: `#${message.channel.name}\n${message.author.username}:\n${message.cleanContent}`,
+            message: `#${message.channel.name}\n${message.author.username}:\n${message.cleanContent}\n${embedDescription}`,
           },
           {
             headers: {
