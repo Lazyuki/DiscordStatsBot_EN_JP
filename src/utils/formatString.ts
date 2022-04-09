@@ -97,17 +97,17 @@ export function userToTagAndId(user: User) {
 }
 
 export function pseudoShlexSplit(text: string) {
-  const escaped = text.replace('\\"', '{ESCAPED_QUOTE}');
+  const escaped = text.replaceAll('\\"', '{ESCAPED_QUOTE}');
   const splitByQuotes = escaped.split('"');
   const spaceReplaced = splitByQuotes
     .map((s, i) =>
       i % 2 === 1 && splitByQuotes.length - 1 !== i
-        ? s.replace(' ', '{ESCAPED_SPACE}')
+        ? s.replaceAll(' ', '{ESCAPED_SPACE}')
         : s
     )
     .join('"');
   const splitBySpace = spaceReplaced.split(' ');
   return splitBySpace.map((s) =>
-    s.replace('{ESCAPED_QUOTE}', '\\"').replace('{ESCAPED_SPACE}', ' ')
+    s.replaceAll('{ESCAPED_QUOTE}', '\\"').replaceAll('{ESCAPED_SPACE}', ' ')
   );
 }
