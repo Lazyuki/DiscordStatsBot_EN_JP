@@ -23,7 +23,11 @@ const command: BotCommand = {
       bool: false,
     },
   ],
-  examples: [['pipe u', '(While replying to a message)'], 'pipe -s 3 id'],
+  examples: [
+    ['pipe u', '(While replying to a message)'],
+    'pipe ban 12345678901234590 -a',
+    'pipe -s 3 id',
+  ],
   normalCommand: async ({
     bot,
     message,

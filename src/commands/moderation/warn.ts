@@ -199,7 +199,7 @@ const warnlog: BotCommand = {
             value: guildBan.reason || 'Reason: Unspecified',
           });
         }
-        if (member) {
+        if (member && server.config.statistics) {
           const messages = getMessagesForUsers({ guildId: server.guild.id }, [
             userId,
           ]);
@@ -209,11 +209,11 @@ const warnlog: BotCommand = {
           });
           fields.push({
             name: 'Member Stats',
-            value: `Total messages in the past 30 days: ${
+            value: `Total messages in the past 30 days: **${
               messages[0]?.count || 0
-            }\nTotal VC time in the past 30 days: ${secondsToVcTime(
+            }**\nTotal VC time in the past 30 days: **${secondsToVcTime(
               voice[0]?.count || 0
-            )}`,
+            )}**`,
           });
         }
         await message.channel.send(

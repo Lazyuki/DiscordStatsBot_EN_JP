@@ -77,7 +77,7 @@ export interface BotCommand {
   hidden?: boolean;
   rateLimitSeconds?: number;
   description: string;
-  arguments?: string;
+  arguments?: string | string[];
   examples?: (string | [string, string])[];
   options?: CommandOption[];
   normalCommand?: (commandInfo: {

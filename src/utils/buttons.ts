@@ -5,6 +5,7 @@ import {
   MessageButton,
   MessageOptions,
 } from 'discord.js';
+import { REGEX_CUSTOM_EMOTES } from './regex';
 
 const FIRST_PAGE = '⏮';
 const PREVIOUS_PAGE = '◀️';
@@ -165,4 +166,23 @@ export async function addButtons(
     embeds: message.embeds,
     components,
   });
+}
+
+export function getButtonsWithLabels(labels: string[]) {
+  let colCount = 0;
+  const rows: MessageActionRow[] = [];
+  let currRow = new MessageActionRow();
+  labels.forEach((label) => {
+    if (colCount === 5) {
+      rows.push(currRow);
+      currRow = new MessageActionRow();
+    }
+    const discordEmoji = label.match(REGEX_CUSTOM_EMOTES)?.[0];
+    const button = new MessageButton().setCustomId(label).setStyle('SECONDARY');
+    discordEmoji ? button.setEmoji(discordEmoji) : button.setLabel(label);
+
+    currRow.addComponents(button);
+  });
+  rows.push(currRow);
+  return rows;
 }

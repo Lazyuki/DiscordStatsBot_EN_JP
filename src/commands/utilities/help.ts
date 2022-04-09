@@ -1,5 +1,6 @@
 import { BotCommand } from '@/types';
 import { errorEmbed, makeEmbed } from '@utils/embed';
+import { code } from '@utils/formatString';
 import { isMessageInChannels } from '@utils/guildUtils';
 import { pluralize } from '@utils/pluralize';
 import { EmbedField } from 'discord.js';
@@ -41,6 +42,26 @@ const command: BotCommand = {
         );
         return;
       } else {
+        const isAllowed =
+          command.isAllowed(message, server, bot) && command.normalCommand;
+        if (!isAllowed) return; // Don't even show an error message
+
+        const missingBotPermissions: string[] = [];
+        // Check bot permission
+        if (command.requiredBotPermissions) {
+          for (const permission of command.requiredBotPermissions) {
+            if (!message.guild.me?.permissions.has(permission)) {
+              // see if I have the guild wide permission
+              if (
+                !message.channel
+                  .permissionsFor(message.guild.me!.id)
+                  ?.has(permission)
+              ) {
+                missingBotPermissions.push(permission);
+              }
+            }
+          }
+        }
         const title = command.name;
         const description = command.description.replaceAll(
           '{PREFIX}',
@@ -59,7 +80,7 @@ const command: BotCommand = {
               value: command.options
                 .map(
                   (option) =>
-                    `${option.name}: \`-${
+                    `--**${option.name}**: \`-${
                       option.short
                     }\` ${option.description.replace(
                       '{PREFIX}',
@@ -70,10 +91,17 @@ const command: BotCommand = {
               inline: false,
             }
           : null;
-        const args = command.arguments
+        const argArray = Array.isArray(command.arguments)
+          ? command.arguments
+          : command.arguments
+          ? [command.arguments]
+          : null;
+        const args = argArray
           ? {
-              name: pluralize('Argument', 's', command.arguments.length),
-              value: `\`< >\` means **required** and \`[ ]\` means **optional**\n\n\`${command.arguments}\``,
+              name: 'Arguments',
+              value: `\`< >\` means *required* and \`[ ]\` means *optional*\n\n${argArray
+                .map(code)
+                .join('\n')}`,
               inline: false,
             }
           : null;
@@ -90,11 +118,31 @@ const command: BotCommand = {
               inline: false,
             }
           : null;
+
+        const missingPerms = missingBotPermissions.length
+          ? {
+              name: pluralize(
+                'Missing Bot Permission',
+                's',
+                missingBotPermissions.length
+              ),
+              value: `I'm missing ${pluralize(
+                '',
+                'these permissions',
+                missingBotPermissions.length,
+                'a permission'
+              )} for this command to work. Please contact server admins to fix this.\n\n[${missingBotPermissions
+                .map(code)
+                .join(', ')}]`,
+            }
+          : null;
         await message.channel.send(
           makeEmbed({
             title,
             description,
-            fields: [args, options, examples].filter(Boolean) as EmbedField[],
+            fields: [missingPerms, args, options, examples].filter(
+              Boolean
+            ) as EmbedField[],
             footer,
           })
         );

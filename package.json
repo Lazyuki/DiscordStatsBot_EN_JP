@@ -4,6 +4,16 @@
   "description": "Discord Statistics & Moderation Bot for Eng-Jpn servers",
   "type": "module",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lazyuki/DiscordStatsBot_EN_JP.git"
+  },
+  "author": "Lazyuki",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Lazyuki/DiscordStatsBot_EN_JP/issues"
+  },
+  "homepage": "https://github.com/Lazyuki/DiscordStatsBot_EN_JP#readme",
   "scripts": {
     "dev": "node --es-module-specifier-resolution=node --enable-source-maps build/main.js",
     "watch": "",
@@ -18,16 +28,6 @@
     "lint": "prettier --write src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Lazyuki/DiscordStatsBot_EN_JP.git"
-  },
-  "author": "Lazyuki",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Lazyuki/DiscordStatsBot_EN_JP/issues"
-  },
-  "homepage": "https://github.com/Lazyuki/DiscordStatsBot_EN_JP#readme",
   "dependencies": {
     "@discordjs/rest": "^0.3.0",
     "axios": "^0.24.0",

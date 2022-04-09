@@ -10,6 +10,7 @@ import {
   GuildBasedChannel,
   CategoryChannel,
 } from 'discord.js';
+import { REGEX_MESSAGE_LINK_OR_FULL_ID } from './regex';
 
 export function isNotDM<M extends Message | PartialMessage>(
   message: M
@@ -113,4 +114,22 @@ export function idToUser(id: string) {
 }
 export function idToRole(id: string) {
   return `<@&${id}>`;
+}
+
+export function messageToFullId(message: {
+  channelId?: string;
+  channel_id?: string;
+  id: string;
+}) {
+  return `${message.channelId || message.channel_id}-${message.id}`;
+}
+
+export async function fetchMessage(guild: Guild, messageIdOrLink?: string) {
+  if (!messageIdOrLink) return null;
+  const match = messageIdOrLink.match(REGEX_MESSAGE_LINK_OR_FULL_ID);
+  if (!match) return null;
+  const [_, channelId, messageId] = match;
+  const channel = getTextChannel(guild, channelId);
+  const message = (await channel?.messages.fetch(messageId)) as GuildMessage;
+  return message || null;
 }

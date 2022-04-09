@@ -168,7 +168,17 @@ const command: BotCommand = {
             )}${dmFailString}`
           )
         );
-        await editEmbed(banConfirmation, { footer: 'Banned' });
+        await editEmbed(banConfirmation, {
+          footer: `Banned ${
+            deleteDays === 0
+              ? 'but kept the messages'
+              : `and deleted messages from the past ${pluralCount(
+                  'day',
+                  's',
+                  deleteDays
+                )}`
+          }`,
+        });
         if (server.config.modActionLogChannel) {
           const modActionLogChannel = getTextChannel(
             server.guild,

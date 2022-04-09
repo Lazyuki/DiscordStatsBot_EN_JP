@@ -1,17 +1,16 @@
-import { getUserId, parseMembers } from '@utils/argumentParsers';
 import { Bot, BotCommand, GuildMessage } from '@/types';
 import {
   getEmojiLeaderboard,
-  getEnglishLeaderboard,
   getSingleEmojiLeaderboard,
 } from '@database/statements';
 import { fieldsPaginator } from '@utils/paginate';
-import { Message } from 'discord.js';
 import Server from '@classes/Server';
-import { infoEmbed, warningEmbed, EmbedField } from '@utils/embed';
+import { infoEmbed, EmbedField } from '@utils/embed';
 import { getServerEmoji, resolveEmoji } from '@utils/formatString';
 import { pluralCount } from '@utils/pluralize';
 import { CommandArgumentError } from '@/errors';
+
+const KANA_EMOJI = /[0-9]{2}_kana_/;
 
 const command: BotCommand = {
   name: 'emojiLeaderboard',
@@ -107,6 +106,7 @@ const command: BotCommand = {
       filteredEmojis.reverse();
       const usagesToEmoji: Record<string, string[]> = {};
       filteredEmojis.forEach(({ emoji, count }) => {
+        if (KANA_EMOJI.test(emoji)) return; // Ignore EJLX Kana emojis
         const countStr = String(count);
         if (countStr in usagesToEmoji) {
           usagesToEmoji[countStr].push(resolveEmoji(emoji, bot));

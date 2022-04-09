@@ -18,6 +18,7 @@ export interface EmbedField {
 // Total embed characters limit 6000
 interface EmbedOptions {
   content?: string; // Message content outside of Embeds
+  ephemeral?: boolean;
   color?: ColorResolvable;
   title?: string; // Max 256
   titleUrl?: string;
@@ -36,6 +37,7 @@ interface EmbedOptions {
 export const makeEmbed = (
   {
     content,
+    ephemeral,
     color = EMBED_BG_COLOR,
     title,
     titleUrl,
@@ -86,7 +88,7 @@ export const makeEmbed = (
         .map((f) => (f!.value ? f : { ...f, value: '\u200b' })) as EmbedField[])
     );
 
-  return { content, embeds: [embed, ...additionalEmbeds] };
+  return { content, embeds: [embed, ...additionalEmbeds], ephemeral };
 };
 
 export const cleanEmbed = (options: EmbedOptions | string) => {
@@ -187,7 +189,7 @@ export function splitIntoMultipleEmbeds(options: EmbedOptions) {
     } else {
       const first = makeEmbed({ ...options, fields: pages[0].fields });
       const rest = pages.slice(1).map((page) => {
-        const { content, ...restEmbed } = options;
+        const { content, ephemeral, ...restEmbed } = options;
         return makeEmbed({ ...restEmbed, fields: page.fields });
       });
       return [first, ...rest];
