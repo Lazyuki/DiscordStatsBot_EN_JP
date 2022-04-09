@@ -33,7 +33,7 @@ const sar: BotCommand = {
   requiredBotPermissions: ['MANAGE_ROLES'],
   description: 'Configure button based self assignable roles.',
   arguments:
-    '[ add | remove | list | describe | send | update ] [label] [@role/role_ID description]',
+    '[ add | remove | list | describe | send | update | reset ] [label] [@role/role_ID description]',
   examples: [
     'br list',
     'br add 📝 1234567891234567890 This role indicates you want people to correct your messages',
@@ -53,6 +53,7 @@ const sar: BotCommand = {
       'br update',
       'Once the button role message has been sent, this command will make Ciri add/remove new buttons. When you add/remove button roles, run this command again to update the buttons on the message',
     ],
+    ['br reset', 'Reset the button role configuration'],
   ],
   onCommandInit: (server) => {
     server.data.buttonRoles ||= { roles: {} };
@@ -73,6 +74,7 @@ const sar: BotCommand = {
           'describe',
           'desc',
           'update',
+          'reset',
         ])
       : { subCommand: 'list', restContent: '' };
 
@@ -203,6 +205,15 @@ const sar: BotCommand = {
         );
         await buttonMessage.edit(generateButtonRoleMessage(currentSettings));
         await message.channel.send(successEmbed(`Button message updated.`));
+        return;
+      }
+      case 'reset': {
+        server.data.buttonRoles = { roles: {} };
+        server.save();
+        await message.channel.send(
+          successEmbed(`Button roles have been reset`)
+        );
+        return;
       }
     }
   },

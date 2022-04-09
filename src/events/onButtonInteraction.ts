@@ -1,5 +1,6 @@
 import { BotEvent } from '@/types';
-import { errorEmbed, successEmbed } from '@utils/embed';
+import { EJLX, EJLX_LANG_ROLE_IDS, JHO } from '@utils/constants';
+import { errorEmbed, successEmbed, warningEmbed } from '@utils/embed';
 
 import { messageToFullId } from '@utils/guildUtils';
 
@@ -29,13 +30,42 @@ const event: BotEvent<'interactionCreate'> = {
                 );
                 return;
               } else {
+                const isHardcore = buttonRole === server.config.hardcoreRole;
+                if (interaction.guildId === EJLX) {
+                  if (
+                    isHardcore &&
+                    !member.roles.cache.hasAny(...EJLX_LANG_ROLE_IDS)
+                  ) {
+                    await interaction.reply(
+                      errorEmbed({
+                        description: `Please state your native language in <#${JHO}> first.`,
+                        ephemeral: true,
+                      })
+                    );
+                    return;
+                  }
+                }
                 await member.roles.add(buttonRole);
-                await interaction.reply(
-                  successEmbed({
-                    description: `**Added** <@&${buttonRole}> to you`,
-                    ephemeral: true,
-                  })
-                );
+                if (isHardcore) {
+                  const isJapanese = member.roles.cache.hasAny(
+                    ...server.config.japaneseRoles
+                  );
+                  await interaction.reply(
+                    warningEmbed({
+                      description: `**Added** <@&${buttonRole}> to you.\n\n**You will NOT be able to send messages in ${
+                        isJapanese ? 'Japanese' : 'English'
+                      }**`,
+                      ephemeral: true,
+                    })
+                  );
+                } else {
+                  await interaction.reply(
+                    successEmbed({
+                      description: `**Added** <@&${buttonRole}> to you`,
+                      ephemeral: true,
+                    })
+                  );
+                }
                 return;
               }
             } catch {
