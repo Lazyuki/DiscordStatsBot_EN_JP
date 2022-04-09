@@ -48,7 +48,7 @@ const command: BotCommand = {
     const noReason = !restContent;
     const reason = restContent || 'Unspecified';
 
-    const auditLogReason = `By ${message.author.username} (${message.author.id}) Reason: ${reason}`;
+    const auditLogReason = `By ${message.author.tag} (${message.author.id}) Reason: ${reason}`;
     if (auditLogReason.length > 512) {
       await message.channel.send(
         warningEmbed(

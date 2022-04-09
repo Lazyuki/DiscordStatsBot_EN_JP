@@ -24,9 +24,9 @@ const unban: BotCommand = {
     if (nonMemberIds.length !== 0) {
       throw new CommandArgumentError('Please specify IDs of users to unban');
     }
-    const reason = `Issued by ${message.author.tag} (${
-      message.author.id
-    }). Reason: ${restContent || 'Unspecified'}`;
+    const reason = `By ${message.author.tag} (${message.author.id}). Reason: ${
+      restContent || 'Unspecified'
+    }`;
     for (const userId of nonMemberIds) {
       try {
         await server.guild.members.unban(userId, reason);

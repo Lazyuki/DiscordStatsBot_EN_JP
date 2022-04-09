@@ -69,9 +69,9 @@ const command: BotCommand = {
       throw new CommandArgumentError('Please specify users to ban');
     }
 
-    let auditLogReason = `By ${executor.username} ${
+    let auditLogReason = `By ${executor.tag} (${
       executor.id
-    } Reason: ${reason.replace('\n', ' ')}`;
+    }) Reason: ${reason.replace('\n', ' ')}`;
     if (auditLogReason.length > 512) {
       const questionMessage = await message.channel.send(
         warningEmbed(
