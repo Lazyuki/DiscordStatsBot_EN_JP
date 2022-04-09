@@ -23,7 +23,7 @@ const event: BotEvent<'interactionCreate'> = {
                 await member.roles.remove(buttonRole);
                 await interaction.reply(
                   successEmbed({
-                    content: `Removed <@&${buttonRole}> from you`,
+                    description: `**Removed** <@&${buttonRole}> from you`,
                     ephemeral: true,
                   })
                 );
@@ -32,7 +32,7 @@ const event: BotEvent<'interactionCreate'> = {
                 await member.roles.add(buttonRole);
                 await interaction.reply(
                   successEmbed({
-                    content: `Added <@&${buttonRole}> to you`,
+                    description: `**Added** <@&${buttonRole}> to you`,
                     ephemeral: true,
                   })
                 );
@@ -41,7 +41,7 @@ const event: BotEvent<'interactionCreate'> = {
             } catch {
               await interaction.reply(
                 errorEmbed({
-                  content: `The role for ${interaction.customId} does not exist. Please contact server moderators`,
+                  description: `The role for ${interaction.customId} does not exist. Please contact server moderators`,
                   ephemeral: true,
                 })
               );
@@ -52,7 +52,7 @@ const event: BotEvent<'interactionCreate'> = {
         }
         await interaction.reply(
           errorEmbed({
-            content:
+            description:
               'There was an error with the button role. Please contact server moderators.',
             ephemeral: true,
           })

@@ -163,7 +163,7 @@ const sar: BotCommand = {
         currentSettings.description = restContent;
         server.save();
         await message.channel.send(
-          errorEmbed(`The button role description has been set`)
+          successEmbed(`The button role description has been set`)
         );
         return;
       }
