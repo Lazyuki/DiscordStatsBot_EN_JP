@@ -208,6 +208,16 @@ const sar: BotCommand = {
         return;
       }
       case 'reset': {
+        if (server.data.buttonRoles.messageId) {
+          // let discord.js cache this message
+          const currMessage = await fetchMessage(
+            server.guild,
+            server.data.buttonRoles.messageId
+          );
+          if (currMessage) {
+            await currMessage.delete();
+          }
+        }
         server.data.buttonRoles = { roles: {} };
         server.save();
         await message.channel.send(
