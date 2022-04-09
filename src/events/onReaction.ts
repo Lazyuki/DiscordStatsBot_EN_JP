@@ -2,6 +2,12 @@ import { BotEvent } from '@/types';
 import { insertEmojis } from '@database/statements';
 import checkSafeMessage from '@utils/checkSafeMessage';
 
+const IGNORED_REACTIONS = [
+  '<:english:439733745591779328>',
+  '<:japanese:439733745390583819>',
+  '<:other_lang:815698119810875453>',
+];
+
 const reactionAdd: BotEvent<'messageReactionAdd'> = {
   eventName: 'messageReactionAdd',
   skipOnDebug: false,
@@ -12,6 +18,7 @@ const reactionAdd: BotEvent<'messageReactionAdd'> = {
     if (!server.config.statistics) return; // No statistics for this server
 
     const reactionString = reaction.emoji.toString();
+    if (IGNORED_REACTIONS.includes(reactionString)) return;
     insertEmojis({
       guildId: server.guild.id,
       userId: user.id,
@@ -32,6 +39,7 @@ const reactionRemove: BotEvent<'messageReactionRemove'> = {
     if (!server.config.statistics) return; // No statistics for this server
 
     const reactionString = reaction.emoji.toString();
+    if (IGNORED_REACTIONS.includes(reactionString)) return;
     insertEmojis({
       guildId: server.guild.id,
       userId: user.id,
