@@ -116,9 +116,9 @@ const sar: BotCommand = {
           : quotedLabel;
 
         const isCustomEmoji = REGEX_CUSTOM_EMOTES.test(label);
-        if (isCustomEmoji && !/^<[^>]+>$/.test(label)) {
+        if (isCustomEmoji && !/^<[^>]+>.*$/.test(label)) {
           throw new CommandArgumentError(
-            `Discord emoji can only be used by itself. If you want to have both text and emoji, use unicode emojis.`
+            `Discord emoji can only be used at the front.`
           );
         }
         const roleId = role.match(REGEX_RAW_ID)?.[0];
@@ -137,7 +137,9 @@ const sar: BotCommand = {
         server.save();
         await message.channel.send(
           successEmbed(
-            `Successfully mapped **${label}** to <@&${roleId}> with the description:\n"${description}"`
+            `Successfully ${
+              existing ? 'updated' : 'mapped'
+            } **${label}** to <@&${roleId}> with the description:\n"${description}"`
           )
         );
         return;
@@ -176,6 +178,16 @@ const sar: BotCommand = {
         if (roles.length === 0) {
           throw new CommandArgumentError('No button roles set');
         }
+        if (server.data.buttonRoles.messageId) {
+          const currMessage = await fetchMessage(
+            server.guild,
+            server.data.buttonRoles.messageId
+          );
+          if (currMessage) {
+            // delete old message
+            await currMessage.delete();
+          }
+        }
         const buttonMessage = await channel.send(
           generateButtonRoleMessage(currentSettings)
         );
@@ -204,12 +216,13 @@ const sar: BotCommand = {
           server.guild
         );
         await buttonMessage.edit(generateButtonRoleMessage(currentSettings));
-        await message.channel.send(successEmbed(`Button message updated.`));
+        await message.channel.send(
+          successEmbed(`Button role message updated.`)
+        );
         return;
       }
       case 'reset': {
         if (server.data.buttonRoles.messageId) {
-          // let discord.js cache this message
           const currMessage = await fetchMessage(
             server.guild,
             server.data.buttonRoles.messageId

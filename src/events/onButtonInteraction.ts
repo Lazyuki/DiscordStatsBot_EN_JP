@@ -21,7 +21,10 @@ const event: BotEvent<'interactionCreate'> = {
           if (member) {
             try {
               if (member.roles.cache.has(buttonRole)) {
-                await member.roles.remove(buttonRole);
+                await member.roles.remove(
+                  buttonRole,
+                  'Self-remove with button roles'
+                );
                 await interaction.reply(
                   successEmbed({
                     description: `**Removed** <@&${buttonRole}> from you`,
@@ -45,7 +48,10 @@ const event: BotEvent<'interactionCreate'> = {
                     return;
                   }
                 }
-                await member.roles.add(buttonRole);
+                await member.roles.add(
+                  buttonRole,
+                  'Self-assign with button roles'
+                );
                 if (isHardcore) {
                   const isJapanese = member.roles.cache.hasAny(
                     ...server.config.japaneseRoles

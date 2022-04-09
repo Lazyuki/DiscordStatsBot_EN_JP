@@ -179,7 +179,41 @@ export function getButtonsWithLabels(labels: string[]) {
     }
     const discordEmoji = label.match(REGEX_CUSTOM_EMOTES)?.[0];
     const button = new MessageButton().setCustomId(label).setStyle('SECONDARY');
-    discordEmoji ? button.setEmoji(discordEmoji) : button.setLabel(label);
+    if (discordEmoji) {
+      button.setEmoji(discordEmoji);
+      label = label.replace(REGEX_CUSTOM_EMOTES, '').trim();
+      if (label) {
+        button.setLabel(label);
+      }
+    } else {
+      button.setLabel(label);
+    }
+    currRow.addComponents(button);
+  });
+  rows.push(currRow);
+  return rows;
+}
+
+export function getButtonsTest(labels: string[]) {
+  let colCount = 0;
+  const rows: MessageActionRow[] = [];
+  let currRow = new MessageActionRow();
+  labels.forEach((label) => {
+    if (colCount === 5) {
+      rows.push(currRow);
+      currRow = new MessageActionRow();
+    }
+    const discordEmoji = label.match(REGEX_CUSTOM_EMOTES)?.[0];
+    const button = new MessageButton().setCustomId(label).setStyle('SECONDARY');
+    if (discordEmoji) {
+      button.setEmoji(discordEmoji);
+      //   label = label.replace(REGEX_CUSTOM_EMOTES, '');
+      if (label) {
+        button.setLabel(label);
+      }
+    } else {
+      button.setLabel(label);
+    }
 
     currRow.addComponents(button);
   });
