@@ -22,23 +22,33 @@ const command: BotCommand = {
       codeBlock('$ ' + gitpullCommand)
     );
     await message.channel.sendTyping();
-    const gitpull = await exec(gitpullCommand);
-    if (gitpull.stdout) {
-      stdoutMessage = await stdoutMessage.edit(
-        appendCodeBlock(stdoutMessage.content, gitpull.stdout, 2000)
-      );
-      if (gitpull.stdout === 'Already up to date.\n') {
-        await message.channel.send(infoEmbed(`Nothing to update`));
-        return; // Nothing to update
+
+    try {
+      const gitpull = await exec(gitpullCommand);
+      if (gitpull.stdout) {
+        stdoutMessage = await stdoutMessage.edit(
+          appendCodeBlock(stdoutMessage.content, gitpull.stdout, 2000)
+        );
+        if (gitpull.stdout === 'Already up to date.\n') {
+          await message.channel.send(infoEmbed(`Nothing to update`));
+          return; // Nothing to update
+        }
       }
-    }
-    if (gitpull.stderr && gitpull.stderr.toLowerCase().includes('error:')) {
+      if (gitpull.stderr && gitpull.stderr.toLowerCase().includes('error:')) {
+        await message.channel.send(
+          errorEmbed(
+            `Error during \`${gitpullCommand}\`:\n${codeBlock(gitpull.stderr)}`
+          )
+        );
+        return;
+      }
+    } catch (e) {
+      const err = e as Error;
       await message.channel.send(
         errorEmbed(
-          `Error during \`${gitpullCommand}\`:\n${codeBlock(gitpull.stderr)}`
+          `Error during \`${gitpullCommand}\`:\n${err.name}: ${err.message}`
         )
       );
-      return;
     }
     // Pulled something, so restart the bot
     const buildCommand = `npm run build`;
