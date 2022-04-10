@@ -53,6 +53,7 @@ function distance(source, target) {
 }
 
 module.exports.process = async function (message, server) {
+  return;
   let dist = distance(
     message.content,
     message.edits[message.edits.length - 1].content

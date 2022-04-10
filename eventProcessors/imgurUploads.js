@@ -16,6 +16,7 @@ const config = require('../config.json');
 const request = require('request');
 
 module.exports.process = (message, server) => {
+  return;
   if (message.attachments.size > 0) {
     let imageURL = message.attachments.first().url;
     var options = {

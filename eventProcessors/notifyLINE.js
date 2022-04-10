@@ -38,6 +38,7 @@ function notify(message, token) {
 }
 
 module.exports.process = async (message, server, bot) => {
+  return;
   const hasActiveStaff = message.mentions.roles.has(activeStaff);
   if (message.content.startsWith('t!') || message.content.startsWith('.'))
     return; // ignore bot commands

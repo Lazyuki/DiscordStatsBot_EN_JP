@@ -19,6 +19,7 @@ const geralthinkbans = [
 ];
 
 module.exports.process = (message, server, bot, language) => {
+  return;
   if (language & Util.LANG.ENG) {
     if (!server.engUsed[message.author.id])
       server.engUsed[message.author.id] = 0;

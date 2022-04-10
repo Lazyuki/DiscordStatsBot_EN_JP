@@ -57,6 +57,7 @@ function addDeleteRecord(message, server) {
 }
 
 module.exports.process = async function (message, server) {
+  return;
   addDeleteRecord(message, server);
   if (server.guild.id === '292389599982911488') return; // mainichi
   let con = message.content;

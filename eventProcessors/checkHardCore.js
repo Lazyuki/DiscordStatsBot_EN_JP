@@ -31,6 +31,7 @@ const Util = require('../classes/Util.js');
 const Discord = require('discord.js');
 
 module.exports.process = (message) => {
+  return;
   let content = message.content;
   let isJapanese =
     (message.member.roles.cache.has('196765998706196480') && // no dual natives
@@ -53,8 +54,12 @@ module.exports.process = (message) => {
     return; // #bot-spam
 
   if (/^\.\.\.\s[\S]+$/.test(content)) return; // nadeko quote
-  if (!isJapanese) { // for welcoming
-    content = content.replace(/what'?s?\s(is\s)?(yo)?ur\snative\slang(uage)?/i, '');
+  if (!isJapanese) {
+    // for welcoming
+    content = content.replace(
+      /what'?s?\s(is\s)?(yo)?ur\snative\slang(uage)?/i,
+      ''
+    );
     content = content.replace(/welcome/i, '');
   }
   content = content.replace(/```\S*\n[\s\S]*?```/g, ''); // ignore code block
