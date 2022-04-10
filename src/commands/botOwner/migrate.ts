@@ -15,13 +15,13 @@ const command: BotCommand = {
     {
       name: 'add',
       short: 'a',
-      description: 'Add kanji',
+      description: 'Add config overrides',
       bool: false,
     },
     {
       name: 'remove',
       short: 'r',
-      description: 'Remove kanji',
+      description: 'Remove config overrides',
       bool: false,
     },
   ],
@@ -42,12 +42,32 @@ const command: BotCommand = {
       );
     } else {
       if (add) {
-        currentOverrides.push(...add.split(','));
+        const adds = add.split(',');
+        currentOverrides.push(...adds);
+        adds.forEach((alias) => {
+          const command = bot.commands[alias];
+          if (!command) {
+            message.channel.send(`${alias} is not a valid command`);
+          } else {
+            currentOverrides.push(command.name);
+          }
+        });
+
         bot.config.commandOverrides = [...new Set(currentOverrides)];
       }
       if (remove) {
+        const removes = remove.split(',');
+        const actualRemovals: string[] = [];
+        removes.forEach((alias) => {
+          const command = bot.commands[alias];
+          if (!command) {
+            message.channel.send(`${alias} is not a valid command`);
+          } else {
+            actualRemovals.push(command.name);
+          }
+        });
         bot.config.commandOverrides = currentOverrides.filter(
-          (k) => !remove.includes(k)
+          (k) => !actualRemovals.includes(k)
         );
       }
       await message.channel.send(
