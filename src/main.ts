@@ -136,7 +136,10 @@ for (const fileName of eventFiles) {
               event.eventName
             } in ${fileName}. Args: (${args
               .map(
-                (a: any) => `${a?.constructor?.name} with ID ${a?.id || 'None'}`
+                (a: any) =>
+                  `${a?.constructor?.name} with ID:${a?.id || 'None'} Guild:${
+                    a?.guild?.name || 'None'
+                  } Channel:${a?.channel?.name || 'None'}`
               )
               .join(', ')})`
           );
