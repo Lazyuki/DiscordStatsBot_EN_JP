@@ -1,8 +1,12 @@
 import { TextBasedChannel } from 'discord.js';
 import { getPaginatorButtons } from './buttons';
 import { INFO_COLOR } from './constants';
-import { EmbedField, makeEmbed } from './embed';
-import { splitString } from './safeSend';
+import {
+  EmbedField,
+  makeEmbed,
+  MAX_FIELDS,
+  splitFieldsIntoPages,
+} from './embed';
 
 export async function descriptionPaginator(
   channel: TextBasedChannel,
@@ -75,7 +79,6 @@ export async function descriptionPaginator(
   }
 }
 
-const MAX_FIELDS = 25;
 export async function fieldsPaginator(
   channel: TextBasedChannel,
   title: string,
@@ -155,59 +158,4 @@ export async function fieldsPaginator(
       message.edit(getEmbed(currPage, true));
     });
   }
-}
-
-// Make sure fields + other strings in the embed do NOT exceed the global 6000 character limit in 1 embed.
-export function splitFieldsIntoPages(
-  fields: EmbedField[],
-  otherLength: number
-) {
-  const maxFieldChars = 6000 - otherLength;
-  const pages: { fields: EmbedField[] }[] = [];
-  let currFields = 0;
-  let currChars = 0;
-  const safeFields = splitFields(fields);
-  let pageBuffer: { fields: EmbedField[] } = { fields: [] };
-
-  safeFields.forEach((field) => {
-    const length = field.name.length + field.value.length;
-    if (currChars + length > maxFieldChars || currFields === MAX_FIELDS) {
-      pages.push(pageBuffer);
-      currFields = 1;
-      currChars = length;
-      pageBuffer = { fields: [field] };
-    } else {
-      currFields++;
-      currChars += length;
-      pageBuffer.fields.push(field);
-    }
-  });
-  if (pageBuffer.fields.length) {
-    pages.push(pageBuffer);
-  }
-  return pages;
-}
-
-// Make sure all field values are under 1024 characters, otherwise split them into multiple fields.
-function splitFields(fields: EmbedField[]) {
-  const safeFields: EmbedField[] = [];
-  fields.forEach((field) => {
-    if (field.value.length > 1024) {
-      // embed value max len
-      const chunks = splitString(field.value, {
-        maxLength: 1024,
-        char: ['\n', ' ', '。'],
-      });
-      chunks.forEach((chunk, index) => {
-        safeFields.push({
-          name: `(${index + 1}/${chunks.length}) ${field.name}`,
-          value: chunk,
-        });
-      });
-    } else {
-      safeFields.push(field);
-    }
-  });
-
-  return safeFields;
 }

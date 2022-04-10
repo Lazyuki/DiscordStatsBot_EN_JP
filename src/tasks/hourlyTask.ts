@@ -1,5 +1,6 @@
 import { Bot } from '@/types';
 import { formatCategoryClock, getStartHourISO } from '@utils/datetime';
+import { cleanOldAttachmentFiles } from '@utils/images';
 
 function hourlyTask(bot: Bot) {
   bot.utcHour = getStartHourISO();
@@ -18,6 +19,7 @@ function hourlyTask(bot: Bot) {
     }
     server.save();
   }
+  cleanOldAttachmentFiles();
 }
 
 export default hourlyTask;

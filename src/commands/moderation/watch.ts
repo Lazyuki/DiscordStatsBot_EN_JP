@@ -11,8 +11,10 @@ import {
   successEmbed,
   warningEmbed,
 } from '@utils/embed';
+import { userToMentionAndTag } from '@utils/formatString';
 import { idToUser } from '@utils/guildUtils';
-import { pluralize } from '@utils/pluralize';
+import { descriptionPaginator } from '@utils/paginate';
+import { pluralCount, pluralize } from '@utils/pluralize';
 import { REGEX_RAW_ID } from '@utils/regex';
 import { User } from 'discord.js';
 
@@ -26,7 +28,8 @@ const watch: BotCommand = {
   name: 'watch',
   isAllowed: ['SERVER_MODERATOR'],
   onCommandInit: (server) => {
-    server.temp.watched ||= [];
+    const res = getWatched({ guildId: server.guild.id });
+    server.temp.watched = res.map((row) => row.userId) || [];
   },
   description: 'Watch a user for deleted messages',
   arguments: '<@user>',
@@ -131,8 +134,26 @@ const watched: BotCommand = {
   description: 'List watched users',
   parentCommand: 'watch',
   hidden: true,
-  normalCommand: async ({ send, server }) => {
-    await send(server.temp.watched.map(idToUser).join(' '));
+  normalCommand: async ({ bot, server, message }) => {
+    const watchedReverse = [...server.temp.watched].reverse();
+    await descriptionPaginator(
+      message.channel,
+      `List of watched users (${pluralCount(
+        'user',
+        's',
+        server.temp.watched.length
+      )})`,
+      watchedReverse.map((id) => {
+        const user = bot.users.cache.get(id);
+        if (user) {
+          return userToMentionAndTag(user);
+        } else {
+          return `User ID: ${id}`;
+        }
+      }),
+      50,
+      message.author.id
+    );
   },
 };
 

@@ -1,12 +1,18 @@
 import logger from '@/logger';
 import { GuildMessage } from '@/types';
 import axios from 'axios';
-import { Message, MessageAttachment, TextBasedChannel } from 'discord.js';
+import { MessageAttachment } from 'discord.js';
 import fs from 'fs';
-import { getStartHourISO } from './datetime';
-import { pluralCount, pluralize } from './pluralize';
+import path from 'path';
+import { DAY_IN_MILLIS } from './datetime';
+import sharp from 'sharp';
+import rimraf from 'rimraf';
 
 export const MAX_BYTES = 50_000_000; // 50MB
+export const MAX_IMAGE_HEIGHT = 800; // px
+export const MAX_IMAGE_WIDTH = 800; // px
+export const MAX_ATTACHMENT_STORAGE_DAYS = 1;
+const TEMP_DIR = './.temp_attachments';
 
 function safeCreateDir(dir: string) {
   if (!fs.existsSync(dir)) {
@@ -14,95 +20,94 @@ function safeCreateDir(dir: string) {
   }
 }
 
-function getImageFilePath(fileName: string) {
-  const startHour = getStartHourISO();
-  safeCreateDir('./.temp_images');
-  return `./.temp_images/${startHour}__${fileName}`;
+function getImageFilePath(messageId: string, fileName: string) {
+  safeCreateDir(`${TEMP_DIR}/${messageId}`);
+  return `${TEMP_DIR}/${messageId}/${fileName}`;
 }
 
 export async function downloadMessageAttachments(
-  message: Message
+  message: GuildMessage
 ): Promise<string[] | null> {
   if (message.attachments.size === 0) return null;
   const attachments = message.attachments.values();
   const filePaths: string[] = [];
   for (const attachment of attachments) {
     if (attachment.size > MAX_BYTES) {
-      logger.warning(
-        `Attachment exceeds the limit at ${attachment.size} bytes. Guild: ${
-          message.guild?.name
-        } | Channel: ${(message.channel as any).name} | Author: ${
-          message.author.tag
-        } | Type: ${attachment.contentType}`
-      );
-
+      const warnMessage = `Attachment exceeds the limit at ${attachment.size} bytes. Guild: ${message.guild.name} | Channel: #${message.channel.name} | Author: ${message.author.tag} | Type: ${attachment.contentType}`;
+      logger.warning(warnMessage);
       continue;
     }
     const contentType = attachment.contentType;
     const isImage = contentType?.includes('image');
-    const isVideo = contentType?.includes('video');
-    if (isImage || isVideo) {
+    const isVideo = contentType?.includes('video'); // save videos too?
+    if (isImage) {
       // image
       const format = contentType?.split('/')[1];
+      const originalHeight = attachment.height || 0;
+      const originalWidth = attachment.width || 0;
       try {
-        const res = await axios.get(attachment.proxyURL);
+        const res = await axios.get(attachment.proxyURL, {
+          responseType: 'arraybuffer',
+        });
         if (res.data) {
+          let data = Buffer.from(res.data, 'binary');
+          if (
+            originalWidth > MAX_IMAGE_WIDTH ||
+            originalHeight > MAX_IMAGE_HEIGHT
+          ) {
+            data = await sharp(data)
+              .resize({
+                width: MAX_IMAGE_WIDTH,
+                height: MAX_IMAGE_HEIGHT,
+                fit: 'contain',
+              })
+              .toBuffer();
+          }
           const filePath = getImageFilePath(
-            attachment.name || `${attachment.id}.${format}`
+            message.id,
+            `${attachment.id}.${attachment.name || format}`
           );
-          fs.writeFileSync(filePath, res.data);
+          fs.writeFileSync(filePath, data);
           filePaths.push(filePath);
         }
-      } catch {}
+      } catch (e) {
+        const err = e as Error;
+        logger.error(
+          `Error during downloading attachment ${err.name}: ${err.message}`
+        );
+      }
     }
   }
   if (filePaths.length === 0) return null;
   return filePaths;
 }
 
-export async function proxyPostAttachments(
-  message: Message,
-  channel: TextBasedChannel
-) {
-  if (message.attachments.size === 0) return 0;
-  const attachments = message.attachments.values();
-  const proxyAttachments: MessageAttachment[] = [];
-  for (const attachment of attachments) {
-    if (attachment.size > MAX_BYTES) {
-      // Since discord.js will download the attachment even if you are just proxying it, make sure not to download huge files
-      logger.warning(
-        `Proxy Attachment exceeds the limit at ${
-          attachment.size
-        } bytes. Guild: ${message.guild?.name} | Channel: ${
-          (message.channel as any).name
-        } | Author: ${message.author.tag} | Type: ${attachment.contentType}`
-      );
-      continue;
+export async function cleanOldAttachmentFiles() {
+  safeCreateDir(TEMP_DIR);
+  const dirs = fs.readdirSync(TEMP_DIR);
+  dirs.forEach((dirName) => {
+    const fullFileName = path.join(TEMP_DIR, dirName);
+    const file = fs.statSync(fullFileName);
+    const now = new Date().getTime();
+    const fileCreatedAt = new Date(file.ctime).getTime();
+    if (now > fileCreatedAt + MAX_ATTACHMENT_STORAGE_DAYS * DAY_IN_MILLIS) {
+      rimraf(fullFileName, () => {});
     }
-    const contentType = attachment.contentType;
-    const isImage = contentType?.includes('image');
-    const isVideo = contentType?.includes('video');
-    if (isImage || isVideo) {
-      const format = contentType?.split('/')[1];
-      const proxyAttachment = new MessageAttachment(
-        attachment.proxyURL,
-        attachment.name || `${attachment.id}.${format}`
-      ).setSpoiler(true);
-      proxyAttachments.push(proxyAttachment);
-    }
+  });
+}
+
+export function getDeletedAttachments(messageId: string): MessageAttachment[] {
+  const dir = `${TEMP_DIR}/${messageId}`;
+  if (!fs.existsSync(dir)) {
+    return []; // no files
   }
-  if (proxyAttachments.length) {
-    await channel.send({
-      content: `${pluralize(
-        'File',
-        's',
-        proxyPostAttachments.length
-      )} from message:${message.id} by ${message.author.tag} in <#${
-        message.channel.id
-      }>`,
-      files: proxyAttachments,
-    });
-    return proxyAttachments.length;
-  }
-  return 0;
+  const files: MessageAttachment[] = [];
+  const fileNames = fs.readdirSync(dir);
+  fileNames.forEach((fileName) => {
+    const fullFileName = `${dir}/${fileName}`;
+    const file = fs.readFileSync(fullFileName);
+    files.push(new MessageAttachment(file, fileName));
+    rimraf(fullFileName, () => {}); // No longer needed
+  });
+  return files;
 }

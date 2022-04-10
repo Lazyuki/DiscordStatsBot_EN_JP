@@ -9,6 +9,7 @@ discord_ciri.db
 nohup.out
 *.log
 *.tmp
+.temp_attachments
 
 # Secrets
 .env
@@ -23,3 +24,5 @@ backups
 configs
 data
 schedules
+
+# tem

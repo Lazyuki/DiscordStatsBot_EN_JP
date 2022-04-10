@@ -5,7 +5,6 @@ const event: BotEvent<'interactionCreate'> = {
   eventName: 'interactionCreate',
   skipOnDebug: true,
   processEvent: async (bot, interaction) => {
-    logger.info(`Slash Command`);
     if (!interaction.isCommand()) return;
 
     const command = bot.commands[interaction.commandName];

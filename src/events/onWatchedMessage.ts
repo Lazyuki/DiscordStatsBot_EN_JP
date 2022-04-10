@@ -1,16 +1,20 @@
 import { BotEvent } from '@/types';
-import { getTextChannel } from '@utils/guildUtils';
+import { fetchMessage, getTextChannel, isNotDM } from '@utils/guildUtils';
 import logger from '@/logger';
 import checkSafeMessage from '@utils/checkSafeMessage';
-import { makeEmbed } from '@utils/embed';
-import { DELETE_COLOR } from '@utils/constants';
+import { makeEmbed, splitFields } from '@utils/embed';
+import { DELETE_COLOR, EDIT_COLOR } from '@utils/constants';
+import {
+  downloadMessageAttachments,
+  getDeletedAttachments,
+} from '@utils/images';
 import { millisToDuration } from '@utils/datetime';
-
-async function storeMediaTemporarily(id: string, mediaLink: string) {}
+import { REGEX_URL } from '@utils/regex';
+import { MessageAttachment } from 'discord.js';
 
 const createEvent: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
-  skipOnDebug: false,
+  skipOnDebug: true,
   processEvent: async (bot, message) => {
     if (!checkSafeMessage(bot, message)) {
       return;
@@ -18,31 +22,8 @@ const createEvent: BotEvent<'messageCreate'> = {
     const server = bot.servers[message.guild.id];
     const userId = message.member.id;
     if (!server.temp.watched.includes(userId)) return;
-
     if (message.attachments.size > 0) {
-      message.attachments.forEach((attachment) => {
-        const isImage = attachment.contentType?.includes('image');
-        const isVideo = attachment.contentType?.includes('video');
-        const format = attachment.contentType?.split('/')[1] || '';
-        const name = attachment.name || `${attachment.id}.${format}`;
-        if (isImage || isVideo) {
-          const delAttachment = {
-            messageId: message.id,
-            url: attachment.proxyURL,
-            type: isImage ? 'image' : 'video',
-            name,
-            bytes: attachment.size,
-          };
-        }
-        if ('height' in attachment) {
-          // image or video
-          logger.info(
-            `Attachment: type=${attachment.contentType}, size=${attachment.size}, proxy=${attachment.proxyURL}, url=${attachment.url}`
-          );
-          // no need to await, it's not important
-          storeMediaTemporarily(attachment.id, attachment.proxyURL);
-        }
-      });
+      await downloadMessageAttachments(message);
     }
   },
 };
@@ -51,49 +32,94 @@ const updateEvent: BotEvent<'messageUpdate'> = {
   eventName: 'messageUpdate',
   skipOnDebug: true,
   processEvent: async (bot, oldMessage, newMessage) => {
-    if (newMessage.partial) return;
-    // TODO : watched edit
-    // ignore distance <= 2
+    if (!isNotDM(newMessage)) return; // DM
+    if (newMessage.partial || oldMessage.partial) return;
+    const server = bot.servers[newMessage.guild.id];
+    if (!server.temp.watched.includes(newMessage.author.id)) return; // Not watched
+    const modLog = getTextChannel(
+      newMessage.guild,
+      server.config.modLogChannel
+    );
+    if (!modLog) return;
+    const distance = levenshteinDistance(
+      oldMessage.content,
+      newMessage.content
+    );
+    if (distance <= 3) return;
+    const timeDiffMillis =
+      newMessage.editedTimestamp! - newMessage.createdTimestamp;
+    const channelName = newMessage.channel.name;
+    await modLog.send(
+      makeEmbed({
+        color: EDIT_COLOR,
+        authorName: `${newMessage.author.tag} (${newMessage.author})`,
+        authorIcon: `${newMessage.author.displayAvatarURL()}`,
+        title: `Message Edited after ${millisToDuration(timeDiffMillis)}`,
+        fields: splitFields([
+          { name: 'Before', value: oldMessage.content, inline: false },
+          { name: 'After', value: newMessage.content, inline: false },
+        ]),
+        footer: `#${channelName} (${newMessage.channel.id})`,
+        timestamp: true,
+      })
+    );
   },
 };
 
-const event: BotEvent<'messageDelete'> = {
+const deleteEvent: BotEvent<'messageDelete'> = {
   eventName: 'messageDelete',
   skipOnDebug: true,
   processEvent: async (bot, message) => {
-    if (!checkSafeMessage(bot, message)) {
-      return;
-    }
+    if (message.system) return; // System
+    if (!isNotDM(message)) return; // DM
+    if (!message.author) return;
+
     const server = bot.servers[message.guild.id];
+    let hasEmbedPreview = false;
+    let deletedFiles: MessageAttachment[] = [];
 
     if (server.temp.watched.includes(message.author.id)) {
       const modLog = getTextChannel(message.guild, server.config.modLogChannel);
       if (!modLog) return;
-
-      // wait for potential images to be downloaded
-      setTimeout(() => {
-        if (message.attachments.size > 0) {
-          // TODO: images
-          message.attachments.forEach((attachment) => {});
-        } else if (message.content.length <= 3) {
-          // too short to care
-          return;
+      if (message.attachments.size > 0) {
+        deletedFiles = getDeletedAttachments(message.id);
+      } else if (message.content) {
+        // No attachments so just send the deleted message
+        if (message.content.length <= 3) return; // too short
+        // bot commands
+        if (server.temp.ignoredBotPrefixRegex?.test(message.content)) return;
+        if (message.content.startsWith(server.config.prefix)) return;
+        if (message.embeds.length) {
         }
-        const timeDiffMillis = new Date().getTime() - message.createdTimestamp;
-        const channelName = message.channel.name;
-
-        modLog.send(
-          makeEmbed({
-            color: DELETE_COLOR,
-            authorName: `${message.author.tag} (${message.author})`,
-            authorIcon: `${message.author.displayAvatarURL()}`,
-            title: `Message Deleted after ${millisToDuration(timeDiffMillis)}`,
-            description: message.content,
-            footer: `#${channelName} (${message.channel.id})`,
-            timestamp: true,
-          })
-        );
-      }, 3000);
+      }
+      const timeDiffMillis = new Date().getTime() - message.createdTimestamp;
+      const channelName = message.channel.name;
+      const deleteLog = await modLog.send(
+        makeEmbed({
+          color: DELETE_COLOR,
+          authorName: `${message.author.tag} (${message.author})`,
+          authorIcon: `${message.author.displayAvatarURL()}`,
+          title: `Message Deleted after ${millisToDuration(timeDiffMillis)}`,
+          description: message.content || '*empty*',
+          footer: `#${channelName} (${message.channel.id})`,
+          timestamp: true,
+        })
+      );
+      if (hasEmbedPreview || deletedFiles.length) {
+        const thread = await deleteLog.startThread({
+          name: 'Deleted Message Attachments',
+          autoArchiveDuration: 60,
+        });
+        let content = 'Deleted Preview Embeds and Attachments:\n';
+        if (hasEmbedPreview) {
+          const allUrls = message.content?.match(REGEX_URL);
+          if (allUrls) {
+            content += allUrls.join('\n');
+          }
+        }
+        await thread.send({ content, files: deletedFiles });
+        await thread.setArchived(true, 'End sending attachments');
+      }
     }
   },
 };
@@ -101,11 +127,12 @@ const event: BotEvent<'messageDelete'> = {
  * Calculates the Damerau-Levenshtein distance between two strings.
  */
 function levenshteinDistance(source: string, target: string) {
-  let m = source.length,
-    n = target.length,
-    INF = m + n,
-    score = new Array(m + 2),
-    sd: Record<string, number> = {};
+  const m = source.length;
+  const n = target.length;
+  const INF = m + n;
+  const score = new Array(m + 2);
+  const sd: Record<string, number> = {};
+
   for (let i = 0; i < m + 2; i++) score[i] = new Array(n + 2);
   score[0][0] = INF;
   for (let i = 0; i <= m; i++) {
@@ -141,4 +168,4 @@ function levenshteinDistance(source: string, target: string) {
   return score[m + 1][n + 1];
 }
 
-export default [createEvent, updateEvent];
+export default [createEvent, updateEvent, deleteEvent];
