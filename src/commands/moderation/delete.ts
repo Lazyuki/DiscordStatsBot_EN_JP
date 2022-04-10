@@ -401,6 +401,7 @@ async function postDeletedMessages(
   if (Object.keys(attachmentURLs).length || hasEmbedsMessageIDs.length) {
     const thread = await mainMessage.startThread({
       name: 'Deleted Message Attachments',
+      autoArchiveDuration: 60,
     });
     let index = 1;
     for (const threadAttachment of threadAttachments) {

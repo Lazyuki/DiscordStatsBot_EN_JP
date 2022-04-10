@@ -50,7 +50,11 @@ const command: BotCommand = {
           (k) => !remove.includes(k)
         );
       }
-      await message.channel.send(successEmbed(`Command list updated`));
+      await message.channel.send(
+        successEmbed(
+          `${add ? `Added ${add}` : ''} ${remove ? `Removed: ${remove}` : ''}`
+        )
+      );
     }
   },
 };

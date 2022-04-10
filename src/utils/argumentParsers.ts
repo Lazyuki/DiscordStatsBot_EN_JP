@@ -110,7 +110,8 @@ export function parseChannels(
 export function parseMembers(
   content: string,
   guild: Guild,
-  required?: 'MEMBERS' | 'MEMBER' | 'ID' | 'IDS'
+  required?: 'MEMBERS' | 'MEMBER' | 'ID' | 'IDS',
+  allowBots = false
 ): {
   members: GuildMember[];
   nonMemberIds: string[];
@@ -129,7 +130,7 @@ export function parseMembers(
       const id = idMatch[0];
       allIds.push(id);
       const member = guild.members.cache.get(id);
-      if (member && !member.user.bot) {
+      if (member && (allowBots || !member.user.bot)) {
         members.push(member);
       } else {
         nonMemberIds.push(id);

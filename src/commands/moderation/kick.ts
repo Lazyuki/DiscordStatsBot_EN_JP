@@ -31,7 +31,8 @@ const command: BotCommand = {
     const { members, nonMemberIds, restContent } = parseMembers(
       content,
       server.guild,
-      'MEMBERS'
+      'MEMBERS',
+      true
     );
     if (nonMemberIds.length) {
       throw new CommandArgumentError(
