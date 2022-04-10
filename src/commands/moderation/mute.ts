@@ -155,10 +155,10 @@ const mute: BotCommand = {
     const durationString = stripIndent`
     \`${millisToDuration(timeoutMillis)}\`
 
-    Unmuting at: ${getDiscordTimestamp(
+    Unmuting at: ${getDiscordTimestamp(unmuteAt, 'F')} (${getDiscordTimestamp(
       unmuteAt,
-      'F'
-    )} (in ${getDiscordTimestamp(unmuteAt, 'R')}) 
+      'R'
+    )}) 
     `;
     const multiTimeoutWarning = multiTimeout
       ? "⚠️ Due to Discord's Timeout being limited to 28 days, the remaining time on the UI will NOT be accurate until you have 28 days remaining."

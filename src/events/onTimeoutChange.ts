@@ -70,7 +70,7 @@ const event: BotEvent<'guildMemberUpdate'> = {
        Unmuting at: ${getDiscordTimestamp(
          newTimeoutUntil,
          'F'
-       )} (in ${getDiscordTimestamp(newTimeoutUntil, 'R')})`;
+       )} (${getDiscordTimestamp(newTimeoutUntil, 'R')})`;
       if (timeoutIndicatorRoleId) {
         await newMember.roles.add(timeoutIndicatorRoleId);
       }
@@ -87,7 +87,7 @@ const event: BotEvent<'guildMemberUpdate'> = {
       Now unmuting at ${getDiscordTimestamp(
         newTimeoutUntil,
         'F'
-      )} (in ${getDiscordTimestamp(newTimeoutUntil, 'R')})
+      )} (${getDiscordTimestamp(newTimeoutUntil, 'R')})
       
       `;
     } else if (!newTimeoutUntil) {
