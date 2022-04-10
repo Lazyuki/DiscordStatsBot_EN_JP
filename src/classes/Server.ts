@@ -9,7 +9,6 @@ import {
   ServerSchedules,
   ServerData,
 } from '@/types';
-import { escapeRegex } from '@utils/formatString';
 import { getIgnoredBotPrefixRegex } from '@commands/configuration/config';
 import {
   getConfigFilePath,
@@ -103,24 +102,6 @@ class Server {
     try {
       saveBackup(this.guild.id, new Date(), 'config', this.config);
       saveBackup(this.guild.id, new Date(), 'data', this.data);
-      const oldDate = new Date();
-      oldDate.setDate(oldDate.getDate() - 7);
-      const oldConfigBackupFile = getBackupFilePath(
-        this.guild.id,
-        oldDate,
-        'config'
-      );
-      if (fs.existsSync(oldConfigBackupFile)) {
-        fs.unlinkSync(oldConfigBackupFile);
-      }
-      const oldDataBackupFile = getBackupFilePath(
-        this.guild.id,
-        oldDate,
-        'data'
-      );
-      if (fs.existsSync(oldDataBackupFile)) {
-        fs.unlinkSync(oldDataBackupFile);
-      }
     } catch (e) {
       logger.error(e);
     }

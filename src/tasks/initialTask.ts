@@ -5,7 +5,11 @@ import { Bot, BotConfig } from '@/types';
 
 import dailyTask from './dailyTask';
 import hourlyTask from './hourlyTask';
-import { getTodayISO, getStartHourISO } from '@utils/datetime';
+import {
+  getTodayISO,
+  getStartHourISO,
+  millisToDuration,
+} from '@utils/datetime';
 import { readConfig } from '@utils/disk';
 
 const HOUR_MILLIS = 60 * 60_000;
@@ -36,12 +40,14 @@ function initialTask(bot: Bot) {
       hourlyTask(bot);
     }, HOUR_MILLIS);
   }, millisUntilNextHour);
+  console.log(`Next hour task in ${millisToDuration(millisUntilNextHour)}`);
 
   setTimeout(() => {
     setInterval(() => {
       dailyTask(bot);
     }, HOUR_MILLIS * 24);
   }, millisUntilTomorrow);
+  console.log(`Next daily task in ${millisToDuration(millisUntilTomorrow)}`);
 }
 
 export default initialTask;

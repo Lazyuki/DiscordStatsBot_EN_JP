@@ -7,7 +7,7 @@ import {
 
 import { insertVoiceSeconds } from '@database/statements';
 import { makeEmbed } from '@utils/embed';
-import { EJLX, EWBF, RAI } from '@utils/constants';
+import { EJLX, EWBF, JHO, RAI } from '@utils/constants';
 import { BotEvent } from '@/types';
 import { getSecondDiff } from './onVoiceUpdate';
 import { getTextChannel } from '@utils/guildUtils';
@@ -54,6 +54,17 @@ const event: BotEvent<'guildMemberRemove'> = {
     if (!userLogChannel) return;
 
     if (member.guild.id === EJLX) {
+      if (server.temp.newUsers.some((nu) => nu.id === member.id)) {
+        const jho = getTextChannel(server.guild, JHO);
+        if (jho) {
+          const msgs = await jho.messages.fetch();
+          for (const [, msg] of msgs) {
+            if (msg.author.bot && msg.mentions.users.has(member.id)) {
+              msg.react('📤');
+            }
+          }
+        }
+      }
       if (member.guild.members.cache.get(RAI)?.presence?.status === 'offline') {
         await notifyUserLeave(member, userLogChannel);
       } else {
