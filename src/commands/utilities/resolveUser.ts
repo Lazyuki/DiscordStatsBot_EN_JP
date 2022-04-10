@@ -11,7 +11,7 @@ const REGEX_USER_TAG_WITH_LAST_PART = /\S+#[0-9]{4}/g;
 
 const command: BotCommand = {
   name: 'resolveUser',
-  aliases: ['ru', 'getuser'],
+  aliases: ['ru', 'getuser', 'find'],
   description:
     'Reply to a message or provide a Discord user tag (e.g. Geralt#0007) and try to get the user info. ',
   examples: [['ru', '(While replying to a message)'], 'ru Geralt#0007'],
