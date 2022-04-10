@@ -57,8 +57,7 @@ const event: BotEvent<'guildMemberUpdate'> = {
     let titleSuffix = '';
     let durationStr = '';
     const now = new Date().getTime();
-    const oldTimeoutUntil =
-      oldMember.communicationDisabledUntilTimestamp || now;
+    const oldTimeoutUntil = oldMember.communicationDisabledUntilTimestamp || 0;
     const newTimeoutUntil = newMember.communicationDisabledUntilTimestamp;
 
     if (now - oldTimeoutUntil > 10_000 && newTimeoutUntil) {
