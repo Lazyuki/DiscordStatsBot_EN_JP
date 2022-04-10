@@ -4,6 +4,7 @@ import { isMessageInChannels } from '@utils/guildUtils';
 import checkSafeMessage from '@utils/checkSafeMessage';
 import { makeEmbed } from '@utils/embed';
 import { safeDelete } from '@utils/safeDelete';
+import { NE } from '@utils/constants';
 
 const createEvent: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -21,9 +22,9 @@ const createEvent: BotEvent<'messageCreate'> = {
       return;
     if (isMessageInChannels(message, server.config.hiddenChannels)) return; // Not in mod channels
 
-    const isJapanese = server.config.japaneseRoles.some((r) =>
-      message.member.roles.cache.has(r)
-    );
+    const isJapanese =
+      message.member.roles.cache.hasAny(...server.config.japaneseRoles) &&
+      !message.member.roles.cache.has(NE); // EJLX specific
 
     const { lang, escaped } = checkLang(message.content);
     if (escaped) return;

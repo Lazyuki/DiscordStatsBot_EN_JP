@@ -1,5 +1,5 @@
 import { BotEvent } from '@/types';
-import { EJLX, EJLX_LANG_ROLE_IDS, JHO } from '@utils/constants';
+import { EJLX, EJLX_LANG_ROLE_IDS, JHO, NE } from '@utils/constants';
 import { errorEmbed, successEmbed, warningEmbed } from '@utils/embed';
 
 import { messageToFullId } from '@utils/guildUtils';
@@ -53,9 +53,9 @@ const event: BotEvent<'interactionCreate'> = {
                   'Self-assign with button roles'
                 );
                 if (isHardcore) {
-                  const isJapanese = member.roles.cache.hasAny(
-                    ...server.config.japaneseRoles
-                  );
+                  const isJapanese =
+                    member.roles.cache.hasAny(...server.config.japaneseRoles) &&
+                    !member.roles.cache.has(NE); // EJLX specific;
                   await interaction.reply(
                     warningEmbed({
                       description: `**Added** <@&${buttonRole}> to you.\n\n**You will NOT be able to send messages in ${

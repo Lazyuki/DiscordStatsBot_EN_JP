@@ -2,6 +2,7 @@ import { Bot, BotEvent, GuildMessage, LangType, ServerTemp } from '@/types';
 import Server from '@classes/Server';
 import checkLang from '@utils/checkLang';
 import checkSafeMessage from '@utils/checkSafeMessage';
+import { NE } from '@utils/constants';
 import { getMessageTextChannel, getParentChannelId } from '@utils/guildUtils';
 import { REGEX_URL } from '@utils/regex';
 
@@ -53,9 +54,9 @@ async function handleLangEx(
   language: { lang: LangType; escaped: boolean }
 ) {
   if (language.escaped) return;
-  const isJapanese = message.member.roles.cache.hasAny(
-    ...server.config.japaneseRoles
-  );
+  const isJapanese =
+    message.member.roles.cache.hasAny(...server.config.japaneseRoles) &&
+    !message.member.roles.cache.has(NE); // EJLX specific;
   if (isJapanese && language.lang === 'JP') {
     await message.react('🚫');
   } else if (!isJapanese && language.lang === 'EN') {
