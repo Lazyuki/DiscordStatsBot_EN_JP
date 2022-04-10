@@ -49,6 +49,7 @@ const command: BotCommand = {
           `Error during \`${gitpullCommand}\`:\n${err.name}: ${err.message}`
         )
       );
+      return;
     }
     // Pulled something, so restart the bot
     const buildCommand = `npm run build`;

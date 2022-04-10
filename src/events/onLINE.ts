@@ -36,7 +36,8 @@ const event: BotEvent<'messageCreate'> = {
             notifyTokens.push(lineNotify.lineNotifyToken);
             continue;
           }
-        } else if (userMentions.has(userId)) {
+        }
+        if (userMentions.has(userId)) {
           const userMentionConfig = lineNotify.userMention;
           if (
             userMentionConfig === 'ALWAYS' ||

@@ -18,7 +18,7 @@ const command: BotCommand = {
     if (commandName === 'command') {
       await message.channel.send(
         errorEmbed({
-          content: `When I said \`Type "${server.config.prefix}help command"\`, you were supposed to swap \`command\` with an actual command in the list.`,
+          description: `When I said \`Type "${server.config.prefix}help command"\`, you were supposed to swap \`command\` with an actual command in the list.`,
         })
       );
       return;
@@ -28,7 +28,7 @@ const command: BotCommand = {
       if (!command) {
         await message.channel.send(
           errorEmbed({
-            content: `Command \`${commandName}\` does not exit.`,
+            description: `Command \`${commandName}\` does not exit.`,
             footer: `Type "${server.config.prefix}help" to see the list of available commands.`,
           })
         );
@@ -36,7 +36,7 @@ const command: BotCommand = {
       } else if (!command.normalCommand) {
         await message.channel.send(
           errorEmbed({
-            content: `Command \`${commandName}\` is for slash commands.`,
+            description: `Command \`${commandName}\` is for slash commands.`,
             footer: `Type "${server.config.prefix}help" to see the list of available commands.`,
           })
         );
