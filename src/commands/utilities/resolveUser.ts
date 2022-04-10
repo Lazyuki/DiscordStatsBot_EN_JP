@@ -86,19 +86,29 @@ const command: BotCommand = {
                   }${userToMentionAndTag(m.user)}`
               )
               .join('\n'),
-            footer: 'Select one from the dropdown to get the ID',
+            footer: `Select one from the dropdown to get the ID`,
           }),
           components: getUserDropdown(members),
         };
       }
       const resultsMessage = await message.channel.send(createMessage());
       const dropdownCollector = resultsMessage.createMessageComponentCollector({
-        filter: (i) => i.user.id === message.author.id,
-        time: 300 * 1000,
+        time: 180 * 1000,
       });
-      dropdownCollector.on('collect', (interaction) => {
+      dropdownCollector.on('collect', async (interaction) => {
         if (!interaction.isSelectMenu()) return;
-        interaction.update(createMessage(interaction.values[0]));
+        if (interaction.user.id === message.author.id) {
+          await interaction.update(createMessage(interaction.values[0]));
+        } else {
+          const id = interaction.values[0];
+          const member = members.find((m) => m.id === id)!;
+          await interaction.reply(
+            makeEmbed({
+              content: id,
+              description: `You selected ${member} (${member.user.tag})`,
+            })
+          );
+        }
       });
       dropdownCollector.on('end', () => {
         removeComponents(resultsMessage);
