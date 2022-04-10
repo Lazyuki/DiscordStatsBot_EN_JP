@@ -8,7 +8,7 @@ const event: BotEvent<'messageCreate'> = {
   skipOnDebug: true,
   processEvent: async (bot, message) => {
     if (!checkSafeMessage(bot, message)) {
-      if (!message.author.bot) return; // Still listened to bot messages
+      if (!message.author.bot) return; // Still listen to bot messages
     }
     const userMentions = message.mentions.users;
     const roleMentions = message.mentions.roles;

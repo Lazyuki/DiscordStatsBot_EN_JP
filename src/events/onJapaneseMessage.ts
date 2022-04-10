@@ -26,7 +26,7 @@ const createEvent: BotEvent<'messageCreate'> = {
     const lang = checkLang(message.content);
     const parentChannelId = getParentChannelId(message.channel);
     if (server.config.langExChannels.includes(parentChannelId)) {
-      await handleLangEx(message, server, bot, lang.lang);
+      await handleLangEx(message, server, bot, lang);
     } else if (server.config.japaneseOnlyChannels.includes(parentChannelId)) {
       await japaneseOnly(message, server, bot, lang.lang);
     } else if (
@@ -50,15 +50,21 @@ async function handleLangEx(
   message: GuildMessage,
   server: Server,
   bot: Bot,
-  language: LangType
+  language: { lang: LangType; escaped: boolean }
 ) {
+  if (language.escaped) return;
   const isJapanese = message.member.roles.cache.hasAny(
     ...server.config.japaneseRoles
   );
-  if (isJapanese && language === 'JP') {
+  if (isJapanese && language.lang === 'JP') {
     await message.react('🚫');
-  } else if (!isJapanese && language === 'EN') {
+  } else if (!isJapanese && language.lang === 'EN') {
     await message.react('🚫');
+  } else {
+    const reaction = message.reactions.cache.get('🚫');
+    if (reaction?.me) {
+      await reaction.remove();
+    }
   }
 }
 
