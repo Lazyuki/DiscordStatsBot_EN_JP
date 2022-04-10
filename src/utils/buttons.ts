@@ -147,7 +147,7 @@ export function getBanConfirmationButtons(allowDelete: boolean) {
   return [row];
 }
 
-export async function removeButtons(message: Message) {
+export async function removeComponents(message: Message) {
   if (message.components) {
     await message.edit({
       content: message.content || undefined,

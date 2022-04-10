@@ -12,6 +12,7 @@ import {
   FE2,
   FJ,
   HJ,
+  INTRODUCTION,
   NE,
   NJ,
   NU,
@@ -20,7 +21,7 @@ import {
 import { cleanEmbed, makeEmbed, warningEmbed } from '@utils/embed';
 import { joinNaturally } from '@utils/formatString';
 import { idToRole } from '@utils/guildUtils';
-import { safeDelete } from '@utils/safeDelete';
+import { deleteAfter, safeDelete } from '@utils/safeDelete';
 
 declare module '@/types' {
   interface ServerTemp {
@@ -155,7 +156,7 @@ const command: BotCommand = {
       setTimeout(() => alreadyTagged.delete(), 5000);
       return;
     }
-    const reason = `Issued by: ${message.author.tag} (${message.author.id})`;
+    const reason = `Tag by: ${message.author.tag} (${message.author.id})`;
     await member.roles.remove(removeRoles, reason);
     member = await member.roles.add(addRoleIds, reason);
 
@@ -180,13 +181,16 @@ const command: BotCommand = {
         sortedNewRoles
       )} instead of ${oldRoleNames} by ${message.author.username}!`;
     }
-    await message.channel.send(
+    const confirmationMessage = await message.channel.send(
       makeEmbed({
         color: memberColor,
         description,
         footer: `${member.user.tag} (${member.user.id})`,
       })
     );
+    if (message.channel.id === INTRODUCTION) {
+      deleteAfter(confirmationMessage, 5); // clean up #introduction
+    }
   },
 };
 

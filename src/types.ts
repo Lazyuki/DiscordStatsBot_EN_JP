@@ -18,6 +18,8 @@ import {
 
 import Server from './classes/Server';
 
+export type AppCommandBuilder = { toJSON: () => any };
+
 export interface Bot extends Client {
   ownerId: string;
   servers: Record<string, Server>;
@@ -27,6 +29,7 @@ export interface Bot extends Client {
   botExits: OnBotExit[];
   serverInits: OnCommandInit[];
   serverConfigInits: OnCommandInit[];
+  applicationCommands: AppCommandBuilder[];
   config: BotConfig;
   bogLogChannel?: TextChannel;
   utcHour: string; // ISO
@@ -90,7 +93,7 @@ export interface BotCommand {
     send: (options: string | MessageOptions) => Promise<Message | undefined>;
     reply: (options: string | MessageOptions) => Promise<Message | undefined>;
   }) => void | Promise<void>;
-  slashCommand?: SlashCommandBuilder;
+  applicationCommand?: AppCommandBuilder;
   childCommands?: string[];
   subCommands?: string[];
   parentCommand?: string;

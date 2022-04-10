@@ -17,11 +17,23 @@ const createEvent: BotEvent<'messageCreate'> = {
     }
     const server = bot.servers[message.guild.id];
     const userId = message.member.id;
-    // TODO: post watched
     if (!server.temp.watched.includes(userId)) return;
 
     if (message.attachments.size > 0) {
       message.attachments.forEach((attachment) => {
+        const isImage = attachment.contentType?.includes('image');
+        const isVideo = attachment.contentType?.includes('video');
+        const format = attachment.contentType?.split('/')[1] || '';
+        const name = attachment.name || `${attachment.id}.${format}`;
+        if (isImage || isVideo) {
+          const delAttachment = {
+            messageId: message.id,
+            url: attachment.proxyURL,
+            type: isImage ? 'image' : 'video',
+            name,
+            bytes: attachment.size,
+          };
+        }
         if ('height' in attachment) {
           // image or video
           logger.info(
@@ -88,7 +100,7 @@ const event: BotEvent<'messageDelete'> = {
 /**
  * Calculates the Damerau-Levenshtein distance between two strings.
  */
-function distance(source: string, target: string) {
+function levenshteinDistance(source: string, target: string) {
   let m = source.length,
     n = target.length,
     INF = m + n,

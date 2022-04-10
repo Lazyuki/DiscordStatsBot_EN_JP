@@ -11,7 +11,7 @@ import {
   User,
 } from 'discord.js';
 import { parseChannels } from './argumentParsers';
-import { addButtons, getButtons, removeButtons } from './buttons';
+import { addButtons, getButtons, removeComponents } from './buttons';
 import { makeEmbed } from './embed';
 import { getTextChannel } from './guildUtils';
 
@@ -260,7 +260,7 @@ export function waitForMessageAndButton(
       buttonCollector.stop();
     });
     messageCollector.on('end', () => {
-      removeButtons(buttonMessage);
+      removeComponents(buttonMessage);
       resolve('timeout');
     });
   });

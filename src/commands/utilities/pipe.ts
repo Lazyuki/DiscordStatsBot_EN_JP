@@ -81,6 +81,8 @@ const command: BotCommand = {
           } else {
             content = sourceContent + ' ' + content;
           }
+          message.reference = null;
+          message.mentions.repliedUser = null;
           await pipeCommand.normalCommand({
             bot,
             message,

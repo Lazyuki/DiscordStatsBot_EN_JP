@@ -1,5 +1,6 @@
 import 'source-map-support/register';
 import { Client, Collection, Intents } from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
 import fs from 'fs';
 
 import { DEBUG, OWNER_ID, DISCORD_TOKEN } from '@/envs';
@@ -14,8 +15,6 @@ import {
 import parseCommand from '@utils/parseCommand';
 import initialTask from '@tasks/initialTask';
 import exitTask from '@tasks/exitTask';
-
-// import deploySlashCommands from './deploySlashCommands';
 
 // Set up intents
 const UNWANTED_INTENTS = [
@@ -45,6 +44,7 @@ client.botExits = [];
 client.serverInits = [];
 client.serverConfigInits = [];
 client.servers = {};
+client.applicationCommands = [];
 client.config = {} as BotConfig;
 
 // Gather commands
@@ -75,6 +75,9 @@ for (const dir of dirs) {
       }
       if (parsedCommand.onBotExit) {
         client.botExits.push(parsedCommand.onBotExit);
+      }
+      if (parsedCommand.applicationCommand) {
+        client.applicationCommands.push(parsedCommand.applicationCommand);
       }
       parsedCommand.aliases?.forEach((alias) => {
         if (client.commands[alias]) {
@@ -174,4 +177,3 @@ process.on('SIGTERM', () => {
 initialTask(client);
 
 client.login(DISCORD_TOKEN);
-// if (!DEBUG) deploySlashCommands();

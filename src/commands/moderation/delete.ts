@@ -1,27 +1,4 @@
-import { CommandArgumentError } from '@/errors';
-import logger, { discordLogError } from '@/logger';
-import { BotCommand, DeletedMessageAttachment, GuildMessage } from '@/types';
-import Server from '@classes/Server';
-import { parseSnowflakeIds } from '@utils/argumentParsers';
-import { getDiscordTimestamp, getExactDaysAgo } from '@utils/datetime';
-import {
-  errorEmbed,
-  makeEmbed,
-  splitIntoMultipleEmbeds,
-  successEmbed,
-  warningEmbed,
-} from '@utils/embed';
-import { userToTagAndId } from '@utils/formatString';
-import { getTextChannel, idToChannel } from '@utils/guildUtils';
-import { MAX_BYTES, proxyPostAttachments } from '@utils/images';
-import { pluralCount, pluralize } from '@utils/pluralize';
-import {
-  REGEX_MESSAGE_LINK_OR_FULL_ID,
-  REGEX_RAW_ID,
-  REGEX_URL,
-  REGEX_USER,
-} from '@utils/regex';
-import { deleteAfter, safeDelete } from '@utils/safeDelete';
+import { ContextMenuCommandBuilder } from '@discordjs/builders';
 import { stripIndent } from 'common-tags';
 import {
   Message,
@@ -30,6 +7,31 @@ import {
   TextChannel,
   ThreadChannel,
 } from 'discord.js';
+
+import { CommandArgumentError } from '@/errors';
+import logger from '@/logger';
+import { BotCommand, DeletedMessageAttachment, GuildMessage } from '@/types';
+import Server from '@classes/Server';
+import { parseSnowflakeIds } from '@utils/argumentParsers';
+import { getDiscordTimestamp, getExactDaysAgo } from '@utils/datetime';
+import {
+  errorEmbed,
+  splitIntoMultipleEmbeds,
+  successEmbed,
+  warningEmbed,
+} from '@utils/embed';
+import { userToTagAndId } from '@utils/formatString';
+import { getTextChannel, idToChannel } from '@utils/guildUtils';
+import { MAX_BYTES } from '@utils/images';
+import { pluralCount, pluralize } from '@utils/pluralize';
+import {
+  REGEX_MESSAGE_LINK_OR_FULL_ID,
+  REGEX_RAW_ID,
+  REGEX_URL,
+  REGEX_USER,
+} from '@utils/regex';
+import { deleteAfter, safeDelete } from '@utils/safeDelete';
+import { ADMIN, MINIMO, STAFF } from '@utils/constants';
 
 const command: BotCommand = {
   name: 'delete',
@@ -416,5 +418,28 @@ async function postDeletedMessages(
     await thread.setArchived(true, 'Deleted Message Attachments');
   }
 }
+
+const contextMenu = new ContextMenuCommandBuilder()
+  .setName('Delete and Log')
+  .setType(3)
+  .setDefaultPermission(false);
+
+const permissions = [
+  {
+    id: MINIMO,
+    type: 'ROLE',
+    permission: true,
+  },
+  {
+    id: STAFF,
+    type: 'ROLE',
+    permission: true,
+  },
+  {
+    id: ADMIN,
+    type: 'ROLE',
+    permission: true,
+  },
+];
 
 export default command;
