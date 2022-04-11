@@ -53,6 +53,7 @@ const command: BotCommand = {
   ],
   examples: [
     'line @Geralt -a OFFLINE_NOROLE -m OFFLINE -t fhdsafjkldsjfkl',
+    'line @Geralt -a NEVER -m ALWAYS',
     'line @Geralt -d',
   ],
   onBotInit: (bot) => {
@@ -66,11 +67,16 @@ const command: BotCommand = {
         await message.channel.send(
           infoEmbed({
             title: 'LINE Notify Config',
-            fields: configs.map((c) => ({
-              name: `<@${c[0]}>`,
-              value: JSON.stringify(c[1], null, 2),
-              inline: false,
-            })),
+            fields: configs.map((c) => {
+              const [id, notify] = c;
+              const user = bot.users.cache.get(id);
+              const { lineNotifyToken, ...restNotify } = notify; // Don't show line notify token
+              return {
+                name: `<@${id}> (${user?.tag || 'Unknown'})`,
+                value: JSON.stringify(restNotify, null, 2),
+                inline: false,
+              };
+            }),
           })
         );
       } else {
@@ -106,6 +112,11 @@ const command: BotCommand = {
       currentConfig.activeStaff = activeStaff;
       currentConfig.userMention = mention;
     } else {
+      if (!token) {
+        throw new CommandArgumentError(
+          'You must specify a token with the `-t` option.'
+        );
+      }
       bot.config.lineNotify[userId] = {
         activeStaff,
         userMention: mention,

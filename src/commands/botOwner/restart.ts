@@ -3,8 +3,7 @@ import util from 'util';
 import exitTask from '@tasks/exitTask';
 import { BotCommand } from '@/types';
 import { cleanEmbed, errorEmbed } from '@utils/embed';
-import { appendCodeBlock } from '@utils/formatString';
-import { codeBlock } from 'common-tags';
+import { appendCodeBlock, codeBlock } from '@utils/formatString';
 
 const command: BotCommand = {
   name: 'restart',
@@ -27,8 +26,11 @@ const command: BotCommand = {
         codeBlock('$ ' + buildCommand)
       );
       await message.channel.sendTyping();
+      const interval = setInterval(() => message.channel.sendTyping(), 14_000);
+
       const build = await exec(buildCommand);
       if (build.stderr) {
+        clearInterval(interval);
         await message.channel.send(
           errorEmbed(
             `Error during \`${buildCommand}\`:\n${codeBlock(build.stderr)}`
@@ -39,15 +41,18 @@ const command: BotCommand = {
       const cleanStdout = build.stdout
         .split('\n')
         .filter((line) => !line.endsWith('paths'))
-        .join('\n');
+        .join('\n')
+        .replace(/\/home\/[^/]+\/Ciri/g, '/home/Ciri'); // remove name
       stdoutMessage = await stdoutMessage.edit(
         appendCodeBlock(stdoutMessage.content, cleanStdout, 2000)
       );
       if (cleanStdout.includes('error TS')) {
         // TS error
+        clearInterval(interval);
         await message.channel.send(errorEmbed(`Build failed. Aborting...`));
         return;
       }
+      clearInterval(interval);
     }
     await message.channel.send(cleanEmbed('Restarting...'));
     exitTask(bot, message);

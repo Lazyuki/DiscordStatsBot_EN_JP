@@ -16,7 +16,6 @@ const command: BotCommand = {
       codeBlock('$ ' + gitpullCommand)
     );
     await message.channel.sendTyping();
-
     try {
       const gitpull = await exec(gitpullCommand);
       if (gitpull.stdout) {
