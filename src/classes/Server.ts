@@ -35,6 +35,8 @@ class Server {
     this.guild = guild;
     this.temp = {} as ServerTemp;
 
+    guild.members.fetch(); // fetch all members even if offline
+
     const configFileName = getConfigFilePath(guild.id);
     this.config = {} as ServerConfig;
     if (fs.existsSync(configFileName)) {
