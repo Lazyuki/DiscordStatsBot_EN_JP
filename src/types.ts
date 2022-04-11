@@ -99,6 +99,7 @@ export interface BotCommand {
   parentCommand?: string;
   replyInteraction?: (interaction: Interaction) => void | Promise<void>;
   onCommandInit?: OnCommandInit;
+  onServerInit?: OnCommandInit;
   onBotInit?: OnBotInit;
   onBotExit?: OnBotExit;
 }

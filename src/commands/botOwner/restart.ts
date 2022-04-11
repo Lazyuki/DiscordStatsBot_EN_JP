@@ -26,7 +26,7 @@ const command: BotCommand = {
         codeBlock('$ ' + buildCommand)
       );
       await message.channel.sendTyping();
-      const interval = setInterval(() => message.channel.sendTyping(), 14_000);
+      const interval = setInterval(() => message.channel.sendTyping(), 9_000); // Build takes long, make sure the typing indicator lasts until the end
 
       const build = await exec(buildCommand);
       if (build.stderr) {

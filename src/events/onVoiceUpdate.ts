@@ -33,22 +33,20 @@ const event: BotEvent<'voiceStateUpdate'> = {
       }
     }
   },
-  onBotInit: (bot) => {
+  onServerInit: (server) => {
     const now = new Date().getTime();
-    for (const server of Object.values(bot.servers)) {
-      server.temp.vc = {};
-      const voiceChannelCollection = server.guild.channels.cache.filter((c) => {
-        return c.isVoice(); // TODO: does it include stage?
-      }) as Collection<string, VoiceBasedChannel>;
-      voiceChannelCollection.forEach((channel) => {
-        channel.members.forEach((member) => {
-          if (member.user.bot) return;
-          if (isVoiceActive(member.voice)) {
-            server.temp.vc[member.id] = now;
-          }
-        });
+    server.temp.vc = {};
+    const voiceChannelCollection = server.guild.channels.cache.filter((c) => {
+      return c.isVoice(); // TODO: does it include stage?
+    }) as Collection<string, VoiceBasedChannel>;
+    voiceChannelCollection.forEach((channel) => {
+      channel.members.forEach((member) => {
+        if (member.user.bot) return;
+        if (isVoiceActive(member.voice)) {
+          server.temp.vc[member.id] = now;
+        }
       });
-    }
+    });
   },
   onBotExit: (bot) => {
     const now = new Date().getTime();

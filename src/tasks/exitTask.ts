@@ -13,12 +13,12 @@ export const RESTART_TMP_FILE = '.restart.tmp';
  * @param bot Bot
  */
 function exitTask(bot: Bot, message?: GuildMessage) {
-  bot.botExits.forEach((fn) => fn(bot));
-  saveConfig('bot', bot.config);
-
   for (const server of Object.values(bot.servers)) {
     server.save();
   }
+  bot.botExits.forEach((fn) => fn(bot));
+  saveConfig('bot', bot.config);
+
   if (message) {
     fs.writeFileSync(
       RESTART_TMP_FILE,

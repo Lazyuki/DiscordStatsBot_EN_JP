@@ -22,6 +22,7 @@ declare module '@/types' {
 function initialTask(bot: Bot) {
   const savedBotConfig = readConfig('bot');
   bot.config = savedBotConfig;
+  bot.botInits.forEach((init) => init(bot));
 
   const now = new Date();
   const startOfThisHour = startOfHour(now);

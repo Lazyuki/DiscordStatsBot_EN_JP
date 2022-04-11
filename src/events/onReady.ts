@@ -19,7 +19,6 @@ const event: BotEvent<'ready'> = {
     }
     logger.info(`===========================================`);
     logger.info(`READY! Logged in as ${bot.user?.tag}`);
-    bot.botInits.forEach((init) => init(bot));
     hourlyTask(bot);
     if (fs.existsSync(RESTART_TMP_FILE)) {
       const killedChannel = fs.readFileSync(RESTART_TMP_FILE, 'utf8');
