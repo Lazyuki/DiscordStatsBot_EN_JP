@@ -14,6 +14,33 @@ import { pluralize } from '@utils/pluralize';
 import { joinNaturally } from '@utils/formatString';
 
 type Member = PartialGuildMember | GuildMember;
+const bulkUpdator: Record<string, { oldMember: Member; newMember: Member }> =
+  {};
+
+const event: BotEvent<'guildMemberUpdate'> = {
+  eventName: 'guildMemberUpdate',
+  skipOnDebug: true,
+  processEvent: async (bot, oldMember, newMember) => {
+    if (newMember.guild.id !== EJLX) return;
+    const roleDiff = oldMember.roles.cache.difference(newMember.roles.cache);
+    const ewbf = getTextChannel(newMember.guild, EWBF);
+    if (!ewbf) return;
+    if (roleDiff.size && EJLX_LANG_ROLE_IDS.some((r) => roleDiff.has(r))) {
+      // EJLX language role update
+      if (newMember.id in bulkUpdator) {
+        bulkUpdator[newMember.id]['newMember'] = newMember;
+      } else {
+        bulkUpdator[newMember.id] = {
+          oldMember,
+          newMember,
+        };
+        setTimeout(async () => {
+          await notifyLanguageRoleChange(newMember.id, ewbf);
+        }, 5_000);
+      }
+    }
+  },
+};
 
 interface RoleChangeAuditLogEntry {
   key: '$add' | '$remove';
@@ -139,33 +166,5 @@ async function notifyLanguageRoleChange(
     }
   }
 }
-
-const bulkUpdator: Record<string, { oldMember: Member; newMember: Member }> =
-  {};
-
-const event: BotEvent<'guildMemberUpdate'> = {
-  eventName: 'guildMemberUpdate',
-  skipOnDebug: true,
-  processEvent: async (bot, oldMember, newMember) => {
-    if (newMember.guild.id !== EJLX) return;
-    const roleDiff = oldMember.roles.cache.difference(newMember.roles.cache);
-    const ewbf = getTextChannel(newMember.guild, EWBF);
-    if (!ewbf) return;
-    if (roleDiff.size && EJLX_LANG_ROLE_IDS.some((r) => roleDiff.has(r))) {
-      // EJLX language role update
-      if (newMember.id in bulkUpdator) {
-        bulkUpdator[newMember.id]['newMember'] = newMember;
-      } else {
-        bulkUpdator[newMember.id] = {
-          oldMember,
-          newMember,
-        };
-        setTimeout(async () => {
-          await notifyLanguageRoleChange(newMember.id, ewbf);
-        }, 5_000);
-      }
-    }
-  },
-};
 
 export default event;

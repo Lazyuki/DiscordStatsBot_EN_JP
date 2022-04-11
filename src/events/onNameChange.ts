@@ -11,6 +11,36 @@ import { makeEmbed } from '@utils/embed';
 import { BotEvent } from '@/types';
 import { getTextChannel } from '@utils/guildUtils';
 
+const memberEvent: BotEvent<'guildMemberUpdate'> = {
+  eventName: 'guildMemberUpdate',
+  skipOnDebug: true,
+  processEvent: async (bot, oldMember, newMember) => {
+    if (oldMember.nickname === newMember.nickname) return;
+    const server = bot.servers[newMember.guild.id];
+    if (!server.config.logNameChanges) return;
+    const userLogChannelId = server.config.userLogChannel;
+    const userLogChannel = getTextChannel(server.guild, userLogChannelId);
+    if (!userLogChannel) return;
+    await notifyNicknameChange(oldMember, newMember, userLogChannel);
+  },
+};
+
+const userEvent: BotEvent<'userUpdate'> = {
+  eventName: 'userUpdate',
+  skipOnDebug: true,
+  processEvent: async (bot, oldUser, newUser) => {
+    if (oldUser.tag === newUser.tag) return;
+    for (const server of Object.values(bot.servers)) {
+      if (!server.config.logNameChanges) continue;
+      if (!server.guild.members.cache.has(newUser.id)) return; // user not in the server
+      const userLogChannelId = server.config.userLogChannel;
+      const userLogChannel = getTextChannel(server.guild, userLogChannelId);
+      if (!userLogChannel) continue;
+      await notifyUsernameChange(oldUser, newUser, userLogChannel);
+    }
+  },
+};
+
 async function sendNameChange(
   message: string,
   user: User,
@@ -68,34 +98,5 @@ async function notifyUsernameChange(
     channel
   );
 }
-
-const memberEvent: BotEvent<'guildMemberUpdate'> = {
-  eventName: 'guildMemberUpdate',
-  skipOnDebug: true,
-  processEvent: async (bot, oldMember, newMember) => {
-    if (oldMember.nickname === newMember.nickname) return;
-    const server = bot.servers[newMember.guild.id];
-    if (!server.config.logNameChanges) return;
-    const userLogChannelId = server.config.userLogChannel;
-    const userLogChannel = getTextChannel(server.guild, userLogChannelId);
-    if (!userLogChannel) return;
-    await notifyNicknameChange(oldMember, newMember, userLogChannel);
-  },
-};
-
-const userEvent: BotEvent<'userUpdate'> = {
-  eventName: 'userUpdate',
-  skipOnDebug: true,
-  processEvent: async (bot, oldUser, newUser) => {
-    if (oldUser.tag === newUser.tag) return;
-    for (const server of Object.values(bot.servers)) {
-      if (!server.config.logNameChanges) continue;
-      const userLogChannelId = server.config.userLogChannel;
-      const userLogChannel = getTextChannel(server.guild, userLogChannelId);
-      if (!userLogChannel) continue;
-      await notifyUsernameChange(oldUser, newUser, userLogChannel);
-    }
-  },
-};
 
 export default [memberEvent, userEvent];

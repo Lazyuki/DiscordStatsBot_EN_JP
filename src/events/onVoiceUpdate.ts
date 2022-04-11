@@ -8,18 +8,6 @@ declare module '@/types' {
   }
 }
 
-export function isVoiceActive(voiceState: VoiceState) {
-  return (
-    voiceState.channel &&
-    voiceState.channelId !== voiceState.guild.afkChannelId &&
-    !voiceState.deaf
-  );
-}
-
-export function getSecondDiff(now: number, then: number) {
-  return Math.round((now - then) / 1000);
-}
-
 const event: BotEvent<'voiceStateUpdate'> = {
   eventName: 'voiceStateUpdate',
   skipOnDebug: false,
@@ -77,5 +65,17 @@ const event: BotEvent<'voiceStateUpdate'> = {
     }
   },
 };
+
+export function isVoiceActive(voiceState: VoiceState) {
+  return (
+    voiceState.channel &&
+    voiceState.channelId !== voiceState.guild.afkChannelId &&
+    !voiceState.deaf
+  );
+}
+
+export function getSecondDiff(now: number, then: number) {
+  return Math.round((now - then) / 1000);
+}
 
 export default event;

@@ -1,10 +1,4 @@
-import {
-  GuildMember,
-  Invite,
-  TextBasedChannel,
-  Util,
-  Vanity,
-} from 'discord.js';
+import { GuildMember, Invite, TextBasedChannel, Util } from 'discord.js';
 
 import { editEmbed, makeEmbed } from '@utils/embed';
 import {
@@ -26,7 +20,7 @@ import {
   MemberJoinInvites,
   QuickBanConfig,
 } from '@/types';
-import { stripIndent, stripIndents } from 'common-tags';
+import { stripIndents } from 'common-tags';
 import { getTextChannel } from '@utils/guildUtils';
 import { resolveInviteLink } from '@utils/resolveIntiteLink';
 import {
@@ -35,8 +29,8 @@ import {
   MINUTE_IN_MILLIS,
 } from '@utils/datetime';
 import Server from '@classes/Server';
-import { getServerEmoji, userToTagAndId } from '@utils/formatString';
-import { waitForButton, waitForReactions } from '@utils/asyncCollector';
+import { userToTagAndId } from '@utils/formatString';
+import { waitForButton } from '@utils/asyncCollector';
 
 const event: BotEvent<'guildMemberAdd'> = {
   eventName: 'guildMemberAdd',

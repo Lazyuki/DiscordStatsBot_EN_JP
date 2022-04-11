@@ -8,13 +8,12 @@ import {
   MemberNotFoundError,
   CommandArgumentError,
 } from '@/errors';
-import { EJLX } from '@utils/constants';
 import { errorEmbed } from '@utils/embed';
 import safeSend from '@utils/safeSend';
 import { isNotDM } from '@utils/guildUtils';
 import isRateLimited from '@utils/rateLimit';
 import { optionParser } from '@utils/optionParser';
-import { code, userToTagAndId } from '@utils/formatString';
+import { userToTagAndId } from '@utils/formatString';
 import { insertCommands } from '@database/statements';
 import { deleteAfter } from '@utils/safeDelete';
 

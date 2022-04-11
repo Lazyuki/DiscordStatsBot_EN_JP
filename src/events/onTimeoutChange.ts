@@ -9,21 +9,6 @@ import { stripIndent } from 'common-tags';
 import runAt, { getMemberOrRepeat } from '@utils/runAt';
 import Server from '@classes/Server';
 
-function millisToClosestMinuteDuration(millis: number) {
-  const minutes = Math.round(millis / 60_000);
-  return millisToDuration(minutes * 60_000);
-}
-
-async function removeTimeoutRole(member: GuildMember, server: Server) {
-  if (server.config.timeoutIndicatorRole) {
-    const unmuteAt = member.communicationDisabledUntilTimestamp;
-    const now = new Date().getTime();
-    if (!unmuteAt || Math.abs(unmuteAt - now) < 5_000) {
-      await member.roles.remove(server.config.timeoutIndicatorRole);
-    }
-  }
-}
-
 const event: BotEvent<'guildMemberUpdate'> = {
   eventName: 'guildMemberUpdate',
   skipOnDebug: true,
@@ -157,6 +142,21 @@ const event: BotEvent<'guildMemberUpdate'> = {
     }
   },
 };
+
+function millisToClosestMinuteDuration(millis: number) {
+  const minutes = Math.round(millis / 60_000);
+  return millisToDuration(minutes * 60_000);
+}
+
+async function removeTimeoutRole(member: GuildMember, server: Server) {
+  if (server.config.timeoutIndicatorRole) {
+    const unmuteAt = member.communicationDisabledUntilTimestamp;
+    const now = new Date().getTime();
+    if (!unmuteAt || Math.abs(unmuteAt - now) < 5_000) {
+      await member.roles.remove(server.config.timeoutIndicatorRole);
+    }
+  }
+}
 
 interface TimeoutChangeAuditLogEntry {
   key: 'communication_disabled_until';

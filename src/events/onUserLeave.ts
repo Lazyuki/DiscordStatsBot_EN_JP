@@ -7,27 +7,10 @@ import {
 
 import { insertVoiceSeconds } from '@database/statements';
 import { makeEmbed } from '@utils/embed';
-import { EJLX, EWBF, JHO, RAI } from '@utils/constants';
+import { EJLX, JHO, RAI } from '@utils/constants';
 import { BotEvent } from '@/types';
 import { getSecondDiff } from './onVoiceUpdate';
 import { getTextChannel } from '@utils/guildUtils';
-
-async function notifyUserLeave(
-  member: PartialGuildMember | GuildMember,
-  channel: TextBasedChannel
-) {
-  await channel.send(
-    makeEmbed({
-      color: '#c13c35',
-      description: `📤 **${Util.escapeMarkdown(
-        member.user.tag
-      )}** has \`left\` the server. (${member.id})`,
-      footer: `User Leave (Members: ${member.guild.memberCount})`,
-      footerIcon: member.user.displayAvatarURL(),
-      timestamp: true,
-    })
-  );
-}
 
 const event: BotEvent<'guildMemberRemove'> = {
   eventName: 'guildMemberRemove',
@@ -88,5 +71,22 @@ const event: BotEvent<'guildMemberRemove'> = {
     }
   },
 };
+
+async function notifyUserLeave(
+  member: PartialGuildMember | GuildMember,
+  channel: TextBasedChannel
+) {
+  await channel.send(
+    makeEmbed({
+      color: '#c13c35',
+      description: `📤 **${Util.escapeMarkdown(
+        member.user.tag
+      )}** has \`left\` the server. (${member.id})`,
+      footer: `User Leave (Members: ${member.guild.memberCount})`,
+      footerIcon: member.user.displayAvatarURL(),
+      timestamp: true,
+    })
+  );
+}
 
 export default event;
