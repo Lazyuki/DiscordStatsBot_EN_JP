@@ -1,5 +1,5 @@
 import { CommandArgumentError } from '@/errors';
-import { BotCommand } from '@/types';
+import { BotCommand, GuildMessage } from '@/types';
 import {
   clearModLogForUser,
   insertModLog,
@@ -115,7 +115,7 @@ const warn: BotCommand = {
         );
       }
 
-      await message.channel.send(
+      const askFallback = await message.channel.send(
         warningEmbed(
           `Failed to DM ${unreachableMembers.join(
             ', '
@@ -126,7 +126,11 @@ const warn: BotCommand = {
           } and ping them?**`
         )
       );
-      const fallbackChannel = await getFallbackChannel(message, server);
+      const fallbackChannel = await getFallbackChannel(
+        askFallback as GuildMessage,
+        message.author.id,
+        server
+      );
       if (fallbackChannel) {
         const fallback = await fallbackChannel.send(
           makeEmbed({

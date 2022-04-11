@@ -1,5 +1,5 @@
 import { CommandArgumentError } from '@/errors';
-import { BotCommand } from '@/types';
+import { BotCommand, GuildMessage } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
 import {
   cleanEmbed,
@@ -9,7 +9,7 @@ import {
   warningEmbed,
 } from '@utils/embed';
 import { joinNaturally } from '@utils/formatString';
-import { GuildMember } from 'discord.js';
+import { GuildMember, Message } from 'discord.js';
 import { getFallbackChannel } from '@utils/asyncCollector';
 
 const command: BotCommand = {
@@ -50,47 +50,54 @@ const command: BotCommand = {
     if (failedMembers.length === 0) {
       await message.channel.send(successEmbed(`Successfully messaged them`));
       return;
-    } else if (failedMembers.length === members.length) {
-      await message.channel.send(
-        errorEmbed(
-          `Failed to messaged them.\n\n❓ Would you like me to send this in ${
-            server.config.userDMFallbackChannel
-              ? `<#${server.config.userDMFallbackChannel}>`
-              : 'a public channel'
-          } and ping them?`
-        )
-      );
     } else {
-      await message.channel.send(
-        warningEmbed(
-          `Successfully messaged them except for ${joinNaturally(
-            failedMembers.map((m) => m.toString())
-          )}.\n\n❓ **Would you like me to send this in ${
-            server.config.userDMFallbackChannel
-              ? `<#${server.config.userDMFallbackChannel}>`
-              : 'a public channel'
-          } and ping them?**`
-        )
+      let askFallback: Message;
+      if (failedMembers.length === members.length) {
+        askFallback = await message.channel.send(
+          errorEmbed(
+            `Failed to messaged them.\n\n❓ Would you like me to send this in ${
+              server.config.userDMFallbackChannel
+                ? `<#${server.config.userDMFallbackChannel}>`
+                : 'a public channel'
+            } and ping them?`
+          )
+        );
+      } else {
+        askFallback = await message.channel.send(
+          warningEmbed(
+            `Successfully messaged them except for ${joinNaturally(
+              failedMembers.map((m) => m.toString())
+            )}.\n\n❓ **Would you like me to send this in ${
+              server.config.userDMFallbackChannel
+                ? `<#${server.config.userDMFallbackChannel}>`
+                : 'a public channel'
+            } and ping them?**`
+          )
+        );
+      }
+      const fallbackChannel = await getFallbackChannel(
+        askFallback as GuildMessage,
+        message.author.id,
+        server
       );
-    }
-    const fallbackChannel = await getFallbackChannel(message, server);
-    if (fallbackChannel) {
-      const fallback = await fallbackChannel?.send(
-        makeEmbed({
-          content: `${failedMembers.join(
-            ' '
-          )} We could not send this message as a DM because of your privacy settings. Contact the moderators if you think this is a mistake.`,
-          title: `Message from the moderators of "${server.guild.name}"`,
-          description: restContent,
-        })
-      );
-      await message.channel.send(
-        successEmbed(
-          `Successfully sent the message in ${fallbackChannel}.\n[Jump](${fallback.url})`
-        )
-      );
-    } else {
-      await message.channel.send(cleanEmbed(`Cancelled`));
+      if (fallbackChannel) {
+        const fallback = await fallbackChannel?.send(
+          makeEmbed({
+            content: `${failedMembers.join(
+              ' '
+            )} We could not send this message as a DM because of your privacy settings. Contact the moderators if you think this is a mistake.`,
+            title: `Message from the moderators of "${server.guild.name}"`,
+            description: restContent,
+          })
+        );
+        await message.channel.send(
+          successEmbed(
+            `Successfully sent the message in ${fallbackChannel}.\n[Jump](${fallback.url})`
+          )
+        );
+      } else {
+        await message.channel.send(cleanEmbed(`Cancelled`));
+      }
     }
   },
 };

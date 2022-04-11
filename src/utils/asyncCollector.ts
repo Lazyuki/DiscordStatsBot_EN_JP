@@ -187,24 +187,25 @@ export async function waitForBanConfirm(
 }
 
 export async function getFallbackChannel(
-  message: GuildMessage,
+  buttonMessage: GuildMessage,
+  authorId: string,
   server: Server,
   waitForSeconds: number = 60
 ) {
-  const yes = await waitForYesOrNo(message, message.author.id, waitForSeconds);
+  const yes = await waitForYesOrNo(buttonMessage, authorId, waitForSeconds);
   if (!yes) return null;
   if (server.config.userDMFallbackChannel) {
     return getTextChannel(server.guild, server.config.userDMFallbackChannel);
   }
-  await message.channel.send(
+  await buttonMessage.channel.send(
     makeEmbed({
       color: 'PURPLE',
       description: `Please specify the channel. Make sure they have access to the channel.`,
     })
   );
   const filter = (m: Message) =>
-    m.author.id === message.author.id && m.mentions.channels.size > 0;
-  const collector = message.channel.createMessageCollector({
+    m.author.id === authorId && m.mentions.channels.size > 0;
+  const collector = buttonMessage.channel.createMessageCollector({
     filter,
     time: waitForSeconds * 1000,
   });

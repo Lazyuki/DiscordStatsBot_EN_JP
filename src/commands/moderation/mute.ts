@@ -247,14 +247,18 @@ const mute: BotCommand = {
         : `and DMed them except for ${joinNaturally(
             noDMs.map((m) => m.toString())
           )}.` + fallbackSuggestion;
-      await message.channel.send(
+      const askFallback = await message.channel.send(
         warningEmbed(
           `Successfully timed out ${joinNaturally(
             members.map((m) => m.toString())
           )} ${dmInfo}`
         )
       );
-      const fallbackChannel = await getFallbackChannel(message, server);
+      const fallbackChannel = await getFallbackChannel(
+        askFallback as GuildMessage,
+        message.author.id,
+        server
+      );
       if (fallbackChannel) {
         const fallback = await fallbackChannel.send({
           ...timeoutDMembed,
