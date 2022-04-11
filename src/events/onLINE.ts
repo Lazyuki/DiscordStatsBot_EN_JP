@@ -59,17 +59,19 @@ const event: BotEvent<'messageCreate'> = {
 
 async function postLINE(message: GuildMessage, tokens: string[]) {
   try {
+    const nl = (s?: string | null) => (s ? `${s}\n` : '');
     const embedString = message.embeds.length
-      ? `${message.embeds[0].author?.name || ''}\n${
-          message.embeds[0].title || ''
-        }\n${message.embeds[0].description || ''}`.trim()
+      ? `${nl(message.embeds[0].author?.name)}${nl(
+          message.embeds[0].title
+        )}${nl(message.embeds[0].description)}`.trim()
       : '';
     const formData = {
-      message:
-        `#${message.channel.name}\n${message.author.username}:\n${message.cleanContent}\n${embedString}`.substring(
-          0,
-          1000 // LINE Notify MAX is 1000
-        ),
+      message: `#${message.channel.name}\n${message.author.username}:\n${nl(
+        message.cleanContent
+      )}${embedString}`.substring(
+        0,
+        1000 // LINE Notify MAX is 1000
+      ),
     };
     const params = new URLSearchParams(formData);
     await Promise.all(

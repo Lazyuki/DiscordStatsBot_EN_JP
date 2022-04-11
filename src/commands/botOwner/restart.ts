@@ -8,6 +8,7 @@ import { codeBlock } from 'common-tags';
 
 const command: BotCommand = {
   name: 'restart',
+  aliases: ['rs'],
   isAllowed: ['BOT_OWNER'],
   description: 'Restart the bot',
   options: [
