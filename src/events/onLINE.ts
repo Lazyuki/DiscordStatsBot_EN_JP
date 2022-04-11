@@ -13,7 +13,7 @@ const event: BotEvent<'messageCreate'> = {
     const userMentions = message.mentions.users;
     const roleMentions = message.mentions.roles;
 
-    if (userMentions.size === 0 || roleMentions.size === 0) return;
+    if (userMentions.size === 0 && roleMentions.size === 0) return;
     if (!bot.config.lineNotify) return;
     const userIds = Object.keys(bot.config.lineNotify);
     const hasActiveStaff = roleMentions.has(ACTIVE_STAFF);
@@ -24,7 +24,8 @@ const event: BotEvent<'messageCreate'> = {
       )) {
         const member = message.guild?.members.cache.get(userId);
         if (!member) continue;
-        const isOffline = member.presence?.status === 'offline';
+        const isOffline =
+          !member.presence || member.presence.status === 'offline';
         const noActiveStaffRole = !member.roles.cache.has(ACTIVE_STAFF);
         if (hasActiveStaff) {
           const activeStaffConfig = lineNotify.activeStaff;
