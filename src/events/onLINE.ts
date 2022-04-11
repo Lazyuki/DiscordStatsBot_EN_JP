@@ -1,3 +1,4 @@
+import logger from '@/logger';
 import { BotEvent, GuildMessage } from '@/types';
 import checkSafeMessage from '@utils/checkSafeMessage';
 import { ACTIVE_STAFF } from '@utils/constants';
@@ -56,27 +57,34 @@ const event: BotEvent<'messageCreate'> = {
 };
 
 async function postLINE(message: GuildMessage, tokens: string[]) {
-  const embedDescription = message.embeds.length
-    ? message.embeds[0].description || message.embeds[0].title || ''
+  const embedString = message.embeds.length
+    ? `${message.embeds[0].author?.name || ''}\n${
+        message.embeds[0].title || ''
+      }\n${message.embeds[0].description || ''}`.trim()
     : '';
-  await Promise.all(
-    tokens.map(
-      async (token) =>
-        await axios.post(
-          'https://notify-api.line.me/api/notify',
-          {
-            message: `#${message.channel.name}\n${message.author.username}:\n${message.cleanContent}\n${embedDescription}`,
-          },
-          {
+  const formData = new FormData();
+  formData.append(
+    'message',
+    `#${message.channel.name}\n${message.author.username}:\n${message.cleanContent}\n${embedString}`
+  );
+  try {
+    await Promise.all(
+      tokens.map(
+        async (token) =>
+          await axios.post('https://notify-api.line.me/api/notify', formData, {
             headers: {
               authorization: `Bearer ${token}`,
               'content-type':
                 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW',
             },
-          }
-        )
-    )
-  );
+          })
+      )
+    );
+  } catch (e) {
+    const err = e as Error;
+    // To prevent infinite loop
+    logger.error(`LINE Notify API Error: ${err.name}: ${err.message}`);
+  }
 }
 
 export default event;
