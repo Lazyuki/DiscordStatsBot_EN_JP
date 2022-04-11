@@ -20,9 +20,15 @@ This is made for English & Japanese servers.
    npm install
    ```
 
-2. Create `.env` based on `sample.env`
+2. Install pm2-logrotate
 
-3. Run the bot
+   ```bash
+   ./node_modules/.bin/pm2 install pm2-logrotate
+   ```
+
+3. Create `.env` based on `sample.env`
+
+4. Run the bot
 
    ```bash
    npm start

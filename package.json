@@ -16,7 +16,6 @@
   "homepage": "https://github.com/Lazyuki/DiscordStatsBot_EN_JP#readme",
   "scripts": {
     "dev": "node --es-module-specifier-resolution=node --enable-source-maps build/main.js",
-    "watch": "",
     "build": "rm -rf build && tsc -p . && tscpaths -p tsconfig.json -s ./src -o ./build && cp ./src/database/schema.sql ./build/database/schema.sql",
     "build:watch": "pm2 start npm --watch -- run build",
     "start": "npm run build && pm2 start build/main.js --name ciri --node-args='--es-module-specifier-resolution=node --enable-source-maps' --time",
