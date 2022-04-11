@@ -52,7 +52,7 @@ const updateEvent: BotEvent<'messageUpdate'> = {
     await modLog.send(
       makeEmbed({
         color: EDIT_COLOR,
-        authorName: `${newMessage.author.tag} (${newMessage.author})`,
+        authorName: `${newMessage.author.tag} (${newMessage.author.id})`,
         authorIcon: `${newMessage.author.displayAvatarURL()}`,
         title: `Message Edited after ${millisToDuration(timeDiffMillis)}`,
         fields: splitFields([
@@ -97,7 +97,7 @@ const deleteEvent: BotEvent<'messageDelete'> = {
       const deleteLog = await modLog.send(
         makeEmbed({
           color: DELETE_COLOR,
-          authorName: `${message.author.tag} (${message.author})`,
+          authorName: `${message.author.tag} (${message.author.id})`,
           authorIcon: `${message.author.displayAvatarURL()}`,
           title: `Message Deleted after ${millisToDuration(timeDiffMillis)}`,
           description: message.content || '*empty*',

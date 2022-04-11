@@ -36,6 +36,7 @@ function initialTask(bot: Bot) {
   bot.utcDay = getTodayISO();
 
   setTimeout(() => {
+    hourlyTask(bot);
     setInterval(() => {
       hourlyTask(bot);
     }, HOUR_MILLIS);
@@ -43,6 +44,7 @@ function initialTask(bot: Bot) {
   console.log(`Next hour task in ${millisToDuration(millisUntilNextHour)}`);
 
   setTimeout(() => {
+    dailyTask(bot);
     setInterval(() => {
       dailyTask(bot);
     }, HOUR_MILLIS * 24);
