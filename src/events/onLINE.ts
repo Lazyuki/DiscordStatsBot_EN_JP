@@ -68,10 +68,12 @@ async function postLINE(message: GuildMessage, tokens: string[]) {
     const formData = {
       message: `#${message.channel.name}\n${message.author.username}:\n${nl(
         message.cleanContent
-      )}${embedString}`.substring(
-        0,
-        1000 // LINE Notify MAX is 1000
-      ),
+      )}${embedString}`
+        .trim()
+        .substring(
+          0,
+          1000 // LINE Notify MAX is 1000
+        ),
     };
     const params = new URLSearchParams(formData);
     await Promise.all(
