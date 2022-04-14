@@ -101,18 +101,16 @@ const command: BotCommand = {
           !voiceOnly
             ? `Messages: ${spacePadLeft(messages, messagePadding)} `
             : ''
-        }${!messageOnly ? `Voice: ${secondsToVcTime(voiceSeconds)}` : ''}\n`;
+        }${!messageOnly ? `VC: ${secondsToVcTime(voiceSeconds)}` : ''}\n`;
       }
     } else {
       const maxVoiceHours = Math.ceil(maxVoice / (60 * 60));
+      const voiceRatio =
+        (maxVoiceHours * VOICE_HOUR_MULTIPLIER) / (maxMessages || 1);
       const maxVoiceBarLength = maxVoiceHours
         ? voiceOnly
           ? MAX_BAR_LENGTH
-          : Math.max(
-              (MAX_BAR_LENGTH * maxMessages) /
-                (maxVoiceHours * VOICE_HOUR_MULTIPLIER),
-              1
-            )
+          : Math.max((MAX_BAR_LENGTH * voiceRatio) / (voiceRatio + 1), 1)
         : 0;
       const messageBarUnit = voiceOnly
         ? 1
