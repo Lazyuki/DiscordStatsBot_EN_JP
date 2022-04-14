@@ -17,6 +17,8 @@ export function millisToDuration(millis?: number | null) {
 export function secondsToVcTime(seconds: number) {
   if (seconds === 0) {
     return 'Never';
+  } else if (seconds < 60) {
+    return `${seconds}sec`;
   }
   const millis = seconds * 1000;
   const hours = Math.floor(millis / HOUR_IN_MILLIS);
