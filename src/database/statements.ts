@@ -137,6 +137,11 @@ function makeGetAllRows<P, R>(sql: string) {
   return (params: P) => sqlToJs(statement.all(jsToSql(params))) as R[];
 }
 
+function makeGetAllRowsNoParam<R>(sql: string) {
+  const statement = db.prepare(sql);
+  return () => sqlToJs(statement.all()) as R[];
+}
+
 function makeStatement<P>(sql: string) {
   const statement = db.prepare<P>(sql);
   return (params: P) => statement.run(jsToSql(params));
@@ -374,9 +379,37 @@ export const getVoiceLeaderboard = makeGetAllRows<GuildId, UserCount>(`
   ORDER BY count DESC
 `);
 
+export const getCommandLeaderboard = makeGetAllRows<
+  GuildId,
+  Count & { command: string }
+>(`
+  SELECT command, SUM(command_count) as count
+  FROM commands
+  WHERE guild_id = $guildId
+  GROUP BY command
+  ORDER BY count DESC
+`);
+
+export const getGlobalCommandLeaderboard = makeGetAllRowsNoParam<
+  Count & { command: string }
+>(`
+  SELECT command, SUM(command_count) as count
+  FROM commands
+  GROUP BY command
+  ORDER BY count DESC
+`);
+
 export const getUserActivity = makeGetAllRows<GuildUser, DateCount>(`
     SELECT SUM(message_count) as count, utc_date
     FROM messages
+    WHERE guild_id = $guildId AND user_id = $userId
+    GROUP BY utc_date
+    ORDER BY utc_date ASC
+`);
+
+export const getUserVoiceActivity = makeGetAllRows<GuildUser, DateCount>(`
+    SELECT SUM(second_count) as count, utc_date
+    FROM voice
     WHERE guild_id = $guildId AND user_id = $userId
     GROUP BY utc_date
     ORDER BY utc_date ASC

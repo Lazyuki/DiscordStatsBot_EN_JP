@@ -42,7 +42,7 @@ const command: BotCommand = {
         .split('\n')
         .filter((line) => !line.endsWith('paths'))
         .join('\n')
-        .replace(/\/home\/[^/]+\/Ciri/g, '/home/Ciri'); // remove name
+        .replace(/\/home\/[^/]+\/Ciri/g, '/home/geralt/Ciri'); // remove name
       stdoutMessage = await stdoutMessage.edit(
         appendCodeBlock(stdoutMessage.content, cleanStdout, 2000)
       );

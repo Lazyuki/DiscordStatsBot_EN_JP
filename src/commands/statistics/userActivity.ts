@@ -1,11 +1,19 @@
+import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
-import { getUserActivity } from '@database/statements';
+import { getUserActivity, getUserVoiceActivity } from '@database/statements';
 import { getUserId } from '@utils/argumentParsers';
-import { pastDays, dateStringForActivity } from '@utils/datetime';
-import { makeEmbed } from '@utils/embed';
+import {
+  pastDays,
+  dateStringForActivity,
+  secondsToVcTime,
+} from '@utils/datetime';
+import { cleanEmbed, makeEmbed } from '@utils/embed';
 import { codeBlock } from '@utils/formatString';
 import { idToUser } from '@utils/guildUtils';
 import { pluralCount } from '@utils/pluralize';
+
+const MAX_BAR_LENGTH = 16;
+const VOICE_HOUR_MULTIPLIER = 100;
 
 const command: BotCommand = {
   name: 'activity',
@@ -16,66 +24,136 @@ const command: BotCommand = {
     {
       name: 'number',
       short: 'n',
-      description: 'Show number of messages instead of relative activity',
+      description: 'Show actual numbers instead of bars',
+      bool: true,
+    },
+    {
+      name: 'messageOnly',
+      short: 'm',
+      description: 'Only show message activity',
+      bool: true,
+    },
+    {
+      name: 'voiceOnly',
+      short: 'v',
+      description: 'Only show voice activity',
       bool: true,
     },
   ],
   description: 'User activity for the past 30 days',
-  examples: ['ac', 'ac -n', 'ac @geralt'],
+  examples: ['ac', 'ac -n', 'ac @geralt', 'ac -v'],
   normalCommand: async ({ message, bot, server, options, content }) => {
     const showNumbers = Boolean(options['number']);
-    const userId = getUserId(bot, server, content) || message.author.id;
-    const userActivity = getUserActivity({
-      guildId: server.guild.id,
-      userId: userId,
-    });
+    const messageOnly = Boolean(options['messageOnly']);
+    const voiceOnly = Boolean(options['voiceOnly']);
+    if (messageOnly && voiceOnly) {
+      throw new CommandArgumentError('You can only select either `-m` or `-v`');
+    }
 
-    if (!userActivity.length) {
-      await message.channel.send('User not active');
+    const userId = getUserId(bot, server, content) || message.author.id;
+    const userMessageActivity = voiceOnly
+      ? []
+      : getUserActivity({
+          guildId: server.guild.id,
+          userId,
+        });
+    const userVoiceActivity = messageOnly
+      ? []
+      : getUserVoiceActivity({
+          guildId: server.guild.id,
+          userId,
+        });
+
+    const hasMessage = userMessageActivity.length > 0;
+    const hasVoice = userVoiceActivity.length > 0;
+
+    if (!hasMessage && !hasVoice) {
+      await message.channel.send(cleanEmbed('No activity in the past 30 days'));
       return;
     }
 
     const userStr =
       server.guild.members.cache.get(userId)?.displayName || idToUser(userId);
 
-    const maxBars = '---------------';
     let maxMessages = 0;
-    const dateToCount: Record<string, number> = {};
-    userActivity.forEach((ac) => {
+    let maxVoice = 0;
+    const dateToMessages: Record<string, number> = {};
+    const dateToVoice: Record<string, number> = {};
+    userMessageActivity.forEach((ac) => {
       if (ac.count > maxMessages) maxMessages = ac.count;
-      dateToCount[ac.date] = ac.count;
+      dateToMessages[ac.date] = ac.count;
+    });
+    userVoiceActivity.forEach((ac) => {
+      if (ac.count > maxVoice) maxVoice = ac.count;
+      dateToVoice[ac.date] = ac.count;
     });
 
     const past30Days = pastDays(30);
 
     let chart = '';
-    let unit = 1;
+    let footer: string | undefined = undefined;
     if (showNumbers) {
       for (const date of past30Days) {
-        const count = dateToCount[date.toISOString()] || 0;
-        chart += `${dateStringForActivity(date)}: ${count}\n`;
+        const messages = dateToMessages[date.toISOString()] || 0;
+        const voiceSeconds = dateToVoice[date.toISOString()] || 0;
+        const messagePadding = String(maxMessages).length;
+        chart += `${dateStringForActivity(date)}: ${
+          !voiceOnly
+            ? `Messages: ${spacePadLeft(messages, messagePadding)} `
+            : ''
+        }${!messageOnly ? `Voice: ${secondsToVcTime(voiceSeconds)}` : ''}\n`;
       }
     } else {
-      unit = Math.ceil(maxMessages / maxBars.length);
+      const maxVoiceHours = Math.ceil(maxVoice / (60 * 60));
+      const maxVoiceBarLength = maxVoiceHours
+        ? voiceOnly
+          ? MAX_BAR_LENGTH
+          : Math.max(
+              (MAX_BAR_LENGTH * maxMessages) /
+                (maxVoiceHours * VOICE_HOUR_MULTIPLIER),
+              1
+            )
+        : 0;
+      const messageBarUnit = voiceOnly
+        ? 1
+        : hasMessage
+        ? Math.ceil(maxMessages / (MAX_BAR_LENGTH - maxVoiceBarLength))
+        : 0;
+      const voiceBarUnit = messageOnly
+        ? 1
+        : hasVoice
+        ? Math.ceil(maxVoice / maxVoiceBarLength)
+        : 0;
+      footer = `${
+        voiceOnly || !hasMessage
+          ? ''
+          : `- is ${pluralCount('message', 's', messageBarUnit)}\n`
+      }${
+        messageOnly || !hasVoice
+          ? ''
+          : `+ is ${secondsToVcTime(voiceBarUnit)} of VC`
+      }`.trim();
       for (const date of past30Days) {
-        console.log(date.toISOString());
-        const count = dateToCount[date.toISOString()] || 0;
-        chart += `${dateStringForActivity(date)}: ${maxBars.substring(
-          0,
-          Math.floor(count / unit)
-        )}\n`;
+        const messages = dateToMessages[date.toISOString()] || 0;
+        const voiceSeconds = dateToVoice[date.toISOString()] || 0;
+        chart += `${dateStringForActivity(date)}: ${'-'.repeat(
+          Math.floor(messages / messageBarUnit)
+        )}${'+'.repeat(Math.floor(voiceSeconds / voiceBarUnit))}\n`;
       }
     }
     await message.channel.send(
       makeEmbed({
         title: `User activity for ${userStr}`,
         description: codeBlock(chart),
-        footer: !showNumbers
-          ? `Bar unit: ${pluralCount('message', 's', unit)}`
-          : undefined,
+        footer,
       })
     );
   },
 };
+
+function spacePadLeft(num: number, totalLength: number) {
+  const numLength = String(num).length;
+  return ' '.repeat(totalLength - numLength) + num;
+}
 
 export default command;
