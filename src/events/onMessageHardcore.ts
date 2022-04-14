@@ -26,7 +26,18 @@ const createEvent: BotEvent<'messageCreate'> = {
       message.member.roles.cache.hasAny(...server.config.japaneseRoles) &&
       !message.member.roles.cache.has(NE); // EJLX specific
 
-    const { lang, escaped } = checkLang(message.content);
+    let content = message.content;
+    if (!isJapanese) {
+      // for welcoming
+      content = content.replace(
+        /what'?s?\s(is\s)?(yo)?ur\snative\slang(uage)?/i,
+        ''
+      );
+      content = content.replace(/welcome/i, '');
+    }
+    content = content.replace(/```\S*\n[\s\S]*?```/g, ''); // ignore code block
+
+    const { lang, escaped } = checkLang(content);
     if (escaped) return;
     if (isJapanese && lang === 'JP') {
       safeDelete(message);
