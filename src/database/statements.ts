@@ -434,6 +434,14 @@ export const getServerActivity = makeGetAllRows<GuildId, DateCount>(`
     ORDER BY utc_date ASC
 `);
 
+export const getServerVoiceActivity = makeGetAllRows<GuildId, DateCount>(`
+    SELECT SUM(second_count) as count, utc_date
+    FROM voice
+    WHERE guild_id = $guildId
+    GROUP BY utc_date
+    ORDER BY utc_date ASC
+`);
+
 export const getModLogForGuild = makeGetAllRows<GuildId, UserCount>(`
     SELECT user_id, COUNT(content) as count
     FROM modlog

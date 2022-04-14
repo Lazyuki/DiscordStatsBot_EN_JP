@@ -1,7 +1,7 @@
 import { TimestampFlag } from '@/types';
 import { format, formatDuration, intervalToDuration } from 'date-fns';
 import { GuildMember } from 'discord.js';
-import { pluralize } from './pluralize';
+import { pluralCount, pluralize } from './pluralize';
 
 export const MINUTE_IN_MILLIS = 60 * 1000;
 export const HOUR_IN_MILLIS = 60 * MINUTE_IN_MILLIS;
@@ -18,12 +18,12 @@ export function secondsToVcTime(seconds: number) {
   if (seconds === 0) {
     return 'Never';
   } else if (seconds < 60) {
-    return `${seconds}sec`;
+    return pluralCount('second', 's', seconds);
   }
   const millis = seconds * 1000;
   const hours = Math.floor(millis / HOUR_IN_MILLIS);
   const minutes = Math.floor((millis % HOUR_IN_MILLIS) / MINUTE_IN_MILLIS);
-  return `${hours ? `${hours}hr ` : ''}${minutes}min`;
+  return `${hours ? `${hours}hr ` : ''}${minutes}min`.trim();
 }
 
 export function memberJoinAge(member: GuildMember, maxDays: number = 3) {

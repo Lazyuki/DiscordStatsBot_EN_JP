@@ -1,13 +1,13 @@
 import { BotCommand } from '@/types';
-import { getUserActivity, getUserVoiceActivity } from '@database/statements';
+import {
+  getServerActivity,
+  getServerVoiceActivity,
+} from '@database/statements';
 import { showActivity } from '@utils/activity';
-import { getUserId } from '@utils/argumentParsers';
-
-import { idToUser } from '@utils/guildUtils';
 
 const command: BotCommand = {
-  name: 'activity',
-  aliases: ['ac'],
+  name: 'serverActivity',
+  aliases: ['sac'],
   requiredServerConfigs: ['statistics'],
   arguments: '[user (default: command invoker)]',
   options: [
@@ -30,33 +30,27 @@ const command: BotCommand = {
       bool: true,
     },
   ],
-  description: 'User activity for the past 30 days',
-  examples: ['ac', 'ac -n', 'ac @geralt', 'ac -v'],
-  normalCommand: async ({ message, bot, server, options, content }) => {
+  description: 'Server activity for the past 30 days',
+  examples: ['sac', 'sac -n', 'sac -v'],
+  normalCommand: async ({ message, server, options }) => {
     const showNumbers = Boolean(options['number']);
     const messageOnly = Boolean(options['messageOnly']);
     const voiceOnly = Boolean(options['voiceOnly']);
 
-    const userId = getUserId(bot, server, content) || message.author.id;
     const messageActivity = voiceOnly
       ? []
-      : getUserActivity({
+      : getServerActivity({
           guildId: server.guild.id,
-          userId,
         });
     const voiceActivity = messageOnly
       ? []
-      : getUserVoiceActivity({
+      : getServerVoiceActivity({
           guildId: server.guild.id,
-          userId,
         });
-
-    const userStr =
-      server.guild.members.cache.get(userId)?.displayName || idToUser(userId);
 
     await showActivity({
       message,
-      title: `User activity for ${userStr}`,
+      title: `Server Activity`,
       showNumbers,
       messageOnly,
       voiceOnly,
