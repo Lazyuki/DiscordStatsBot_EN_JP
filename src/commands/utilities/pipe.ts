@@ -83,6 +83,7 @@ const command: BotCommand = {
           }
           message.reference = null;
           message.mentions.repliedUser = null;
+          content = content.trim();
           await pipeCommand.normalCommand({
             bot,
             message,

@@ -579,3 +579,13 @@ const clearOldRecordStatements = (() => {
 export const clearOldRecords = () => {
   clearOldRecordStatements.forEach((statement) => statement.run());
 };
+
+export const runAnyQuery = (sql: string) => {
+  const statement = db.prepare(sql);
+  return statement.run(jsToSql(sql));
+};
+
+export const fetchAnyQuery = (sql: string) => {
+  const statement = db.prepare(sql);
+  return sqlToJs(statement.all(jsToSql(sql)));
+};

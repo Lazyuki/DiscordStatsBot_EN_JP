@@ -48,7 +48,7 @@ const event: BotEvent<'messageCreate'> = {
         }
       }
     }
-    const unicodeEmojiMatches = message.content.match(REGEX_UNICODE_EMOJI);
+    const unicodeEmojiMatches = message.content.matchAll(REGEX_UNICODE_EMOJI);
     if (unicodeEmojiMatches) {
       for (const emojiMatch of unicodeEmojiMatches) {
         const emoji = emojiMatch[0];

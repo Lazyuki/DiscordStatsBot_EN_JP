@@ -49,8 +49,8 @@ const command: BotCommand = {
     if (userRows.length > 2) {
       // always two rows even if the user hasn't said anything
       const [totalMessagesRow, weekMessagesRow, ...restRows] = userRows;
-      totalMessages = totalMessagesRow.count;
-      weekMessages = weekMessagesRow.count;
+      totalMessages = totalMessagesRow.count || 0;
+      weekMessages = weekMessagesRow.count || 0;
       restRows.forEach((row) => {
         if (row.lang) {
           if (row.lang === 'EN') englishUsage = row.count;
