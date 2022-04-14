@@ -12,8 +12,8 @@ import { codeBlock } from '@utils/formatString';
 import { idToUser } from '@utils/guildUtils';
 import { pluralCount } from '@utils/pluralize';
 
-const MAX_BAR_LENGTH = 16;
-const VOICE_HOUR_MULTIPLIER = 100;
+const MAX_BAR_LENGTH = 20;
+const VOICE_HOUR_MULTIPLIER = 50;
 
 const command: BotCommand = {
   name: 'activity',
