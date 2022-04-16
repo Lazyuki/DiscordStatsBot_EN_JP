@@ -1,5 +1,6 @@
 import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
+import { insertCommands } from '@database/statements';
 import { getTextChannel } from '@utils/guildUtils';
 import { optionParser } from '@utils/optionParser';
 
@@ -84,6 +85,13 @@ const command: BotCommand = {
           message.reference = null;
           message.mentions.repliedUser = null;
           content = content.trim();
+          insertCommands({
+            guildId: message.guild.id,
+            userId: message.author.id,
+            date: bot.utcDay,
+            command: pipeCommand.name,
+            commandCount: 1,
+          });
           await pipeCommand.normalCommand({
             bot,
             message,
