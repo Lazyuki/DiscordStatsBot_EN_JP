@@ -12,7 +12,7 @@ import {
 import { CategoryChannel, Guild } from 'discord.js';
 import { DEFAULT_PREFIX } from '@/envs';
 import { REGEX_MESSAGE_ID } from '@utils/regex';
-import { idToChannel, idToRole } from '@utils/guildUtils';
+import { idToChannel, idToRole, isMessageInChannels } from '@utils/guildUtils';
 
 declare module '@/types' {
   interface ServerConfig {
@@ -496,15 +496,21 @@ const command: BotCommand = {
   ],
   normalCommand: async ({ content, message, server, bot, ...rest }) => {
     if (!content) {
+      const isInHiddenChannel = isMessageInChannels(
+        message,
+        server.config.hiddenChannels
+      );
       // Show current config
       await message.channel.send(
         makeEmbed({
           title: 'Current Server Configuration',
           description: CONFIGURABLE_SERVER_CONFIG.map(
             (config, index) =>
-              `${index + 1}. **${camelCaseToNormal(
-                config.key
-              )}**: ${formatValue(config.type, server.config[config.key])}`
+              `${index + 1}. **${camelCaseToNormal(config.key)}**: ${
+                config.key === 'hiddenChannels' && !isInHiddenChannel
+                  ? '`Hidden`'
+                  : formatValue(config.type, server.config[config.key])
+              }`
           ).join('\n'),
           footer: `Type "${server.config.prefix}config config_number help" for more info on each config`,
         })
