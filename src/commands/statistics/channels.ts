@@ -44,6 +44,7 @@ const command: BotCommand = {
     const deadChannels = allChannels.filter(
       (ch) =>
         !channels.some((row) => row.channelId === ch.id) &&
+        ch.viewable &&
         !hiddenChannels.includes(ch.id) &&
         !ignoredChannels.includes(ch.id)
     );
