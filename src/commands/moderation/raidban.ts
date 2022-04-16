@@ -47,7 +47,7 @@ const command: BotCommand = {
   normalCommand: async ({ bot, content, server, message, options }) => {
     const deleteDays = 1;
     const [firstArg] = content.split(/\s+/);
-    const firstId = firstArg.match(REGEX_RAW_ID)?.[1];
+    const firstId = firstArg.match(REGEX_RAW_ID)?.[0];
     if (!firstId) {
       throw new CommandArgumentError(
         'Please specify a user or provide a Discord ID'
@@ -87,7 +87,7 @@ const command: BotCommand = {
     let endMillis = nowMillis;
     const last = options['last'] as string;
     if (last) {
-      const lastId = last.match(REGEX_RAW_ID)?.[1];
+      const lastId = last.match(REGEX_RAW_ID)?.[0];
       if (!lastId) {
         throw new CommandArgumentError(
           'Please specify a valid ID for the `--last` option'

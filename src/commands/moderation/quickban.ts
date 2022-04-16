@@ -67,7 +67,7 @@ const prune: BotCommand = {
     }
     let time = new Date().getTime();
     if (timeId) {
-      const id = timeId.match(REGEX_RAW_ID)?.[1];
+      const id = timeId.match(REGEX_RAW_ID)?.[0];
       if (!id) {
         throw new CommandArgumentError(
           'Please provide a valid ID for the -t option'
