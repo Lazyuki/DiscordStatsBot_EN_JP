@@ -3,7 +3,7 @@ import { stripIndent } from 'common-tags';
 
 const poll: ParsedBotCommand = {
   name: 'poll',
-  category: 'utilities',
+  category: 'Utilities',
   isAllowed: () => true,
   normalCommand: () => {},
   description: 'Create a poll with reactions. 🆎 means "abstain"',
@@ -21,7 +21,7 @@ const poll: ParsedBotCommand = {
 const age: ParsedBotCommand = {
   name: 'age',
   aliases: ['joined'],
-  category: 'utilities',
+  category: 'Utilities',
   isAllowed: () => true,
   normalCommand: () => {},
   description: 'Show when you joined this server',
@@ -31,7 +31,7 @@ const age: ParsedBotCommand = {
 const boosters: ParsedBotCommand = {
   name: 'boosters',
   aliases: ['booster', 'boost', 'boosts'],
-  category: 'utilities',
+  category: 'Utilities',
   isAllowed: () => true,
   normalCommand: () => {},
   description: 'Show Nitro Boosters',
@@ -40,7 +40,7 @@ const boosters: ParsedBotCommand = {
 
 const bookmark: ParsedBotCommand = {
   name: 'bookmark',
-  category: 'utilities',
+  category: 'Utilities',
   isAllowed: () => true,
   normalCommand: () => {},
   description:
@@ -51,7 +51,7 @@ const bookmark: ParsedBotCommand = {
 const timestamp: ParsedBotCommand = {
   name: 'timestamp',
   aliases: ['ts', 'time', 'date'],
-  category: 'utilities',
+  category: 'Utilities',
   isAllowed: () => true,
   normalCommand: () => {},
   description: stripIndent`
@@ -81,7 +81,7 @@ const timestamp: ParsedBotCommand = {
 const move: ParsedBotCommand = {
   name: 'move',
   aliases: ['mv'],
-  category: 'utilities',
+  category: 'Utilities',
   isAllowed: () => true,
   normalCommand: () => {},
   description: stripIndent`
@@ -121,7 +121,7 @@ const move: ParsedBotCommand = {
 const voicePing: ParsedBotCommand = {
   name: 'voicePing',
   aliases: ['vp'],
-  category: 'utilities',
+  category: 'Utilities',
   isAllowed: () => true,
   normalCommand: () => {},
   description: 'Ping everyone in your VC room',
