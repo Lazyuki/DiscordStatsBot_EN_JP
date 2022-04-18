@@ -1,4 +1,5 @@
 import { BotCommand } from '@/types';
+import { CIRILLA } from '@utils/constants';
 import { errorEmbed, makeEmbed } from '@utils/embed';
 import { code } from '@utils/formatString';
 import { isMessageInChannels } from '@utils/guildUtils';
@@ -15,6 +16,8 @@ const command: BotCommand = {
       message,
       server.config.hiddenChannels
     );
+    const cirillaExists = server.guild.members.cache.has(CIRILLA);
+
     if (commandName === 'command') {
       await message.channel.send(
         errorEmbed({
@@ -25,7 +28,7 @@ const command: BotCommand = {
     }
     if (commandName) {
       const command = bot.commands[commandName];
-      if (!command) {
+      if (!command || (command.isCirillaCommand && !cirillaExists)) {
         await message.channel.send(
           errorEmbed({
             description: `Command \`${commandName}\` does not exit.`,
@@ -155,7 +158,8 @@ const command: BotCommand = {
           command.normalCommand &&
           command.isAllowed(message, server, bot) &&
           !command.parentCommand &&
-          (!command.hidden || isInHiddenChannel)
+          (!command.hidden || isInHiddenChannel) &&
+          (!command.isCirillaCommand || cirillaExists)
         ) {
           let name = command.name;
           if (command.childCommands?.length) {

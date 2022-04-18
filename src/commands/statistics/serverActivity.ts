@@ -56,7 +56,7 @@ const command: BotCommand = {
       voiceOnly,
       messageActivity,
       voiceActivity,
-      voiceHourMultiplier: 30,
+      voiceHourMultiplier: 20,
     });
   },
 };

@@ -277,7 +277,7 @@ const warnlog: BotCommand = {
 
         await fieldsPaginator(
           message.channel,
-          `Mod Logs for ${userTag}${
+          `Mod Log Entries for ${userTag}${
             isWatched ? ' (Being watched for deleted messages)' : ''
           }`,
           `\`${pluralCount('Official Warning', 's', officialWarningCount)}\``,

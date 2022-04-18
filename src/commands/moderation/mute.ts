@@ -79,7 +79,7 @@ const mute: BotCommand = {
     '<@user> [@user2...] [time in the format 1d2h3m4s. Default: 5m. Max: 28d] [reason]',
   childCommands: ['unmute'],
   examples: [
-    'mute @Geralt being too good at Japanese',
+    'mute @Geralt 1d4h40m being too good at Japanese',
     'mute 284840842026549259 299335689558949888 shut up',
   ],
   onCommandInit: (server) => {

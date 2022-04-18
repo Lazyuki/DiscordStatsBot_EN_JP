@@ -91,6 +91,16 @@ for (const dir of dirs) {
   }
 }
 
+const cirillaCommands = (await import(`./cirillaCommands`))
+  .default as ParsedBotCommand[];
+
+for (const cirillaCommand of cirillaCommands) {
+  client.commands[cirillaCommand.name] = cirillaCommand;
+  cirillaCommand.aliases?.forEach((alias) => {
+    client.commands[alias] = cirillaCommand;
+  });
+}
+
 const eventFiles = fs
   .readdirSync('./build/events')
   .filter((file: string) => file.endsWith('.js'));

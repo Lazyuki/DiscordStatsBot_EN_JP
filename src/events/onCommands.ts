@@ -134,6 +134,9 @@ const event: BotEvent<'messageCreate'> = {
           commandCount: 1,
         });
 
+        // ignore cirilla command
+        if (command.isCirillaCommand) return;
+
         try {
           await command.normalCommand({
             content,

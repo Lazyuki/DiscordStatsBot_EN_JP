@@ -104,39 +104,6 @@ export interface BotCommand {
   onBotExit?: OnBotExit;
 }
 
-export interface CommandOption {
-  name: string; // can be used as --name
-  short:
-    | 'a'
-    | 'b'
-    | 'c'
-    | 'd'
-    | 'e'
-    | 'f'
-    | 'g'
-    | 'h'
-    | 'i'
-    | 'j'
-    | 'k'
-    | 'l'
-    | 'm'
-    | 'n'
-    | 'o'
-    | 'p'
-    | 'q'
-    | 'r'
-    | 's'
-    | 't'
-    | 'u'
-    | 'v'
-    | 'w'
-    | 'x'
-    | 'y'
-    | 'z'; // 1 letter string. can be used as -short
-  bool: boolean; // whether it takes an argument
-  description: string;
-}
-
 /**
  * "F" Saturday, July 31, 2021 3:45 PM (default)
  * "d" 07/31/2021
@@ -154,6 +121,7 @@ export interface ParsedBotCommand extends BotCommand {
   name: string;
   category: string;
   isAllowed: (message: GuildMessage, server: Server, bot: Bot) => boolean;
+  isCirillaCommand?: boolean;
 }
 
 export interface BotEvent<E extends keyof ClientEvents> {
@@ -230,3 +198,62 @@ export interface ServerData {
 }
 // Config for the bot itself, to be shared across servers
 export interface BotConfig {}
+
+export interface CommandOption {
+  name: string; // can be used as --name
+  short:
+    | 'a'
+    | 'b'
+    | 'c'
+    | 'd'
+    | 'e'
+    | 'f'
+    | 'g'
+    | 'h'
+    | 'i'
+    | 'j'
+    | 'k'
+    | 'l'
+    | 'm'
+    | 'n'
+    | 'o'
+    | 'p'
+    | 'q'
+    | 'r'
+    | 's'
+    | 't'
+    | 'u'
+    | 'v'
+    | 'w'
+    | 'x'
+    | 'y'
+    | 'z'
+    | 'A'
+    | 'B'
+    | 'C'
+    | 'D'
+    | 'E'
+    | 'F'
+    | 'G'
+    | 'H'
+    | 'I'
+    | 'J'
+    | 'K'
+    | 'L'
+    | 'M'
+    | 'N'
+    | 'O'
+    | 'P'
+    | 'Q'
+    | 'R'
+    | 'S'
+    | 'T'
+    | 'U'
+    | 'V'
+    | 'W'
+    | 'X'
+    | 'Y'
+    | 'Z'; // 1 letter string. can be used as -short
+  bool: boolean; // whether it takes an argument
+  description: string;
+}
