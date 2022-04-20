@@ -234,7 +234,7 @@ const warnlog: BotCommand = {
         );
       } else {
         const fields = userModLogs.map((ml, index) => {
-          const timestamp = getDiscordTimestamp(new Date(ml.date), 'D'); // TODO: 'f' to show time?
+          const timestamp = getDiscordTimestamp(new Date(ml.date), 'R');
           const issuer = bot.users.cache.get(ml.issuerId);
           const issuerTag = issuer ? issuer.tag : `User: ${ml.issuerId}`;
           const jumpLink = ml.messageLink ? `\n[Jump](${ml.messageLink})` : '';

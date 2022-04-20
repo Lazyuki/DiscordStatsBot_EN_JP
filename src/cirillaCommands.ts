@@ -1,4 +1,5 @@
 import { ParsedBotCommand } from '@/types';
+import { EJLX } from '@utils/constants';
 import { stripIndent } from 'common-tags';
 
 const poll: ParsedBotCommand = {
@@ -128,4 +129,51 @@ const voicePing: ParsedBotCommand = {
   isCirillaCommand: true,
 };
 
-export default [poll, age, boosters, bookmark, timestamp, move, voicePing];
+const clubs: ParsedBotCommand = {
+  name: 'clubs',
+  aliases: ['club'],
+  category: 'Clubs',
+  isAllowed: (m, s) => s.guild.id === EJLX,
+  normalCommand: () => {},
+  description: 'List clubs',
+  isCirillaCommand: true,
+};
+const join: ParsedBotCommand = {
+  name: 'join',
+  category: 'Clubs',
+  isAllowed: (m, s) => s.guild.id === EJLX,
+  normalCommand: () => {},
+  description: 'Join a club',
+  isCirillaCommand: true,
+};
+const leave: ParsedBotCommand = {
+  name: 'leave',
+  category: 'Clubs',
+  isAllowed: (m, s) => s.guild.id === EJLX,
+  normalCommand: () => {},
+  description: 'Leave a club',
+  isCirillaCommand: true,
+};
+const autoban: ParsedBotCommand = {
+  name: 'autoban',
+  aliases: ['ab'],
+  category: 'Moderation',
+  isAllowed: (m, s) => m.member.permissions.has('ADMINISTRATOR'),
+  normalCommand: () => {},
+  description: 'Try to figure out trolls and bring up a ban menu',
+  isCirillaCommand: true,
+};
+
+export default [
+  poll,
+  age,
+  boosters,
+  bookmark,
+  timestamp,
+  move,
+  voicePing,
+  clubs,
+  join,
+  leave,
+  autoban,
+];
