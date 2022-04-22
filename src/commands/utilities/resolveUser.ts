@@ -106,6 +106,7 @@ const command: BotCommand = {
             makeEmbed({
               content: id,
               description: `You selected ${member} (${member.user.tag})`,
+              ephemeral: true,
             })
           );
         }
