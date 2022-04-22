@@ -21,7 +21,7 @@ const unban: BotCommand = {
         `${members.join(', ')} already in the server.`
       );
     }
-    if (nonMemberIds.length !== 0) {
+    if (nonMemberIds.length === 0) {
       throw new CommandArgumentError('Please specify IDs of users to unban');
     }
     const reason = `By ${message.author.tag} (${message.author.id}). Reason: ${
