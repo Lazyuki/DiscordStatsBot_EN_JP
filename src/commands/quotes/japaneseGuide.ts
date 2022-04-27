@@ -25,8 +25,7 @@ const command: BotCommand = {
       case 'guides': {
         title = `__**Guides ${EXTERNAL_LINK_EMOJI}**__`;
         description = 'All beginners should read one of the below guides';
-        url =
-          'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#beginner-guide';
+        url = 'https://github.com/EngJpDiscordExchange/Awesome-Japanese';
         fields = [
           {
             name: "r/LearnJapanese's guide",
@@ -50,7 +49,7 @@ const command: BotCommand = {
       case 'katakana': {
         title = `__**Kana ${EXTERNAL_LINK_EMOJI}**__`;
         url =
-          'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#hiragana-and-katakana';
+          'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#hiragana-and-katakana';
         description = 'The first step is learning Hiragana and Katakana. ';
         fields = [
           {
@@ -67,7 +66,7 @@ const command: BotCommand = {
       case 'kanji': {
         title = `__**Kanji ${EXTERNAL_LINK_EMOJI}**__`;
         url =
-          'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#kanji';
+          'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#kanji';
         description = "After you've got your kana down, you need Kanji.";
         fields = [
           {
@@ -96,7 +95,7 @@ const command: BotCommand = {
       case 'grammar': {
         title = `__**Grammar ${EXTERNAL_LINK_EMOJI}**__`;
         url =
-          'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#grammar';
+          'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#grammar';
         description =
           'You can either use a structured textbook or a more free-form online grammar guide like Tae-Kim. Either one works, try one or both and stick with the one you like the best.';
         fields = [
@@ -118,7 +117,7 @@ const command: BotCommand = {
       case 'vocab': {
         title = `__**Vocabulary ${EXTERNAL_LINK_EMOJI}**__`;
         url =
-          'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#vocabulary';
+          'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#vocabulary';
         description = 'For vocabulary, three nice options are: ';
         fields = [
           {
@@ -135,7 +134,7 @@ const command: BotCommand = {
       case 'keyboard': {
         title = `__**Keyboard ${EXTERNAL_LINK_EMOJI}**__`;
         url =
-          'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#software';
+          'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#software';
         description =
           'You need to have a special program (IME) to type in Japanese';
         fields = [
@@ -155,7 +154,7 @@ const command: BotCommand = {
       case 'dictionaries': {
         title = `__**Dictionaries ${EXTERNAL_LINK_EMOJI}**__`;
         url =
-          'https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#dictionary';
+          'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#dictionary';
         description =
           'For translating, avoid using Google Translate. Instead use one of these:';
         fields = [
@@ -196,7 +195,7 @@ const command: BotCommand = {
         description = `Written by Bonyari Boy`;
       }
       case '': {
-        description = `__**[New to Japanese? Start here! ${EXTERNAL_LINK_EMOJI}](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md#beginner-guide)**__`;
+        description = `__**[New to Japanese? Start here! ${EXTERNAL_LINK_EMOJI}](https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#beginner-guide)**__`;
         break;
       }
       default: {
