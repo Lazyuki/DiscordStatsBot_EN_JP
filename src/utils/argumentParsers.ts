@@ -178,9 +178,9 @@ export function strictGetUserId(content: string, guild: Guild) {
     // Snowflake ID
     return idMatch[0];
   } else {
-    const userTag = content.match(REGEX_USER_TAG)?.[0];
+    const userTag = content.match(/^(.+#[0-9]{4})$/)?.[0];
     if (userTag) {
-      const hasAt = userTag[0] === '@'; // Make sure there are no ambiguity
+      const hasAt = userTag[0] === '@'; // Make sure there is no ambiguity
       const nonAtUserTag = userTag.substring(1);
       const matches: string[] = [];
       for (const member of guild.members.cache.values()) {

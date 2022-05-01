@@ -92,8 +92,16 @@ export function userToMentionAndTag(user: User) {
   return `${user.toString()} (${Util.escapeMarkdown(user.tag)})`;
 }
 
+export function userToMentionAndTagNoEscape(user: User) {
+  return `${user.toString()} (${user.tag})`;
+}
+
 export function userToTagAndId(user: User) {
   return `${Util.escapeMarkdown(user.tag)} (${user.id})`;
+}
+
+export function userToTagAndIdNoEscape(user: User) {
+  return `${user.tag} (${user.id})`;
 }
 
 export function pseudoShlexSplit(text: string) {

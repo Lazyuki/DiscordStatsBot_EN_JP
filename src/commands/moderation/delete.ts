@@ -20,7 +20,7 @@ import {
   successEmbed,
   warningEmbed,
 } from '@utils/embed';
-import { userToTagAndId } from '@utils/formatString';
+import { userToTagAndId, userToTagAndIdNoEscape } from '@utils/formatString';
 import { getTextChannel, idToChannel } from '@utils/guildUtils';
 import { MAX_BYTES } from '@utils/images';
 import { pluralCount, pluralize } from '@utils/pluralize';
@@ -324,9 +324,12 @@ async function postDeletedMessages(
 
   const title = pluralize('Message', 's', messages.length);
   const fields = messages.map((message) => {
-    const name = `${onlyOneUser ? '' : `👤${userToTagAndId(message.author)} `}${
-      onlyOneChannel ? '' : `#${message.channel.name} `
-    }${getDiscordTimestamp(message.createdAt, onlyOneUser ? 'f' : 't')}`;
+    const name = `${
+      onlyOneUser ? '' : `👤${userToTagAndIdNoEscape(message.author)} `
+    }${onlyOneChannel ? '' : `#${message.channel.name} `}${getDiscordTimestamp(
+      message.createdAt,
+      onlyOneUser ? 'f' : 't'
+    )}`;
 
     const hasAttachment = Boolean(
       hasEmbedsMessageIDs.includes(message.id) || attachmentURLs[message.id]
@@ -378,7 +381,7 @@ async function postDeletedMessages(
     color: 'RED',
     authorIcon: onlyOneUser ? messages[0].author.displayAvatarURL() : undefined,
     authorName: `${title}${
-      onlyOneUser ? ` from ${userToTagAndId(messages[0].author)}` : ''
+      onlyOneUser ? ` from ${userToTagAndIdNoEscape(messages[0].author)}` : ''
     } Deleted`,
     description: onlyOneChannel ? `In ${messages[0].channel}` : undefined,
     fields,

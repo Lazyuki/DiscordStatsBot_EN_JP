@@ -1,8 +1,7 @@
 import exitTask from '@tasks/exitTask';
 import { BotCommand } from '@/types';
-import db from '@db';
 
-import { exec as execPromise, spawn, ChildProcess } from 'child_process';
+import { exec as execPromise } from 'child_process';
 import util from 'util';
 import { cleanEmbed } from '@utils/embed';
 

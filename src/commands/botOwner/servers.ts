@@ -1,4 +1,3 @@
-import { makeEmbed, successEmbed } from '@utils/embed';
 import { BotCommand } from '@/types';
 import { stripIndent } from 'common-tags';
 import { EmbedField } from '@utils/embed';

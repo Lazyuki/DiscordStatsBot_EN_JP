@@ -1,4 +1,4 @@
-import { infoEmbed, makeEmbed, successEmbed } from '@utils/embed';
+import { infoEmbed, successEmbed } from '@utils/embed';
 import { BotCommand } from '@/types';
 
 declare module '@/types' {

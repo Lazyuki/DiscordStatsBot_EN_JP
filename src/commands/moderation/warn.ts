@@ -24,7 +24,11 @@ import {
   successEmbed,
   warningEmbed,
 } from '@utils/embed';
-import { userToMentionAndTag, joinNaturally } from '@utils/formatString';
+import {
+  userToMentionAndTag,
+  joinNaturally,
+  userToMentionAndTagNoEscape,
+} from '@utils/formatString';
 import { isInChannelsOrCategories } from '@utils/guildUtils';
 import { descriptionPaginator, fieldsPaginator } from '@utils/paginate';
 import { pluralCount, pluralize } from '@utils/pluralize';
@@ -189,7 +193,7 @@ const warnlog: BotCommand = {
       } catch {}
       const user = bot.users.cache.get(userId);
       const userMentionTag = user
-        ? userToMentionAndTag(user)
+        ? userToMentionAndTagNoEscape(user)
         : `User: ${userId}`;
 
       const isWatched = server.temp.watched.includes(userId);

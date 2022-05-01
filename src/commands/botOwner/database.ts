@@ -1,4 +1,4 @@
-import { errorEmbed, makeEmbed, successEmbed } from '@utils/embed';
+import { errorEmbed, successEmbed } from '@utils/embed';
 import { BotCommand } from '@/types';
 import { parseSubCommand } from '@utils/argumentParsers';
 import { fetchAnyQuery, runAnyQuery } from '@database/statements';

@@ -1,5 +1,5 @@
 import { CommandArgumentError } from '@/errors';
-import { BotCommand, BotConfig, NotifyType, RoleNotifyType } from '@/types';
+import { BotCommand, NotifyType, RoleNotifyType } from '@/types';
 import { parseMembers } from '@utils/argumentParsers';
 import { saveConfig } from '@utils/disk';
 import { infoEmbed, successEmbed } from '@utils/embed';
