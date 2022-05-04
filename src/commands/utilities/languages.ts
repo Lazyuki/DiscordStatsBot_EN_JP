@@ -27,27 +27,27 @@ const command: BotCommand = {
       name: 'messages',
       short: 'm',
       description:
-        'Minimum number of messages to be included in the stats. Default: 100. Use `infinity` to ignore message count',
+        'Minimum number of messages to be included in the stats. Default: 100. Use `ignore` to ignore message count',
       bool: false,
     },
     {
       name: 'voice',
       short: 'v',
       description:
-        'Minimum hours of VC activity to be included in the stats: Default: 5. Use `infinity` to ignore voice count.',
+        'Minimum hours of VC activity to be included in the stats: Default: 5. Use `ignore` to ignore voice count.',
       bool: false,
     },
   ],
   normalCommand: async ({ message, server, options, content }) => {
     await message.channel.sendTyping();
     const all = Boolean(options['all']) || content === 'all';
+    const messages = options['messages'] as string;
+    const voice = options['voice'] as string;
     let members: GuildMember[] = [...server.guild.members.cache.values()];
     let minMessages = 100;
     let minVoiceHours = 5;
     if (!all) {
-      const messages = options['messages'] as string;
-      const voice = options['voice'] as string;
-      if (messages === 'infinity') {
+      if (messages === 'ignore') {
         minMessages = 9999999999;
       } else if (messages) {
         minMessages = parseInt(messages);
@@ -57,7 +57,7 @@ const command: BotCommand = {
           );
         }
       }
-      if (voice === 'infinity') {
+      if (voice === 'ignore') {
         minVoiceHours = 9999999;
       } else if (voice) {
         minVoiceHours = parseInt(voice);
@@ -124,7 +124,17 @@ const command: BotCommand = {
           Out of **${members.length}** people${
           all
             ? ''
-            : ` who have sent more than ${minMessages} messages or spent more than ${minVoiceHours} hours in the past 30 days`
+            : `who have ${
+                messages === 'ignore'
+                  ? ''
+                  : `sent more than ${minMessages} messages${
+                      voice !== 'ignore' ? ' or' : ''
+                    }`
+              }${
+                voice === 'ignore'
+                  ? ''
+                  : ` spent more than ${minVoiceHours} hours`
+              } in the past 30 days`
         },
           ${count(langs[NJ])} <@&${NJ}>
           ${count(langs[FJ])} <@&${FJ}>
