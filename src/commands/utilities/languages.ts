@@ -38,6 +38,7 @@ const command: BotCommand = {
       bool: false,
     },
   ],
+  examples: ['lang -a', 'lang -v ignroe -m 300'],
   normalCommand: async ({ message, server, options, content }) => {
     await message.channel.sendTyping();
     const all = Boolean(options['all']) || content === 'all';
