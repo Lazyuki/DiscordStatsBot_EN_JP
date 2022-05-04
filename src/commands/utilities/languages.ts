@@ -74,10 +74,10 @@ const command: BotCommand = {
         threshold: minVoiceSeconds,
       });
       const userIds = [
-        ...new Set(
+        ...new Set([
           ...userMessages.map((u) => u.userId),
-          ...userVoice.map((u) => u.userId)
-        ),
+          ...userVoice.map((u) => u.userId),
+        ]),
       ];
       members = members.filter((m) => userIds.includes(m.id));
     }
