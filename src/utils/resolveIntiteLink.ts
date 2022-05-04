@@ -30,7 +30,7 @@ export async function resolveInviteLink(
     }
   }
   const inviteCollection = await server.guild.invites.fetch();
-  const oldInvites = server.temp.invites || {};
+  const oldInvites = server.temp.invites || new Collection();
   const possibleInvites: Invite[] = [];
   const nowMillis = new Date().getTime();
   for (const [id, invite] of inviteCollection) {
