@@ -1,6 +1,9 @@
 import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
-import { getActiveUserMessages } from '@database/statements';
+import {
+  getActiveUserMessages,
+  getActiveUserVoice,
+} from '@database/statements';
 import { AJ, EJLX, FE, FE2, FJ, HJ, NE, NJ, OL } from '@utils/constants';
 import { infoEmbed } from '@utils/embed';
 import { isOrAre } from '@utils/pluralize';
@@ -69,7 +72,7 @@ const command: BotCommand = {
         guildId: server.guild.id,
         threshold: minMessages,
       });
-      const userVoice = getActiveUserMessages({
+      const userVoice = getActiveUserVoice({
         guildId: server.guild.id,
         threshold: minVoiceSeconds,
       });
