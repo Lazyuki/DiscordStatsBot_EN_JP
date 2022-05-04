@@ -12,7 +12,7 @@ const command: BotCommand = {
       name: 'threshold',
       short: 'n',
       description:
-        'Minimum total messages required to show up on on the leaderboard. Default: 200',
+        'Minimum total messages required to show up on on the leaderboard. Default: 100',
       bool: false,
     },
   ],
@@ -23,7 +23,7 @@ const command: BotCommand = {
     const japaneseRoles = server.config.japaneseRoles;
     const searchUserId = getUserId(bot, server, content) || message.author.id;
 
-    let threshold = 200;
+    let threshold = 100;
     if (options['threshold']) {
       const parsedThreshold = parseInt(options['threshold'] as string);
       if (!isNaN(parsedThreshold)) {

@@ -27,7 +27,7 @@ const command: BotCommand = {
       name: 'messages',
       short: 'm',
       description:
-        'Minimum number of messages to be included in the stats. Default: 100. Use `ignore` to ignore message count',
+        'Minimum number of messages to be included in the stats. Default: 50. Use `ignore` to ignore message count',
       bool: false,
     },
     {
@@ -45,7 +45,7 @@ const command: BotCommand = {
     const messages = options['messages'] as string;
     const voice = options['voice'] as string;
     let members: GuildMember[] = [...server.guild.members.cache.values()];
-    let minMessages = 100;
+    let minMessages = 50;
     let minVoiceHours = 5;
     if (!all) {
       if (messages === 'ignore') {
