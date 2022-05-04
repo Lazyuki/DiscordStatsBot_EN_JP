@@ -198,13 +198,21 @@ async function singleEmojiLeaderboard(
     return;
   }
   // Unicode emoji or emoji available to the bot.
-  const fields = users.map(({ userId, count }, index) => {
-    const user = bot.users.cache.get(userId)?.username || `*${userId}*`;
-    return {
-      name: `${index + 1}) ${user}`,
-      value: `${count}`,
-    };
-  });
+  const fields = await Promise.all(
+    users.map(async ({ userId, count }, index) => {
+      let user = bot.users.cache.get(userId);
+      if (!user && index < 50) {
+        // fetch active users
+        user = await bot.users.fetch(userId);
+      }
+      const userName = user?.username || `User:${userId}`;
+      const userLeft = !server.guild.members.resolve(userId);
+      return {
+        name: `${index + 1}) ${userLeft ? '📤 ' : ''}${userName}`,
+        value: `${count}`,
+      };
+    })
+  );
 
   await fieldsPaginator(
     message.channel,

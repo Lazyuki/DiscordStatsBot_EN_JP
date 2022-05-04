@@ -42,13 +42,23 @@ const command: BotCommand = {
 
     const userIndex = jpUsers.findIndex((u) => u.userId === searchUserId);
 
-    const fields = jpUsers.map(({ userId, enRatio }, index) => {
-      const user = bot.users.cache.get(userId)?.username || `*${userId}*`;
-      return {
-        name: `${index + 1}) ${user}${userId === searchUserId ? '📍' : ''}`,
-        value: `${enRatio.toFixed(2)}%`,
-      };
-    });
+    const fields = await Promise.all(
+      jpUsers.map(async ({ userId, enRatio }, index) => {
+        let user = bot.users.cache.get(userId);
+        if (!user && index < 100) {
+          // fetch active users
+          user = await bot.users.fetch(userId);
+        }
+        const userName = user?.username || `User:${userId}`;
+        const userLeft = !server.guild.members.resolve(userId);
+        return {
+          name: `${index + 1}) ${userLeft ? '📤 ' : ''}${userName}${
+            userId === searchUserId ? '📍' : ''
+          }`,
+          value: `${enRatio.toFixed(2)}%`,
+        };
+      })
+    );
     await fieldsPaginator(
       message.channel,
       `English Usage Leaderboard`,

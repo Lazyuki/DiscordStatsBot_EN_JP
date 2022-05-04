@@ -42,13 +42,23 @@ const command: BotCommand = {
 
     const userIndex = nonJpUsers.findIndex((u) => u.userId === searchUserId);
 
-    const fields = nonJpUsers.map(({ userId, jpRatio }, index) => {
-      const user = bot.users.cache.get(userId)?.username || `*${userId}*`;
-      return {
-        name: `${index + 1}) ${user}${userId === searchUserId ? '📍' : ''}`,
-        value: `${jpRatio.toFixed(2)}%`,
-      };
-    });
+    const fields = await Promise.all(
+      nonJpUsers.map(async ({ userId, jpRatio }, index) => {
+        let user = bot.users.cache.get(userId);
+        if (!user && index < 100) {
+          // fetch active users
+          user = await bot.users.fetch(userId);
+        }
+        const userName = user?.username || `User:${userId}`;
+        const userLeft = !server.guild.members.resolve(userId);
+        return {
+          name: `${index + 1}) ${userLeft ? '📤 ' : ''}${userName}${
+            userId === searchUserId ? '📍' : ''
+          }`,
+          value: `${jpRatio.toFixed(2)}%`,
+        };
+      })
+    );
     await fieldsPaginator(
       message.channel,
       `Japanese Usage Leaderboard`,
