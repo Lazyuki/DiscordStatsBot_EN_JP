@@ -17,12 +17,13 @@ const command: BotCommand = {
       bool: true,
     },
   ],
-  normalCommand: async ({ message, server, options }) => {
+  normalCommand: async ({ message, server, options, bot, content }) => {
+    const guildId = content || server.guild.id;
     const isGlobal = Boolean(options['global']);
     const commands = isGlobal
       ? getGlobalCommandLeaderboard()
       : getCommandLeaderboard({
-          guildId: server.guild.id,
+          guildId,
         });
 
     const fields = commands.map(({ command, count }, index) => {
@@ -33,7 +34,9 @@ const command: BotCommand = {
     });
     const title = isGlobal
       ? 'Global Command Leaderboard'
-      : 'Server Command Leaderboard';
+      : `Server Command Leaderboard for ${
+          bot.servers[guildId]?.guild.name || guildId
+        }`;
     await fieldsPaginator(
       message.channel,
       title,
