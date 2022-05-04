@@ -41,7 +41,7 @@ declare module '@/types' {
 
 const DEFAULT_CONFIG: ServerConfig = {
   prefix: DEFAULT_PREFIX,
-  statistics: true, // TODO: Once the migration is complete, false by default
+  statistics: false,
   ignoredChannels: [],
   hiddenChannels: [],
   voiceMuteRoles: [],
