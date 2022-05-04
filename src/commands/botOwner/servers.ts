@@ -3,6 +3,8 @@ import { stripIndent } from 'common-tags';
 import { EmbedField } from '@utils/embed';
 import { fieldsPaginator } from '@utils/paginate';
 import { userToMentionAndTag } from '@utils/formatString';
+import { getDiscordTimestamp } from '@utils/datetime';
+import { getActiveUserMessages } from '@database/statements';
 
 const command: BotCommand = {
   name: 'servers',
@@ -24,13 +26,20 @@ const command: BotCommand = {
     for (const server of servers) {
       const guild = server.guild;
       const owner = guild.members.cache.get(guild.ownerId);
+      const userMessages = getActiveUserMessages({
+        guildId: server.guild.id,
+        threshold,
+      });
       serverData.push({
         name: guild.name,
         value: stripIndent`
         Server ID: \`${guild.id}\`
         Server Owner: ${owner ? userToMentionAndTag(owner.user) : 'None'}
+        Added: ${getDiscordTimestamp(server.guild.me!.joinedAt!, 'R')}
         Total Members: \`${guild.memberCount}\`
+        Active Members: \`${userMessages.length}\`
         Statistics Enabled: \`${server.config.statistics ? 'true' : 'false'}\`
+
         `,
         inline: false,
       });
@@ -38,7 +47,7 @@ const command: BotCommand = {
     await fieldsPaginator(
       message.channel,
       'Servers',
-      `${servers.length} servers`,
+      `${servers.length} servers. Active member message threshold: \`${threshold}\``,
       serverData,
       false,
       -1,
