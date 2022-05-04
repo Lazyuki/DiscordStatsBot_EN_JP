@@ -124,7 +124,7 @@ const command: BotCommand = {
           Out of **${members.length}** people${
           all
             ? ''
-            : `who have ${
+            : ` who have ${
                 messages === 'ignore'
                   ? ''
                   : `sent more than ${minMessages} messages${
