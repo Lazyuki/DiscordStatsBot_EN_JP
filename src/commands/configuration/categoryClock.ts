@@ -123,6 +123,7 @@ const command: BotCommand = {
         }
         await category.setName(formatCategoryClock(timeString, zeroPad));
         await message.channel.send(successEmbed(`Category clock set!`));
+        break;
       }
       case 'reset': {
         const idMatch = channelId.match(REGEX_RAW_ID);
@@ -147,6 +148,7 @@ const command: BotCommand = {
             )
           );
         }
+        break;
       }
     }
     server.save();
