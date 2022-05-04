@@ -1,6 +1,6 @@
 import { BotCommand } from '@/types';
 import { errorEmbed, infoEmbed, successEmbed } from '@utils/embed';
-import { CommandArgumentError } from '@/errors';
+import { BotPermissionError, CommandArgumentError } from '@/errors';
 import { parseChannels } from '@utils/argumentParsers';
 import { REGEX_RAW_ID } from '@utils/regex';
 import hourlyTask from '@tasks/hourlyTask';
@@ -22,7 +22,6 @@ const command: BotCommand = {
   name: 'categoryClock',
   aliases: ['cc'],
   isAllowed: ['ADMIN'],
-  requiredBotPermissions: ['MANAGE_CHANNELS'],
   description:
     'Set up and configure hourly category clocks. Note that it will only show the 24-hour format. Use "TZ Database Name" from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones inside `{TZ_name}` for specifying the timezone.',
   arguments: '< set | reset > [category/channel ID] ["Time format string"]',
@@ -97,6 +96,14 @@ const command: BotCommand = {
             'Please provide a valid channel/category in this server'
           );
         const category = channelsAndCategories[0];
+        if (
+          !message.guild.me!.permissions.has('MANAGE_CHANNELS') &&
+          !category.permissionsFor(server.guild.me!).has('MANAGE_CHANNELS')
+        ) {
+          throw new BotPermissionError(
+            'Missing Bot Permission: `MANAGE_CHANNELS`. Please make sure the bot has this permission on that category.'
+          );
+        }
         const zeroPad = Boolean(options['padding']);
         let found;
         for (const categoryClock of currentServerClocks) {

@@ -24,6 +24,14 @@ export class UserPermissionError extends UserError {
   }
 }
 
+export class BotPermissionError extends UserError {
+  constructor(message = '', ...args: any[]) {
+    super(...args);
+    this.message = message;
+    this.name = 'BotPermissionError';
+  }
+}
+
 export class CommandArgumentError extends UserError {
   constructor(message = '', ...args: any[]) {
     super(...args);
