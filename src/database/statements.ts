@@ -186,7 +186,7 @@ export const getActiveUserMessages = makeGetAllRows<
     FROM messages
     WHERE guild_id = $guildId 
     GROUP BY user_id
-    HAVING SUM(message_count) > $threshold 
+    HAVING count > $threshold 
 `);
 
 export const getActiveUserVoice = makeGetAllRows<
@@ -197,7 +197,7 @@ export const getActiveUserVoice = makeGetAllRows<
     FROM voice
     WHERE guild_id = $guildId 
     GROUP BY user_id
-    HAVING SUM(second_count) > $threshold 
+    HAVING count > $threshold 
 `);
 
 export const getUserMessages = makeGetAllWithArray<

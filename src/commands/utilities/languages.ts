@@ -35,9 +35,9 @@ const command: BotCommand = {
       bool: false,
     },
   ],
-  normalCommand: async ({ message, server, options }) => {
+  normalCommand: async ({ message, server, options, content }) => {
     await message.channel.sendTyping();
-    const all = Boolean(options['all']);
+    const all = Boolean(options['all']) || content === 'all';
     let members: GuildMember[] = [...server.guild.members.cache.values()];
     let minMessages = 100;
     let minVoiceHours = 5;
