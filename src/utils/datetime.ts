@@ -135,7 +135,7 @@ export function formatCategoryClock(timeString: string, zeroPad: boolean) {
       try {
         const hour = date.toLocaleString('en-US', {
           hour: 'numeric',
-          hour12: false,
+          hourCycle: 'h23',
           timeZone: timezone,
         });
         if (!zeroPad && hour[0] === '0') {
