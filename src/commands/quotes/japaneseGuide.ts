@@ -1,10 +1,6 @@
-import { MessageEmbed } from 'discord.js';
-import { stripIndents } from 'common-tags';
-
 import { BotCommand } from '@/types';
 import { EJLX, EXTERNAL_LINK_EMOJI, FJ_COLOR } from '@utils/constants';
 import { EmbedField, infoEmbed, makeEmbed } from '@utils/embed';
-import { safeDelete } from '@utils/safeDelete';
 
 const command: BotCommand = {
   name: 'japaneseGuide',
@@ -128,9 +124,11 @@ const command: BotCommand = {
           { name: 'Memrise', value: 'https://www.memrise.com/', inline: true },
           { name: 'Anki', value: 'http://ankisrs.net/', inline: true },
         ];
+        break;
       }
       case 'ime':
       case 'type':
+      case 'typing':
       case 'keyboard': {
         title = `__**Keyboard ${EXTERNAL_LINK_EMOJI}**__`;
         url =
@@ -148,6 +146,7 @@ const command: BotCommand = {
             value: 'https://www.tofugu.com/japanese/how-to-type-in-japanese/',
           },
         ];
+        break;
       }
       case 'dict':
       case 'dictionary':
@@ -162,12 +161,14 @@ const command: BotCommand = {
           { name: 'Tangorin', value: 'http://tangorin.com/', inline: true },
           { name: 'Weblio', value: 'http://www.weblio.jp/', inline: true },
         ];
+        break;
       }
       case 'anki': {
         title = `__**Anki ${EXTERNAL_LINK_EMOJI}**__`;
         url = 'https://itazuraneko.neocities.org/learn/anki.html';
         description =
           'Anki is a free and open-source flashcard program that utilizes spaced repetition.';
+        break;
       }
       case 'audio':
       case 'pronunciation': {
@@ -185,6 +186,7 @@ const command: BotCommand = {
             inline: true,
           },
         ];
+        break;
       }
       case 'bon':
       case 'bonyari':
@@ -193,12 +195,15 @@ const command: BotCommand = {
         url =
           'https://docs.google.com/document/d/19FEIOJWbLhJQ-AmepxFBMC2ebhJJr9RBUMfMeatYuq8/edit?usp=sharing';
         description = `Written by Bonyari Boy`;
+        break;
       }
       case '': {
         description = `__**[New to Japanese? Start here! ${EXTERNAL_LINK_EMOJI}](https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#beginner-guide)**__`;
         break;
       }
       default: {
+        description = `__**[New to Japanese? Start here! ${EXTERNAL_LINK_EMOJI}](https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#beginner-guide)**__`;
+        break;
       }
     }
     await message.channel.send(
