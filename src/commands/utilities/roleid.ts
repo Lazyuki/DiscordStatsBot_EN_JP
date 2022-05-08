@@ -1,5 +1,6 @@
 import { BotCommand } from '@/types';
 import { CommandArgumentError } from '@/errors';
+import { errorEmbed } from '@utils/embed';
 
 const command: BotCommand = {
   name: 'roleId',
@@ -17,7 +18,13 @@ const command: BotCommand = {
         roles += `**${role.name}**: ${role.id}\n`;
       }
     }
-    await message.channel.send(roles);
+    if (roles) {
+      await message.channel.send(roles);
+    } else {
+      await message.channel.send(
+        errorEmbed(`\`${content}\` did not match any role in this server`)
+      );
+    }
   },
 };
 
