@@ -95,7 +95,7 @@ export async function fieldsPaginator(
   );
   const maxPageIndex = pages.length - 1;
   const userPage = Math.floor(userIndex / MAX_FIELDS); // TODO: search pages
-  let currPage = openToPin && userIndex === -1 ? userPage : 0;
+  let currPage = openToPin && userIndex !== -1 ? userPage : 0;
 
   function getEmbed(page: number, end?: boolean) {
     return {
