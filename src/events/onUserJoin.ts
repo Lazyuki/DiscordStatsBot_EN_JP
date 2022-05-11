@@ -145,8 +145,8 @@ async function notifyUserJoin(
 async function welcomeToEJLX(member: GuildMember, channel: TextBasedChannel) {
   await channel.send(
     stripIndents`
-    Welcome ${member}. Please read <#${SERVER_RULES}}> and tell us what your native language is!\n
-    ${member}、ようこそ! あなたの母語を教えてください! 注意事項は<#${SERVER_RULES}}>に書いてあります。 <@&${PING_PARTY}>
+    Welcome ${member}. Please read <#${SERVER_RULES}> and tell us what your native language is!\n
+    ${member}、ようこそ! あなたの母語を教えてください! 注意事項は<#${SERVER_RULES}>に書いてあります。 <@&${PING_PARTY}>
     `
   );
 }

@@ -1,13 +1,7 @@
-import { parseMembers, parseSnowflakeIds } from '@utils/argumentParsers';
+import { getUserId } from '@utils/argumentParsers';
 import { BotCommand } from '@/types';
-import {
-  getChannelLeaderboard,
-  getLeaderboard,
-  getVoiceLeaderboard,
-} from '@database/statements';
-import { idToChannel } from '@utils/guildUtils';
+import { getVoiceLeaderboard } from '@database/statements';
 import { fieldsPaginator } from '@utils/paginate';
-import { joinNaturally } from '@utils/formatString';
 import { secondsToVcTime } from '@utils/datetime';
 
 const command: BotCommand = {
@@ -17,14 +11,15 @@ const command: BotCommand = {
   arguments: '[@user]',
   requiredServerConfigs: ['statistics'],
   normalCommand: async ({ message, bot, server, content }) => {
-    const { ids } = parseSnowflakeIds(content);
     const users = getVoiceLeaderboard({
       guildId: server.guild.id,
     });
-    const authorId = message.author.id;
-    let searchUserId = authorId;
-    if (ids.length > 0) {
-      searchUserId = ids[0];
+    let searchUserId = message.author.id;
+    let openToPin = false;
+    const contentUserId = getUserId(bot, server, content);
+    if (contentUserId) {
+      openToPin = true;
+      searchUserId = contentUserId;
     } else if (content) {
       await message.react('❓');
     }
@@ -54,7 +49,8 @@ const command: BotCommand = {
       fields,
       true,
       userIndex,
-      authorId
+      message.author.id,
+      openToPin
     );
   },
 };

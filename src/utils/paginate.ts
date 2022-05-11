@@ -86,15 +86,16 @@ export async function fieldsPaginator(
   fields: EmbedField[],
   inline: boolean,
   userIndex: number,
-  authorID: string
+  authorID: string,
+  openToPin?: boolean
 ) {
   const pages = splitFieldsIntoPages(
     fields,
     title.length + description.length + 'Page: 9999/9999'.length
   );
   const maxPageIndex = pages.length - 1;
-  let currPage = 0;
   const userPage = Math.floor(userIndex / MAX_FIELDS); // TODO: search pages
+  let currPage = openToPin && userIndex === -1 ? userPage : 0;
 
   function getEmbed(page: number, end?: boolean) {
     return {

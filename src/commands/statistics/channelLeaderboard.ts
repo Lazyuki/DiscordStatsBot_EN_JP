@@ -30,11 +30,13 @@ const command: BotCommand = {
     );
     const authorId = message.author.id;
     let searchUserId = authorId;
+    let openToPin = false;
     if (nonChannelIds.length > 0) {
       const memberIds = nonChannelIds.filter((id) =>
         server.guild.members.cache.has(id)
       );
       if (memberIds.length > 0) {
+        openToPin = true;
         searchUserId = memberIds[0];
       } else {
         await message.react('❓');
@@ -68,7 +70,8 @@ const command: BotCommand = {
       fields,
       true,
       userIndex,
-      authorId
+      authorId,
+      openToPin
     );
   },
 };

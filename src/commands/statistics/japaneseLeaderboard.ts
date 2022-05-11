@@ -21,7 +21,15 @@ const command: BotCommand = {
   examples: ['jpl', 'jpl -n 1000', 'jpl @Geralt'],
   normalCommand: async ({ message, bot, server, content, options }) => {
     const japaneseRoles = server.config.japaneseRoles;
-    const searchUserId = getUserId(bot, server, content) || message.author.id;
+    let searchUserId = message.author.id;
+    let openToPin = false;
+    const contentUserId = getUserId(bot, server, content);
+    if (contentUserId) {
+      openToPin = true;
+      searchUserId = contentUserId;
+    } else if (content) {
+      await message.react('❓');
+    }
 
     let threshold = 100;
     if (options['threshold']) {
@@ -66,7 +74,8 @@ const command: BotCommand = {
       fields,
       true,
       userIndex,
-      message.author.id
+      message.author.id,
+      openToPin
     );
   },
 };
