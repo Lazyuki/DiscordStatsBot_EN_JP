@@ -94,7 +94,11 @@ const command: BotCommand = {
       });
       for (const message of recentMessages.values()) {
         const author = message.member;
-        if (author?.roles.cache.hasAny(...EJLX_LANG_ROLE_IDS)) continue;
+        if (
+          author?.user.bot ||
+          author?.roles.cache.hasAny(...EJLX_LANG_ROLE_IDS)
+        )
+          continue;
         if (author) {
           member = author;
           break;
