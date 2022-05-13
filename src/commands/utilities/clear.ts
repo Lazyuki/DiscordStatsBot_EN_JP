@@ -29,6 +29,12 @@ const command: BotCommand = {
         `You cannot clear my messages in this channel`
       );
     }
+
+    if (message.reference) {
+      await message.channel.delete(message.reference.messageId);
+      return;
+    }
+
     const messagesToDelete = [];
     for (const m of messages.values()) {
       if (m.author.id === bot.user?.id) {
