@@ -1,6 +1,8 @@
 import { BotEvent } from '@/types';
 import { insertEmojis } from '@database/statements';
 import checkSafeMessage from '@utils/checkSafeMessage';
+import { SUGGESTIONS_FORUM, SUGGESTIONS } from '@utils/constants';
+import { isMessageInChannels } from '@utils/guildUtils';
 
 const IGNORED_REACTIONS = [
   '<:english:439733745591779328>',
@@ -16,6 +18,7 @@ const reactionAdd: BotEvent<'messageReactionAdd'> = {
     if (!checkSafeMessage(bot, message)) return;
     const server = bot.servers[message.guild.id];
     if (!server.config.statistics) return; // No statistics for this server
+    if (isMessageInChannels(message, [SUGGESTIONS_FORUM, SUGGESTIONS])) return; // Ignore EJLX Suggesions
 
     const reactionString = reaction.emoji.toString();
     if (IGNORED_REACTIONS.includes(reactionString)) return;
@@ -37,6 +40,7 @@ const reactionRemove: BotEvent<'messageReactionRemove'> = {
     if (!checkSafeMessage(bot, message)) return;
     const server = bot.servers[message.guild.id];
     if (!server.config.statistics) return; // No statistics for this server
+    if (isMessageInChannels(message, [SUGGESTIONS_FORUM, SUGGESTIONS])) return; // Ignore EJLX Suggesions
 
     const reactionString = reaction.emoji.toString();
     if (IGNORED_REACTIONS.includes(reactionString)) return;

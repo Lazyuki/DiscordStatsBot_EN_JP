@@ -8,6 +8,7 @@ import checkLang from '@utils/checkLang';
 import { getParentChannelId, isMessageInChannels } from '@utils/guildUtils';
 import checkSafeMessage from '@utils/checkSafeMessage';
 import { REGEX_CUSTOM_EMOTES, REGEX_UNICODE_EMOJI } from '@utils/regex';
+import { SUGGESTIONS, SUGGESTIONS_FORUM } from '@utils/constants';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -38,16 +39,24 @@ const event: BotEvent<'messageCreate'> = {
 
     const emojis: Record<string, number> = {};
 
-    const discordEmojis = message.content.match(REGEX_CUSTOM_EMOTES);
-    if (discordEmojis) {
-      for (const emoji of discordEmojis) {
-        if (emoji in emojis) {
-          emojis[emoji] += 1;
-        } else {
-          emojis[emoji] = 1;
+    const isEjlxSuggestions = isMessageInChannels(message, [
+      SUGGESTIONS_FORUM,
+      SUGGESTIONS,
+    ]);
+
+    if (!isEjlxSuggestions) {
+      const discordEmojis = message.content.match(REGEX_CUSTOM_EMOTES);
+      if (discordEmojis) {
+        for (const emoji of discordEmojis) {
+          if (emoji in emojis) {
+            emojis[emoji] += 1;
+          } else {
+            emojis[emoji] = 1;
+          }
         }
       }
     }
+
     const unicodeEmojiMatches = message.content.matchAll(REGEX_UNICODE_EMOJI);
     if (unicodeEmojiMatches) {
       for (const emojiMatch of unicodeEmojiMatches) {
@@ -69,16 +78,18 @@ const event: BotEvent<'messageCreate'> = {
       });
     });
 
-    if (message.stickers?.size) {
-      message.stickers.forEach((sticker) => {
-        insertStickers({
-          guildId,
-          userId,
-          date,
-          sticker: `${sticker.name}:${sticker.guildId}`,
-          stickerCount: 1,
+    if (!isEjlxSuggestions) {
+      if (message.stickers?.size) {
+        message.stickers.forEach((sticker) => {
+          insertStickers({
+            guildId,
+            userId,
+            date,
+            sticker: `${sticker.name}:${sticker.guildId}`,
+            stickerCount: 1,
+          });
         });
-      });
+      }
     }
   },
 };
