@@ -13,6 +13,7 @@ const command: BotCommand = {
   description:
     'Let people know that they need to use appropriate voice text channels. You can mention people or reply to a message, otherwise the bot will automatically look up the channel and see which users are in VC.',
   arguments: '[users]',
+  examples: ['vt', 'vt @user1 @user2'],
   normalCommand: async ({ message, content, server }) => {
     safeDelete(message);
     const { members } = parseMembers(content, server.guild);
