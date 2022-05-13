@@ -8,7 +8,8 @@ import { safeDelete } from '@utils/safeDelete';
 const command: BotCommand = {
   name: 'clear',
   aliases: ['clr'],
-  description: 'Clear messages by Ciri. Defaults to 1 message.',
+  description:
+    "Clear messages by Ciri. Defaults to 1 message. You can reply to Ciri's message to delete a specific message.",
   arguments: '[number of Ciri messages to delete]',
   examples: ['clr', 'clr 5'],
   normalCommand: async ({ message, content, server, bot }) => {
