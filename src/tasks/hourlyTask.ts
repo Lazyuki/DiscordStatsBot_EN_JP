@@ -5,6 +5,7 @@ import { cleanOldAttachmentFiles } from '@utils/images';
 function hourlyTask(bot: Bot) {
   bot.utcHour = getStartHourISO();
   for (const server of Object.values(bot.servers)) {
+    server.guild.members.fetch(); // fetch all members even if offline
     if (server.data.categoryClocks?.length) {
       for (const categoryClock of server.data.categoryClocks) {
         const category = server.guild.channels.cache.get(
