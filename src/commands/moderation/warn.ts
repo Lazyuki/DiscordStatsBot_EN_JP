@@ -55,18 +55,40 @@ const warn: BotCommand = {
     },
   ],
   childCommands: ['warnlog', 'warnclear'],
-  normalCommand: async ({ content, message, server, options }) => {
-    const { members, restContent } = parseMembers(
-      content,
-      server.guild,
-      'MEMBERS'
-    );
+  normalCommand: async ({ bot, content, message, server, options }) => {
+    const {
+      members: guildMembers,
+      nonMemberIds,
+      restContent,
+    } = parseMembers(content, server.guild, 'IDS');
     if (!restContent) {
       throw new CommandArgumentError('Please specify the warning content');
     }
+    type UserOrMember = {
+      id: string;
+      send: GuildMember['send'];
+      toString: GuildMember['toString'];
+    };
+    const members = guildMembers as UserOrMember[];
     const date = new Date().toISOString();
     const silent = Boolean(options['silent']);
-    const unreachableMembers: GuildMember[] = [];
+    if (nonMemberIds.length && silent) {
+      await Promise.all(
+        nonMemberIds.map(async (id) => {
+          try {
+            const user = await bot.users.fetch(id);
+            members.push(user);
+          } catch {
+            await message.channel.send(`\`${id}\` is not a valid user ID.`);
+          }
+        })
+      );
+    }
+    if (members.length === 0) {
+      throw new CommandArgumentError('Please specify valid Discord users');
+    }
+
+    const unreachableMembers: UserOrMember[] = [];
     const addModLog = (userId: string) => {
       insertModLog({
         kind: 'warn',
