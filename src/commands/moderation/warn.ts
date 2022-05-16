@@ -188,7 +188,7 @@ const warn: BotCommand = {
 
 const warnlog: BotCommand = {
   name: 'warnlog',
-  isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE'],
+  isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE', 'EJLX_MOD_CATEGORY'],
   description:
     'List mod logs. To prevent accidentally showing warning details publically, this command is only available in one of `hiddenChannels` defined in the `config` command.',
   arguments: '[@user]',

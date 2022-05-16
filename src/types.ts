@@ -45,6 +45,7 @@ export type CommandPermissionLevel =
   | 'EJLX_STAFF'
   | 'MINIMO'
   | 'WP'
+  | 'EJLX_MOD_CATEGORY'
   | 'MAINICHI_COMMITTEE'
   | PermissionString;
 
