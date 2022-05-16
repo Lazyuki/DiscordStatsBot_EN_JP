@@ -32,7 +32,7 @@ import {
 import { isInChannelsOrCategories } from '@utils/guildUtils';
 import { descriptionPaginator, fieldsPaginator } from '@utils/paginate';
 import { pluralCount, pluralize } from '@utils/pluralize';
-import { GuildBan, GuildMember } from 'discord.js';
+import { GuildBan, GuildMember, User } from 'discord.js';
 
 const warn: BotCommand = {
   name: 'warn',
@@ -213,7 +213,10 @@ const warnlog: BotCommand = {
       try {
         guildBan = await server.guild.bans.fetch(userId);
       } catch {}
-      const user = bot.users.cache.get(userId);
+      let user: User | undefined;
+      try {
+        user = await bot.users.fetch(userId);
+      } catch {}
       const userMentionTag = user
         ? userToMentionAndTagNoEscape(user)
         : `User: ${userId}`;
