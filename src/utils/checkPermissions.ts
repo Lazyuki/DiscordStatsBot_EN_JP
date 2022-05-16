@@ -2,8 +2,12 @@ import { Message, PermissionString } from 'discord.js';
 
 import Server from '../classes/Server';
 import { Bot, CommandPermissionLevel, GuildMessage } from '../types';
-import { COMMITTEE, EJLX, MINIMO, STAFF, WP } from './constants';
-import { getMessageTextChannel, getParentChannelId } from './guildUtils';
+import { COMMITTEE, EJLX, MINIMO, MODERATION, STAFF, WP } from './constants';
+import {
+  getCategoryId,
+  getMessageTextChannel,
+  getParentChannelId,
+} from './guildUtils';
 
 export function checkEjlx(server: Server) {
   return server.guild.id === EJLX;
@@ -21,6 +25,17 @@ export function checkEjlxStaff(message: Message, server: Server) {
   if (!checkEjlx(server)) return false;
   if (checkAdmin(message)) return true;
   if (message.member?.roles.cache.has(STAFF)) return true;
+  return false;
+}
+
+export function checkModCategory(message: Message, server: Server) {
+  if (!checkEjlx(server)) return false;
+  if (checkAdmin(message)) return true;
+  if (
+    message.channel.type !== 'DM' &&
+    getCategoryId(message.channel) === MODERATION
+  )
+    return true;
   return false;
 }
 
@@ -68,6 +83,8 @@ export function getPermission(
       return checkAdmin;
     case 'EJLX_STAFF':
       return checkEjlxStaff;
+    case 'EJLX_MOD_CATEGORY':
+      return checkModCategory;
     case 'MINIMO':
       return checkMinimo;
     case 'WP':
