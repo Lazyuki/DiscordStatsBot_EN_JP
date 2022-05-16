@@ -19,7 +19,7 @@ const command: BotCommand = {
           mentioned ? ' ' + mentioned.user.username : ''
         }!! 🎉 READ ME!`,
         description:
-          '__**[Japanese Starting Guide](https://github.com/ryry013/Awesome-Japanese/blob/master/readme.md)**__<:externallink:438354612379189268>',
+          '__**[Japanese Starting Guide](https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md)**__<:externallink:438354612379189268>',
         mainImage: 'https://i.imgur.com/MmAIJzT.png',
         fields: [
           {

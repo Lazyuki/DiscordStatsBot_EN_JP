@@ -19,7 +19,7 @@ const command: BotCommand = {
     switch (content) {
       case 'beginner':
       case 'guides': {
-        title = `__**Guides ${EXTERNAL_LINK_EMOJI}**__`;
+        title = `__**Guides**__ ${EXTERNAL_LINK_EMOJI}`;
         description = 'All beginners should read one of the below guides';
         url = 'https://github.com/EngJpDiscordExchange/Awesome-Japanese';
         fields = [
@@ -43,7 +43,7 @@ const command: BotCommand = {
       case 'kana':
       case 'hiragana':
       case 'katakana': {
-        title = `__**Kana ${EXTERNAL_LINK_EMOJI}**__`;
+        title = `__**Kana**__ ${EXTERNAL_LINK_EMOJI}`;
         url =
           'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#hiragana-and-katakana';
         description = 'The first step is learning Hiragana and Katakana. ';
@@ -60,7 +60,7 @@ const command: BotCommand = {
         break;
       }
       case 'kanji': {
-        title = `__**Kanji ${EXTERNAL_LINK_EMOJI}**__`;
+        title = `__**Kanji**__ ${EXTERNAL_LINK_EMOJI}`;
         url =
           'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#kanji';
         description = "After you've got your kana down, you need Kanji.";
@@ -89,7 +89,7 @@ const command: BotCommand = {
         break;
       }
       case 'grammar': {
-        title = `__**Grammar ${EXTERNAL_LINK_EMOJI}**__`;
+        title = `__**Grammar**__ ${EXTERNAL_LINK_EMOJI}`;
         url =
           'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#grammar';
         description =
@@ -111,7 +111,7 @@ const command: BotCommand = {
         break;
       }
       case 'vocab': {
-        title = `__**Vocabulary ${EXTERNAL_LINK_EMOJI}**__`;
+        title = `__**Vocabulary**__ ${EXTERNAL_LINK_EMOJI}`;
         url =
           'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#vocabulary';
         description = 'For vocabulary, three nice options are: ';
@@ -130,7 +130,7 @@ const command: BotCommand = {
       case 'type':
       case 'typing':
       case 'keyboard': {
-        title = `__**Keyboard ${EXTERNAL_LINK_EMOJI}**__`;
+        title = `__**Keyboard**__ ${EXTERNAL_LINK_EMOJI}`;
         url =
           'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#software';
         description =
@@ -151,7 +151,7 @@ const command: BotCommand = {
       case 'dict':
       case 'dictionary':
       case 'dictionaries': {
-        title = `__**Dictionaries ${EXTERNAL_LINK_EMOJI}**__`;
+        title = `__**Dictionaries**__ ${EXTERNAL_LINK_EMOJI}`;
         url =
           'https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#dictionary';
         description =
@@ -164,7 +164,7 @@ const command: BotCommand = {
         break;
       }
       case 'anki': {
-        title = `__**Anki ${EXTERNAL_LINK_EMOJI}**__`;
+        title = `__**Anki**__ ${EXTERNAL_LINK_EMOJI}`;
         url = 'https://itazuraneko.neocities.org/learn/anki.html';
         description =
           'Anki is a free and open-source flashcard program that utilizes spaced repetition.';
@@ -198,11 +198,11 @@ const command: BotCommand = {
         break;
       }
       case '': {
-        description = `__**[New to Japanese? Start here! ${EXTERNAL_LINK_EMOJI}](https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#beginner-guide)**__`;
+        description = `__**[New to Japanese? Start here!](https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#beginner-guide)**__ ${EXTERNAL_LINK_EMOJI}`;
         break;
       }
       default: {
-        description = `__**[New to Japanese? Start here! ${EXTERNAL_LINK_EMOJI}](https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#beginner-guide)**__`;
+        description = `__**[New to Japanese? Start here!](https://github.com/EngJpDiscordExchange/Awesome-Japanese/blob/master/readme.md#beginner-guide)**__ ${EXTERNAL_LINK_EMOJI}`;
         break;
       }
     }
