@@ -19,3 +19,17 @@ export function pluralCount(
 ) {
   return `${length} ${word}${length === 1 ? singularSuffix : pluralSuffix}`;
 }
+
+export function nth(n: number) {
+  if (n === 0) return `N/A`;
+  switch (n % 10) {
+    case 1:
+      return `${n}st`;
+    case 2:
+      return `${n}nd`;
+    case 3:
+      return `${n}rd`;
+    default:
+      return `${n}th`;
+  }
+}
