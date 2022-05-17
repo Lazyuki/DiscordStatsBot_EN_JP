@@ -1,4 +1,3 @@
-import { Util } from 'discord.js';
 import { getUserId } from '@utils/argumentParsers';
 import { BotCommand } from '@/types';
 import { infoEmbed } from '@utils/embed';
@@ -69,9 +68,7 @@ const command: BotCommand = {
     // Title
     const user = bot.users.cache.get(userId);
     const titleName = member
-      ? `${Util.escapeMarkdown(member.user.tag)}${
-          member.nickname ? ` aka ${Util.escapeMarkdown(member.nickname)}` : ''
-        }`
+      ? `${member.user.tag}${member.nickname ? ` aka ${member.nickname}` : ''}`
       : user
       ? user.tag
       : `User <@${userId}>`;
