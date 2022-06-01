@@ -44,7 +44,7 @@
     "erlpack": "github:discord/erlpack",
     "pm2": "^5.2.0",
     "rimraf": "^3.0.2",
-    "sharp": "^0.30.3",
+    "sharp": "^0.30.5",
     "source-map-support": "^0.5.21",
     "typescript": "^4.5.5",
     "utf-8-validate": "^5.0.7",
