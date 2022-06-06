@@ -1,4 +1,4 @@
-import { GuildMessage, SimpleButton } from '@/types';
+import { GuildMessage, GuildTextChannel, SimpleButton } from '@/types';
 import Server from '@classes/Server';
 import {
   CacheType,
@@ -209,7 +209,7 @@ export async function getFallbackChannel(
     filter,
     time: waitForSeconds * 1000,
   });
-  const promise = new Promise<TextChannel | NewsChannel | null>((resolve) => {
+  const promise = new Promise<GuildTextChannel | null>((resolve) => {
     collector.on('collect', (m) => {
       const { channels } = parseChannels(m.content, server.guild);
       if (channels.length) {

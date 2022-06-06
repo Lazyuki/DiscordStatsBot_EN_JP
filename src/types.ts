@@ -4,6 +4,7 @@ import {
   ClientEvents,
   Guild,
   GuildMember,
+  GuildTextBasedChannel,
   Interaction,
   Message,
   MessageButtonStyleResolvable,
@@ -14,6 +15,7 @@ import {
   PermissionString,
   TextChannel,
   ThreadChannel,
+  VoiceChannel,
 } from 'discord.js';
 
 import Server from './classes/Server';
@@ -60,10 +62,12 @@ export type BotCommandCategory =
 export type OnCommandInit = (server: Server) => void;
 export type OnBotInit = (bot: Bot) => void;
 export type OnBotExit = (bot: Bot) => void;
+
+export type GuildTextChannel = TextChannel | NewsChannel | VoiceChannel;
 export type GuildMessage<M extends Message | PartialMessage = Message> = M & {
   guild: Guild;
   member: GuildMember;
-  channel: NewsChannel | TextChannel | ThreadChannel;
+  channel: GuildTextBasedChannel;
 };
 
 export interface BotCommand {

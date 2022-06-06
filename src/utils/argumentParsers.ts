@@ -6,6 +6,7 @@ import {
   Message,
   NewsChannel,
   TextChannel,
+  VoiceChannel,
 } from 'discord.js';
 import Server from '@classes/Server';
 import {
@@ -15,7 +16,7 @@ import {
   REGEX_USER,
   REGEX_USER_TAG,
 } from './regex';
-import { Bot } from '@/types';
+import { Bot, GuildTextChannel } from '@/types';
 import { CommandArgumentError, MemberNotFoundError } from '@/errors';
 import { getTextChannel, isTextChannel } from './guildUtils';
 import { joinNaturally } from './formatString';
@@ -46,8 +47,6 @@ export function parseSnowflakeIds(str: string, greedy = false) {
 
   return { ids, rest: nonIds.join(' ') };
 }
-
-type GuildTextChannel = TextChannel | NewsChannel;
 
 export function parseChannels(
   content: string,

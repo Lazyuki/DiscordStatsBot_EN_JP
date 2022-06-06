@@ -15,7 +15,8 @@ const command: BotCommand = {
     await message.channel.send(
       makeEmbed({
         title: `Channel topic for #${channel.name}`,
-        description: channel.topic || 'None',
+        description:
+          (channel.type !== 'GUILD_VOICE' && channel.topic) || 'None',
       })
     );
   },

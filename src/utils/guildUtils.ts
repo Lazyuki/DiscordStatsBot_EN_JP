@@ -10,6 +10,7 @@ import {
   GuildBasedChannel,
   CategoryChannel,
   VoiceChannel,
+  GuildTextBasedChannel,
 } from 'discord.js';
 import { REGEX_MESSAGE_LINK_OR_FULL_ID } from './regex';
 
@@ -29,9 +30,7 @@ export function getMessageTextChannel(message: GuildMessage) {
   }
 }
 
-export function getParentChannelId(
-  channel: TextChannel | NewsChannel | ThreadChannel
-) {
+export function getParentChannelId(channel: GuildTextBasedChannel) {
   if (channel.isThread()) {
     return channel.parentId!;
   } else {
@@ -39,9 +38,7 @@ export function getParentChannelId(
   }
 }
 
-export function getCategoryId(
-  channel: TextChannel | NewsChannel | ThreadChannel | VoiceChannel
-) {
+export function getCategoryId(channel: GuildTextBasedChannel) {
   if (channel.isThread()) {
     return channel.parent?.parentId;
   } else {
