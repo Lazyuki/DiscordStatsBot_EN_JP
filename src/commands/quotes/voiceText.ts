@@ -55,7 +55,7 @@ const command: BotCommand = {
     await message.channel.send(
       makeEmbed({
         content: vcMembers.map((m) => m.toString()).join(''),
-        description: `If you want to send text messages while in voice chat, please use the integrated text chat ${voiceChannels
+        description: `If you want to send text messages while in voice chat, please use the integrated text chat in ${voiceChannels
           .map((vc) => vc.toString())
           .join(
             ', '
