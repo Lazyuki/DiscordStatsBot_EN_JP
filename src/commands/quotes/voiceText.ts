@@ -56,12 +56,22 @@ const command: BotCommand = {
       makeEmbed({
         content: vcMembers.map((m) => m.toString()).join(''),
         description: `If you want to send text messages while in voice chat, please use the integrated text chat in ${voiceChannels
-          .map((vc) => vc.toString())
+          .map(
+            (vc) =>
+              `[#${vc.name}](https://discord.com/channels/${vc.guildId}/${
+                vc.id
+              }/${vc.lastMessageId || 1})`
+          )
           .join(
             ', '
           )} or <#${VOICE_BOT}>.\n通話中のテキストチャットには${voiceChannels
-          .map((vc) => vc.toString())
-          .join('')}<#${VOICE_BOT}>を使用してください。`,
+          .map(
+            (vc) =>
+              `[#${vc.name}](https://discord.com/channels/${vc.guildId}/${
+                vc.id
+              }/${vc.lastMessageId || 1})`
+          )
+          .join(' ')} <#${VOICE_BOT}>を使用してください。`,
         color: 'RED',
       })
     );
