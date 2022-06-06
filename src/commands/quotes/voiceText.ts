@@ -49,9 +49,9 @@ const command: BotCommand = {
       await message.channel.send(errorEmbed(`Couldn't find any users in VC`));
       return;
     }
-    const voiceChannels = vcMembers
-      .map((mem) => mem.voice.channel)
-      .filter(Boolean) as VoiceChannel[];
+    const voiceChannels = [
+      ...new Set(vcMembers.map((mem) => mem.voice.channel).filter(Boolean)),
+    ] as VoiceChannel[];
     await message.channel.send(
       makeEmbed({
         content: vcMembers.map((m) => m.toString()).join(''),
