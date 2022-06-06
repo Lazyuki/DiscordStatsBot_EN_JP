@@ -45,7 +45,7 @@ const command: BotCommand = {
       (ch) =>
         !channels.some((row) => row.channelId === ch.id) &&
         ch.viewable &&
-        !ch.isVoice &&
+        ch.type !== 'GUILD_VOICE' &&
         !hiddenChannels.includes(ch.id) &&
         !ignoredChannels.includes(ch.id)
     );

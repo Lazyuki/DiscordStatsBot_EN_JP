@@ -51,7 +51,7 @@ export function getCategoryId(
 
 export function isTextChannel(
   channel: GuildBasedChannel
-): channel is TextChannel | NewsChannel {
+): channel is TextChannel | NewsChannel | VoiceChannel {
   return channel.isText() && !channel.isThread();
 }
 
