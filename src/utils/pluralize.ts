@@ -24,11 +24,11 @@ export function nth(n: number) {
   if (n === 0) return `N/A`;
   switch (n % 10) {
     case 1:
-      return `${n}st`;
+      return String(n).endsWith('11') ? `${n}th` : `${n}st`;
     case 2:
-      return `${n}nd`;
+      return String(n).endsWith('12') ? `${n}th` : `${n}nd`;
     case 3:
-      return `${n}rd`;
+      return String(n).endsWith('13') ? `${n}th` : `${n}rd`;
     default:
       return `${n}th`;
   }

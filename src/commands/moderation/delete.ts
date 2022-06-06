@@ -124,9 +124,18 @@ const command: BotCommand = {
       // Rest of IDs are definitely message IDs
       const { ids: messageIds, rest } = parseSnowflakeIds(content, true);
       if (messageIds.length > 0) {
-        for (const messageId of messageIds) {
-          const delMessage = await defaultChannel.messages.fetch(messageId);
-          delMessage && deletingMessages.push(delMessage as GuildMessage);
+        try {
+          for (const messageId of messageIds) {
+            const delMessage = await defaultChannel.messages.fetch(messageId);
+            delMessage && deletingMessages.push(delMessage as GuildMessage);
+          }
+        } catch (e) {
+          await message.channel.send(
+            errorEmbed(
+              `The message ID did not match any message in <#${defaultChannel.id}>. To delete messages in other channels, use the full ID in the format \`123456789-123456789\` which you can copy by holding the shift key when clicking "Copy ID", or mention the channel first like \`${server.config.prefix}del #general 123456789\`.`
+            )
+          );
+          return;
         }
       }
       content = rest.trim();
