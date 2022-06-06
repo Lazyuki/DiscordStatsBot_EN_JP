@@ -1,4 +1,4 @@
-import { Util } from 'discord.js';
+import { Util, VoiceChannel } from 'discord.js';
 import { getUserId } from '@utils/argumentParsers';
 import { BotCommand } from '@/types';
 import { infoEmbed } from '@utils/embed';
@@ -45,6 +45,7 @@ const command: BotCommand = {
       (ch) =>
         !channels.some((row) => row.channelId === ch.id) &&
         ch.viewable &&
+        !ch.isVoice &&
         !hiddenChannels.includes(ch.id) &&
         !ignoredChannels.includes(ch.id)
     );
