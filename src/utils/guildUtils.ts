@@ -9,6 +9,7 @@ import {
   GuildMember,
   GuildBasedChannel,
   CategoryChannel,
+  VoiceChannel,
 } from 'discord.js';
 import { REGEX_MESSAGE_LINK_OR_FULL_ID } from './regex';
 
@@ -39,7 +40,7 @@ export function getParentChannelId(
 }
 
 export function getCategoryId(
-  channel: TextChannel | NewsChannel | ThreadChannel
+  channel: TextChannel | NewsChannel | ThreadChannel | VoiceChannel
 ) {
   if (channel.isThread()) {
     return channel.parent?.parentId;
