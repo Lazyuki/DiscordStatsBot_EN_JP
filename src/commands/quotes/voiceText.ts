@@ -3,7 +3,7 @@ import { EJLX, VOICE_1, VOICE_2, VOICE_BOT } from '@utils/constants';
 import { errorEmbed, makeEmbed, warningEmbed } from '@utils/embed';
 import { safeDelete } from '@utils/safeDelete';
 import { parseMembers } from '@utils/argumentParsers';
-import { GuildMember } from 'discord.js';
+import { GuildMember, VoiceChannel } from 'discord.js';
 import { getCategoryId } from '@utils/guildUtils';
 
 const command: BotCommand = {
@@ -49,10 +49,19 @@ const command: BotCommand = {
       await message.channel.send(errorEmbed(`Couldn't find any users in VC`));
       return;
     }
+    const voiceChannels = vcMembers
+      .map((mem) => mem.voice.channel)
+      .filter(Boolean) as VoiceChannel[];
     await message.channel.send(
       makeEmbed({
         content: vcMembers.map((m) => m.toString()).join(''),
-        description: `If you want to text chat while in VC, please use <#${VOICE_1}>, <#${VOICE_2}>, or <#${VOICE_BOT}>.\n通話中のテキストチャットには<#${VOICE_1}><#${VOICE_2}><#${VOICE_BOT}>を使用してください。`,
+        description: `If you want to send text messages while in voice chat, please use the integrated text chat ${voiceChannels
+          .map((vc) => vc.toString())
+          .join(
+            ', '
+          )} or <#${VOICE_BOT}>.\n通話中のテキストチャットには${voiceChannels
+          .map((vc) => vc.toString())
+          .join('')}<#${VOICE_BOT}>を使用してください。`,
         color: 'RED',
       })
     );
