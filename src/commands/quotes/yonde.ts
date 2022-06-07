@@ -18,7 +18,7 @@ const command: BotCommand = {
         title: `${
           mentioned ? mentioned.user.username + 'さん、' : ''
         }ようこそ！！ 🎉 このサーバーの簡単な説明です`,
-        mainImage: 'https://i.imgur.com/NmUudeF.png',
+        mainImage: 'https://i.imgur.com/2N1fJH2.png',
         fields: [
           {
             name: '注意事項（必読）',
