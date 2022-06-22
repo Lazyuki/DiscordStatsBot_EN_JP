@@ -101,8 +101,12 @@ const command: BotCommand = {
           const delMessage = await channel?.messages.fetch(messageId);
           delMessage && deletingMessages.push(delMessage as GuildMessage);
         }
+        const globalFullIdRegex = new RegExp(
+          REGEX_MESSAGE_LINK_OR_FULL_ID,
+          'g'
+        );
         content = content
-          .replaceAll(REGEX_MESSAGE_LINK_OR_FULL_ID, '')
+          .replaceAll(globalFullIdRegex, '')
           .replaceAll(REGEX_URL, '')
           .trim();
       }

@@ -1,21 +1,6 @@
-import {
-  CategoryChannel,
-  Guild,
-  GuildBasedChannel,
-  GuildMember,
-  Message,
-  NewsChannel,
-  TextChannel,
-  VoiceChannel,
-} from 'discord.js';
+import { CategoryChannel, Guild, GuildMember } from 'discord.js';
 import Server from '@classes/Server';
-import {
-  REGEX_MESSAGE_LINK_OR_FULL_ID,
-  REGEX_RAW_ID,
-  REGEX_RAW_ID_ONLY,
-  REGEX_USER,
-  REGEX_USER_TAG,
-} from './regex';
+import { REGEX_MESSAGE_LINK_OR_FULL_ID, REGEX_RAW_ID } from './regex';
 import { Bot, GuildTextChannel } from '@/types';
 import { CommandArgumentError, MemberNotFoundError } from '@/errors';
 import { getTextChannel, isTextChannel } from './guildUtils';

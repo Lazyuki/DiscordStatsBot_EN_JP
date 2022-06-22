@@ -8,13 +8,8 @@ import {
 import { getButtonsWithLabels } from '@utils/buttons';
 import { errorEmbed, infoEmbed, successEmbed } from '@utils/embed';
 import { pseudoShlexSplit } from '@utils/formatString';
-import { fetchMessage, getTextChannel } from '@utils/guildUtils';
-import {
-  REGEX_CUSTOM_EMOTES,
-  REGEX_MESSAGE_LINK_OR_FULL_ID,
-  REGEX_RAW_ID,
-  REGEX_UNICODE_EMOJI,
-} from '@utils/regex';
+import { fetchMessage } from '@utils/guildUtils';
+import { REGEX_CUSTOM_EMOTES, REGEX_RAW_ID } from '@utils/regex';
 
 declare module '@/types' {
   interface ServerData {

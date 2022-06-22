@@ -2,11 +2,9 @@ import { GuildMessage } from '@/types';
 import {
   TextChannel,
   NewsChannel,
-  ThreadChannel,
   Guild,
   PartialMessage,
   Message,
-  GuildMember,
   GuildBasedChannel,
   CategoryChannel,
   VoiceChannel,
