@@ -102,8 +102,8 @@ const command: BotCommand = {
           delMessage && deletingMessages.push(delMessage as GuildMessage);
         }
         content = content
-          .replace(REGEX_MESSAGE_LINK_OR_FULL_ID, '')
-          .replace(REGEX_URL, '')
+          .replaceAll(REGEX_MESSAGE_LINK_OR_FULL_ID, '')
+          .replaceAll(REGEX_URL, '')
           .trim();
       }
 
@@ -188,7 +188,7 @@ const command: BotCommand = {
     }
 
     const notLogging =
-      options['noLogs'] && message.member.permissions.has('ADMINISTRATOR');
+      options['noLog'] && message.member.permissions.has('ADMINISTRATOR');
 
     const attachmentURLs: Record<string, DeletedMessageAttachment[]> = {}; // repost images
     const hasEmbedMessageIds: string[] = []; // Embed with videos/images means there was a URL.
