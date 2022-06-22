@@ -30,13 +30,9 @@ const command: BotCommand = {
 
       const build = await exec(buildCommand);
       if (build.stderr) {
-        clearInterval(interval);
         await message.channel.send(
-          errorEmbed(
-            `Error during \`${buildCommand}\`:\n${codeBlock(build.stderr)}`
-          )
+          errorEmbed(`stderr \`${buildCommand}\`:\n${codeBlock(build.stderr)}`)
         );
-        return;
       }
       const cleanStdout = build.stdout
         .split('\n')
