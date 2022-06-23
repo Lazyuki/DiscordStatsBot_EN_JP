@@ -10,7 +10,12 @@ const command: BotCommand = {
   isAllowed: ['WP'],
   description: `Automatically follow whenever a thread is created in <#${SUGGESTIONS_FORUM}>.`,
   normalCommand: async ({ server, message }) => {
-    const followers = server.data.forumFollowers[SUGGESTIONS_FORUM];
+    const followers = (() => {
+      const existing = server.data.forumFollowers[SUGGESTIONS_FORUM];
+      if (existing) return existing;
+      server.data.forumFollowers[SUGGESTIONS_FORUM] = [];
+      return server.data.forumFollowers[SUGGESTIONS_FORUM];
+    })();
     const authorId = message.author.id;
     const index = followers.findIndex((id) => id === authorId);
     if (index === -1) {
