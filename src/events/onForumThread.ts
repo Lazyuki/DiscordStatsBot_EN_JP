@@ -8,7 +8,7 @@ declare module '@/types' {
 
 const threadCreate: BotEvent<'threadCreate'> = {
   eventName: 'threadCreate',
-  skipOnDebug: false,
+  skipOnDebug: true,
   onServerInit: (server) => {
     server.data.forumFollowers ||= {};
   },

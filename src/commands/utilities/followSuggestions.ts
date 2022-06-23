@@ -8,7 +8,7 @@ const command: BotCommand = {
   aliases: ['fs', 'suggestions'],
   allowedServers: [EJLX],
   isAllowed: ['WP'],
-  description: `Automatically follow whenever a thread is created in <#${SUGGESTIONS_FORUM}>.`,
+  description: `Automatically follow whenever a post is created in <#${SUGGESTIONS_FORUM}>.`,
   normalCommand: async ({ server, message }) => {
     const followers = (() => {
       const existing = server.data.forumFollowers[SUGGESTIONS_FORUM];
