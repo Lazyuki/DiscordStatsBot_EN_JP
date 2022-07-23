@@ -16,6 +16,7 @@ import { optionParser } from '@utils/optionParser';
 import { userToTagAndId } from '@utils/formatString';
 import { insertCommands } from '@database/statements';
 import { deleteAfter } from '@utils/safeDelete';
+import { EJLX } from '@utils/constants';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -25,13 +26,18 @@ const event: BotEvent<'messageCreate'> = {
     if (message.author.bot || message.system) return;
 
     let server = bot.servers[message.guild.id];
-    const match = message.content.match(/^!!([0-9]+)/);
+    const match = message.content.match(/^!!([0-9]+|ejlx)/);
     if (match && message.author.id === bot.ownerId) {
-      server = bot.servers[match[1]];
-      if (!server) {
-        throw new NotFoundError(`Server with ID: \`${match[1]}\` not found.`);
+      const serverId = match[1];
+      if (serverId === 'ejlx') {
+        server = bot.servers[EJLX];
+      } else {
+        server = bot.servers[serverId];
       }
-      message.content = message.content.replace(/^!![0-9]+/, '');
+      if (!server) {
+        throw new NotFoundError(`Server with ID: \`${serverId}\` not found.`);
+      }
+      message.content = message.content.replace(/^!!([0-9]+|ejlx)/, '');
     }
 
     // Is it not my command?

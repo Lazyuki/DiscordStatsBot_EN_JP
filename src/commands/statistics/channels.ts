@@ -62,12 +62,18 @@ const command: BotCommand = {
       .map((channel) => `**#${channel.name}**: 0 messages`)
       .join('\n');
 
-    await message.channel.send(
-      infoEmbed({
-        title: `Most active channels`,
-        description: channelsString,
-      })
-    );
+    const messageContent = infoEmbed({
+      title: `Most active channels`,
+      description: channelsString,
+    });
+    if (messageContent.embeds.length > 1) {
+      const promises = messageContent.embeds.map(async (embed) => {
+        await message.channel.send({ ...messageContent, embeds: [embed] });
+      });
+      await Promise.all(promises);
+    } else {
+      await message.channel.send(messageContent);
+    }
   },
 };
 
