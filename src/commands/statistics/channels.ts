@@ -30,7 +30,7 @@ const command: BotCommand = {
         guildId: server.guild.id,
       },
       hiddenChannels
-    );
+    ).filter((ch) => server.guild.channels.cache.has(ch.channelId)); // filter out deleted channels, e.g. private voice text
 
     const ignoredChannels = channelsOrCategoriesToChannels(
       server.config.ignoredChannels,
@@ -53,7 +53,7 @@ const command: BotCommand = {
       channels
         .map(({ channelId, count }) => {
           const channel = server.guild.channels.cache.get(channelId);
-          return `**#${
+          return `**${channel?.type === ChannelType.GuildVoice ? '🔉' : '#'}${
             channel?.name || `*deleted (${channelId})*`
           }**: ${pluralCount('message', 's', count)}`;
         })

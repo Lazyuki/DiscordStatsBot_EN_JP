@@ -1,4 +1,4 @@
-import { escapeMarkdown } from 'discord.js';
+import { ChannelType, escapeMarkdown } from 'discord.js';
 import { getUserId } from '@utils/argumentParsers';
 import { BotCommand } from '@/types';
 import { infoEmbed } from '@utils/embed';
@@ -34,7 +34,7 @@ const command: BotCommand = {
         userId: userId,
       },
       hiddenChannels
-    );
+    ).filter((ch) => server.guild.channels.cache.has(ch.channelId));
 
     // Title
     const user = bot.users.cache.get(userId);
@@ -49,7 +49,7 @@ const command: BotCommand = {
     const channelsString = channels
       .map(({ channelId, count }) => {
         const channel = server.guild.channels.cache.get(channelId);
-        return `**#${
+        return `**${channel?.type === ChannelType.GuildVoice ? '🔉' : '#'}${
           channel?.name || `*deleted (${channelId})*`
         }**: ${pluralCount('message', 's', count)}`;
       })

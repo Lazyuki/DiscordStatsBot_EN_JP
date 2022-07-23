@@ -1,17 +1,11 @@
-import {
-  Guild,
-  GuildMember,
-  Message,
-  PartialMessage,
-  TextChannel,
-  ThreadChannel,
-} from 'discord.js';
+import { ChannelType, Message, PartialMessage } from 'discord.js';
 import { Bot, GuildMessage } from '@/types';
 import { isNotDM } from './guildUtils';
 
 function checkSafeMessage(
   bot: Bot,
-  message: Message | PartialMessage
+  message: Message | PartialMessage,
+  ignoreVoiceText?: boolean
 ): message is GuildMessage {
   if (!isNotDM(message)) return false; // DM
   if (!message.author || message.content === null) return false;
@@ -23,6 +17,9 @@ function checkSafeMessage(
 
   if (message.content.startsWith(server.config.prefix)) {
     return false; // This bot's command
+  }
+  if (ignoreVoiceText && message.channel.type === ChannelType.GuildVoice) {
+    return false; // VC text channel
   }
   return true;
 }
