@@ -7,12 +7,12 @@ import {
   GuildTextBasedChannel,
   Interaction,
   Message,
-  MessageButtonStyleResolvable,
+  ButtonStyle,
   MessageOptions,
   MessagePayload,
   NewsChannel,
   PartialMessage,
-  PermissionString,
+  PermissionsString,
   TextChannel,
   ThreadChannel,
   VoiceChannel,
@@ -49,7 +49,7 @@ export type CommandPermissionLevel =
   | 'WP'
   | 'EJLX_MOD_CATEGORY'
   | 'MAINICHI_COMMITTEE'
-  | PermissionString;
+  | PermissionsString;
 
 export type BotCommandCategory =
   | 'Moderation'
@@ -75,7 +75,7 @@ export interface BotCommand {
   aliases?: string[];
   allowedServers?: string[];
   requiredServerConfigs?: (keyof ServerConfig)[];
-  requiredBotPermissions?: PermissionString[];
+  requiredBotPermissions?: PermissionsString[];
   /**
    * If array of permission levels, then it will be "true" if any of the permissions returns true
    */
@@ -174,7 +174,7 @@ export interface LineNotifyConfig {
 export interface SimpleButton {
   id: string;
   label: string;
-  style: MessageButtonStyleResolvable;
+  style: ButtonStyle;
   disabled?: boolean;
 }
 

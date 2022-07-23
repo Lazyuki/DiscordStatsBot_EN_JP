@@ -40,7 +40,7 @@ export async function getMemberOrRepeat(
     } catch (e) {
       const err = e as DiscordAPIError;
       logger.error('getMemberOrRepeat Error: ', e);
-      if (err.httpStatus && err.httpStatus >= 500) {
+      if (err.status && err.status >= 500) {
         // Discord outage? Try again in 30 minutes
         runAt(new Date().getTime() + 30 * 60_000, () =>
           getMemberOrRepeat(userId, server, func, onError)

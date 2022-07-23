@@ -16,7 +16,7 @@ const prune: BotCommand = {
   name: 'quickban',
   isAllowed: ['ADMIN'],
   allowedServers: [EJLX],
-  requiredBotPermissions: ['BAN_MEMBERS'],
+  requiredBotPermissions: ['BanMembers'],
   description:
     'Set up "quickban" with options. Leave blank to unset. Quickban allows Ciri to open up a reaction ban menu for new users that match the criteria. The quickban menu allows WPs to ban new users with reactions.',
   options: [
@@ -73,7 +73,7 @@ const prune: BotCommand = {
           'Please provide a valid ID for the -t option'
         );
       }
-      time = SnowflakeUtil.deconstruct(id).date.getTime();
+      time = SnowflakeUtil.timestampFrom(id);
     }
     server.data.quickban = {
       time,

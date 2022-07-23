@@ -1,8 +1,7 @@
-import { Util, VoiceChannel } from 'discord.js';
-import { getUserId } from '@utils/argumentParsers';
+import { ChannelType } from 'discord.js';
 import { BotCommand } from '@/types';
 import { infoEmbed } from '@utils/embed';
-import { getChannels, getUserChannels } from '@database/statements';
+import { getChannels } from '@database/statements';
 import {
   channelsOrCategoriesToChannels,
   isInChannelsOrCategories,
@@ -45,7 +44,7 @@ const command: BotCommand = {
       (ch) =>
         !channels.some((row) => row.channelId === ch.id) &&
         ch.viewable &&
-        ch.type !== 'GUILD_VOICE' &&
+        ch.type !== ChannelType.GuildVoice &&
         !hiddenChannels.includes(ch.id) &&
         !ignoredChannels.includes(ch.id)
     );

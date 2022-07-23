@@ -21,7 +21,7 @@ const command: BotCommand = {
   name: 'kick',
   isAllowed: ['SERVER_MODERATOR', 'MAINICHI_COMMITTEE'],
   description: 'Kick people off this server.',
-  requiredBotPermissions: ['KICK_MEMBERS'],
+  requiredBotPermissions: ['KickMembers'],
   arguments: '<@user> [@user2...] [reason]',
   examples: [
     'kick @Geralt bye',

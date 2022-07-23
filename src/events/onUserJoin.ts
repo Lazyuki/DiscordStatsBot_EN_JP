@@ -1,4 +1,10 @@
-import { GuildMember, Invite, TextBasedChannel, Util } from 'discord.js';
+import {
+  GuildMember,
+  Invite,
+  TextBasedChannel,
+  escapeMarkdown,
+  ButtonStyle,
+} from 'discord.js';
 
 import { editEmbed, makeEmbed } from '@utils/embed';
 import {
@@ -126,7 +132,7 @@ async function notifyUserJoin(
   await channel.send(
     makeEmbed({
       color: '#84a332',
-      description: `📥 **${Util.escapeMarkdown(
+      description: `📥 **${escapeMarkdown(
         member.user.tag
       )}** has \`joined\` the server. (${member.id})`,
       footer: `User Join (Members: ${member.guild.memberCount})${
@@ -250,7 +256,7 @@ async function handleQuickban(
 
   const banMenu = await userLogChannel.send(
     makeEmbed({
-      color: 'RED',
+      color: 'Red',
       title: `New User Quickban Menu`,
       description: `**${
         member.user.username
@@ -281,15 +287,15 @@ async function handleQuickban(
         return false;
       },
       [
-        { id: 'BAN', label: 'BAN', style: 'DANGER' },
-        { id: 'DISMISS', label: 'Dismiss', style: 'SECONDARY' },
+        { id: 'BAN', label: 'BAN', style: ButtonStyle.Danger },
+        { id: 'DISMISS', label: 'Dismiss', style: ButtonStyle.Secondary },
       ],
       5 * 60 // 5 minutes
     );
     switch (response) {
       case 'BAN':
         await member.ban({
-          days: 1,
+          deleteMessageDays: 1,
           reason: `Banned by ${userToTagAndId(responder!)} Reason: ${
             isLockdown ? 'lockdown' : 'quickban'
           }`,

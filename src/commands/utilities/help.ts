@@ -53,11 +53,11 @@ const command: BotCommand = {
         // Check bot permission
         if (command.requiredBotPermissions) {
           for (const permission of command.requiredBotPermissions) {
-            if (!message.guild.me?.permissions.has(permission)) {
+            if (!message.guild.members.me?.permissions.has(permission)) {
               // see if I have the guild wide permission
               if (
                 !message.channel
-                  .permissionsFor(message.guild.me!.id)
+                  .permissionsFor(message.guild.members.me!.id)
                   ?.has(permission)
               ) {
                 missingBotPermissions.push(permission);

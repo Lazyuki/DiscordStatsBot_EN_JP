@@ -10,7 +10,7 @@ import {
 } from '@utils/images';
 import { millisToDuration } from '@utils/datetime';
 import { REGEX_URL } from '@utils/regex';
-import { MessageAttachment } from 'discord.js';
+import { AttachmentBuilder } from 'discord.js';
 
 const createEvent: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -76,7 +76,7 @@ const deleteEvent: BotEvent<'messageDelete'> = {
 
     const server = bot.servers[message.guild.id];
     let hasEmbedPreview = false;
-    let deletedFiles: MessageAttachment[] = [];
+    let deletedFiles: AttachmentBuilder[] = [];
 
     if (server.temp.watched.includes(message.author.id)) {
       const modLog = getTextChannel(message.guild, server.config.modLogChannel);

@@ -1,6 +1,11 @@
 import { BotEvent } from '@/types';
 import { insertVoiceSeconds } from '@database/statements';
-import { Collection, VoiceBasedChannel, VoiceState } from 'discord.js';
+import {
+  ChannelType,
+  Collection,
+  VoiceBasedChannel,
+  VoiceState,
+} from 'discord.js';
 
 declare module '@/types' {
   interface ServerTemp {
@@ -37,7 +42,7 @@ const event: BotEvent<'voiceStateUpdate'> = {
     const now = new Date().getTime();
     server.temp.vc = {};
     const voiceChannelCollection = server.guild.channels.cache.filter((c) => {
-      return c.isVoice(); // TODO: does it include stage?
+      return c.type === ChannelType.GuildVoice; // TODO: does it include stage?
     }) as Collection<string, VoiceBasedChannel>;
     voiceChannelCollection.forEach((channel) => {
       channel.members.forEach((member) => {

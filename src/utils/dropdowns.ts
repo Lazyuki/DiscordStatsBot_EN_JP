@@ -1,18 +1,10 @@
-import { SimpleButton } from '@/types';
-import {
-  Message,
-  MessageActionRow,
-  MessageSelectMenu,
-  MessageOptions,
-  GuildMember,
-  User,
-} from 'discord.js';
+import { ActionRowBuilder, SelectMenuBuilder, GuildMember } from 'discord.js';
 
 export function getUserDropdown(members: GuildMember[]) {
-  const row = new MessageActionRow();
+  const row = new ActionRowBuilder<SelectMenuBuilder>();
   const maxMembers = members.slice(0, 25);
   row.addComponents(
-    new MessageSelectMenu()
+    new SelectMenuBuilder()
       .setPlaceholder('Select a user')
       .setCustomId('USERS')
       .setOptions(

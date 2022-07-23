@@ -15,7 +15,7 @@ const command: BotCommand = {
     safeDelete(message);
     await message.channel.send(
       makeEmbed({
-        color: 'RED',
+        color: 'Red',
         description: stripIndents`
         We avoid "jap" on this server due to its historical use as a racial slur. We prefer "jp", "jpn", or "Japanese". Thank you for understanding.
         ([Some picture examples](https://imgur.com/a/lPVBo2y))

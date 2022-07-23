@@ -1,8 +1,9 @@
 import { ContextMenuCommandBuilder } from '@discordjs/builders';
 import { stripIndent } from 'common-tags';
 import {
+  ChannelType,
   Message,
-  MessageAttachment,
+  AttachmentBuilder,
   NewsChannel,
   TextChannel,
   ThreadChannel,
@@ -45,7 +46,7 @@ const command: BotCommand = {
       bool: true,
     },
   ],
-  requiredBotPermissions: ['MANAGE_MESSAGES'],
+  requiredBotPermissions: ['ManageMessages'],
   description: stripIndent`
     Delete messages either by specifying the message IDs or by searching.
     When using message IDs, it will only fetch the messages in the channel the command is invoked in.
@@ -81,7 +82,7 @@ const command: BotCommand = {
       const defaultChannel = message.mentions.channels.size
         ? getTextChannel(guild, message.mentions.channels.firstKey())
         : message.channel;
-      if (!defaultChannel?.isText()) {
+      if (defaultChannel?.type !== ChannelType.GuildText) {
         throw new CommandArgumentError('Please specify a text channel');
       } else if (message.mentions.channels.size > 1) {
         throw new CommandArgumentError(
@@ -192,7 +193,7 @@ const command: BotCommand = {
     }
 
     const notLogging =
-      options['noLog'] && message.member.permissions.has('ADMINISTRATOR');
+      options['noLog'] && message.member.permissions.has('Administrator');
 
     const attachmentURLs: Record<string, DeletedMessageAttachment[]> = {}; // repost images
     const hasEmbedMessageIds: string[] = []; // Embed with videos/images means there was a URL.
@@ -332,7 +333,7 @@ async function postDeletedMessages(
   let attachmentNum = 1;
   const threadAttachments: {
     content?: string;
-    attachments?: MessageAttachment[];
+    attachments?: AttachmentBuilder[];
   }[] = [];
 
   const title = pluralize('Message', 's', messages.length);
@@ -358,7 +359,7 @@ async function postDeletedMessages(
           content = allUrls.join('\n');
         }
       }
-      const attachments: MessageAttachment[] = [];
+      const attachments: AttachmentBuilder[] = [];
       if (message.id in attachmentURLs) {
         const delAttachments = attachmentURLs[message.id];
         delAttachments.forEach((da) => {
@@ -366,10 +367,9 @@ async function postDeletedMessages(
             content += `\n${da.type} size exceeds the limit at ${da.bytes} bytes. SKIPPING`;
             return null;
           }
-          const proxyAttachment = new MessageAttachment(
-            da.url,
-            da.name
-          ).setSpoiler(true);
+          const proxyAttachment = new AttachmentBuilder(da.url, {
+            name: da.name,
+          }).setSpoiler(true);
           attachments.push(proxyAttachment);
         });
       }
@@ -391,7 +391,7 @@ async function postDeletedMessages(
   });
 
   const embeds = splitIntoMultipleEmbeds({
-    color: 'RED',
+    color: 'Red',
     authorIcon: onlyOneUser ? messages[0].author.displayAvatarURL() : undefined,
     authorName: `${title}${
       onlyOneUser ? ` from ${userToTagAndIdNoEscape(messages[0].author)}` : ''

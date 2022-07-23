@@ -9,7 +9,7 @@ import {
   escapeRegex,
   joinNaturally,
 } from '@utils/formatString';
-import { CategoryChannel, Guild } from 'discord.js';
+import { CategoryChannel, ChannelType, Guild } from 'discord.js';
 import { DEFAULT_PREFIX } from '@/envs';
 import { REGEX_MESSAGE_ID } from '@utils/regex';
 import { idToChannel, idToRole, isMessageInChannels } from '@utils/guildUtils';
@@ -328,13 +328,15 @@ function isValidRole(id: string, guild: Guild) {
 }
 function isValidChannel(id: string, guild: Guild) {
   const channel = guild.channels.cache.get(id);
-  return Boolean(channel && channel.isText() && !channel.isThread());
+  return Boolean(
+    channel && channel.type === ChannelType.GuildText && !channel.isThread()
+  );
 }
 function isValidCategoryOrChannel(id: string, guild: Guild) {
   const channel = guild.channels.cache.get(id);
   if (!channel) return false;
   return (
-    Boolean(channel.isText() && !channel.isThread()) ||
+    Boolean(channel.type === ChannelType.GuildText && !channel.isThread()) ||
     channel instanceof CategoryChannel
   );
 }

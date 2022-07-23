@@ -14,7 +14,7 @@ const command: BotCommand = {
     safeDelete(message);
     await message.channel.send(
       makeEmbed({
-        color: 'LUMINOUS_VIVID_PINK',
+        color: 'LuminousVividPink',
         title: `WELCOME${
           mentioned ? ' ' + mentioned.user.username : ''
         }!! 🎉 READ ME!`,

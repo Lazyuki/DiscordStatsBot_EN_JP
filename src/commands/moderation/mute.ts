@@ -71,8 +71,8 @@ function repeatTimeoutEveryDay(userId: string, server: Server) {
 const mute: BotCommand = {
   name: 'mute',
   aliases: ['timeout', 'tempmute', 'tm'],
-  isAllowed: ['MODERATE_MEMBERS', 'MINIMO'],
-  requiredBotPermissions: ['MODERATE_MEMBERS'],
+  isAllowed: ['ModerateMembers', 'MINIMO'],
+  requiredBotPermissions: ['ModerateMembers'],
   description:
     "Mute (timeout) people from chats and VC using Discord's timeout feature",
   arguments:
@@ -133,7 +133,7 @@ const mute: BotCommand = {
     }
     if (
       timeoutMillis > 24 * HOUR_IN_MILLIS &&
-      !message.member.permissions.has('MODERATE_MEMBERS')
+      !message.member.permissions.has('ModerateMembers')
     ) {
       // MINIMOs can only mute for 24 hours
       throw new UserPermissionError(
@@ -183,7 +183,7 @@ const mute: BotCommand = {
 
     const noDMs: GuildMember[] = [];
     const timeoutDMembed = makeEmbed({
-      color: 'RED',
+      color: 'Red',
       title: `You are now on timeout in the "${server.guild.name}" server`,
       fields: [
         {
@@ -313,8 +313,8 @@ const mute: BotCommand = {
 
 const unmute: BotCommand = {
   name: 'unmute',
-  isAllowed: ['MODERATE_MEMBERS'],
-  requiredBotPermissions: ['MODERATE_MEMBERS'],
+  isAllowed: ['ModerateMembers'],
+  requiredBotPermissions: ['ModerateMembers'],
   description: 'Remove timeout from people',
   arguments: '<@user> [@user2...] [reason]',
   examples: [
@@ -377,7 +377,7 @@ const unmute: BotCommand = {
         try {
           await member.send(
             makeEmbed({
-              color: 'RED',
+              color: 'Red',
               title: `Your timeout has been removed in the "${server.guild.name}" server`,
               description: `Reason: ${reason}`,
             })

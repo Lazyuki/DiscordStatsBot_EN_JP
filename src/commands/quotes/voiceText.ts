@@ -72,7 +72,7 @@ const command: BotCommand = {
               }/${vc.lastMessageId || 1})`
           )
           .join(' ')} <#${VOICE_BOT}>を使用してください。`,
-        color: 'RED',
+        color: 'Red',
       })
     );
   },

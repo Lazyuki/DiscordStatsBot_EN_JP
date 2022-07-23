@@ -7,6 +7,7 @@ import { insertServer } from '@database/statements';
 import { RESTART_TMP_FILE } from '@tasks/exitTask';
 import hourlyTask from '@tasks/hourlyTask';
 import { successEmbed } from '@utils/embed';
+import { ChannelType } from 'discord.js';
 
 const event: BotEvent<'ready'> = {
   eventName: 'ready',
@@ -28,7 +29,7 @@ const event: BotEvent<'ready'> = {
         const guild = bot.guilds.cache.get(guildId);
         if (guild) {
           const channel = guild.channels.cache.get(channelId);
-          if (channel?.isText()) {
+          if (channel?.type === ChannelType.GuildText) {
             await channel.send(successEmbed("I'm back online"));
           }
         }

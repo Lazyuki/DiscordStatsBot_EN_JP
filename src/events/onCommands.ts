@@ -1,4 +1,4 @@
-import { Util, DiscordAPIError } from 'discord.js';
+import { escapeCodeBlock, escapeInlineCode, DiscordAPIError } from 'discord.js';
 import { BotEvent } from '@/types';
 import logger, { discordLogError } from '@/logger';
 import {
@@ -64,11 +64,11 @@ const event: BotEvent<'messageCreate'> = {
         // Check bot permission
         if (command.requiredBotPermissions) {
           for (const permission of command.requiredBotPermissions) {
-            if (!message.guild.me?.permissions.has(permission)) {
+            if (!message.guild.members.me?.permissions.has(permission)) {
               // see if I have the guild wide permission
               if (
                 !message.channel
-                  .permissionsFor(message.guild.me!.id)
+                  .permissionsFor(message.guild.members.me!.id)
                   ?.has(permission)
               ) {
                 // check channel-specific permissions
@@ -120,7 +120,7 @@ const event: BotEvent<'messageCreate'> = {
         } catch (e) {
           const error = e as Error | DiscordAPIError | UserError | BotError;
           if (error instanceof DiscordAPIError) {
-            if (error.httpStatus === 401) {
+            if (error.status === 401) {
               await safeChannelSend(
                 errorEmbed(
                   `${error.name}: ${error.message}\nMake sure the bot has required permissions`
@@ -137,17 +137,17 @@ const event: BotEvent<'messageCreate'> = {
                   message.author
                 )} in #${message.channel.name} in \`${message.guild.name}\` (${
                   message.guildId
-                }). Content: \`${Util.escapeCodeBlock(message.content)}\``
+                }). Content: \`${escapeCodeBlock(message.content)}\``
               );
             }
-            logger.warn(`${error.httpStatus} ${error.name}: ${error.message}`);
+            logger.warn(`${error.status} ${error.name}: ${error.message}`);
           } else if (error instanceof UserError) {
             if (error instanceof MemberNotFoundError) {
               if (error.message) {
                 deleteAfter(
                   await safeChannelSend(
                     errorEmbed(
-                      `Member not found in the server: \`${Util.escapeInlineCode(
+                      `Member not found in the server: \`${escapeInlineCode(
                         error.message
                       )}\``
                     )
@@ -182,7 +182,7 @@ const event: BotEvent<'messageCreate'> = {
                 message.author
               )} in #${message.channel.name} in \`${message.guild.name}\` (${
                 message.guildId
-              }). Content: \`${Util.escapeCodeBlock(message.content)}\``
+              }). Content: \`${escapeCodeBlock(message.content)}\``
             );
           } else {
             await safeChannelSend(
@@ -205,7 +205,7 @@ const event: BotEvent<'messageCreate'> = {
                 message.channel.name
               } in \`${message.guild.name}\` (${
                 message.guildId
-              }). Content: \`${Util.escapeCodeBlock(message.content)}\``
+              }). Content: \`${escapeCodeBlock(message.content)}\``
             );
           }
         }

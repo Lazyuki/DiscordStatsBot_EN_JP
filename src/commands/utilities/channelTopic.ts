@@ -2,6 +2,7 @@ import { BotCommand } from '@/types';
 import { makeEmbed } from '@utils/embed';
 import { getMessageTextChannel } from '@utils/guildUtils';
 import { safeDelete } from '@utils/safeDelete';
+import { ChannelType } from 'discord.js';
 
 const command: BotCommand = {
   name: 'channelTopic',
@@ -16,7 +17,7 @@ const command: BotCommand = {
       makeEmbed({
         title: `Channel topic for #${channel.name}`,
         description:
-          (channel.type !== 'GUILD_VOICE' && channel.topic) || 'None',
+          (channel.type !== ChannelType.GuildVoice && channel.topic) || 'None',
       })
     );
   },

@@ -1,4 +1,4 @@
-import { GuildMember, Util } from 'discord.js';
+import { GuildMember, escapeMarkdown } from 'discord.js';
 
 import { BotCommand } from '@/types';
 import Server from '@classes/Server';
@@ -88,7 +88,7 @@ function scheduleMute(
 const command: BotCommand = {
   name: 'selfmute',
   aliases: ['sm'],
-  requiredBotPermissions: ['MODERATE_MEMBERS', 'MANAGE_ROLES'],
+  requiredBotPermissions: ['ModerateMembers', 'ManageRoles'],
   description:
     'Mute yourself for some amount of time. The time can be specified with `d` for days, `h` for hours, `m` for minutes, and `s` for seconds. Use the `in` keyword to delay the selfmute',
   arguments: '< mute_duration (Max: 7d)> [ in delay_duration (Max: 1d)]',
@@ -181,7 +181,7 @@ const command: BotCommand = {
       : null;
 
     safeDelete(message);
-    const name = `**${Util.escapeMarkdown(message.member.displayName)}**`;
+    const name = `**${escapeMarkdown(message.member.displayName)}**`;
     if (muteAtMillis) {
       const unmuteAtMillis = muteAtMillis + totalMillis;
       scheduleMute(

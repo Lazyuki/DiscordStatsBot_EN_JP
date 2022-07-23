@@ -21,8 +21,8 @@ import { CommandArgumentError } from '@/errors';
 
 const command: BotCommand = {
   name: 'ban',
-  isAllowed: ['BAN_MEMBERS', 'MAINICHI_COMMITTEE'],
-  requiredBotPermissions: ['BAN_MEMBERS'],
+  isAllowed: ['BanMembers', 'MAINICHI_COMMITTEE'],
+  requiredBotPermissions: ['BanMembers'],
   description:
     'Ban! You can specify multiple users. Or use `raidban` for banning the entire raid party.',
   arguments: '<@user> [@user2...] [reason]',
@@ -251,7 +251,7 @@ async function banUsers({
       }
       try {
         await mem.ban({
-          days: deleteDays,
+          deleteMessageDays: deleteDays,
           reason: auditLogReason,
         });
       } catch (e) {
@@ -264,7 +264,7 @@ async function banUsers({
       nonMemberIds.map(async (id) => {
         try {
           await server.guild.members.ban(id, {
-            days: deleteDays,
+            deleteMessageDays: deleteDays,
             reason: auditLogReason,
           });
         } catch (e) {

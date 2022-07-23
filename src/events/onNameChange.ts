@@ -4,7 +4,7 @@ import {
   PartialUser,
   TextBasedChannel,
   User,
-  Util,
+  escapeMarkdown,
 } from 'discord.js';
 
 import { makeEmbed } from '@utils/embed';
@@ -67,17 +67,15 @@ async function notifyNicknameChange(
 
   let message: string;
   if (!oldNickname) {
-    message = `**${Util.escapeMarkdown(
+    message = `**${escapeMarkdown(
       oldMember.user.username
-    )}**'s nickname was set to **${Util.escapeMarkdown(newNickname || '')}**`;
+    )}**'s nickname was set to **${escapeMarkdown(newNickname || '')}**`;
   } else if (!newNickname) {
-    message = `**${Util.escapeMarkdown(
-      oldNickname || ''
-    )}**'s nickname was removed`;
+    message = `**${escapeMarkdown(oldNickname || '')}**'s nickname was removed`;
   } else {
-    message = `**${Util.escapeMarkdown(
+    message = `**${escapeMarkdown(
       oldNickname
-    )}**'s nickname was changed to **${Util.escapeMarkdown(newNickname)}**`;
+    )}**'s nickname was changed to **${escapeMarkdown(newNickname)}**`;
   }
   await sendNameChange(message, newMember.user, channel);
 }
@@ -88,10 +86,10 @@ async function notifyUsernameChange(
   channel: TextBasedChannel
 ) {
   const oldUserTag = oldUser.tag
-    ? `**${Util.escapeMarkdown(oldUser.tag)}**`
+    ? `**${escapeMarkdown(oldUser.tag)}**`
     : `UserID: **${oldUser.id}**`;
   await sendNameChange(
-    `${oldUserTag}'s username was changed to **${Util.escapeMarkdown(
+    `${oldUserTag}'s username was changed to **${escapeMarkdown(
       newUser.tag
     )}**`,
     newUser,

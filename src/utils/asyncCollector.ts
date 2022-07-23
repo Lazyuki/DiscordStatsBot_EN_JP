@@ -1,6 +1,7 @@
 import { GuildMessage, GuildTextChannel, SimpleButton } from '@/types';
 import Server from '@classes/Server';
 import {
+  ButtonStyle,
   CacheType,
   Message,
   MessageComponentInteraction,
@@ -43,7 +44,7 @@ export function waitForButton(
   buttons: SimpleButton[],
   waitForSeconds: number = 15
 ): Promise<[string, User | null]> {
-  if (buttonMessage.author.id === buttonMessage.guild.me?.id) {
+  if (buttonMessage.author.id === buttonMessage.guild.members.me?.id) {
     if (!buttonMessage.components.length) {
       addButtons(buttonMessage, getButtons(buttons));
     }
@@ -81,9 +82,9 @@ export async function waitForConfirmOrCancel(
       {
         id: 'confirm',
         label: 'Confirm',
-        style: isConfirmDestructive ? 'DANGER' : 'PRIMARY',
+        style: isConfirmDestructive ? ButtonStyle.Danger : ButtonStyle.Primary,
       },
-      { id: 'cancel', label: 'Cancel', style: 'SECONDARY' },
+      { id: 'cancel', label: 'Cancel', style: ButtonStyle.Secondary },
     ],
     ['confirm', 'cancel']
   );
@@ -105,9 +106,9 @@ export async function waitForYesOrNo(
       {
         id: 'yes',
         label: 'Yes',
-        style: 'PRIMARY',
+        style: ButtonStyle.Primary,
       },
-      { id: 'no', label: 'No', style: 'SECONDARY' },
+      { id: 'no', label: 'No', style: ButtonStyle.Secondary },
     ],
     [...YES, ...NO]
   );
@@ -120,24 +121,27 @@ export async function waitForKickConfirm(
   noReason: boolean
 ): Promise<'SILENT' | 'DM' | 'CANCEL'> {
   const buttons: SimpleButton[] = noReason
-    ? [{ id: 'confirm', label: 'Confirm', style: 'DANGER' }]
+    ? [{ id: 'confirm', label: 'Confirm', style: ButtonStyle.Danger }]
     : [
         {
           id: 'confirm dm',
           label: 'DM',
-          style: 'DANGER',
+          style: ButtonStyle.Danger,
         },
         {
           id: 'confirm silent',
           label: 'Silent',
-          style: 'DANGER',
+          style: ButtonStyle.Danger,
         },
       ];
   const result = await waitForMessageAndButton(
     buttonMessage,
     authorId,
     45,
-    [...buttons, { id: 'cancel', label: 'Cancel', style: 'SECONDARY' }],
+    [
+      ...buttons,
+      { id: 'cancel', label: 'Cancel', style: ButtonStyle.Secondary },
+    ],
     noReason
       ? ['confirm', 'cancel']
       : ['confirm silent', 'confirm dm', 'confirm s', 'cancel']
@@ -158,7 +162,7 @@ export async function waitForBanConfirm(
   allowDelete: boolean
 ): Promise<'DELETE' | 'KEEP' | 'CANCEL' | 'TIMEOUT'> {
   const buttons: SimpleButton[] = allowDelete
-    ? [{ id: 'confirm delete', label: 'DELETE', style: 'DANGER' }]
+    ? [{ id: 'confirm delete', label: 'DELETE', style: ButtonStyle.Danger }]
     : [];
   const deleteMessages = allowDelete
     ? ['confirm delete', 'confirm del', 'confirm d']
@@ -170,8 +174,8 @@ export async function waitForBanConfirm(
     45,
     [
       ...buttons,
-      { id: 'confirm keep', label: 'KEEP', style: 'DANGER' },
-      { id: 'cancel', label: 'Cancel', style: 'SECONDARY' },
+      { id: 'confirm keep', label: 'KEEP', style: ButtonStyle.Danger },
+      { id: 'cancel', label: 'Cancel', style: ButtonStyle.Secondary },
     ],
     [...deleteMessages, 'confirm keep', 'confirm k', 'cancel']
   );
@@ -199,7 +203,7 @@ export async function getFallbackChannel(
   }
   await buttonMessage.channel.send(
     makeEmbed({
-      color: 'PURPLE',
+      color: 'Purple',
       description: `Please specify the channel. Make sure they have access to the channel.`,
     })
   );
@@ -239,7 +243,7 @@ export function waitForMessageAndButton(
     filter,
     time: waitForSeconds * 1000,
   });
-  if (buttonMessage.author.id === buttonMessage.guild.me?.id) {
+  if (buttonMessage.author.id === buttonMessage.guild.members.me?.id) {
     if (!buttonMessage.components.length) {
       addButtons(buttonMessage, getButtons(buttons));
     }

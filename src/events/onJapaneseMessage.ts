@@ -103,7 +103,7 @@ async function japaneseOnly(
           await parentChannel.permissionOverwrites.create(
             message.author,
             {
-              SEND_MESSAGES: false,
+              SendMessages: false,
             },
             { reason: 'Using English in JP chat' }
           );

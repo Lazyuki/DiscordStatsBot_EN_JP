@@ -2,7 +2,7 @@ import {
   GuildMember,
   PartialGuildMember,
   TextBasedChannel,
-  Util,
+  escapeMarkdown,
 } from 'discord.js';
 
 import { insertVoiceSeconds } from '@database/statements';
@@ -79,7 +79,7 @@ async function notifyUserLeave(
   await channel.send(
     makeEmbed({
       color: '#c13c35',
-      description: `📤 **${Util.escapeMarkdown(
+      description: `📤 **${escapeMarkdown(
         member.user.tag
       )}** has \`left\` the server. (${member.id})`,
       footer: `User Leave (Members: ${member.guild.memberCount})`,

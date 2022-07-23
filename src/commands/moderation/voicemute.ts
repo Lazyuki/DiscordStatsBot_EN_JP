@@ -9,9 +9,9 @@ import { GuildMember } from 'discord.js';
 const voicemute: BotCommand = {
   name: 'voiceMute',
   aliases: ['vm'],
-  isAllowed: ['MUTE_MEMBERS'],
+  isAllowed: ['MuteMembers'],
   requiredServerConfigs: ['voiceMuteRoles'],
-  requiredBotPermissions: ['MUTE_MEMBERS', 'MANAGE_ROLES'],
+  requiredBotPermissions: ['MuteMembers', 'ManageRoles'],
   description: 'Voice mute people',
   arguments: '<@user> [@user2...] [reason]',
   childCommands: ['voiceUnmute'],
@@ -50,7 +50,7 @@ const voicemute: BotCommand = {
       try {
         await member.send(
           makeEmbed({
-            color: 'RED',
+            color: 'Red',
             title: `You have been voice muted in the "${server.guild.name}" server`,
             description: `Reason: ${reason}`,
             footer:
@@ -110,9 +110,9 @@ const voicemute: BotCommand = {
 
 const voiceunmute: BotCommand = {
   name: 'voiceUnmute',
-  isAllowed: ['MUTE_MEMBERS'],
+  isAllowed: ['MuteMembers'],
   requiredServerConfigs: ['voiceMuteRoles'],
-  requiredBotPermissions: ['MUTE_MEMBERS', 'MANAGE_ROLES'],
+  requiredBotPermissions: ['MuteMembers', 'ManageRoles'],
   aliases: ['unvoicemute', 'uvm', 'vum', 'unvm'],
   description: 'Remove voice mutes from people',
   arguments: '<@user> [reason]',

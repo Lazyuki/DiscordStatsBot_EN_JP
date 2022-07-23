@@ -8,9 +8,9 @@ import { CommandArgumentError } from '@/errors';
 const command: BotCommand = {
   name: 'voiceKick',
   aliases: ['vk'],
-  isAllowed: ['MOVE_MEMBERS'],
+  isAllowed: ['MoveMembers'],
   description: 'Kick someone from VC',
-  requiredBotPermissions: ['MOVE_MEMBERS'],
+  requiredBotPermissions: ['MoveMembers'],
   arguments: '<@user>',
   examples: ['vk @user'],
   normalCommand: async ({ message, content, server }) => {

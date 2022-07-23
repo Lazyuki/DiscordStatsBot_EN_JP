@@ -1,6 +1,5 @@
 import 'source-map-support/register';
-import { Client, Collection, Intents } from 'discord.js';
-import { SlashCommandBuilder } from '@discordjs/builders';
+import { Client, GatewayIntentBits } from 'discord.js';
 import fs from 'fs';
 
 import { DEBUG, OWNER_ID, DISCORD_TOKEN } from '@/envs';
@@ -18,22 +17,24 @@ import exitTask from '@tasks/exitTask';
 
 // Set up intents
 const UNWANTED_INTENTS = [
-  Intents.FLAGS.GUILD_INTEGRATIONS,
-  Intents.FLAGS.GUILD_WEBHOOKS,
-  Intents.FLAGS.GUILD_MESSAGE_TYPING,
-  Intents.FLAGS.DIRECT_MESSAGE_TYPING,
+  GatewayIntentBits.GuildIntegrations,
+  GatewayIntentBits.GuildWebhooks,
+  GatewayIntentBits.GuildMessageTyping,
+  GatewayIntentBits.DirectMessageTyping,
 ];
 
+const intents = Object.values(GatewayIntentBits).filter(
+  (flag) => typeof flag !== 'string' && !UNWANTED_INTENTS.includes(flag)
+) as GatewayIntentBits[];
+
+console.log(intents);
 // Init bot user
 const client = new Client({
   allowedMentions: {
     parse: ['users', 'roles'],
     repliedUser: true,
   },
-  intents: Object.values(Intents.FLAGS).filter(
-    (flag) => !UNWANTED_INTENTS.includes(flag)
-  ),
-  restTimeOffset: 0, // Extra time in milliseconds to wait before continuing to make REST requests (higher values will reduce rate-limiting errors on bad connections). Setting to 0 since adding multiple reactions is too slow
+  intents,
 }) as Bot;
 
 client.ownerId = OWNER_ID;

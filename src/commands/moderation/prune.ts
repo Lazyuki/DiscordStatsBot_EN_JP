@@ -7,7 +7,7 @@ import { REGEX_RAW_ID } from '@utils/regex';
 const prune: BotCommand = {
   name: 'prune',
   isAllowed: ['SERVER_MODERATOR'],
-  requiredBotPermissions: ['MANAGE_MESSAGES'],
+  requiredBotPermissions: ['ManageMessages'],
   description:
     'Delete messages sent by specified users in the channel in the past 24 hours. Use their IDs. Useful if you forget to delete messages when banning users.',
   arguments: '<user ID> [user2 ID...]',

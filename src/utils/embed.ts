@@ -1,4 +1,4 @@
-import { ColorResolvable, Message, MessageEmbed, Util } from 'discord.js';
+import { ColorResolvable, Message, EmbedBuilder } from 'discord.js';
 import {
   EMBED_BG_COLOR,
   ERROR_COLOR,
@@ -53,10 +53,10 @@ export const makeEmbed = (
     timestamp,
     fields,
   }: EmbedOptions,
-  baseEmbed?: MessageEmbed
+  baseEmbed?: EmbedBuilder
 ) => {
-  const embed = baseEmbed || new MessageEmbed().setColor(color);
-  const additionalEmbeds: MessageEmbed[] = [];
+  const embed = baseEmbed || new EmbedBuilder().setColor(color);
+  const additionalEmbeds: EmbedBuilder[] = [];
   if (title) embed.setTitle(title);
   if (titleUrl) embed.setURL(titleUrl);
   if (description) {
@@ -64,7 +64,7 @@ export const makeEmbed = (
       const [firstChunk, ...restChunk] = splitMessage(description, 4096);
       embed.setDescription(firstChunk);
       restChunk.forEach((chunk) => {
-        const extraEmbed = new MessageEmbed()
+        const extraEmbed = new EmbedBuilder()
           .setColor(color)
           .setDescription(chunk);
         additionalEmbeds.push(extraEmbed);
@@ -155,12 +155,12 @@ export const questionEmbed = (options: EmbedOptions | string) => {
     typeof options === 'string' ? options : options.description
   }`;
   if (typeof options === 'string') {
-    return makeEmbed({ description, color: 'PURPLE' });
+    return makeEmbed({ description, color: 'Purple' });
   }
   return makeEmbed({
     ...options,
     description,
-    color: 'PURPLE',
+    color: 'Purple',
   });
 };
 
@@ -168,7 +168,7 @@ export async function editEmbed(message: Message, newOptions: EmbedOptions) {
   const currentEmbed = message.embeds[0];
   if (!currentEmbed) return;
 
-  await message.edit(makeEmbed(newOptions, currentEmbed));
+  await message.edit(makeEmbed(newOptions, EmbedBuilder.from(currentEmbed)));
 }
 
 // If embed fields together might exceed the 6000 char limit, use this to construct multiple messages with embeds.

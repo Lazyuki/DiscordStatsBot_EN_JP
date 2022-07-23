@@ -97,8 +97,10 @@ const command: BotCommand = {
           );
         const category = channelsAndCategories[0];
         if (
-          !message.guild.me!.permissions.has('MANAGE_CHANNELS') &&
-          !category.permissionsFor(server.guild.me!).has('MANAGE_CHANNELS')
+          !message.guild.members.me!.permissions.has('ManageChannels') &&
+          !category
+            .permissionsFor(server.guild.members.me!)
+            .has('ManageChannels')
         ) {
           throw new BotPermissionError(
             'Missing Bot Permission: `MANAGE_CHANNELS`. Please make sure the bot has this permission on that category.'

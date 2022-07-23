@@ -9,6 +9,7 @@ import {
   CategoryChannel,
   VoiceChannel,
   GuildTextBasedChannel,
+  ChannelType,
 } from 'discord.js';
 import { REGEX_MESSAGE_LINK_OR_FULL_ID } from './regex';
 
@@ -16,7 +17,7 @@ export function isNotDM<M extends Message | PartialMessage>(
   message: M
 ): message is GuildMessage<M> {
   return Boolean(
-    message.channel.type !== 'DM' && message.guild && message.member
+    message.channel.type !== ChannelType.DM && message.guild && message.member
   );
 }
 
@@ -47,7 +48,7 @@ export function getCategoryId(channel: GuildTextBasedChannel) {
 export function isTextChannel(
   channel: GuildBasedChannel
 ): channel is TextChannel | NewsChannel | VoiceChannel {
-  return channel.isText() && !channel.isThread();
+  return channel.type === ChannelType.GuildText && !channel.isThread();
 }
 
 export function isInChannelOrCategory(
@@ -77,10 +78,10 @@ export function channelsOrCategoriesToChannels(
   channdlOrCategoriIds.forEach((id) => {
     const channel = guild.channels.cache.get(id);
     if (!channel) return;
-    if (channel.isText() && !channel.isThread()) {
+    if (channel.type === ChannelType.GuildText && !channel.isThread()) {
       textChannelIds.push(channel.id);
     } else if (channel instanceof CategoryChannel) {
-      const children = channel.children.keys();
+      const children = channel.children.cache.keys();
       textChannelIds.push(...children);
     }
   });
@@ -99,7 +100,7 @@ export function isMessageInChannels(
 export function getTextChannel(guild: Guild, channelId?: string) {
   if (!channelId) return null;
   const channel = guild.channels.cache.get(channelId);
-  return channel?.isText() ? channel : null;
+  return channel?.type === ChannelType.GuildText ? channel : null;
 }
 
 export function idToChannel(id: string) {

@@ -1,7 +1,7 @@
 import logger from '@/logger';
 import { GuildMessage } from '@/types';
 import axios from 'axios';
-import { MessageAttachment } from 'discord.js';
+import { AttachmentBuilder } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import { DAY_IN_MILLIS } from './datetime';
@@ -96,17 +96,17 @@ export async function cleanOldAttachmentFiles() {
   });
 }
 
-export function getDeletedAttachments(messageId: string): MessageAttachment[] {
+export function getDeletedAttachments(messageId: string): AttachmentBuilder[] {
   const dir = `${TEMP_DIR}/${messageId}`;
   if (!fs.existsSync(dir)) {
     return []; // no files
   }
-  const files: MessageAttachment[] = [];
+  const files: AttachmentBuilder[] = [];
   const fileNames = fs.readdirSync(dir);
   fileNames.forEach((fileName) => {
     const fullFileName = `${dir}/${fileName}`;
     const file = fs.readFileSync(fullFileName);
-    files.push(new MessageAttachment(file, fileName));
+    files.push(new AttachmentBuilder(file, { name: fileName }));
     rimraf(fullFileName, () => {}); // No longer needed
   });
   return files;

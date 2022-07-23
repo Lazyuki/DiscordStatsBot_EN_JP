@@ -17,8 +17,8 @@ import { GuildMember, SnowflakeUtil } from 'discord.js';
 const command: BotCommand = {
   name: 'raidban',
   aliases: ['banraid'],
-  isAllowed: ['BAN_MEMBERS'],
-  requiredBotPermissions: ['BAN_MEMBERS'],
+  isAllowed: ['BanMembers'],
+  requiredBotPermissions: ['BanMembers'],
   description:
     'Ban all users joined after the provided user/Discord ID. If the first user has already left the server, use the ID of the message right before their join notification.',
   options: [
@@ -70,8 +70,7 @@ const command: BotCommand = {
       if (newUser) {
         firstMillis = newUser.joinMillis;
       } else {
-        const date = SnowflakeUtil.deconstruct(firstId).date;
-        firstMillis = date.getTime();
+        firstMillis = SnowflakeUtil.timestampFrom(firstId);
       }
     }
     if (firstMillis === 0) {
@@ -108,8 +107,7 @@ const command: BotCommand = {
         if (newUser) {
           firstMillis = newUser.joinMillis;
         } else {
-          const date = SnowflakeUtil.deconstruct(lastId).date;
-          firstMillis = date.getTime();
+          firstMillis = SnowflakeUtil.timestampFrom(lastId);
         }
       }
       if (endMillis === nowMillis) {
@@ -190,7 +188,7 @@ const command: BotCommand = {
         members.map(async (mem) => {
           try {
             await mem.ban({
-              days: deleteDays,
+              deleteMessageDays: deleteDays,
               reason: auditLogReason,
             });
             someBanned = true;
@@ -204,7 +202,7 @@ const command: BotCommand = {
         nonMemberIds.map(async (id) => {
           try {
             await server.guild.members.ban(id, {
-              days: deleteDays,
+              deleteMessageDays: deleteDays,
               reason: auditLogReason,
             });
             someBanned = true;

@@ -1,13 +1,14 @@
 import { BotEvent } from '@/types';
 import { DM_MOD_BOT, EJLX, MAINICHI } from '@utils/constants';
 import isRateLimited from '@utils/rateLimit';
+import { ChannelType } from 'discord.js';
 
 const event: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
   skipOnDebug: true,
   processEvent: async (bot, message) => {
     // Direct message.
-    if (message.channel.type !== 'DM') return;
+    if (message.channel.type !== ChannelType.DM) return;
     if (message.author.bot) return;
     // Max 1 message / second
     if (isRateLimited(`DM_${message.author.id}`, 10)) return;

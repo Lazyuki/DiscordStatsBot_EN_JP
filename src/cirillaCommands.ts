@@ -158,7 +158,7 @@ const autoban: ParsedBotCommand = {
   name: 'autoban',
   aliases: ['ab'],
   category: 'Moderation',
-  isAllowed: (m, s) => m.member.permissions.has('ADMINISTRATOR'),
+  isAllowed: (m, s) => m.member.permissions.has('Administrator'),
   normalCommand: () => {},
   description: 'Try to figure out trolls and bring up a ban menu',
   isCirillaCommand: true,

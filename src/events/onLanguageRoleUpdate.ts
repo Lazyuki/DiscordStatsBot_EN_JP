@@ -1,4 +1,5 @@
 import {
+  AuditLogEvent,
   Guild,
   GuildMember,
   PartialGuildMember,
@@ -51,11 +52,11 @@ interface RoleChangeAuditLogEntry {
 async function getRoleChangeAuditLogs(guild: Guild, userId: string) {
   const auditLogs = await guild.fetchAuditLogs({
     limit: 20,
-    type: 'MEMBER_ROLE_UPDATE',
+    type: AuditLogEvent.MemberRoleUpdate,
   });
   const actions: Record<string, { add: string[]; remove: string[] }> = {};
   auditLogs.entries
-    .filter((e) => e.targetType === 'USER' && e.target?.id === userId)
+    .filter((e) => e.target?.id === userId)
     .forEach((entry) => {
       const executor = entry.executor;
       if (!executor) return;

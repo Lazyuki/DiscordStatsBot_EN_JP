@@ -1,7 +1,7 @@
 import { BotEvent } from '@/types';
 import { getTextChannel } from '@utils/guildUtils';
 import { makeEmbed } from '@utils/embed';
-import { Guild, GuildMember } from 'discord.js';
+import { AuditLogEvent, Guild, GuildMember } from 'discord.js';
 import { REGEX_AUDIT_LOG_ID } from '@utils/regex';
 import { userToMentionAndTag } from '@utils/formatString';
 import { getDiscordTimestamp, millisToDuration } from '@utils/datetime';
@@ -169,13 +169,13 @@ async function getTimeoutIssuerFromAuditLogs(
   userId: string,
   mode: 'ADD' | 'REMOVE' | 'UPDATE'
 ) {
-  if (!guild.me?.permissions.has('VIEW_AUDIT_LOG')) {
+  if (!guild.members.me?.permissions.has('ViewAuditLog')) {
     // can't view audit log then I can't do anything
     return;
   }
   const auditLogs = await guild.fetchAuditLogs({
     limit: 20,
-    type: 'MEMBER_UPDATE',
+    type: AuditLogEvent.MemberUpdate,
   });
   let timeoutIssuerId: string | null = null;
   let delegateBotId: string | null = null;

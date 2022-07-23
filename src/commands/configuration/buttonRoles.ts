@@ -25,7 +25,7 @@ const sar: BotCommand = {
   name: 'buttonRoles',
   aliases: ['br'],
   isAllowed: ['ADMIN'],
-  requiredBotPermissions: ['MANAGE_ROLES'],
+  requiredBotPermissions: ['ManageRoles'],
   description: 'Configure button based self assignable roles.',
   arguments:
     '[ add | remove | list | describe | send | update | reset ] [label] [@role/role_ID description]',

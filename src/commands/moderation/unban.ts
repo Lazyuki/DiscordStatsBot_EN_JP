@@ -5,8 +5,8 @@ import { errorEmbed, successEmbed } from '@utils/embed';
 
 const unban: BotCommand = {
   name: 'unban',
-  isAllowed: ['BAN_MEMBERS', 'MAINICHI_COMMITTEE'],
-  requiredBotPermissions: ['BAN_MEMBERS'],
+  isAllowed: ['BanMembers', 'MAINICHI_COMMITTEE'],
+  requiredBotPermissions: ['BanMembers'],
   description: 'Unban users',
   arguments: '<user ID> [user2 ID...] [reason]',
   examples: ['unban 123454323454 2345432345643 4543246543234'],

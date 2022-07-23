@@ -1,5 +1,5 @@
 import { Bot } from '@/types';
-import { Guild, User, Util } from 'discord.js';
+import { Guild, User, escapeMarkdown } from 'discord.js';
 
 export function codeBlock(str: string, lang: string = '') {
   const lines = str.split('\n');
@@ -89,7 +89,7 @@ export function getServerEmoji(emoji: string, guild: Guild) {
 }
 
 export function userToMentionAndTag(user: User) {
-  return `${user.toString()} (${Util.escapeMarkdown(user.tag)})`;
+  return `${user.toString()} (${escapeMarkdown(user.tag)})`;
 }
 
 export function userToMentionAndTagNoEscape(user: User) {
@@ -97,7 +97,7 @@ export function userToMentionAndTagNoEscape(user: User) {
 }
 
 export function userToTagAndId(user: User) {
-  return `${Util.escapeMarkdown(user.tag)} (${user.id})`;
+  return `${escapeMarkdown(user.tag)} (${user.id})`;
 }
 
 export function userToTagAndIdNoEscape(user: User) {

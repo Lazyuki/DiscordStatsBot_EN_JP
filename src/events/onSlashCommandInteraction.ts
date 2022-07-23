@@ -1,11 +1,12 @@
 import { BotEvent } from '@/types';
 import logger from '@/logger';
+import { InteractionType } from 'discord.js';
 
 const event: BotEvent<'interactionCreate'> = {
   eventName: 'interactionCreate',
   skipOnDebug: true,
   processEvent: async (bot, interaction) => {
-    if (!interaction.isCommand()) return;
+    if (interaction.type !== InteractionType.ApplicationCommand) return;
 
     const command = bot.commands[interaction.commandName];
 

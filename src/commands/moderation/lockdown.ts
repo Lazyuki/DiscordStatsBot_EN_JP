@@ -17,7 +17,7 @@ const prune: BotCommand = {
   name: 'lockdown',
   isAllowed: ['ADMIN'],
   allowedServers: [EJLX],
-  requiredBotPermissions: ['BAN_MEMBERS'],
+  requiredBotPermissions: ['BanMembers'],
   description:
     'Set up "lockdown". All new users will be muted and welcome bots will not work. Leave blank to unset. Lockdown allows Ciri to open up a reaction ban menu for new users that match the criteria. The quickban menu allows WPs and up to ban new users with reactions.',
   options: [
@@ -91,15 +91,15 @@ const prune: BotCommand = {
           'Please provide a valid ID for the -t option'
         );
       }
-      time = SnowflakeUtil.deconstruct(id).date.getTime();
+      time = SnowflakeUtil.timestampFrom(id);
     }
 
     try {
       await jho.permissionOverwrites.create(MEE6, {
-        SEND_MESSAGES: false,
+        SendMessages: false,
       });
       await jho.permissionOverwrites.create(RAI, {
-        SEND_MESSAGES: false,
+        SendMessages: false,
       });
     } catch (e) {
       await message.channel.send(

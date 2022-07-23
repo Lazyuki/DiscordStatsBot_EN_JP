@@ -2,7 +2,7 @@ import { BotCommand } from '@/types';
 import { CommandArgumentError, MemberNotFoundError } from '@/errors';
 import { getUserId, parseSnowflakeIds } from '@utils/argumentParsers';
 import { stripIndent } from 'common-tags';
-import { DMChannel, SnowflakeUtil, Util } from 'discord.js';
+import { DMChannel, SnowflakeUtil, escapeMarkdown } from 'discord.js';
 import { infoEmbed } from '@utils/embed';
 import { getDiscordTimestamp } from '@utils/datetime';
 import { resolveEmoji } from '@utils/formatString';
@@ -72,7 +72,7 @@ const command: BotCommand = {
         avatarUrl = member.displayAvatarURL();
       }
     }
-    const idDate = SnowflakeUtil.deconstruct(parsedId).date;
+    const idTimeMillis = SnowflakeUtil.timestampFrom(parsedId);
     await message.channel.send(
       infoEmbed({
         content: parsedId,
@@ -80,8 +80,8 @@ const command: BotCommand = {
         authorIcon: avatarUrl,
         description: stripIndent`
         Snowflake: \`${parsedId}\`
-        Unix Time in Seconds: \`${Math.floor(idDate.getTime() / 1000)}\`
-        Your Local Time: ${getDiscordTimestamp(idDate, 'F')}
+        Unix Time in Seconds: \`${Math.floor(idTimeMillis / 1000)}\`
+        Your Local Time: ${getDiscordTimestamp(idTimeMillis, 'F')}
         `,
       })
     );

@@ -2,11 +2,11 @@ import { Message } from 'discord.js';
 import { GuildMessage } from '@/types';
 
 export function safeDelete(message: GuildMessage) {
-  const me = message.guild.me;
+  const me = message.guild.members.me;
   if (!me) return;
   if (
-    me.permissions.has('MANAGE_MESSAGES') ||
-    message.channel.permissionsFor(me)?.has('MANAGE_MESSAGES')
+    me.permissions.has('ManageMessages') ||
+    message.channel.permissionsFor(me)?.has('ManageMessages')
   ) {
     setTimeout(() => message.delete().catch((e) => {}), 200); // Delay a little to let Discord UI actually delete the message
   }

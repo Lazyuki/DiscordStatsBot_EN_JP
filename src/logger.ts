@@ -3,6 +3,7 @@ import { BOT_LOG_CHANNEL_ID, DEBUG } from '@/envs';
 import { Bot } from '@/types';
 import { makeEmbed } from '@utils/embed';
 import { codeBlock } from '@utils/formatString';
+import { ChannelType } from 'discord.js';
 
 const logger = winston.createLogger({
   transports: [
@@ -22,7 +23,8 @@ const logger = winston.createLogger({
 export async function discordLogInfo(bot: Bot, message: string) {
   if (BOT_LOG_CHANNEL_ID) {
     const botLogChannel = bot.channels.cache.get(BOT_LOG_CHANNEL_ID);
-    botLogChannel?.isText() && (await botLogChannel.send(message));
+    botLogChannel?.type === ChannelType.GuildText &&
+      (await botLogChannel.send(message));
   }
 }
 
@@ -34,7 +36,7 @@ export async function discordLogError(
   if (BOT_LOG_CHANNEL_ID && error) {
     const botLogChannel = bot.channels.cache.get(BOT_LOG_CHANNEL_ID);
     const httpStatus = (error as any).httpStatus;
-    botLogChannel?.isText() &&
+    botLogChannel?.type === ChannelType.GuildText &&
       (await botLogChannel.send(
         makeEmbed({
           content: `<@${bot.ownerId}>`,

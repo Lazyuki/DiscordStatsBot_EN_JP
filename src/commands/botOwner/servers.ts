@@ -35,7 +35,7 @@ const command: BotCommand = {
         value: stripIndent`
         Server ID: \`${guild.id}\`
         Server Owner: ${owner ? userToMentionAndTag(owner.user) : 'None'}
-        Added: ${getDiscordTimestamp(server.guild.me!.joinedAt!, 'R')}
+        Added: ${getDiscordTimestamp(server.guild.members.me!.joinedAt!, 'R')}
         Total Members: \`${guild.memberCount}\`
         Active Members: \`${userMessages.length}\`
         Statistics Enabled: \`${server.config.statistics ? 'true' : 'false'}\`

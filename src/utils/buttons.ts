@@ -1,9 +1,10 @@
 import { SimpleButton } from '@/types';
 import {
   Message,
-  MessageActionRow,
-  MessageButton,
+  ActionRowBuilder,
+  ButtonBuilder,
   MessageOptions,
+  ButtonStyle,
 } from 'discord.js';
 import { REGEX_CUSTOM_EMOTES } from './regex';
 
@@ -22,44 +23,44 @@ export function getPaginatorButtons(
     return undefined;
   }
   const shouldHaveSkip = pages > 3;
-  const row = new MessageActionRow();
+  const row = new ActionRowBuilder<ButtonBuilder>();
   if (shouldHaveSkip) {
     row.addComponents(
-      new MessageButton()
+      new ButtonBuilder()
         .setCustomId('FIRST_PAGE')
         .setLabel(FIRST_PAGE)
-        .setStyle('SECONDARY')
+        .setStyle(ButtonStyle.Secondary)
         .setDisabled(currentPage === 0)
     );
   }
   row.addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId('PREVIOUS_PAGE')
       .setLabel(PREVIOUS_PAGE)
-      .setStyle('SECONDARY')
+      .setStyle(ButtonStyle.Secondary)
       .setDisabled(currentPage === 0)
   );
   if (hasPin) {
     row.addComponents(
-      new MessageButton()
+      new ButtonBuilder()
         .setCustomId('PINNED_PAGE')
         .setLabel(PINNED_PAGE)
-        .setStyle('SECONDARY')
+        .setStyle(ButtonStyle.Secondary)
     );
   }
   row.addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId('NEXT_PAGE')
       .setLabel(NEXT_PAGE)
-      .setStyle('SECONDARY')
+      .setStyle(ButtonStyle.Secondary)
       .setDisabled(currentPage === pages - 1)
   );
   if (shouldHaveSkip) {
     row.addComponents(
-      new MessageButton()
+      new ButtonBuilder()
         .setCustomId('LAST_PAGE')
         .setLabel(LAST_PAGE)
-        .setStyle('SECONDARY')
+        .setStyle(ButtonStyle.Secondary)
         .setDisabled(currentPage === pages - 1)
     );
   }
@@ -67,21 +68,27 @@ export function getPaginatorButtons(
 }
 
 export function getYesOrNoButtons() {
-  const row = new MessageActionRow();
+  const row = new ActionRowBuilder<ButtonBuilder>();
   row.addComponents(
-    new MessageButton().setCustomId('YES').setLabel('Yes').setStyle('PRIMARY')
+    new ButtonBuilder()
+      .setCustomId('YES')
+      .setLabel('Yes')
+      .setStyle(ButtonStyle.Primary)
   );
   row.addComponents(
-    new MessageButton().setCustomId('NO').setLabel('No').setStyle('SECONDARY')
+    new ButtonBuilder()
+      .setCustomId('NO')
+      .setLabel('No')
+      .setStyle(ButtonStyle.Secondary)
   );
   return [row];
 }
 
 export function getButtons(buttons: SimpleButton[]) {
-  const row = new MessageActionRow();
+  const row = new ActionRowBuilder<ButtonBuilder>();
   buttons.forEach((button) => {
     row.addComponents(
-      new MessageButton()
+      new ButtonBuilder()
         .setCustomId(button.id)
         .setLabel(button.label)
         .setStyle(button.style)
@@ -91,58 +98,61 @@ export function getButtons(buttons: SimpleButton[]) {
 }
 
 export function getConfirmOrCancelButtons(isConfirmDestructive?: boolean) {
-  const row = new MessageActionRow();
+  const row = new ActionRowBuilder<ButtonBuilder>();
   row.addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId('CONFIRM')
       .setLabel('Confirm')
-      .setStyle(isConfirmDestructive ? 'DANGER' : 'PRIMARY')
+      .setStyle(isConfirmDestructive ? ButtonStyle.Danger : ButtonStyle.Primary)
   );
   row.addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId('CANCEL')
       .setLabel('Cancel')
-      .setStyle('SECONDARY')
+      .setStyle(ButtonStyle.Secondary)
   );
   return [row];
 }
 
 export function getBanOrDismiss() {
-  const row = new MessageActionRow();
+  const row = new ActionRowBuilder<ButtonBuilder>();
   row.addComponents(
-    new MessageButton().setCustomId('BAN').setLabel('BAN').setStyle('DANGER')
+    new ButtonBuilder()
+      .setCustomId('BAN')
+      .setLabel('BAN')
+      .setStyle(ButtonStyle.Danger)
   );
   row.addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId('Dismiss')
       .setLabel('Dismiss')
-      .setStyle('SECONDARY')
+      .setStyle(ButtonStyle.Secondary)
   );
   return [row];
 }
 
 export function getBanConfirmationButtons(allowDelete: boolean) {
-  const row = new MessageActionRow();
+  const row = new ActionRowBuilder<ButtonBuilder>();
 
   if (allowDelete) {
     row.addComponents(
-      new MessageButton()
+      new ButtonBuilder()
         .setCustomId('confirm delete')
         .setLabel('DELETE')
-        .setStyle('DANGER')
+        .setStyle(ButtonStyle.Danger)
     );
   }
   row.addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId('confirm keep')
       .setLabel('KEEP')
-      .setStyle('DANGER')
+      .setStyle(ButtonStyle.Danger)
   );
   row.addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId('cancel')
       .setLabel('Cancel')
-      .setStyle('SECONDARY')
+      .setStyle(ButtonStyle.Secondary)
   );
   return [row];
 }
@@ -170,15 +180,17 @@ export async function addButtons(
 
 export function getButtonsWithLabels(labels: string[]) {
   let colCount = 0;
-  const rows: MessageActionRow[] = [];
-  let currRow = new MessageActionRow();
+  const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+  let currRow = new ActionRowBuilder<ButtonBuilder>();
   labels.forEach((label) => {
     if (colCount === 5) {
       rows.push(currRow);
-      currRow = new MessageActionRow();
+      currRow = new ActionRowBuilder<ButtonBuilder>();
     }
     const discordEmoji = label.match(REGEX_CUSTOM_EMOTES)?.[0];
-    const button = new MessageButton().setCustomId(label).setStyle('SECONDARY');
+    const button = new ButtonBuilder()
+      .setCustomId(label)
+      .setStyle(ButtonStyle.Secondary);
     if (discordEmoji) {
       button.setEmoji(discordEmoji);
       label = label.replace(REGEX_CUSTOM_EMOTES, '').trim();
@@ -196,15 +208,17 @@ export function getButtonsWithLabels(labels: string[]) {
 
 export function getButtonsTest(labels: string[]) {
   let colCount = 0;
-  const rows: MessageActionRow[] = [];
-  let currRow = new MessageActionRow();
+  const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+  let currRow = new ActionRowBuilder<ButtonBuilder>();
   labels.forEach((label) => {
     if (colCount === 5) {
       rows.push(currRow);
-      currRow = new MessageActionRow();
+      currRow = new ActionRowBuilder<ButtonBuilder>();
     }
     const discordEmoji = label.match(REGEX_CUSTOM_EMOTES)?.[0];
-    const button = new MessageButton().setCustomId(label).setStyle('SECONDARY');
+    const button = new ButtonBuilder()
+      .setCustomId(label)
+      .setStyle(ButtonStyle.Secondary);
     if (discordEmoji) {
       button.setEmoji(discordEmoji);
       //   label = label.replace(REGEX_CUSTOM_EMOTES, '');

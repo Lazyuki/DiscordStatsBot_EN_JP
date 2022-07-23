@@ -1,4 +1,4 @@
-import { Message, PermissionString } from 'discord.js';
+import { ChannelType, Message, PermissionsString } from 'discord.js';
 
 import Server from '../classes/Server';
 import { Bot, CommandPermissionLevel, GuildMessage } from '../types';
@@ -14,7 +14,7 @@ export function checkEjlx(server: Server) {
 }
 
 export function checkAdmin(message: Message) {
-  return message.member?.permissions.has('ADMINISTRATOR') || false;
+  return message.member?.permissions.has('Administrator') || false;
 }
 
 export function checkBotOwner(message: Message, server: Server, bot: Bot) {
@@ -32,7 +32,7 @@ export function checkModCategory(message: Message, server: Server) {
   if (!checkEjlx(server)) return false;
   if (checkAdmin(message)) return true;
   if (
-    message.channel.type !== 'DM' &&
+    message.channel.type !== ChannelType.DM &&
     getCategoryId(message.channel) === MODERATION
   )
     return true;
@@ -55,7 +55,7 @@ export function checkWP(message: Message, server: Server) {
 
 export function checkServerMod(message: Message) {
   if (checkAdmin(message)) return true;
-  if (message.member?.permissions.has('MODERATE_MEMBERS')) return true;
+  if (message.member?.permissions.has('ModerateMembers')) return true;
   return false;
 }
 
@@ -66,7 +66,7 @@ export function checkMainichiCommittee(message: GuildMessage) {
 
 export function checkSpecificPerm(
   message: Message,
-  permission: PermissionString
+  permission: PermissionsString
 ) {
   return Boolean(message.member?.permissions.has(permission));
 }
