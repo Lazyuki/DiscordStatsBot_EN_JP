@@ -13,7 +13,7 @@ declare module '@/types' {
   }
 }
 
-const prune: BotCommand = {
+const command: BotCommand = {
   name: 'lockdown',
   isAllowed: ['ADMIN'],
   allowedServers: [EJLX],
@@ -121,4 +121,4 @@ const prune: BotCommand = {
   },
 };
 
-export default prune;
+export default command;
