@@ -27,7 +27,6 @@ const intents = Object.values(GatewayIntentBits).filter(
   (flag) => typeof flag !== 'string' && !UNWANTED_INTENTS.includes(flag)
 ) as GatewayIntentBits[];
 
-console.log(intents);
 // Init bot user
 const client = new Client({
   allowedMentions: {

@@ -59,10 +59,10 @@ const createEvent: BotEvent<'messageCreate'> = {
           authorName: `${message.author.tag} (${message.author.id})`,
           authorIcon: message.author.displayAvatarURL(),
           title: `Regex Keyword Match`,
-          description: `([Jump](${message.url}))\n${message.content}`,
+          description: `[Jump](${message.url})\n\n${message.content}`,
           fields: matches.map((match) => ({
-            name: `Key: \`${match.regex}\``,
-            value: `**Matched**: \`${match.matched}\``,
+            name: `Regex: \`${match.regex}\``,
+            value: `**Match**: \`${match.matched}\``,
             inline: true,
           })),
           footer: `#${message.channel.name} (${message.channel.id})`,

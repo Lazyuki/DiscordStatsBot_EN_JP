@@ -1,17 +1,11 @@
-import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
-import { EJLX, JHO, MEE6, RAI } from '@utils/constants';
-import { DAY_IN_MILLIS, getDiscordTimestamp } from '@utils/datetime';
 import {
   errorEmbed,
   makeEmbed,
   successEmbed,
   warningEmbed,
 } from '@utils/embed';
-import { getTextChannel } from '@utils/guildUtils';
-import { REGEX_RAW_ID } from '@utils/regex';
-import { inlineCode, TextChannel } from 'discord.js';
-import { isInChannelsOrCategories } from '@utils/guildUtils';
+import { inlineCode } from 'discord.js';
 import { checkKeywordMatch } from '@events/onKeywordMessage';
 import { pluralize } from '@utils/pluralize';
 import { joinNaturally } from '@utils/formatString';
@@ -38,7 +32,6 @@ const command: BotCommand = {
   name: 'keywords',
   aliases: ['keys', 'key'],
   isAllowed: ['ADMIN'],
-  allowedServers: [EJLX],
   arguments: '< add | remove | list | test > [regex keys ... ]',
   description: 'Log messages that match certain keyword regexes',
   examples: [
@@ -55,7 +48,8 @@ const command: BotCommand = {
       await message.channel.send(
         makeEmbed({
           title: 'Current Keywords',
-          description: server.data.keywords.map(inlineCode).join('\n'),
+          description:
+            server.data.keywords.map(inlineCode).join('\n') || 'None',
           footer: `Type "${server.config.prefix}key add" or "key remove" to update the list.`,
         })
       );
@@ -103,6 +97,7 @@ const command: BotCommand = {
             server.temp.keywordRegexes = buildRegexes(server.data.keywords);
             server.save();
             await message.channel.send(successEmbed(`Key \`${key}\` added.`));
+            return;
           }
           case 'remove':
           case 'rem':
@@ -121,6 +116,7 @@ const command: BotCommand = {
             server.temp.keywordRegexes = buildRegexes(server.data.keywords);
             server.save();
             await message.channel.send(successEmbed(`Key \`${key}\` removed.`));
+            return;
           }
         }
       } else {
