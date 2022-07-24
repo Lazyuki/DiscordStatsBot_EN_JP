@@ -37,7 +37,7 @@ const command: BotCommand = {
     'Log messages that match certain keyword regexes. Keys can be wrapped in a code block to escape Discord formatting.',
   examples: [
     'key add \\bchink\\b',
-    'key remove callMods',
+    'key remove \\`:callMods:\\`',
     'key test would this trigger?',
   ],
   onCommandInit: (server) => {
@@ -51,7 +51,7 @@ const command: BotCommand = {
           title: 'Current Keywords',
           description:
             server.data.keywords.map(inlineCode).join('\n') || 'None',
-          footer: `Type "${server.config.prefix}key add" or "key remove" to update the list.`,
+          footer: `Type "${server.config.prefix}key add" or "${server.config.prefix}key remove" to update the list.`,
         })
       );
     };
@@ -63,9 +63,9 @@ const command: BotCommand = {
       const subCommand = content.toLowerCase().split(' ')[0];
       if (SUB_COMMANDS.includes(subCommand)) {
         let key = content.replace(new RegExp(`^${subCommand}`), '').trim();
-        if (key.startsWith('```')) {
-          // if inline code block, excap
-          key = escapeCodeBlock(key).trim();
+        if (key.startsWith('`') && key.endsWith('`')) {
+          // if inline code block, excape
+          key = key.slice(1, -1);
         }
         const exists = server.data.keywords.includes(key);
         switch (subCommand) {
@@ -93,6 +93,12 @@ const command: BotCommand = {
             return;
           }
           case 'add': {
+            if (key === '') {
+              await message.channel.send(
+                errorEmbed(`Please specify a key to add`)
+              );
+              return;
+            }
             if (exists) {
               await message.channel.send(
                 errorEmbed(`The key \`${key}\` already exists`)
@@ -109,6 +115,12 @@ const command: BotCommand = {
           case 'rem':
           case 'delete':
           case 'del': {
+            if (key === '') {
+              await message.channel.send(
+                errorEmbed(`Please specify a key to remove`)
+              );
+              return;
+            }
             if (!exists) {
               await message.channel.send(
                 errorEmbed(
