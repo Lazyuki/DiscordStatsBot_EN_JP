@@ -68,6 +68,8 @@ const warn: BotCommand = {
       id: string;
       send: GuildMember['send'];
       toString: GuildMember['toString'];
+      user?: User;
+      tag?: string;
     };
     const members = guildMembers as UserOrMember[];
     const date = new Date().toISOString();
@@ -122,7 +124,9 @@ const warn: BotCommand = {
       await message.channel.send(
         successEmbed(
           `Logged the warning for ${joinNaturally(
-            members.map((m) => m.toString())
+            members.map(
+              (m) => `${m.toString()} (${'user' in m ? m.user?.tag : m.tag})`
+            )
           )} issued by ${
             message.author.tag
           }.\nThey did **not** receive the warning DM.`
@@ -135,7 +139,10 @@ const warn: BotCommand = {
             `Successfully warned ${joinNaturally(
               members
                 .filter((m) => !unreachableMembers.includes(m))
-                .map((m) => m.toString())
+                .map(
+                  (m) =>
+                    `${m.toString()} (${'user' in m ? m.user?.tag : m.tag})`
+                )
             )} by ${message.author.tag}.`
           )
         );
@@ -179,7 +186,11 @@ const warn: BotCommand = {
     } else {
       await message.channel.send(
         successEmbed(
-          `Successfully warned ${members.join(', ')} by ${message.author.tag}.`
+          `Successfully warned ${joinNaturally(
+            members.map(
+              (m) => `${m.toString()} (${'user' in m ? m.user?.tag : m.tag})`
+            )
+          )} by ${message.author.tag}.`
         )
       );
     }
