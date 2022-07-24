@@ -57,10 +57,11 @@ const command: BotCommand = {
     if (!content) {
       // Show current config
       await sendList();
+      return;
     } else {
       const subCommand = content.toLowerCase().split(' ')[0];
       if (SUB_COMMANDS.includes(subCommand)) {
-        const key = content.replace(new RegExp(`^${subCommand} `), '');
+        const key = content.replace(new RegExp(`^${subCommand}`), '').trim();
         const exists = server.data.keywords.includes(key);
         switch (subCommand) {
           case 'list': {
