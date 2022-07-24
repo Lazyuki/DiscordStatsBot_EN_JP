@@ -5,7 +5,7 @@ import {
   successEmbed,
   warningEmbed,
 } from '@utils/embed';
-import { inlineCode } from 'discord.js';
+import { escapeCodeBlock, inlineCode } from 'discord.js';
 import { checkKeywordMatch } from '@events/onKeywordMessage';
 import { pluralize } from '@utils/pluralize';
 import { joinNaturally } from '@utils/formatString';
@@ -61,7 +61,11 @@ const command: BotCommand = {
     } else {
       const subCommand = content.toLowerCase().split(' ')[0];
       if (SUB_COMMANDS.includes(subCommand)) {
-        const key = content.replace(new RegExp(`^${subCommand}`), '').trim();
+        let key = content.replace(new RegExp(`^${subCommand}`), '').trim();
+        if (key.startsWith('```')) {
+          // if inline code block, excap
+          key = escapeCodeBlock(key).trim();
+        }
         const exists = server.data.keywords.includes(key);
         switch (subCommand) {
           case 'list': {
