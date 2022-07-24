@@ -33,7 +33,8 @@ const command: BotCommand = {
   aliases: ['keys', 'key'],
   isAllowed: ['ADMIN'],
   arguments: '< add | remove | list | test > [regex keys ... ]',
-  description: 'Log messages that match certain keyword regexes',
+  description:
+    'Log messages that match certain keyword regexes. Keys can be wrapped in a code block to escape Discord formatting.',
   examples: [
     'key add \\bchink\\b',
     'key remove callMods',
