@@ -75,7 +75,7 @@ const command: BotCommand = {
           }
           case 'test': {
             const matches = checkKeywordMatch(key, server.temp.keywordRegexes);
-            if (matches) {
+            if (matches.length > 0) {
               await message.reply(
                 successEmbed(
                   `This message matched the following ${pluralize(
