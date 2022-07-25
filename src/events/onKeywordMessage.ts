@@ -58,8 +58,9 @@ const createEvent: BotEvent<'messageCreate'> = {
           color: 'DarkOrange',
           authorName: `${message.author.tag} (${message.author.id})`,
           authorIcon: message.author.displayAvatarURL(),
-          title: `Regex Keyword Match`,
-          description: `[Jump](${message.url})\n\n${message.content}`,
+          title: `Keyword Match [Jump]`,
+          titleUrl: message.url,
+          description: message.content,
           fields: matches.map((match) => ({
             name: `Regex: \`${match.regex}\``,
             value: `**Match**: \`${match.matched}\``,
