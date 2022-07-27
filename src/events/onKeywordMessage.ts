@@ -2,6 +2,7 @@ import { BotEvent } from '@/types';
 import { getTextChannel, isMessageInChannels } from '@utils/guildUtils';
 import checkSafeMessage from '@utils/checkSafeMessage';
 import { makeEmbed } from '@utils/embed';
+import { channelName } from '@utils/formatString';
 
 export function checkKeywordMatch(content: string, regexes: RegExp[]) {
   const matches = regexes
@@ -66,7 +67,7 @@ const createEvent: BotEvent<'messageCreate'> = {
             value: `**Match**: \`${match.matched}\``,
             inline: true,
           })),
-          footer: `#${message.channel.name} (${message.channel.id})`,
+          footer: `${channelName(message.channel)} (${message.channel.id})`,
           timestamp: true,
         })
       );

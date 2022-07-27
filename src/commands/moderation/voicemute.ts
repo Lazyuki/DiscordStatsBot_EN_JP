@@ -2,7 +2,11 @@ import { BotCommand } from '@/types';
 import { insertModLog } from '@database/statements';
 import { parseMembers } from '@utils/argumentParsers';
 import { makeEmbed, successEmbed } from '@utils/embed';
-import { joinNaturally, userToMentionAndTag } from '@utils/formatString';
+import {
+  channelName,
+  joinNaturally,
+  userToMentionAndTag,
+} from '@utils/formatString';
 import { getTextChannel } from '@utils/guildUtils';
 import { GuildMember } from 'discord.js';
 
@@ -99,7 +103,7 @@ const voicemute: BotCommand = {
               inline: false,
             },
           ],
-          footer: `By ${message.author.tag} in #${message.channel.name}`,
+          footer: `By ${message.author.tag} in ${channelName(message.channel)}`,
           footerIcon: message.member.displayAvatarURL(),
           timestamp: true,
         })
@@ -160,7 +164,7 @@ const voiceunmute: BotCommand = {
               inline: false,
             },
           ],
-          footer: `By ${message.author.tag} in #${message.channel.name}`,
+          footer: `By ${message.author.tag} in ${channelName(message.channel)}`,
           footerIcon: message.member.displayAvatarURL(),
           timestamp: true,
         })

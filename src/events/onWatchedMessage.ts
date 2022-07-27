@@ -11,6 +11,7 @@ import {
 import { millisToDuration } from '@utils/datetime';
 import { REGEX_URL } from '@utils/regex';
 import { AttachmentBuilder } from 'discord.js';
+import { channelName } from '@utils/formatString';
 
 const createEvent: BotEvent<'messageCreate'> = {
   eventName: 'messageCreate',
@@ -48,7 +49,6 @@ const updateEvent: BotEvent<'messageUpdate'> = {
     if (distance <= 3) return;
     const timeDiffMillis =
       newMessage.editedTimestamp! - newMessage.createdTimestamp;
-    const channelName = newMessage.channel.name;
     await modLog.send(
       makeEmbed({
         color: EDIT_COLOR,
@@ -59,7 +59,7 @@ const updateEvent: BotEvent<'messageUpdate'> = {
           { name: 'Before', value: oldMessage.content, inline: false },
           { name: 'After', value: newMessage.content, inline: false },
         ]),
-        footer: `#${channelName} (${newMessage.channel.id})`,
+        footer: `${channelName(newMessage.channel)} (${newMessage.channel.id})`,
         timestamp: true,
       })
     );
@@ -93,7 +93,6 @@ const deleteEvent: BotEvent<'messageDelete'> = {
         }
       }
       const timeDiffMillis = new Date().getTime() - message.createdTimestamp;
-      const channelName = message.channel.name;
       const deleteLog = await modLog.send(
         makeEmbed({
           color: DELETE_COLOR,
@@ -101,7 +100,7 @@ const deleteEvent: BotEvent<'messageDelete'> = {
           authorIcon: `${message.author.displayAvatarURL()}`,
           title: `Message Deleted after ${millisToDuration(timeDiffMillis)}`,
           description: message.content || '*empty*',
-          footer: `#${channelName} (${message.channel.id})`,
+          footer: `${channelName(message.channel)} (${message.channel.id})`,
           timestamp: true,
         })
       );

@@ -14,7 +14,11 @@ import { stripIndents } from 'common-tags';
 import { memberJoinAge } from '@utils/datetime';
 import { pluralCount, pluralize } from '@utils/pluralize';
 import { getTextChannel, idToUser } from '@utils/guildUtils';
-import { joinNaturally, userToMentionAndTag } from '@utils/formatString';
+import {
+  channelName,
+  joinNaturally,
+  userToMentionAndTag,
+} from '@utils/formatString';
 import Server from '@classes/Server';
 import { getBanConfirmationButtons } from '@utils/buttons';
 import { CommandArgumentError } from '@/errors';
@@ -188,7 +192,9 @@ const command: BotCommand = {
             makeEmbed({
               title: 'Ban',
               color: BLACK,
-              footer: `By ${message.author.tag} in #${message.channel.name}`,
+              footer: `By ${message.author.tag} in ${channelName(
+                message.channel
+              )}`,
               footerIcon: message.member.displayAvatarURL(),
               fields: [
                 {

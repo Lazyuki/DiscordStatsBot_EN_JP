@@ -8,6 +8,7 @@ import {
   isTextChannel,
 } from '@utils/guildUtils';
 import { pluralCount } from '@utils/pluralize';
+import { channelName } from '@utils/formatString';
 
 const command: BotCommand = {
   name: 'channels',
@@ -53,13 +54,13 @@ const command: BotCommand = {
       channels
         .map(({ channelId, count }) => {
           const channel = server.guild.channels.cache.get(channelId);
-          return `**${channel?.type === ChannelType.GuildVoice ? '🔉' : '#'}${
-            channel?.name || `*deleted (${channelId})*`
+          return `**${
+            channel ? channelName(channel) : `*deleted (${channelId})*`
           }**: ${pluralCount('message', 's', count)}`;
         })
         .join('\n') + '\n';
     channelsString += deadChannels
-      .map((channel) => `**#${channel.name}**: 0 messages`)
+      .map((channel) => `**${channelName(channel)}**: 0 messages`)
       .join('\n');
 
     const messageContent = infoEmbed({

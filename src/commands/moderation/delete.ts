@@ -21,7 +21,11 @@ import {
   successEmbed,
   warningEmbed,
 } from '@utils/embed';
-import { userToTagAndId, userToTagAndIdNoEscape } from '@utils/formatString';
+import {
+  channelName,
+  userToTagAndId,
+  userToTagAndIdNoEscape,
+} from '@utils/formatString';
 import { getTextChannel, idToChannel } from '@utils/guildUtils';
 import { MAX_BYTES } from '@utils/images';
 import { pluralCount, pluralize } from '@utils/pluralize';
@@ -340,10 +344,9 @@ async function postDeletedMessages(
   const fields = messages.map((message) => {
     const name = `${
       onlyOneUser ? '' : `👤${userToTagAndIdNoEscape(message.author)} `
-    }${onlyOneChannel ? '' : `#${message.channel.name} `}${getDiscordTimestamp(
-      message.createdAt,
-      onlyOneUser ? 'f' : 't'
-    )}`;
+    }${
+      onlyOneChannel ? '' : `${channelName(message.channel)} `
+    }${getDiscordTimestamp(message.createdAt, onlyOneUser ? 'f' : 't')}`;
 
     const hasAttachment = Boolean(
       hasEmbedsMessageIDs.includes(message.id) || attachmentURLs[message.id]
@@ -398,7 +401,9 @@ async function postDeletedMessages(
     } Deleted`,
     description: onlyOneChannel ? `In ${messages[0].channel}` : undefined,
     fields,
-    footer: `By ${commandMessage.author.tag} in #${commandMessage.channel.name}`,
+    footer: `By ${commandMessage.author.tag} in ${channelName(
+      commandMessage.channel
+    )}`,
     footerIcon: commandMessage.member.displayAvatarURL(),
     timestamp: true,
   });

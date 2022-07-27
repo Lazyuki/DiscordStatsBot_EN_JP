@@ -21,6 +21,7 @@ import {
   warningEmbed,
 } from '@utils/embed';
 import {
+  channelName,
   joinNaturally,
   userToMentionAndTag,
   userToTagAndId,
@@ -302,7 +303,7 @@ const mute: BotCommand = {
               inline: false,
             },
           ],
-          footer: `By ${message.author.tag} in #${message.channel.name}`,
+          footer: `By ${message.author.tag} in ${channelName(message.channel)}`,
           footerIcon: message.member.displayAvatarURL(),
           timestamp: true,
         })
@@ -429,7 +430,7 @@ const unmute: BotCommand = {
               inline: false,
             },
           ],
-          footer: `By ${message.author.tag} in #${message.channel.name}`,
+          footer: `By ${message.author.tag} in ${channelName(message.channel)}`,
           footerIcon: message.member.displayAvatarURL(),
           timestamp: true,
         })

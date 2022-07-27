@@ -1,5 +1,17 @@
-import { Bot } from '@/types';
-import { Guild, User, escapeMarkdown } from 'discord.js';
+import { Bot, GuildTextChannel } from '@/types';
+import {
+  Guild,
+  User,
+  escapeMarkdown,
+  GuildChannel,
+  VoiceChannel,
+  ChannelType,
+  TextBasedChannel,
+  DMChannel,
+  PartialDMChannel,
+  CategoryChannel,
+  GuildBasedChannel,
+} from 'discord.js';
 
 export function codeBlock(str: string, lang: string = '') {
   const lines = str.split('\n');
@@ -118,4 +130,14 @@ export function pseudoShlexSplit(text: string) {
   return splitBySpace.map((s) =>
     s.replaceAll('{ESCAPED_QUOTE}', '\\"').replaceAll('{ESCAPED_SPACE}', ' ')
   );
+}
+
+export function channelName(channel: GuildBasedChannel) {
+  if (channel.type === ChannelType.GuildVoice) {
+    return `🔉${channel.name}`;
+  } else if (channel.isThread()) {
+    return `#${channel.name}`;
+  } else {
+    return `#${channel.name}`;
+  }
 }

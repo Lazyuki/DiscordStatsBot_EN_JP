@@ -8,7 +8,7 @@ import {
   getUserMessages,
   getVoiceSecondsForUser,
 } from '@database/statements';
-import { formatPercent, resolveEmoji } from '@utils/formatString';
+import { channelName, formatPercent, resolveEmoji } from '@utils/formatString';
 import { pluralCount } from '@utils/pluralize';
 import {
   channelsOrCategoriesToChannels,
@@ -102,7 +102,9 @@ const command: BotCommand = {
         .map(({ channelId, count }) => {
           const channel = server.guild.channels.cache.get(channelId);
           const percentage = formatPercent(count / totalMessages, 1);
-          return `**#${channel?.name || 'deleted-channel'}**: ${percentage}`;
+          return `**${
+            channel ? channelName(channel) : 'deleted-channel'
+          }**: ${percentage}`;
         })
         .join('\n');
 
