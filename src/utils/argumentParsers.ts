@@ -13,7 +13,7 @@ import { joinNaturally } from './formatString';
  * @returns { ids: string[], rest: string } parsed IDs and also the rest of the string with IDs stripped out.
  */
 export function parseSnowflakeIds(str: string, greedy = false) {
-  const words = str.split(/\s+/);
+  const words = str.match(/[^\s>]+[\s>]*|\S/g) || [];
   const ids: string[] = [];
   const nonIds: string[] = [];
   for (const [i, word] of words.entries()) {
@@ -30,7 +30,7 @@ export function parseSnowflakeIds(str: string, greedy = false) {
     }
   }
 
-  return { ids, rest: nonIds.join(' ') };
+  return { ids, rest: nonIds.join('') };
 }
 
 export function parseChannels(
@@ -44,7 +44,7 @@ export function parseChannels(
   allIds: string[];
   restContent: string;
 } {
-  const words = content.split(/\s+/);
+  const words = content.match(/[^\s>]+[\s>]*|\S/g) || [];
   const channels: GuildTextChannel[] = [];
   const categories: CategoryChannel[] = [];
   const nonChannelIds: string[] = [];
@@ -74,7 +74,7 @@ export function parseChannels(
     channelsAndCategories: [...channels, ...categories],
     nonChannelIds,
     allIds,
-    restContent: words.slice(allIds.length).join(' '),
+    restContent: words.slice(allIds.length).join(''),
   };
 }
 
@@ -102,7 +102,7 @@ export function parseMembers(
   allIds: string[];
   restContent: string;
 } {
-  const words = content.split(/\s+/);
+  const words = content.match(/[^\s>]+[\s>]*|\S/g) || [];
 
   const members: GuildMember[] = [];
   const nonMemberIds: string[] = [];
@@ -124,9 +124,11 @@ export function parseMembers(
     }
   }
 
-  if (allIds.length === 0 && /^.+#[0-9]{4}$/.test(words[0])) {
+  if (allIds.length === 0 && /^.+#[0-9]{4}\s*$/.test(words[0])) {
     // using user tag?
-    const tagMember = guild.members.cache.find((v) => v.user.tag === words[0]);
+    const tagMember = guild.members.cache.find(
+      (v) => v.user.tag === words[0].trim()
+    );
     if (tagMember) {
       members.push(tagMember);
       allIds.push(tagMember.id);
@@ -152,7 +154,7 @@ export function parseMembers(
     members,
     nonMemberIds,
     allIds,
-    restContent: words.slice(allIds.length).join(' '),
+    restContent: words.slice(allIds.length).join(''),
   };
 }
 
