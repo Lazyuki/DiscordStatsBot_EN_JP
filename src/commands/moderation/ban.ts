@@ -9,7 +9,7 @@ import {
 } from '@utils/embed';
 import { waitForBanConfirm, waitForYesOrNo } from '@utils/asyncCollector';
 import { GuildMember } from 'discord.js';
-import { BLACK } from '@utils/constants';
+import { BLACK, EJLX } from '@utils/constants';
 import { stripIndents } from 'common-tags';
 import { memberJoinAge } from '@utils/datetime';
 import { pluralCount, pluralize } from '@utils/pluralize';
@@ -22,6 +22,8 @@ import {
 import Server from '@classes/Server';
 import { getBanConfirmationButtons } from '@utils/buttons';
 import { CommandArgumentError } from '@/errors';
+
+const APPEAL_INVITE_PATH = 'pnHEGPah8X';
 
 const command: BotCommand = {
   name: 'ban',
@@ -36,6 +38,12 @@ const command: BotCommand = {
   ],
   options: [
     {
+      name: 'appeal',
+      short: 'a',
+      bool: true,
+      description: 'Include the EJLX ban appeal server link in the ban message',
+    },
+    {
       name: 'days',
       short: 'd',
       bool: false,
@@ -45,6 +53,7 @@ const command: BotCommand = {
   childCommands: ['unban'],
   normalCommand: async ({ content, message, server, options }) => {
     const executor = message.author;
+    const allowAppeal = Boolean(options['appeal']) && server.guild.id === EJLX;
     let deleteDays = parseInt(String(options['days']) || '');
     if (isNaN(deleteDays)) {
       deleteDays = 1;
@@ -116,7 +125,7 @@ const command: BotCommand = {
           .join('\n')}
 
         __Reason__: ${reason}
-
+        ${allowAppeal ? '__BAN APPEAL__ link included\n' : ''}
         ${deleting}
 
         Type ${
@@ -147,6 +156,7 @@ const command: BotCommand = {
           deleteDays,
           reason,
           auditLogReason,
+          allowAppeal,
         });
         const { failedBanIds, dmFailedMembers } = banResult;
 
@@ -233,6 +243,7 @@ async function banUsers({
   deleteDays,
   reason,
   auditLogReason,
+  allowAppeal,
 }: {
   server: Server;
   members: GuildMember[];
@@ -240,6 +251,7 @@ async function banUsers({
   deleteDays: number;
   reason: string;
   auditLogReason: string;
+  allowAppeal: boolean;
 }) {
   const failedBanIds: string[] = [];
   const dmFailedMembers: GuildMember[] = [];
@@ -252,6 +264,11 @@ async function banUsers({
             description: `Reason: ${reason}`,
           })
         );
+        if (allowAppeal) {
+          await mem.send(
+            `If you wish to appeal your ban at EJLX, join this server.\nサーバーBANに不服がある場合は以下のサーバーより申請してください。\nhttps://discord.gg/${APPEAL_INVITE_PATH}`
+          );
+        }
       } catch (e) {
         dmFailedMembers.push(mem);
       }

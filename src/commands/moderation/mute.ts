@@ -144,7 +144,7 @@ const mute: BotCommand = {
 
     if (!members.every((m) => m.moderatable)) {
       throw new UserPermissionError(
-        `I cannot mute them as their roles are heigher than mine`
+        `I cannot mute them as their roles are higher than mine`
       );
     }
 
