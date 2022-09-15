@@ -84,9 +84,13 @@ export const makeEmbed = (
   }
   if (fields && fields.filter(Boolean).length)
     embed.addFields(
-      ...(fields
-        .filter(Boolean)
-        .map((f) => (f!.value ? f : { ...f, value: '\u200b' })) as EmbedField[])
+      ...splitFields(
+        fields
+          .filter(Boolean)
+          .map((f) =>
+            f!.value ? f : { ...f, value: '\u200b' }
+          ) as EmbedField[]
+      )
     );
 
   return { content, embeds: [embed, ...additionalEmbeds], ephemeral };

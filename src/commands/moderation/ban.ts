@@ -8,7 +8,7 @@ import {
   warningEmbed,
 } from '@utils/embed';
 import { waitForBanConfirm, waitForYesOrNo } from '@utils/asyncCollector';
-import { GuildMember } from 'discord.js';
+import { GuildMember, User } from 'discord.js';
 import { BLACK, EJLX } from '@utils/constants';
 import { stripIndents } from 'common-tags';
 import { memberJoinAge } from '@utils/datetime';
@@ -16,12 +16,13 @@ import { pluralCount, pluralize } from '@utils/pluralize';
 import { getTextChannel, idToUser } from '@utils/guildUtils';
 import {
   channelName,
+  code,
   joinNaturally,
   userToMentionAndTag,
 } from '@utils/formatString';
 import Server from '@classes/Server';
 import { getBanConfirmationButtons } from '@utils/buttons';
-import { CommandArgumentError } from '@/errors';
+import { BotError, CommandArgumentError } from '@/errors';
 
 const APPEAL_INVITE_PATH = 'pnHEGPah8X';
 
@@ -33,8 +34,10 @@ const command: BotCommand = {
     'Ban! You can specify multiple users. Or use `raidban` for banning the entire raid party.',
   arguments: '<@user> [@user2...] [reason]',
   examples: [
-    'ban @user being too good at Japanese',
+    'ban @user being too good at Japanese -a',
     'ban 284840842026549259 299335689558949888 -d 0',
+    'ban @user -s banned you but we are not sending you this reason',
+    'ban @user -m This is an important message and @user will not be banned if they have their DMs closed.',
   ],
   options: [
     {
@@ -49,11 +52,28 @@ const command: BotCommand = {
       bool: false,
       description: 'Number of days to delete. Default to 1',
     },
+    {
+      name: 'silent',
+      short: 's',
+      bool: true,
+      description:
+        "Don't try to send the ban reason to the users. Non-server members (people who have left already) won't receive the DM by default.",
+    },
+    {
+      name: 'messageEnforced',
+      short: 'm',
+      bool: true,
+      description:
+        'Abort banning users who have their DMs closed. You will need to find a way to send the message somehow.',
+    },
   ],
   childCommands: ['unban'],
-  normalCommand: async ({ content, message, server, options }) => {
+  normalCommand: async ({ content, message, server, options, bot }) => {
     const executor = message.author;
     const allowAppeal = Boolean(options['appeal']) && server.guild.id === EJLX;
+    const silent = Boolean(options['silent']);
+    const forceMessage = Boolean(options['messageEnforced']);
+
     let deleteDays = parseInt(String(options['days']) || '');
     if (isNaN(deleteDays)) {
       deleteDays = 1;
@@ -82,13 +102,28 @@ const command: BotCommand = {
       throw new CommandArgumentError('Please specify users to ban');
     }
 
+    await message.channel.sendTyping();
+
+    const outsideUsers: User[] = [];
+    for (const nonMemberId of nonMemberIds) {
+      try {
+        const user = await bot.users.fetch(nonMemberId);
+        outsideUsers.push(user);
+      } catch (e) {
+        await message.channel.send(
+          errorEmbed(`The ID ${code(nonMemberId)} is not a valid Discord user.`)
+        );
+        return;
+      }
+    }
+
     let auditLogReason = `By ${executor.tag} (${
       executor.id
     }) Reason: ${reason.replace('\n', ' ')}`;
     if (auditLogReason.length > 512) {
       const questionMessage = await message.channel.send(
         warningEmbed(
-          `The ban reason exceeds the limit of 512 characters at \`${auditLogReason.length}\` characters.\n\nDo you want to send the full reason to the person and let Discord's audit log ban reason be truncated?`
+          `The ban reason exceeds the limit of 512 characters at \`${auditLogReason.length}\` characters.\n\nDo you want me to send the full reason to the person and let Discord's audit log ban reason be truncated?`
         )
       );
       const sendAnyway = await waitForYesOrNo(
@@ -120,12 +155,14 @@ const command: BotCommand = {
             (member) =>
               `${member}: ${member.user.tag} ${memberJoinAge(member, 7)}`
           )
-          .join('\n')}${nonMemberIds.length ? '\n' : ''}${nonMemberIds
-          .map(idToUser)
+          .join('\n')}${outsideUsers.length ? '\n' : ''}${outsideUsers
+          .map(userToMentionAndTag)
           .join('\n')}
 
         __Reason__: ${reason}
-        ${allowAppeal ? '__BAN APPEAL__ link included\n' : ''}
+        ${allowAppeal ? '\n__**BAN APPEAL**__ link included\n' : ''}
+        ${silent ? '\n__**NOT SENDING DMs**__\n' : ''}
+        ${forceMessage ? '\n__**ABORTING** if DMs closed__\n' : ''}
         ${deleting}
 
         Type ${
@@ -152,36 +189,66 @@ const command: BotCommand = {
         const banResult = await banUsers({
           server,
           members,
-          nonMemberIds,
+          outsideUsers,
           deleteDays,
           reason,
           auditLogReason,
           allowAppeal,
+          silent,
+          forceMessage,
         });
         const { failedBanIds, dmFailedMembers } = banResult;
 
         const bannedMembers = members.filter(
           (m) => !failedBanIds.includes(m.id)
         );
-        const bannedIds = nonMemberIds.filter(
-          (id) => !failedBanIds.includes(id)
+        const bannedUsers = outsideUsers.filter(
+          (user) => !failedBanIds.includes(user.id)
         );
 
         const dmFailString = dmFailedMembers.length
-          ? `\n\nBut failed to DM: ${joinNaturally(
-              dmFailedMembers.map((m) => m.toString())
-            )}`
-          : '';
+          ? `\n\nBut **failed** to DM: ${dmFailedMembers
+              .map((mem) => userToMentionAndTag(mem.user))
+              .join('\n')}`
+          : ' and DMed the reason';
 
-        await message.channel.send(
-          successEmbed(
-            `Banned ${pluralCount(
-              'user',
-              's',
-              bannedMembers.length + bannedIds.length
-            )}${dmFailString}`
-          )
-        );
+        const bannedUserCount = bannedMembers.length + bannedUsers.length;
+
+        if (failedBanIds.length > 0) {
+          const failedMembers = members
+            .filter((m) => failedBanIds.includes(m.id))
+            .map((m) => userToMentionAndTag(m.user));
+          const failedUsers = outsideUsers
+            .filter((u) => failedBanIds.includes(u.id))
+            .map(userToMentionAndTag);
+          await message.channel.send(
+            errorEmbed(
+              `Failed to ban:\n\n${failedMembers.join(
+                '\n'
+              )}\n${failedUsers.join('\n')}\n${
+                forceMessage
+                  ? 'since they had their DMs disabled'
+                  : 'due to unknown errors'
+              }.`
+            )
+          );
+        }
+        if (bannedUserCount === 0) {
+          await editEmbed(banConfirmation, {
+            footer: `Ban failed`,
+          });
+          return;
+        } else {
+          await message.channel.send(
+            successEmbed(
+              `Banned ${pluralCount(
+                'user',
+                's',
+                bannedUserCount
+              )}${dmFailString}`
+            )
+          );
+        }
         await editEmbed(banConfirmation, {
           footer: `Banned ${
             deleteDays === 0
@@ -208,14 +275,12 @@ const command: BotCommand = {
               footerIcon: message.member.displayAvatarURL(),
               fields: [
                 {
-                  name: pluralize(
-                    'Banned User',
-                    's',
-                    bannedMembers.length + bannedIds.length
-                  ),
+                  name: pluralize('Banned User', 's', bannedUserCount),
                   value: `${bannedMembers
                     .map((m) => userToMentionAndTag(m.user))
-                    .join('\n')}\n${bannedIds.map(idToUser).join('\n')}`.trim(),
+                    .join('\n')}\n${bannedUsers
+                    .map(userToMentionAndTag)
+                    .join('\n')}`.trim(),
                   inline: false,
                 },
                 { name: 'Reason', value: reason, inline: false },
@@ -239,38 +304,49 @@ const command: BotCommand = {
 async function banUsers({
   server,
   members,
-  nonMemberIds,
+  outsideUsers,
   deleteDays,
   reason,
   auditLogReason,
   allowAppeal,
+  silent,
+  forceMessage,
 }: {
   server: Server;
   members: GuildMember[];
-  nonMemberIds?: string[];
+  outsideUsers: User[];
   deleteDays: number;
   reason: string;
   auditLogReason: string;
   allowAppeal: boolean;
+  silent: boolean;
+  forceMessage: boolean;
 }) {
   const failedBanIds: string[] = [];
   const dmFailedMembers: GuildMember[] = [];
   await Promise.all(
     members.map(async (mem) => {
-      try {
-        await mem.send(
-          makeEmbed({
-            title: `You have been banned from ${server.guild}`,
-            description: `Reason: ${reason}`,
-          })
-        );
-        if (allowAppeal) {
+      if (!silent) {
+        try {
           await mem.send(
-            `If you wish to appeal your ban at EJLX, join this server.\nサーバーBANに不服がある場合は以下のサーバーより申請してください。\nhttps://discord.gg/${APPEAL_INVITE_PATH}`
+            makeEmbed({
+              title: `You have been banned from ${server.guild}`,
+              description: `Reason: ${reason}`,
+            })
           );
+          if (allowAppeal) {
+            await mem.send(
+              `If you wish to appeal your ban at EJLX, join this server.\nサーバーBANに不服がある場合は以下のサーバーより申請してください。\nhttps://discord.gg/${APPEAL_INVITE_PATH}`
+            );
+          }
+        } catch (e) {
+          if (forceMessage) {
+            failedBanIds.push(mem.id);
+            return;
+          } else {
+            dmFailedMembers.push(mem);
+          }
         }
-      } catch (e) {
-        dmFailedMembers.push(mem);
       }
       try {
         await mem.ban({
@@ -282,16 +358,16 @@ async function banUsers({
       }
     })
   );
-  if (nonMemberIds?.length) {
+  if (outsideUsers.length) {
     await Promise.all(
-      nonMemberIds.map(async (id) => {
+      outsideUsers.map(async (user) => {
         try {
-          await server.guild.members.ban(id, {
+          await server.guild.members.ban(user.id, {
             deleteMessageDays: deleteDays,
             reason: auditLogReason,
           });
         } catch (e) {
-          failedBanIds.push(id);
+          failedBanIds.push(user.id);
         }
       })
     );
