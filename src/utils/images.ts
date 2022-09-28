@@ -34,7 +34,7 @@ export async function downloadMessageAttachments(
   for (const attachment of attachments) {
     if (attachment.size > MAX_BYTES) {
       const warnMessage = `Attachment exceeds the limit at ${attachment.size} bytes. Guild: ${message.guild.name} | Channel: #${message.channel.name} | Author: ${message.author.tag} | Type: ${attachment.contentType}`;
-      logger.warning(warnMessage);
+      logger.warn(warnMessage);
       continue;
     }
     const contentType = attachment.contentType;
