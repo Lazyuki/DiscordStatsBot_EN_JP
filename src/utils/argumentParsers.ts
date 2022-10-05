@@ -1,7 +1,7 @@
-import { CategoryChannel, Guild, GuildMember } from 'discord.js';
+import { CategoryChannel, ForumChannel, Guild, GuildMember } from 'discord.js';
 import Server from '@classes/Server';
 import { REGEX_MESSAGE_LINK_OR_FULL_ID, REGEX_RAW_ID } from './regex';
-import { Bot, GuildTextChannel } from '@/types';
+import { Bot, GuildTextChannel, GuildTextParentChannel } from '@/types';
 import { CommandArgumentError, MemberNotFoundError } from '@/errors';
 import { getTextChannel, isTextChannel } from './guildUtils';
 import { joinNaturally } from './formatString';
@@ -37,15 +37,17 @@ export function parseChannels(
   content: string,
   guild: Guild
 ): {
-  channels: GuildTextChannel[];
+  channels: GuildTextParentChannel[];
+  textChannels: GuildTextChannel[];
   categories: CategoryChannel[];
-  channelsAndCategories: (GuildTextChannel | CategoryChannel)[];
+  channelsAndCategories: (GuildTextParentChannel | CategoryChannel)[];
   nonChannelIds: string[];
   allIds: string[];
   restContent: string;
 } {
   const words = content.match(/[^\s>]+[\s>]*|\S/g) || [];
-  const channels: GuildTextChannel[] = [];
+  const channels: GuildTextParentChannel[] = [];
+  const textChannels: GuildTextChannel[] = [];
   const categories: CategoryChannel[] = [];
   const nonChannelIds: string[] = [];
   const allIds: string[] = [];
@@ -57,9 +59,12 @@ export function parseChannels(
       allIds.push(id);
       const channel = guild.channels.cache.get(id);
       if (channel && isTextChannel(channel)) {
+        textChannels.push(channel);
         channels.push(channel);
       } else if (channel && channel instanceof CategoryChannel) {
         categories.push(channel);
+      } else if (channel && channel instanceof ForumChannel) {
+        channels.push(channel);
       } else {
         nonChannelIds.push(id);
       }
@@ -70,6 +75,7 @@ export function parseChannels(
 
   return {
     channels,
+    textChannels,
     categories,
     channelsAndCategories: [...channels, ...categories],
     nonChannelIds,

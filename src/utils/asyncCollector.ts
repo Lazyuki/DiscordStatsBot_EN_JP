@@ -215,9 +215,9 @@ export async function getFallbackChannel(
   });
   const promise = new Promise<GuildTextChannel | null>((resolve) => {
     collector.on('collect', (m) => {
-      const { channels } = parseChannels(m.content, server.guild);
-      if (channels.length) {
-        resolve(channels[0]);
+      const { textChannels } = parseChannels(m.content, server.guild);
+      if (textChannels.length) {
+        resolve(textChannels[0]);
       }
     });
     collector.on('end', () => {

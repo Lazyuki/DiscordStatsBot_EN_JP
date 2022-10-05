@@ -1,4 +1,4 @@
-import { Message, MessageOptions } from 'discord.js';
+import { Message, MessageCreateOptions } from 'discord.js';
 import { codeBlock } from './formatString';
 
 function splitAndAppend(chunk: string, delimiter: string) {
@@ -81,8 +81,10 @@ export function splitMessage(content: string, maxLength = 2_000) {
 }
 
 // Send or reply safely, even if the message length exceeds the limit
-function safeSend(_send: (m: MessageOptions) => Promise<Message | undefined>) {
-  return async (content: string | MessageOptions) => {
+function safeSend(
+  _send: (m: MessageCreateOptions) => Promise<Message | undefined>
+) {
+  return async (content: string | MessageCreateOptions) => {
     if (typeof content === 'string') {
       if (content.length > 2000) {
         const [firstChunk, ...restChunks] = splitMessage(content);

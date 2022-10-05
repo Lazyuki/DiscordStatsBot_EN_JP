@@ -3,7 +3,7 @@ import {
   Message,
   ActionRowBuilder,
   ButtonBuilder,
-  MessageOptions,
+  MessageCreateOptions,
   ButtonStyle,
 } from 'discord.js';
 import { REGEX_CUSTOM_EMOTES } from './regex';
@@ -169,7 +169,7 @@ export async function removeComponents(message: Message) {
 
 export async function addButtons(
   message: Message,
-  components: MessageOptions['components']
+  components: MessageCreateOptions['components']
 ) {
   await message.edit({
     content: message.content || undefined,

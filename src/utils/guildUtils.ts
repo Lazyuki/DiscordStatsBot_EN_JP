@@ -97,10 +97,11 @@ export function isMessageInChannels(
   );
 }
 
+// Get send-able text channel
 export function getTextChannel(guild: Guild, channelId?: string) {
   if (!channelId) return null;
   const channel = guild.channels.cache.get(channelId);
-  return channel?.type === ChannelType.GuildText ? channel : null;
+  return channel?.isTextBased() ? channel : null;
 }
 
 export function idToChannel(id: string) {

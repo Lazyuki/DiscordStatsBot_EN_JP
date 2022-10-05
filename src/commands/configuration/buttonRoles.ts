@@ -167,8 +167,8 @@ const sar: BotCommand = {
         return;
       }
       case 'send': {
-        const { channels } = parseChannels(restContent, server.guild);
-        const channel = channels?.[0] || message.channel;
+        const { textChannels } = parseChannels(restContent, server.guild);
+        const channel = textChannels?.[0] || message.channel;
         const roles = Object.entries(currentSettings.roles);
         if (roles.length === 0) {
           throw new CommandArgumentError('No button roles set');

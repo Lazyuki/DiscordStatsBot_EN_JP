@@ -10,14 +10,14 @@ const send: BotCommand = {
   examples: ['send #channel hello I have become sentient'],
   childCommands: ['edit'],
   normalCommand: async ({ message, content, server }) => {
-    const { channels, restContent } = parseChannels(content, server.guild);
-    if (channels.length === 0) {
+    const { textChannels, restContent } = parseChannels(content, server.guild);
+    if (textChannels.length === 0) {
       throw new CommandArgumentError('Please select a channel');
     }
     if (!restContent) {
       throw new CommandArgumentError('Message content cannot be empty');
     }
-    await channels[0].send(restContent);
+    await textChannels[0].send(restContent);
     await message.react('✅');
   },
 };

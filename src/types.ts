@@ -8,14 +8,14 @@ import {
   Interaction,
   Message,
   ButtonStyle,
-  MessageOptions,
-  MessagePayload,
+  MessageCreateOptions,
   NewsChannel,
   PartialMessage,
   PermissionsString,
   TextChannel,
   ThreadChannel,
   VoiceChannel,
+  ForumChannel,
 } from 'discord.js';
 
 import Server from './classes/Server';
@@ -64,6 +64,7 @@ export type OnBotInit = (bot: Bot) => void;
 export type OnBotExit = (bot: Bot) => void;
 
 export type GuildTextChannel = TextChannel | NewsChannel | VoiceChannel;
+export type GuildTextParentChannel = GuildTextChannel | ForumChannel;
 export type GuildMessage<M extends Message | PartialMessage = Message> = M & {
   guild: Guild;
   member: GuildMember;
@@ -95,8 +96,12 @@ export interface BotCommand {
     bot: Bot;
     prefix: string;
     options: ResolvedCommandOptions;
-    send: (options: string | MessageOptions) => Promise<Message | undefined>;
-    reply: (options: string | MessageOptions) => Promise<Message | undefined>;
+    send: (
+      options: string | MessageCreateOptions
+    ) => Promise<Message | undefined>;
+    reply: (
+      options: string | MessageCreateOptions
+    ) => Promise<Message | undefined>;
   }) => void | Promise<void>;
   applicationCommand?: AppCommandBuilder;
   childCommands?: string[];
