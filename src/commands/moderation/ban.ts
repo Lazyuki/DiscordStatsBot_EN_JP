@@ -210,6 +210,8 @@ const command: BotCommand = {
           ? `\n\nBut **failed** to DM: ${dmFailedMembers
               .map((mem) => userToMentionAndTag(mem.user))
               .join('\n')}`
+          : silent
+          ? ' without sending DMs'
           : ' and DMed the reason';
 
         const bannedUserCount = bannedMembers.length + bannedUsers.length;
