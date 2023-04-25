@@ -10,6 +10,7 @@ import {
   VoiceChannel,
   GuildTextBasedChannel,
   ChannelType,
+  StageChannel,
 } from 'discord.js';
 import { REGEX_MESSAGE_LINK_OR_FULL_ID } from './regex';
 
@@ -47,7 +48,7 @@ export function getCategoryId(channel: GuildTextBasedChannel) {
 
 export function isTextChannel(
   channel: GuildBasedChannel
-): channel is TextChannel | NewsChannel | VoiceChannel {
+): channel is TextChannel | NewsChannel | VoiceChannel | StageChannel {
   return channel.type === ChannelType.GuildText && !channel.isThread();
 }
 

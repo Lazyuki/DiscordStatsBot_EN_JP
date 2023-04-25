@@ -16,6 +16,7 @@ import {
   ThreadChannel,
   VoiceChannel,
   ForumChannel,
+  StageChannel,
 } from 'discord.js';
 
 import Server from './classes/Server';
@@ -63,7 +64,11 @@ export type OnCommandInit = (server: Server) => void;
 export type OnBotInit = (bot: Bot) => void;
 export type OnBotExit = (bot: Bot) => void;
 
-export type GuildTextChannel = TextChannel | NewsChannel | VoiceChannel;
+export type GuildTextChannel =
+  | TextChannel
+  | NewsChannel
+  | VoiceChannel
+  | StageChannel;
 export type GuildTextParentChannel = GuildTextChannel | ForumChannel;
 export type GuildMessage<M extends Message | PartialMessage = Message> = M & {
   guild: Guild;
