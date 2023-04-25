@@ -12,7 +12,6 @@ import {
   CHAT_MUTE,
   EJLX,
   JHO,
-  MEE6,
   MINIMO,
   PING_PARTY,
   RAI,
@@ -101,22 +100,7 @@ const event: BotEvent<'guildMemberAdd'> = {
       }
       const jho = getTextChannel(server.guild, JHO);
       if (!jho) return;
-      if (
-        member.guild.members.cache.get(MEE6)?.presence?.status === 'offline'
-      ) {
-        await welcomeToEJLX(member, jho);
-      } else {
-        setTimeout(async () => {
-          const messages = await jho.messages.fetch({ limit: 30 });
-          for (const [, msg] of messages) {
-            if (msg.author.id === MEE6 && msg.content.includes(member.id)) {
-              // Mee6 welcomed them
-              return;
-            }
-          }
-          await welcomeToEJLX(member, jho);
-        }, 5000);
-      }
+      await welcomeToEJLX(member, jho);
     } else {
       // If not EJLX but has user join notification enabled
       await notifyUserJoin(member, userLogChannel);

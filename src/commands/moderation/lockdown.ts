@@ -1,6 +1,6 @@
 import { CommandArgumentError } from '@/errors';
 import { BotCommand } from '@/types';
-import { EJLX, JHO, MEE6, RAI } from '@utils/constants';
+import { EJLX, JHO, RAI } from '@utils/constants';
 import { DAY_IN_MILLIS, getDiscordTimestamp } from '@utils/datetime';
 import { errorEmbed, successEmbed } from '@utils/embed';
 import { getTextChannel } from '@utils/guildUtils';
@@ -62,20 +62,13 @@ const command: BotCommand = {
       if (currentLockdown) {
         server.data.lockdown = undefined;
         try {
-          await jho.permissionOverwrites.delete(MEE6);
           await jho.permissionOverwrites.delete(RAI);
         } catch (e) {
           await message.channel.send(
-            errorEmbed(
-              'Failed to delete permission overwrites for MEE6 and Rai in JHO'
-            )
+            errorEmbed('Failed to delete permission overwrites for Rai in JHO')
           );
         }
-        await message.channel.send(
-          successEmbed(
-            `Lockdown has been removed. Go to https://mee6.xyz and re-enable welcome messages.`
-          )
-        );
+        await message.channel.send(successEmbed(`Lockdown has been removed.`));
         return;
       } else {
         throw new CommandArgumentError(
@@ -95,15 +88,12 @@ const command: BotCommand = {
     }
 
     try {
-      await jho.permissionOverwrites.create(MEE6, {
-        SendMessages: false,
-      });
       await jho.permissionOverwrites.create(RAI, {
         SendMessages: false,
       });
     } catch (e) {
       await message.channel.send(
-        errorEmbed('Failed to overwrite permissions for MEE6 and Rai in JHO')
+        errorEmbed('Failed to overwrite permissions for Rai in JHO')
       );
     }
 
@@ -115,7 +105,7 @@ const command: BotCommand = {
     };
     await message.channel.send(
       successEmbed(
-        `Lockdown has been enabled and new users are muted. Mee6 and Rai are also muted in JHO.`
+        `Lockdown has been enabled and new users are muted. Rai is also muted in JHO.`
       )
     );
   },
