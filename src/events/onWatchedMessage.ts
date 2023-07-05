@@ -82,7 +82,6 @@ const deleteEvent: BotEvent<'messageDelete'> = {
       const modLog = getTextChannel(message.guild, server.config.modLogChannel);
       if (!modLog) return;
       if (message.attachments.size > 0) {
-        console.log('has att')
         deletedFiles = getDeletedAttachments(message.id, message);
       } else if (message.content) {
         // No attachments so just send the deleted message
