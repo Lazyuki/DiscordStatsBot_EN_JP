@@ -191,7 +191,7 @@ export interface SimpleButton {
 export interface DeletedMessageAttachment {
   messageId: string;
   url: string;
-  type: 'image' | 'video';
+  type: 'image' | 'video' | 'audio';
   name: string;
   bytes: number; // only for attachments, not for embed
 }

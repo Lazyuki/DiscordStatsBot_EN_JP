@@ -1,7 +1,7 @@
 import logger from '@/logger';
 import { GuildMessage } from '@/types';
 import axios from 'axios';
-import { AttachmentBuilder } from 'discord.js';
+import { AttachmentBuilder, Message, PartialMessage } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import { DAY_IN_MILLIS } from './datetime';
@@ -96,12 +96,39 @@ export async function cleanOldAttachmentFiles() {
   });
 }
 
-export function getDeletedAttachments(messageId: string): AttachmentBuilder[] {
+export function getDeletedAttachments(
+  messageId: string,
+  message: GuildMessage<Message<boolean> | PartialMessage>
+): AttachmentBuilder[] {
+  const files: AttachmentBuilder[] = [];
+  message.attachments.forEach((a) => {
+    const isImage = a.contentType?.includes('image');
+    const isVideo = a.contentType?.includes('video');
+    const isAudio = a.contentType?.includes('audio');
+    const format = a.contentType?.split('/')[1] || '';
+    const name = a.name || `${a.id}.${format}`;
+    if (isVideo || isAudio) {
+      // video and audio not saved
+      const proxyAttachment = new AttachmentBuilder(a.proxyURL, {
+        name,
+      }).setSpoiler(true);
+      files.push(proxyAttachment);
+    }
+  });
+  if (message.embeds) {
+    message.embeds.forEach((e) => {
+      if (e.video?.proxyURL) {
+        const proxyAttachment = new AttachmentBuilder(e.video.proxyURL, {
+          name: `${message.id} video`,
+        }).setSpoiler(true);
+        files.push(proxyAttachment);
+      }
+    });
+  }
   const dir = `${TEMP_DIR}/${messageId}`;
   if (!fs.existsSync(dir)) {
-    return []; // no files
+    return files; // no files
   }
-  const files: AttachmentBuilder[] = [];
   const fileNames = fs.readdirSync(dir);
   fileNames.forEach((fileName) => {
     const fullFileName = `${dir}/${fileName}`;

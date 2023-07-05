@@ -68,7 +68,7 @@ const updateEvent: BotEvent<'messageUpdate'> = {
 
 const deleteEvent: BotEvent<'messageDelete'> = {
   eventName: 'messageDelete',
-  skipOnDebug: true,
+  skipOnDebug: false,
   processEvent: async (bot, message) => {
     if (message.system) return; // System
     if (!isNotDM(message)) return; // DM
@@ -82,7 +82,8 @@ const deleteEvent: BotEvent<'messageDelete'> = {
       const modLog = getTextChannel(message.guild, server.config.modLogChannel);
       if (!modLog) return;
       if (message.attachments.size > 0) {
-        deletedFiles = getDeletedAttachments(message.id);
+        console.log('has att')
+        deletedFiles = getDeletedAttachments(message.id, message);
       } else if (message.content) {
         // No attachments so just send the deleted message
         if (message.content.length <= 3) return; // too short

@@ -207,13 +207,14 @@ const command: BotCommand = {
         m.attachments.forEach((a) => {
           const isImage = a.contentType?.includes('image');
           const isVideo = a.contentType?.includes('video');
+          const isAudio = a.contentType?.includes('audio');
           const format = a.contentType?.split('/')[1] || '';
           const name = a.name || `${a.id}.${format}`;
-          if (isImage || isVideo) {
+          if (isImage || isVideo || isAudio) {
             const delAttachment: DeletedMessageAttachment = {
               messageId: m.id,
               url: a.proxyURL,
-              type: isImage ? 'image' : 'video',
+              type: isImage ? 'image' : isVideo ? 'video' : 'audio',
               name,
               bytes: a.size,
             };

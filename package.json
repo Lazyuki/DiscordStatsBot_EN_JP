@@ -29,14 +29,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@discordjs/rest": "^1.0.0",
+    "@discordjs/rest": "^1.7.1",
     "axios": "^0.24.0",
     "better-sqlite3": "^7.4.6",
     "bufferutil": "^4.0.5",
     "common-tags": "^1.8.2",
     "date-fns": "^2.28.0",
-    "discord-api-types": "^0.37.11",
-    "discord.js": "^14.9.0",
+    "discord-api-types": "^0.37.47",
+    "discord.js": "^14.11.0",
     "dotenv": "^16.0.0",
     "emoji-regex": "^10.1.0",
     "env-var": "^7.1.1",
