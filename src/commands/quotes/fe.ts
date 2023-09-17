@@ -16,7 +16,7 @@ const command: BotCommand = {
       makeEmbed({
         color: FE_COLOR,
         description: stripIndents`
-          People with the 'Fluent' tag must set a good example for English learners. \
+          People with the 'Fluent' tag must set a good example for English learners.
           If we see you speak accurately and actively in English, you will receive the tag (may take a while).
           `,
       })
