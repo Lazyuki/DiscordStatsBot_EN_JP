@@ -36,10 +36,15 @@ export async function discordLogError(
   if (BOT_LOG_CHANNEL_ID && error) {
     const botLogChannel = bot.channels.cache.get(BOT_LOG_CHANNEL_ID);
     const httpStatus = (error as any).httpStatus;
+    // ignore unknown interaction,
+    const ignoredError = [
+      'DiscordAPIError[10062]',
+      'Error [ChannelNotCached]',
+    ].includes(error.name);
     botLogChannel?.type === ChannelType.GuildText &&
       (await botLogChannel.send(
         makeEmbed({
-          content: `<@${bot.ownerId}>`,
+          content: ignoredError ? 'Ignored Error' : `<@${bot.ownerId}>`,
           title: `${httpStatus ? httpStatus + ' ' : ''}${error.name || error}:${
             error.message
           }`,
