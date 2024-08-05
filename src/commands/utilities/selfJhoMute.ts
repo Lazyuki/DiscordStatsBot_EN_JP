@@ -7,8 +7,8 @@ import {
 
 const command: BotCommand = {
   ...timedRoleCommandTemplate,
-  name: 'nojho',
-  aliases: ['jm', 'nj'],
+  name: 'selfNoJho',
+  aliases: ['jm', 'nojho', 'snj'],
   allowedServers: [EJLX],
   description:
     'Mute just_hanging_out channels and japanese_study for some amount of time. The time can be specified with `d` for days, `h` for hours, `m` for minutes, and `s` for seconds. Use the `in` keyword to delay the mute',
