@@ -151,11 +151,13 @@ export const getNormalCommandForRole: (
   (roleId: string) =>
   async ({ message, content, server }) => {
     const selfRoleKey = getSelfRoleKey(message.member.id, roleId);
-    const existingMute = server.data.schedules.selfMutes[selfRoleKey];
+    const existingMute = server.data.schedules.selfRoles[selfRoleKey];
     if (existingMute) {
       // User already have scheduled mute
       throw new ConflictError(
-        `You have an active self-role for ${millisToDuration(existingMute)}`
+        `You have an active self-role for ${millisToDuration(
+          existingMute - new Date().getTime()
+        )}`
       );
     }
     const existingSchedule =
