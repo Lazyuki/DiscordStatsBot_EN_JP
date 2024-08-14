@@ -31,14 +31,14 @@ const sar: BotCommand = {
     '[ add | remove | list | describe | send | update | reset ] [label] [@role/role_ID description]',
   examples: [
     'br list',
-    'br add 📝 1234567891234567890 This role indicates you want people to correct your messages',
+    'br add "📝 Correct Me" 1234567891234567890 This role indicates you want people to correct your messages',
     'br add <:customEmoji:1234567891234567890> 1234567891234567890 Some description, idk',
     [
       'br add "Ultra Hardcore" @ultrahardcore This role will DELETE your messages not in your learning language',
       'You can use double quotes `" "` if the label contains spaces',
     ],
     'br remove <:customEmoji:1234567891234567890>',
-    'br remove 📝',
+    'br remove 📝 Correct Me',
     'br describe Click the buttons below to assign/remove roles from yourself.',
     [
       'br send #server_rules',
