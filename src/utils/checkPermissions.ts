@@ -33,6 +33,7 @@ export function checkModCategory(message: Message, server: Server) {
   if (checkAdmin(message)) return true;
   if (
     message.channel.type !== ChannelType.DM &&
+    message.channel.type !== ChannelType.GroupDM &&
     getCategoryId(message.channel) === MODERATION
   )
     return true;

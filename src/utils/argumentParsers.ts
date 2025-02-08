@@ -130,10 +130,10 @@ export function parseMembers(
     }
   }
 
-  if (allIds.length === 0 && /^.+#[0-9]{4}\s*$/.test(words[0])) {
+  if (allIds.length === 0 && /^.+#[0-9]{4}\s*$/.test(words[0]!)) {
     // using user tag?
     const tagMember = guild.members.cache.find(
-      (v) => v.user.tag === words[0].trim()
+      (v) => v.user.tag === words[0]!.trim()
     );
     if (tagMember) {
       members.push(tagMember);

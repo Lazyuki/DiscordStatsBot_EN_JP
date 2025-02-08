@@ -1,7 +1,7 @@
 import {
   GuildMember,
   Invite,
-  TextBasedChannel,
+  SendableChannels,
   escapeMarkdown,
   ButtonStyle,
 } from 'discord.js';
@@ -110,7 +110,7 @@ const event: BotEvent<'guildMemberAdd'> = {
 
 async function notifyUserJoin(
   member: GuildMember,
-  channel: TextBasedChannel,
+  channel: SendableChannels,
   invite?: Invite
 ) {
   await channel.send(
@@ -132,7 +132,7 @@ async function notifyUserJoin(
   );
 }
 
-async function welcomeToEJLX(member: GuildMember, channel: TextBasedChannel) {
+async function welcomeToEJLX(member: GuildMember, channel: SendableChannels) {
   await channel.send(
     stripIndents`
     Welcome ${member}. Please read <#${SERVER_RULES}> and tell us what your native language is!

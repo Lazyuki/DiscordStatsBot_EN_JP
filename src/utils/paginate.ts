@@ -1,4 +1,4 @@
-import { TextBasedChannel } from 'discord.js';
+import { SendableChannels } from 'discord.js';
 import { getPaginatorButtons } from './buttons';
 import { INFO_COLOR } from './constants';
 import {
@@ -9,7 +9,7 @@ import {
 } from './embed';
 
 export async function descriptionPaginator(
-  channel: TextBasedChannel,
+  channel: SendableChannels,
   title: string,
   list: string[],
   perPage: number,
@@ -80,7 +80,7 @@ export async function descriptionPaginator(
 }
 
 export async function fieldsPaginator(
-  channel: TextBasedChannel,
+  channel: SendableChannels,
   title: string,
   description: string,
   fields: EmbedField[],

@@ -11,6 +11,7 @@ import {
   GuildTextBasedChannel,
   ChannelType,
   StageChannel,
+  MediaChannel,
 } from 'discord.js';
 import { REGEX_MESSAGE_LINK_OR_FULL_ID } from './regex';
 

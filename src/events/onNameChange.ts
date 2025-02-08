@@ -2,7 +2,7 @@ import {
   GuildMember,
   PartialGuildMember,
   PartialUser,
-  TextBasedChannel,
+  SendableChannels,
   User,
   escapeMarkdown,
 } from 'discord.js';
@@ -44,7 +44,7 @@ const userEvent: BotEvent<'userUpdate'> = {
 async function sendNameChange(
   message: string,
   user: User,
-  channel: TextBasedChannel
+  channel: SendableChannels
 ) {
   await channel.send(
     makeEmbed({
@@ -60,7 +60,7 @@ async function sendNameChange(
 async function notifyNicknameChange(
   oldMember: PartialGuildMember | GuildMember,
   newMember: GuildMember,
-  channel: TextBasedChannel
+  channel: SendableChannels
 ) {
   const oldNickname = oldMember.nickname;
   const newNickname = newMember.nickname;
@@ -83,7 +83,7 @@ async function notifyNicknameChange(
 async function notifyUsernameChange(
   oldUser: PartialUser | User,
   newUser: User,
-  channel: TextBasedChannel
+  channel: SendableChannels
 ) {
   const oldUserTag = oldUser.tag
     ? `**${escapeMarkdown(oldUser.tag)}**`

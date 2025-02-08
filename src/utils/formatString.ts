@@ -6,7 +6,7 @@ import {
   GuildChannel,
   VoiceChannel,
   ChannelType,
-  TextBasedChannel,
+  SendableChannels,
   DMChannel,
   PartialDMChannel,
   CategoryChannel,

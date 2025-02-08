@@ -77,14 +77,14 @@ function getArrayStatement(key: string, sql: string, arr: any[]) {
   return arrayStatements[key][arr.length];
 }
 
-function makeGetAllWithArray<P, R>(key: string, sql: string) {
+function makeGetAllWithArray<P extends object, R>(key: string, sql: string) {
   return (params: P, array: string[]) => {
     const statement = getArrayStatement(key, sql, array);
     return sqlToJs(statement.all(...array, jsToSql(params))) as R[];
   };
 }
 
-function makeStatementWithArray<P>(key: string, sql: string) {
+function makeStatementWithArray<P extends object>(key: string, sql: string) {
   return (params: P, array: (string | number)[]) => {
     const statement = getArrayStatement(key, sql, array);
     return statement.run(...array, jsToSql(params));
@@ -118,7 +118,7 @@ function sqlToJs(rows: any[]) {
   return null;
 }
 
-function jsToSql<T>(params: T) {
+function jsToSql<T extends object>(params: T) {
   const ret = {} as any;
   Object.entries(params).forEach(([key, value]) => {
     if (BOOLEAN_KEYS.includes(key)) {
@@ -132,7 +132,7 @@ function jsToSql<T>(params: T) {
   return ret;
 }
 
-function makeGetAllRows<P, R>(sql: string) {
+function makeGetAllRows<P extends object, R>(sql: string) {
   const statement = db.prepare<P>(sql);
   return (params: P) => sqlToJs(statement.all(jsToSql(params))) as R[];
 }
@@ -142,7 +142,7 @@ function makeGetAllRowsNoParam<R>(sql: string) {
   return () => sqlToJs(statement.all()) as R[];
 }
 
-function makeStatement<P>(sql: string) {
+function makeStatement<P extends object>(sql: string) {
   const statement = db.prepare<P>(sql);
   return (params: P) => statement.run(jsToSql(params));
 }
@@ -623,10 +623,10 @@ export const clearOldRecords = () => {
 
 export const runAnyQuery = (sql: string) => {
   const statement = db.prepare(sql);
-  return statement.run(jsToSql(sql));
+  return statement.run(sql);
 };
 
 export const fetchAnyQuery = (sql: string) => {
   const statement = db.prepare(sql);
-  return sqlToJs(statement.all(jsToSql(sql)));
+  return sqlToJs(statement.all(sql));
 };

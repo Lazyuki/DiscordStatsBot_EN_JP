@@ -1,7 +1,7 @@
 import {
   GuildMember,
   PartialGuildMember,
-  TextBasedChannel,
+  SendableChannels,
   escapeMarkdown,
 } from 'discord.js';
 
@@ -74,7 +74,7 @@ const event: BotEvent<'guildMemberRemove'> = {
 
 async function notifyUserLeave(
   member: PartialGuildMember | GuildMember,
-  channel: TextBasedChannel
+  channel: SendableChannels
 ) {
   await channel.send(
     makeEmbed({

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 import { DAY_IN_MILLIS } from './datetime';
 
 const MAX_BACKUP_DAYS = 7;
@@ -73,11 +73,11 @@ export function deleteOldBackups() {
     if (fileName.endsWith('.db')) {
       // DB backups are bigger so delete more often
       if (now > fileCreatedAt + MAX_DB_BACKUP_DAYS * DAY_IN_MILLIS) {
-        rimraf(fullFileName, () => {});
+        rimraf(fullFileName);
       }
     } else {
       if (now > fileCreatedAt + MAX_BACKUP_DAYS * DAY_IN_MILLIS) {
-        rimraf(fullFileName, () => {});
+        rimraf(fullFileName);
       }
     }
   });

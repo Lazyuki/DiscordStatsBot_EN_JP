@@ -7,7 +7,7 @@ import {
   MessageComponentInteraction,
   MessageReaction,
   NewsChannel,
-  TextBasedChannel,
+  SendableChannels,
   TextChannel,
   User,
 } from 'discord.js';
@@ -17,7 +17,7 @@ import { makeEmbed } from './embed';
 import { getTextChannel } from './guildUtils';
 
 async function waitForMessage(
-  channel: TextBasedChannel,
+  channel: SendableChannels,
   filter: (m: Message) => boolean,
   waitForSeconds: number = 15,
   max: number = 1

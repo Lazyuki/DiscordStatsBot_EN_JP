@@ -17,6 +17,7 @@ import {
   VoiceChannel,
   ForumChannel,
   StageChannel,
+  MediaChannel,
 } from 'discord.js';
 
 import Server from './classes/Server';
@@ -69,7 +70,10 @@ export type GuildTextChannel =
   | NewsChannel
   | VoiceChannel
   | StageChannel;
-export type GuildTextParentChannel = GuildTextChannel | ForumChannel;
+export type GuildTextParentChannel =
+  | GuildTextChannel
+  | MediaChannel
+  | ForumChannel;
 export type GuildMessage<M extends Message | PartialMessage = Message> = M & {
   guild: Guild;
   member: GuildMember;

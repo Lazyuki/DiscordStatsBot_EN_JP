@@ -3,7 +3,7 @@ import {
   Guild,
   GuildMember,
   PartialGuildMember,
-  TextBasedChannel,
+  SendableChannels,
 } from 'discord.js';
 
 import { makeEmbed } from '@utils/embed';
@@ -90,7 +90,7 @@ async function getRoleChangeAuditLogs(guild: Guild, userId: string) {
 
 async function notifyLanguageRoleChange(
   userId: string,
-  channel: TextBasedChannel
+  channel: SendableChannels
 ) {
   const { oldMember, newMember } = bulkUpdator[userId] ?? {};
   delete bulkUpdator[userId];

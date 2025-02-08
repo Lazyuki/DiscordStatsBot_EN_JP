@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { DAY_IN_MILLIS } from './datetime';
 import sharp from 'sharp';
-import rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 
 export const MAX_BYTES = 50_000_000; // 50MB
 export const MAX_IMAGE_HEIGHT = 800; // px
@@ -91,7 +91,7 @@ export async function cleanOldAttachmentFiles() {
     const now = new Date().getTime();
     const fileCreatedAt = new Date(file.ctime).getTime();
     if (now > fileCreatedAt + MAX_ATTACHMENT_STORAGE_DAYS * DAY_IN_MILLIS) {
-      rimraf(fullFileName, () => {});
+      rimraf(fullFileName);
     }
   });
 }
@@ -134,7 +134,7 @@ export function getDeletedAttachments(
     const fullFileName = `${dir}/${fileName}`;
     const file = fs.readFileSync(fullFileName);
     files.push(new AttachmentBuilder(file, { name: fileName }));
-    rimraf(fullFileName, () => {}); // No longer needed
+    rimraf(fullFileName); // No longer needed
   });
   return files;
 }
