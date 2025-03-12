@@ -42,13 +42,15 @@ async function assignRole(
   member: GuildMember,
   roleId: string,
   server: Server,
-  removeAtMillis: number
+  removeAtMillis: number | null
 ) {
   const id = getSelfRoleKey(member.id, roleId);
   try {
-    server.data.schedules.selfRoles[id] = removeAtMillis;
     await member.roles.add(roleId, 'CIRI_SELF_ROLE');
-    runAt(removeAtMillis, () => removeSelfRole(id, server));
+    if (removeAtMillis !== null) {
+      server.data.schedules.selfRoles[id] = removeAtMillis;
+      runAt(removeAtMillis, () => removeSelfRole(id, server));
+    }
   } catch (e) {
     delete server.data.schedules.selfRoles[id];
     // User left?
@@ -67,11 +69,13 @@ function scheduleSelfRole(
   unassignAtMillis: number
 ) {
   const id = getSelfRoleKey(member.id, roleId);
-  server.data.schedules.scheduledSelfRoles[id] = {
-    assignAt: assignAtMillis,
-    unassignAt: unassignAtMillis,
-    channelId,
-  };
+  if (unassignAtMillis !== null) {
+    server.data.schedules.scheduledSelfRoles[id] = {
+      assignAt: assignAtMillis,
+      unassignAt: unassignAtMillis,
+      channelId,
+    };
+  }
   runAt(assignAtMillis, () => {
     getMemberOrRepeat(
       member.id,
@@ -103,7 +107,8 @@ type TemplateBotCommand = Omit<
 
 export const timedRoleCommandTemplate: TemplateBotCommand = {
   requiredBotPermissions: ['ModerateMembers', 'ManageRoles'],
-  arguments: '< role_duration (Max: 7d)> [ in delay_duration (Max: 1d)]',
+  arguments:
+    '< role_duration (Max: 7d or forever)> [ in delay_duration (Max: 1d)]',
   onCommandInit: (server) => {
     server.data.schedules.scheduledSelfRoles ||= {};
     server.data.schedules.selfRoles ||= {};
@@ -170,13 +175,17 @@ export const getNormalCommandForRole: (
         )}`
       );
     }
-    const [roleDuration, roleDelay] = content.split(' in ');
-    const totalMillis = strToMillis(roleDuration.trim()).millis;
+    const [roleDuration, roleDelay] = content
+      .split(' in ')
+      .map((s) => s.trim().toLowerCase());
+    const totalMillis = strToMillis(roleDuration).millis;
     const delayMillis =
-      roleDelay !== undefined ? strToMillis(roleDelay.trim()).millis : null;
-    if (!totalMillis) {
+      roleDelay !== undefined ? strToMillis(roleDelay).millis : null;
+
+    const isForever = roleDuration === 'forever';
+    if (!totalMillis && !isForever) {
       throw new CommandArgumentError(
-        `Specify the amount of time in the format \`1d2h3m4s\` Where \`d\` is days, \`h\` is hours, \`m\` is minutes, and \`s\` is seconds.`
+        `Specify the amount of time in the format \`1d2h3m4s\` Where \`d\` is days, \`h\` is hours, \`m\` is minutes, and \`s\` is seconds. Alternatively, use \`forever\` to never remove the role.`
       );
     }
     if (totalMillis > 7 * DAY_IN_MILLIS) {
@@ -197,6 +206,10 @@ export const getNormalCommandForRole: (
       );
     } else if (delayMillis && delayMillis > DAY_IN_MILLIS) {
       throw new CommandArgumentError(`You cannot delay for more than a day`);
+    } else if (delayMillis && isForever) {
+      throw new CommandArgumentError(
+        `You cannot delay when assigning the role forever`
+      );
     }
 
     const assignAtMillis = delayMillis
@@ -231,9 +244,11 @@ export const getNormalCommandForRole: (
       );
       await message.channel.send(
         successEmbed({
-          description: `${name} self-assigned <@&${roleId}> for **${millisToDuration(
-            totalMillis
-          )}**`,
+          description: isForever
+            ? `${name} self-assigned <@&${roleId}> **forever**`
+            : `${name} self-assigned <@&${roleId}> for **${millisToDuration(
+                totalMillis
+              )}**`,
         })
       );
     }
