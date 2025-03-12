@@ -108,7 +108,7 @@ type TemplateBotCommand = Omit<
 export const timedRoleCommandTemplate: TemplateBotCommand = {
   requiredBotPermissions: ['ModerateMembers', 'ManageRoles'],
   arguments:
-    '< role_duration (Max: 7d or forever)> [ in delay_duration (Max: 1d)]',
+    '< role_duration (Max: 7d) | forever | remove> [ in delay_duration (Max: 1d)]',
   onCommandInit: (server) => {
     server.data.schedules.scheduledSelfRoles ||= {};
     server.data.schedules.selfRoles ||= {};
@@ -156,33 +156,64 @@ export const getNormalCommandForRole: (
   (roleId: string) =>
   async ({ message, content, server }) => {
     const selfRoleKey = getSelfRoleKey(message.member.id, roleId);
-    const existingMute = server.data.schedules.selfRoles[selfRoleKey];
-    if (existingMute) {
-      // User already have scheduled mute
-      throw new ConflictError(
-        `You have an active self-role for ${millisToDuration(
-          existingMute - new Date().getTime()
-        )}`
-      );
-    }
-    const existingSchedule =
-      server.data.schedules.scheduledSelfRoles[selfRoleKey];
-    if (existingSchedule) {
-      // User already have scheduled mute
-      throw new ConflictError(
-        `You already have a scheduled self-role in ${millisToDuration(
-          existingSchedule.assignAt - new Date().getTime()
-        )}`
-      );
-    }
+
     const [roleDuration, roleDelay] = content
       .split(' in ')
       .map((s) => s.trim().toLowerCase());
+
     const totalMillis = strToMillis(roleDuration).millis;
     const delayMillis =
       roleDelay !== undefined ? strToMillis(roleDelay).millis : null;
-
     const isForever = roleDuration === 'forever';
+    const isRemove = roleDuration === 'remove';
+
+    const existingSchedule =
+      server.data.schedules.scheduledSelfRoles[selfRoleKey];
+    if (existingSchedule) {
+      // User already has a scheduled self role
+      if (isRemove) {
+        throw new ConflictError(
+          `You cannot remvoe a scheduled self-role in ${millisToDuration(
+            existingSchedule.assignAt - new Date().getTime()
+          )}`
+        );
+      } else {
+        throw new ConflictError(
+          `You already have a scheduled self-role in ${millisToDuration(
+            existingSchedule.assignAt - new Date().getTime()
+          )}`
+        );
+      }
+    }
+
+    const existingMute = server.data.schedules.selfRoles[selfRoleKey];
+    if (existingMute) {
+      // User already has a timed self role
+      if (isRemove) {
+        throw new ConflictError(
+          `You cannot remove an active self-role that ends in ${millisToDuration(
+            existingMute - new Date().getTime()
+          )}`
+        );
+      } else {
+        throw new ConflictError(
+          `You have an active self-role for ${millisToDuration(
+            existingMute - new Date().getTime()
+          )}`
+        );
+      }
+    }
+    if (isRemove) {
+      removeSelfRole(selfRoleKey, server);
+      safeDelete(message);
+      const name = `**${escapeMarkdown(message.member.displayName)}**`;
+      await message.channel.send(
+        successEmbed({
+          description: `${name} removed the indefinite self-role <@&${roleId}>`,
+        })
+      );
+      return;
+    }
     if (!totalMillis && !isForever) {
       throw new CommandArgumentError(
         `Specify the amount of time in the format \`1d2h3m4s\` Where \`d\` is days, \`h\` is hours, \`m\` is minutes, and \`s\` is seconds. Alternatively, use \`forever\` to never remove the role.`

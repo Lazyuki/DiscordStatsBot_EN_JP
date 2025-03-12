@@ -11,8 +11,14 @@ const command: BotCommand = {
   aliases: ['focus', 'sf'],
   allowedServers: [EJLX],
   description:
-    'Mute most channels except for study-heavy channels. This highly limits your interation with the server.',
-  examples: ['focus 3h', 'focus 1d6h30m', 'focus 1d40m in 2h', 'focus forever'],
+    'Mute most channels except for study-heavy channels. This highly limits your interation with the server. Use `forever` or `remove` to manually assign it.',
+  examples: [
+    'focus 3h',
+    'focus 1d6h30m',
+    'focus 1d40m in 2h',
+    'focus forever',
+    'focus remove',
+  ],
   normalCommand: getNormalCommandForRole('903825140779982909'),
 };
 
