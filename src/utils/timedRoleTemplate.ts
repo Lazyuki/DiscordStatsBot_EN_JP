@@ -187,12 +187,11 @@ export const getNormalCommandForRole: (
       throw new CommandArgumentError(
         `Specify the amount of time in the format \`1d2h3m4s\` Where \`d\` is days, \`h\` is hours, \`m\` is minutes, and \`s\` is seconds. Alternatively, use \`forever\` to never remove the role.`
       );
-    }
-    if (totalMillis > 7 * DAY_IN_MILLIS) {
+    } else if (totalMillis > 7 * DAY_IN_MILLIS) {
       throw new CommandArgumentError(
         `You cannot assign a role to yourself for more than 7 days`
       );
-    } else if (totalMillis < 60_000) {
+    } else if (totalMillis < 60_000 && !isForever) {
       throw new CommandArgumentError(
         `You cannot assign a role to yourself for under a minute`
       );
