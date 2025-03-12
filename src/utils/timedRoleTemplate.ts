@@ -270,7 +270,7 @@ export const getNormalCommandForRole: (
         message.member,
         roleId,
         server,
-        new Date().getTime() + totalMillis
+        isForever ? null : new Date().getTime() + totalMillis
       );
       await message.channel.send(
         successEmbed({
